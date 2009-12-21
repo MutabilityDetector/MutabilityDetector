@@ -56,3 +56,6 @@ if(result.equals(IsImmutable.DEFINITELY)) {
 } else if(result.equals(IsImmutable.DEFINITELY_NOT)) {
     // be careful here: make defensive copies, don't publish the reference, read Java Concurrency In Practice right away!
 }
+
+= Contact =
+Contact can be made either by leaving comments or by email at Grundlefleck at gmail dot com
