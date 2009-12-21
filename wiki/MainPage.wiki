@@ -1,5 +1,3 @@
-Mutability Detector Main Page
-
 = Introduction =
 
 == What is Mutability Detector? == 
