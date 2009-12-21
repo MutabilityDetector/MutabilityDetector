@@ -1,0 +1,60 @@
+Mutability Detector Main Page
+
+= Introduction =
+
+== What is Mutability Detector? == 
+Mutability Detector is designed to analyse Java classes and report on whether instances of a given class is immutable. It is intended that Mutability Detector will be usable at runtime or statically.
+== What is Mutability Detector *NOT*? ==
+  * Heavily used, production ready, well tested, extensively documented. Mutability Detector is very much in a pre-release state. As such it has very limited capability, but there is functionality there. Functionality which may just be useful.
+  * A general tool for static code analysis - if you're looking for a tool which does static analysis for a wide range of code defects, you're probably looking for Findbugs.
+  * A JSR-305 implementation - the tool does not yet recognise the annotations for concurrency described in that JSR. Thus, Mutability Detector does not look for, or change behaviour on finding, a class annotated with `@Immutable`.
+
+= Getting Started =
+Both static analysis and runtime analysis should use the same jar, available from [https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/build/MutabilityDetector.jar here]. In the former case the tool is a command line app, in the latter it should be added to your classpath for inclusion in your project.
+
+== Static Analysis ==
+
+An example of how to run it is probably the most useful. If you want to analyse MyCodebase.jar use:
+
+{{{ java -jar MutabilityDetector.jar -classpath path/to/MyCodebase.jar }}}
+
+Mutability Detector can handle jars as seen above, or directories of class files (thanks go to the authors of [http://code.google.com/p/classpath-explorer/ classpath-explorer]). So if your codebase was in the filesystem as directories and .class files, and the directory MyCodebase was the root of that, you could run:
+
+{{{ java -jar MutabilityDetector.jar -classpath path/to/MyCodebase }}}
+
+The output is a list of the analysed classes against the result of asking "Is immutable?", ie. DEFINITELY, DEFINITELY_NOT. Currently there is no way to select individual classes to be analysed with this command. As a workaround I'd suggest piping the output through {{{grep}}}.
+
+The command line has the following usage:
+{{{
+usage: MutabilityDetector
+ -classpath <path>   The classpath to be analysed by Mutability Detector
+ -help               print this message
+ -r,--report <arg>   Choose what is reported from the analysis. Valid
+                     options are [ALL|IMMUTABLE|MUTABLE]. If not
+                     specified, or doesn't match an available mode,
+                     defaults to 'ALL'
+ -v,--verbose        Print details of analysis and reasons for results.
+}}}
+
+== Runtime use == 
+
+Create an instance of AnalysisSession using the default constructor. Classes can then be analysed on request, given the class name (this is the dotted class name, e.g. java.lang.String as opposed to java/lang/String.class). Like so:
+
+{{{
+// Initialise AnalysisSession
+// This should be done only once per run, as each instance caches the result
+IAnalysisSession analysisSession = new AnalysisSession(); 
+
+...
+
+// If you want to then test if a class is immutable, call the following:
+// IAnalysisSession#isImmutable(String className)
+// This does not return a boolean, but rather an enum type, as there is currently an immutability spectrum
+// A more meaningful use is:
+String dottedClassName = someObject.getClass().getName();
+IsImmutable result = analysisSession.isImmutable(dottedClassName);
+if(result.equals(IsImmutable.DEFINITELY)) {
+    // rest safe in the knowledge the class is immutable, share across threads with joyful abandon
+} else if(result.equals(IsImmutable.DEFINITELY_NOT)) {
+    // be careful here: make defensive copies, don't publish the reference, read Java Concurrency In Practice right away!
+}
