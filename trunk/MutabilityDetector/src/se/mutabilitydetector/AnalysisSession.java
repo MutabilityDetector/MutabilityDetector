@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 
 public class AnalysisSession implements IAnalysisSession {
 
@@ -18,6 +19,11 @@ public class AnalysisSession implements IAnalysisSession {
 	private final List<String> requestedAnalysis = new ArrayList<String>();
 
 	public AnalysisSession(ClassPath classpath) {
+		checkerRunnerFactory = new CheckerRunnerFactory(classpath);
+	}
+	
+	public AnalysisSession() {
+		ClassPath classpath = new ClassPathFactory().createFromJVM();
 		checkerRunnerFactory = new CheckerRunnerFactory(classpath);
 	}
 
