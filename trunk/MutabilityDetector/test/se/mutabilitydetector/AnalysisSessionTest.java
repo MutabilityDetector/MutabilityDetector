@@ -1,6 +1,6 @@
 package se.mutabilitydetector;
 
-import static se.mutabilitydetector.benchmarks.ImmutableAssert.assertImmutable;
+import static se.mutabilitydetector.ImmutableAssert.assertImmutable;
 
 import org.junit.Before;
 import org.junit.Test;

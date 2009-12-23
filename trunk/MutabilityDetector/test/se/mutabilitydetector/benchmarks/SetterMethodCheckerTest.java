@@ -1,8 +1,8 @@
 package se.mutabilitydetector.benchmarks;
 
 import static org.junit.Assert.assertEquals;
-import static se.mutabilitydetector.benchmarks.ImmutableAssert.assertDefinitelyNotImmutable;
-import static se.mutabilitydetector.benchmarks.ImmutableAssert.assertImmutable;
+import static se.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static se.mutabilitydetector.ImmutableAssert.assertImmutable;
 
 import java.util.Collections;
 

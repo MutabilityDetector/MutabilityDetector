@@ -1,4 +1,4 @@
-package se.mutabilitydetector.benchmarks;
+package se.mutabilitydetector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,7 +7,8 @@ import se.mutabilitydetector.IAnalysisSession.IsImmutable;
 public class ImmutableAssert {
 
 	public static void assertImmutable(IsImmutable result) {
-		assertEquals("Expected Immutable result.", IsImmutable.DEFINITELY, result);
+		String failString = "Expected Immutable result.\n";
+		assertEquals(failString, IsImmutable.DEFINITELY, result);
 	}
 	
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
@@ -18,6 +19,10 @@ public class ImmutableAssert {
 		String error = "Expected any result but Immutable. \nActual: " + result.name();
 		assertFalse(error, IsImmutable.DEFINITELY.equals(result));
 		
+	}
+	
+	public static void assertIsImmutableResult(IsImmutable expected, IsImmutable actual) {
+		assertEquals(expected, actual);
 	}
 	
 }

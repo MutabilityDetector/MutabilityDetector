@@ -22,10 +22,7 @@ public class RunMutabilityDetector {
 
 	public static void main(String[] args) {
 		CommandLineOptions options = createOptionsFromArgs(args);
-//		ClassPath cp = new ClassPathFactory().createFromPath(options.classpath());
-		
-		
-		ClassPath cp = new ClassPathFactory().createFromJVM();
+		ClassPath cp = new ClassPathFactory().createFromPath(options.classpath());
 
 		RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
 		String[] findResources = cp.findResources("", regExpResourceFilter);

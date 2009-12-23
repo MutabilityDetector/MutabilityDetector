@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static se.mutabilitydetector.benchmarks.ImmutableAssert.assertNotImmutable;
+import static se.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
