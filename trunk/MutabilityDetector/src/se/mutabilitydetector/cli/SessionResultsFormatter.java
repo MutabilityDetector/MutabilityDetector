@@ -3,6 +3,7 @@ package se.mutabilitydetector.cli;
 import static se.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static se.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -95,11 +96,12 @@ public class SessionResultsFormatter {
 		}
 	}
 
-	private static final class ClassnameComparator implements Comparator<AnalysisResult> {
+	private static final class ClassnameComparator implements Comparator<AnalysisResult>, Serializable {
+		private static final long serialVersionUID = 1865374158214841422L;
 
 		@Override
-		public int compare(AnalysisResult o1, AnalysisResult o2) {
-			return o1.dottedClassName.compareToIgnoreCase(o2.dottedClassName);
+		public int compare(AnalysisResult first, AnalysisResult second) {
+			return first.dottedClassName.compareToIgnoreCase(second.dottedClassName);
 		}
 
 	}

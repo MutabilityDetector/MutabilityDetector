@@ -89,7 +89,7 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 		}
 	}
 
-	class FieldInfo {
+	static class FieldInfo {
 		final String name;
 		final Type type;
 

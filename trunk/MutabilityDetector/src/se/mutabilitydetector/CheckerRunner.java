@@ -1,6 +1,7 @@
 package se.mutabilitydetector;
 
 import static java.lang.String.format;
+import static java.lang.Thread.currentThread;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,7 @@ public class CheckerRunner {
 	public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath) {
 		try {
 			try {
-				Class<?> toCheck = Thread.currentThread().getContextClassLoader().loadClass(dottedClassPath);
+				Class<?> toCheck = currentThread().getContextClassLoader().loadClass(dottedClassPath);
 				cr = new ClassReader(toCheck.getName());
 				cr.accept(checker, 0);
 			} catch (Throwable e) {
