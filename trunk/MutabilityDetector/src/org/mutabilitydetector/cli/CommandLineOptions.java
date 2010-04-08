@@ -65,13 +65,14 @@ public class CommandLineOptions {
 	@SuppressWarnings("static-access")
 	private Options createOptions() {
 		Options opts = new Options();
-		createAndAddOption(opts, "path", "The classpath to be analysed by Mutability Detector", "classpath");
+		createAndAddOption(opts, "path", "The classpath to be analysed by Mutability Detector", "classpath", "cp");
 		createAndAddOption(opts, "regex", "A regular expression used to match class names to analyse. "
-				+ "Default is '*.class', meaning all .class files will be analysed. THIS OPTION IS CURRENTLY IGNORED.",
-				"match");
+				+ "This is matched against the fully qualified class name, minus the .class suffix (i.e. it matches " +
+						"against 'java.lang.Object', not 'java/lang/Object.class'). The default is '.*', meaning all " +
+						"classes will be analysed. THIS OPTION IS CURRENTLY IGNORED.",
+				"match", "m");
 		opts.addOption("v", "verbose", false, "Print details of analysis and reasons for results.");
-		opts
-				.addOption("r", "report", true, "Choose what is reported from the analysis. Valid options are "
+		opts.addOption("r", "report", true, "Choose what is reported from the analysis. Valid options are "
 						+ ReportMode.validModes()
 						+ ". If not specified, or doesn't match an available mode, defaults to 'ALL'");
 		opts.addOption(OptionBuilder.withDescription("print this message").create("help"));
@@ -79,10 +80,12 @@ public class CommandLineOptions {
 	}
 
 	@SuppressWarnings("static-access")
-	private static void createAndAddOption(Options opts, String argumentName, String description, String argumentFlag) {
-		Option hostOption = OptionBuilder.withArgName(argumentName).hasArg().withDescription(description).create(
-				argumentFlag);
+	private static void createAndAddOption(Options opts, String argumentName, String description, String argumentFlag,
+			String shortFlag) {
+		Option hostOption = OptionBuilder.withArgName(argumentName).hasArg().withDescription(description).withLongOpt(
+				argumentFlag).create(shortFlag);
 		opts.addOption(hostOption);
+
 	}
 
 	public String classpath() {
@@ -119,7 +122,7 @@ public class CommandLineOptions {
 	}
 
 	private void extractMatch(CommandLine line) {
-		this.match = line.getOptionValue("match", "*");
+		this.match = line.getOptionValue("match", ".*");
 	}
 
 	private void printHelpIfRequired(CommandLine line) {
@@ -132,7 +135,7 @@ public class CommandLineOptions {
 	private void printHelpAndExit() {
 		HelpFormatter help = new HelpFormatter();
 		help.printHelp("MutabilityDetector", options);
-		throw new RuntimeException();
+		System.exit(0);
 	}
 
 	public String match() {
