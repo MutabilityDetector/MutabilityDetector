@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.ClassNameConvertor;
 
 
 import com.google.classpath.ClassPath;
@@ -93,7 +94,7 @@ public class RunMutabilityDetector {
 		String matcher = options.match();
 		for (String className : classNames) {
 
-			String dottedClassName = className.replace(".class", "").replace("/", ".");
+			String dottedClassName = new ClassNameConvertor().dotted(className);
 			if (Pattern.matches(matcher, dottedClassName)) {
 				filtered.add(className);
 			}

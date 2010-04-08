@@ -20,6 +20,7 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
+import org.mutabilitydetector.ClassNameConvertor;
 import org.mutabilitydetector.IAnalysisSession;
 
 public class InheritedMutabilityChecker extends AbstractMutabilityChecker {
@@ -33,9 +34,14 @@ public class InheritedMutabilityChecker extends AbstractMutabilityChecker {
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		super.visit(version, access, name, signature, superName, interfaces);
+		
 		if(superName == null) {
 			result = DEFINITELY; // for java.lang.Object
-		} else if(analysisSession.isImmutable(superName).equals(DEFINITELY_NOT)) {
+			return;
+		}
+		
+		String dottedSuperName = new ClassNameConvertor().dotted(superName);
+		if(analysisSession.isImmutable(dottedSuperName).equals(DEFINITELY_NOT)) {
 			result = DEFINITELY_NOT;
 		} else {
 			result = DEFINITELY;
