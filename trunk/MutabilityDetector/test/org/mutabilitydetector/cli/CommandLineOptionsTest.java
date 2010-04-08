@@ -83,11 +83,6 @@ public class CommandLineOptionsTest {
 		assertEquals(reportMode, options.reportMode());
 	}
 
-	@Test(expected=RuntimeException.class)
-	public void testHelpWillTerminateWithRuntimeException() throws Exception {
-		options = new CommandLineOptions(makeArgs("-help"));
-	}
-
 	private String[] makeArgs(String... args) {
 		return args;
 	}
