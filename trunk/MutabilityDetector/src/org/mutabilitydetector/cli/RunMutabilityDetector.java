@@ -59,15 +59,14 @@ public class RunMutabilityDetector {
 	}
 
 	private static CommandLineOptions createOptionsFromArgs(String[] args) {
-		CommandLineOptions options;
 		try {
-			options = new CommandLineOptions(args);
+			CommandLineOptions options = new CommandLineOptions(args);
 			return options;
 		} catch (Throwable e) {
 			System.out.println("Exiting...");
 			System.exit(1);
+			return null; // impossible statement
 		}
-		return null; // impossible statement
 	}
 
 	private static void setCustomClassLoader(CommandLineOptions options) {
@@ -91,7 +90,7 @@ public class RunMutabilityDetector {
 		List<String> filtered = new ArrayList<String>();
 		List<String> classNames = new ArrayList<String>();
 		classNames.addAll(Arrays.asList(findResources));
-		String matcher = options.match().replace(".", "\\.").replace("*", ".*"); 
+		String matcher = options.match();
 		for (String className : classNames) {
 
 			String dottedClassName = className.replace(".class", "").replace("/", ".");
@@ -99,7 +98,7 @@ public class RunMutabilityDetector {
 				filtered.add(className);
 			}
 		}
-		return classNames;
+		return filtered;
 	}
 
 }
