@@ -34,13 +34,12 @@ public class OptionParserHelper {
 	}
 
 	public void parseOptions(ParsingAction action) {
-		CommandLineParser parser = new GnuParser();
-		CommandLine line;
 		try {
-			line = parser.parse(options, args);
+			CommandLineParser parser = new GnuParser();
+			CommandLine line = parser.parse(options, args);
 			action.doParsingAction(line);
 		} catch (ParseException e) {
-			System.err.println("Parsing command line failed.\nReason: " + e.getMessage());
+			System.out.println("Parsing command line options failed.\nReason: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 		
