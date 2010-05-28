@@ -1,7 +1,7 @@
 = Introduction =
 
 == What is Mutability Detector? == 
-Mutability Detector is designed to analyse Java classes and report on whether instances of a given class is immutable. It is intended that Mutability Detector will be usable at runtime or statically.
+Mutability Detector is designed to analyse Java classes and report on whether instances of a given class are immutable. It is intended that Mutability Detector will be usable at runtime or statically.
 == What is Mutability Detector *NOT*? ==
   * Heavily used, production ready, well tested, extensively documented. Mutability Detector is very much in a pre-release state. As such it has very limited capability, but there is functionality there. Functionality which may just be useful.
   * A general tool for static code analysis - if you're looking for a tool which does static analysis for a wide range of code defects, you're probably looking for Findbugs.
