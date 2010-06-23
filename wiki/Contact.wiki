@@ -1,0 +1,6 @@
+#summary Details of contact details for project members
+
+=Project member's contact details=
+
+==Grundlefleck (owner)==
+ E-Mail: Grundlefleck@gmail.com
