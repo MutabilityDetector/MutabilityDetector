@@ -8,17 +8,17 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector;
+package org.mutabilitydetector.benchmarks;
 
 /**
  * @author Graham Allan (grundlefleck@gmail.com)
- * @date 8 Apr 2010
+ * @date 19 Apr 2010
  * 
  */
-public class ClassNameConvertor {
+public class MutableByExtendingMutableType extends MutableByHavingPublicNonFinalField {
 
-	public String dotted(String slashed) {
-		return slashed.replace(".class", "").replace("/", ".");
+	public MutableByExtendingMutableType(String name) {
+		super(name);
 	}
 
 }

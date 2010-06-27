@@ -17,6 +17,7 @@
  */
 package org.mutabilitydetector.checkers;
 
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.visitor.MethodVisitorAdapter;
 import org.objectweb.asm.MethodVisitor;
@@ -34,7 +35,7 @@ import org.objectweb.asm.Opcodes;
  * 
  */
 public class SetterMethodChecker extends AbstractMutabilityChecker {
-
+	
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		return new SetterMethodVisitor(name);
@@ -53,7 +54,8 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			if("<init>".equals(this.methodName)) return; // We're not concerned with the constructor 
 			
 			if(opcode == Opcodes.PUTFIELD) {
-				reasons.add("Field [" + name + "] can be reassigned within method [" + this.methodName + "]");
+				addResult("Field [" + name + "] can be reassigned within method [" + this.methodName + "]",
+						null, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
 				result = IsImmutable.DEFINITELY_NOT;
 			}
 		}

@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.circular.ImmutableClassA;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 

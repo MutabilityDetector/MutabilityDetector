@@ -19,4 +19,7 @@ package org.mutabilitydetector.benchmarks.types;
 
 public abstract class AbstractType {
 
+	public static class ImmutableSubtypeOfAbstractType extends AbstractType {
+		
+	}
 }

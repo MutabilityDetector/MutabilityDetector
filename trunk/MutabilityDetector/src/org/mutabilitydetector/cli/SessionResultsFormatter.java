@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
@@ -99,7 +100,7 @@ public class SessionResultsFormatter {
 	}
 
 	private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-		output.append(String.format("%s is %s\n", result.dottedClassName, isImmutable.name()));
+		output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
 		if (!result.isImmutable.equals(DEFINITELY)) {
 			addReasons(result, output);
 		}
@@ -109,8 +110,8 @@ public class SessionResultsFormatter {
 		if (!verbose)
 			return;
 
-		for (String reason : result.reasons) {
-			output.append(String.format("\t%10s\n", reason));
+		for (CheckerReasonDetail resultDetail : result.reasons) {
+			output.append(String.format("\t%10s\n", resultDetail.message()));
 		}
 	}
 

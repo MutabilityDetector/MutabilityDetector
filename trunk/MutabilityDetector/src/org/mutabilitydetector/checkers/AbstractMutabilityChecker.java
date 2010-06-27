@@ -23,6 +23,9 @@ import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.Reason;
+import org.mutabilitydetector.SourceLocation;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -33,7 +36,7 @@ import org.objectweb.asm.Type;
 
 public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
-	protected Collection<String> reasons = new ArrayList<String>();
+	protected Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
 	protected IsImmutable result;
 	protected String ownerClass;
 	
@@ -46,7 +49,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	}
 	
 	@Override
-	public Collection<String> reasons() {
+	public Collection<CheckerReasonDetail> reasons() {
 		return reasons;
 	}
 
@@ -108,5 +111,14 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 		String dottedClassName = className.replace("/", ".");
 		return dottedClassName;
 	}
+	
+	protected CheckerReasonDetail createResult(String message, SourceLocation location, Reason reason) {
+		return new CheckerReasonDetail(message, location, reason);
+	}
+	
+	protected void addResult(String message, SourceLocation location, Reason reason) {
+		reasons.add(new CheckerReasonDetail(message, location, reason));
+	}
+	
 
 }

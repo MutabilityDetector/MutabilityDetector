@@ -10,15 +10,6 @@
 
 package org.mutabilitydetector;
 
-/**
- * @author Graham Allan (grundlefleck@gmail.com)
- * @date 8 Apr 2010
- * 
- */
-public class ClassNameConvertor {
-
-	public String dotted(String slashed) {
-		return slashed.replace(".class", "").replace("/", ".");
-	}
+public interface SourceLocation {
 
 }

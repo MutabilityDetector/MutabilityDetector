@@ -27,7 +27,6 @@ import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.objectweb.asm.ClassReader;
 
-
 import com.google.classpath.ClassPath;
 
 public class CheckerRunner {
@@ -37,6 +36,14 @@ public class CheckerRunner {
 
 	public CheckerRunner(ClassPath classpath) {
 		this.classpath = classpath;
+	}
+	
+	public static CheckerRunner createWithClasspath(ClassPath classpath) {
+		return new CheckerRunner(classpath);
+	}
+
+	public static CheckerRunner createWithCurrentClasspath() {
+		return new CheckerRunner(null);
 	}
 
 	public void run(IMutabilityChecker checker, Class<?> toCheck) {

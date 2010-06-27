@@ -24,11 +24,6 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.ImmutableWithPublicFinalField;
-import org.mutabilitydetector.benchmarks.MutableByHavingDefaultVisibleNonFinalField;
-import org.mutabilitydetector.benchmarks.MutableByHavingProtectedNonFinalField;
-import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 

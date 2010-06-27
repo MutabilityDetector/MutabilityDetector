@@ -32,7 +32,7 @@ public class AllChecksRunner {
 
 	private IsImmutable isImmutable;
 	private final String toAnalyse;
-	private final Collection<String> reasons = new ArrayList<String>();
+	private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
 	private IMutabilityCheckerFactory factory;
 	private final ICheckerRunnerFactory checkerRunnerFactory;
 
@@ -80,7 +80,7 @@ public class AllChecksRunner {
 
 
 
-	public Collection<String> reasons() {
+	public Collection<CheckerReasonDetail> reasons() {
 		return reasons;
 	}
 

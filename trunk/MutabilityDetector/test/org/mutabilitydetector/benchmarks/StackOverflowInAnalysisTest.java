@@ -22,8 +22,6 @@ import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 

@@ -20,6 +20,7 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
 
+import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -39,11 +40,12 @@ import org.objectweb.asm.Type;
  * 
  */
 public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
-
+	
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		if(isAbstract(access) || isInterface(access)) {
-			reasons.add("Inherently mutable as declared as an abstract type.");
+			addResult(name + " is inherently mutable, as declared as an abstract type.", 
+					null, MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
 			result = DEFINITELY_NOT;
 		}
 	}
@@ -63,7 +65,7 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 		an entire class mutable for having a mutable field which it doesn't mutate is a bit rubbish.
 		 */		
 		if(isPrimitiveArray(desc) && !("ENUM$VALUES".equals(name))){
-			reasons.add("Field [" + name + "] is a primitive array. Array types are inherently mutable.");
+			addResult("Field [" + name + "] is a primitive array.", null, MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
 			result = PROBABLY;
 		}
 		

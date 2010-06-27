@@ -25,8 +25,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.MutableByHavingSetterMethod;
+import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
 
 
@@ -57,6 +56,15 @@ public class SetterMethodCheckerTest {
 	public void testIntegerClassPassesCheck() throws Exception {
 		checker = new SetterMethodChecker();
 		new CheckerRunner(null).run(checker, Integer.class);
+		
+		assertEquals(Collections.EMPTY_LIST, checker.reasons());
+		assertImmutable(checker.result());
+	}
+	
+	@Test
+	public void testEnumTypePassesCheck() throws Exception {
+		checker = new SetterMethodChecker();
+		new CheckerRunner(null).run(checker, EnumType.class);
 		
 		assertEquals(Collections.EMPTY_LIST, checker.reasons());
 		assertImmutable(checker.result());

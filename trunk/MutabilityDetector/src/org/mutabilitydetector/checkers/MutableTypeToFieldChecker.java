@@ -21,6 +21,7 @@ import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
 import org.objectweb.asm.FieldVisitor;
@@ -99,21 +100,10 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 			String dottedClassName = dottedClassName(type);
 			IsImmutable isImmutable = analysisSession.isImmutable(dottedClassName);
 			if (!isImmutable.equals(DEFINITELY)) {
-				reasons.add("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
-						+ "assigned to it.");
+				addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
+						+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				result = DEFINITELY_NOT;
 			}
 		}
 	}
-
-	static class FieldInfo {
-		final String name;
-		final Type type;
-
-		public FieldInfo(String name, Type type) {
-			this.name = name;
-			this.type = type;
-		}
-	}
-
 }

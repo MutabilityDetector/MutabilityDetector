@@ -17,9 +17,12 @@
  */
 package org.mutabilitydetector.checkers;
 
+import org.mutabilitydetector.MutabilityReason;
+
 public class NullMutabilityChecker extends AbstractMutabilityChecker {
 
 	public NullMutabilityChecker() {
-		this.reasons.add("This checker is a placeholder for a proper checker.");
+		addResult("This checker is a placeholder for a proper checker.", null, MutabilityReason.CANNOT_ANALYSE);
 	}
+	
 }

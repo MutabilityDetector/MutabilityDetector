@@ -24,8 +24,7 @@ import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
+import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 
 
@@ -61,5 +60,10 @@ public class FinalClassCheckerTest {
 		
 	}
 	
+	@Test
+	public void testEnumTypeIsImmutable() throws Exception {
+		runChecker(EnumType.class);
+		assertImmutable(finalFieldsChecker.result());
+	}
 	
 }

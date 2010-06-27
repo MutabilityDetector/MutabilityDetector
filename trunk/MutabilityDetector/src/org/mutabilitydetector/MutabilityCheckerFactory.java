@@ -25,7 +25,6 @@ import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
-import org.mutabilitydetector.checkers.InheritedMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
@@ -42,7 +41,7 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 		checkers.add(new SetterMethodChecker());
 		checkers.add(new MutableTypeToFieldChecker(analysisSession));
 		checkers.add(new InherentTypeMutabilityChecker());
-		checkers.add(new InheritedMutabilityChecker(analysisSession));
+//		checkers.add(new InheritedMutabilityChecker(analysisSession));
 //		checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
 		return Collections.unmodifiableCollection(checkers);
 	}

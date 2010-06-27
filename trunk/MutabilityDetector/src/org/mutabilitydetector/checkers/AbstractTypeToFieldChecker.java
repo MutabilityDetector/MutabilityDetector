@@ -20,6 +20,7 @@ package org.mutabilitydetector.checkers;
 
 import java.lang.reflect.Modifier;
 
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
 import org.objectweb.asm.MethodVisitor;
@@ -89,12 +90,13 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 			try {
 				assignedClass = getClass().getClassLoader().loadClass(dottedClassName);
 				if (assignedClass.isInterface() || Modifier.isAbstract(assignedClass.getModifiers())) {
-					reasons.add("Field [" + name + "] can have an abstract type (" + dottedClassName + ") "
-							+ "assigned to it.");
+					addResult("Field [" + name + "] can have an abstract type (" + dottedClassName + ") assigned to it.", 
+							null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
 					result = IsImmutable.DEFINITELY_NOT;
 				}
 			} catch (ClassNotFoundException e) {
-				reasons.add("Cannot analyse [" + dottedClassName + "] because the class cannot be loaded.");
+				addResult("Cannot analyse [" + dottedClassName + "] because the class cannot be loaded.", 
+						null, MutabilityReason.CANNOT_ANALYSE);
 			}
 		}
 

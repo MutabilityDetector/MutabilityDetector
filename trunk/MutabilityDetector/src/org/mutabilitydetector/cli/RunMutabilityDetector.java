@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.ClassNameConvertor;
 
-
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;

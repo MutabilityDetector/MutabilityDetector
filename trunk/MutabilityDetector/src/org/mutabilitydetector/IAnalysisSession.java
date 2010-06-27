@@ -38,13 +38,14 @@ public interface IAnalysisSession {
 		PROBABLY,
 		MAYBE,
 		DEFINITELY_NOT;
+		
 	}
 
 	public static final class AnalysisResult {
 		public final String dottedClassName;
 		public final IsImmutable isImmutable;
-		public final Collection<String> reasons;
-		public AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<String> reasons) {
+		public final Collection<CheckerReasonDetail> reasons;
+		public AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
 			this.dottedClassName = dottedClassName;
 			this.isImmutable = isImmutable;
 			this.reasons = Collections.unmodifiableCollection(reasons);

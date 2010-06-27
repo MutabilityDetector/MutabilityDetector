@@ -24,9 +24,6 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField;
-import org.mutabilitydetector.benchmarks.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 

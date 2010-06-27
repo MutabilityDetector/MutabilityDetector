@@ -20,6 +20,7 @@ package org.mutabilitydetector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class ImmutableAssert {
@@ -29,10 +30,20 @@ public class ImmutableAssert {
 		assertEquals(failString, IsImmutable.DEFINITELY, result);
 	}
 	
+	public static void assertImmutable(AnalysisResult result) {
+		String failString = "Expected Immutable result.\n";
+		failString += result.reasons.toString();
+		assertEquals(failString, IsImmutable.DEFINITELY, result.isImmutable);
+	}
+	
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
 		assertEquals("Expected Not Immutable result.", IsImmutable.DEFINITELY_NOT, result);
 	}
 
+	public static void assertDefinitelyNotImmutable(AnalysisResult result) {
+		assertEquals("Expected Not Immutable result.", IsImmutable.DEFINITELY_NOT, result.isImmutable);
+	}
+	
 	public static void assertNotImmutable(IsImmutable result) {
 		String error = "Expected any result but Immutable. \nActual: " + result.name();
 		assertFalse(error, IsImmutable.DEFINITELY.equals(result));
@@ -43,4 +54,9 @@ public class ImmutableAssert {
 		assertEquals(expected, actual);
 	}
 	
+	public static void assertIsImmutableResult(IsImmutable expected, AnalysisResult actualResult) {
+		String error = actualResult.reasons.toString();
+		assertEquals(error, expected, actualResult.isImmutable);
+		
+	}
 }

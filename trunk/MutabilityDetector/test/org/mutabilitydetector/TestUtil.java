@@ -17,12 +17,16 @@
  */
 package org.mutabilitydetector;
 
-import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class TestUtil {
-	public static IsImmutable getResultOfAnalysis(Class<?> toAnalyse) {
+	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
 		IsImmutable result = new AnalysisSession().isImmutable(toAnalyse.getName());
 		return result;
+	}
+	
+	public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
+		return new AnalysisSession().resultFor(toAnalyse.getName());
 	}
 }

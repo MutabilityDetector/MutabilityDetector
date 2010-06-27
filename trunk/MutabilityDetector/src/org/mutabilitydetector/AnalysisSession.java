@@ -53,6 +53,16 @@ public class AnalysisSession implements IAnalysisSession {
 			return requestAnalysis(className);
 		}
 	}
+	
+	public AnalysisResult resultFor(String className) {
+		AnalysisResult resultForClass = analysedClasses.get(className);
+		if (resultForClass != null) {
+			return resultForClass;
+		} else {
+			requestAnalysis(className);
+			return analysedClasses.get(className);
+		}
+	}
 
 	private IsImmutable requestAnalysis(String className) {
 		if (requestedAnalysis.contains(className)) {
@@ -75,7 +85,6 @@ public class AnalysisSession implements IAnalysisSession {
 			}
 			isImmutable(resource);
 		}
-
 	}
 	
 	@Override
@@ -88,15 +97,12 @@ public class AnalysisSession implements IAnalysisSession {
 	public void addAnalysisError(AnalysisError error) {
 		requestedAnalysis.remove(error.onClass);
 		analysisErrors.add(error);
-		
 	}
 
 	@Override
 	public Collection<AnalysisResult> getResults() {
 		return Collections.unmodifiableCollection(analysedClasses.values());
 	}
-
-
 
 	@Override
 	public Collection<AnalysisError> getErrors() {

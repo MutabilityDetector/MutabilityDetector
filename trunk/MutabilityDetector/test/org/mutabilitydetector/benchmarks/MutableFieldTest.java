@@ -28,8 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
-import org.mutabilitydetector.benchmarks.MutableExample;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 
 
