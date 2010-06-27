@@ -20,7 +20,6 @@ package org.mutabilitydetector.cli;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mutabilitydetector.cli.CommandLineOptions;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 
