@@ -31,6 +31,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
@@ -118,6 +119,18 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	
 	protected void addResult(String message, SourceLocation location, Reason reason) {
 		reasons.add(createResult(message, location, reason));
+	}
+
+	protected boolean isInterface(int access) {
+		return (access & Opcodes.ACC_INTERFACE) != 0;
+	}
+
+	protected boolean isAbstract(int access) {
+		return (access & Opcodes.ACC_ABSTRACT) != 0;
+	}
+
+	protected boolean isStatic(int access) {
+		return (access & Opcodes.ACC_STATIC) != 0;
 	}
 	
 
