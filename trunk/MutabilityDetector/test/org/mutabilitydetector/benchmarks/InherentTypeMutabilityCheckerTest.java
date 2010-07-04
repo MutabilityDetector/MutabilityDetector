@@ -20,10 +20,13 @@ package org.mutabilitydetector.benchmarks;
 import static org.junit.Assert.assertTrue;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertIsImmutableResult;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.ImmutableAssert;
+import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -75,6 +78,18 @@ public class InherentTypeMutabilityCheckerTest {
 		assertImmutableClass(ClassWithAllPrimitives.Double.class);
 		/* @link InherentTypeMutabilityChecker#visitField(int, String, String, String, Object) 
 		assertMutableClass(ClassWithAllPrimitives.Array.class); */ 
+	}
+	
+	@Test
+	public void testArrayTypesAreInherentlyMutable() throws Exception {
+		CheckerRunner.createWithCurrentClasspath().run(checker, ClassWithAllPrimitives.Array.class);
+		assertIsImmutableResult(IsImmutable.PROBABLY, checker.result());
+	}
+	
+	@Test
+	public void testArrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
+		CheckerRunner.createWithCurrentClasspath().run(checker, ImmutableWhenArrayFieldIsStatic.class);
+		ImmutableAssert.assertImmutable(checker.result());
 	}
 
 	@SuppressWarnings("unused")

@@ -30,3 +30,15 @@ public class MutableByHavingArrayTypeAsField {
 		names[0] = "Haha I've mutated this instance!";
 	}
 }
+
+class ImmutableWhenArrayFieldIsStatic {
+	static final String names[] = new String[] { "Rick", "Levon", "Richard", "Garth", "Robbie" };
+	
+	static {
+		names[4] = "Bob";
+	}
+	
+	static void mutateStaticField() {
+		names[4] = "Bobby";
+	}
+}

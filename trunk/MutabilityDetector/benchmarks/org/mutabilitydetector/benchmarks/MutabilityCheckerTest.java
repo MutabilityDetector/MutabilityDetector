@@ -18,7 +18,6 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.junit.Assert.assertEquals;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
 
 import java.lang.reflect.Array;
 import java.util.Date;
@@ -31,9 +30,9 @@ import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IMutabilityCheckerFactory;
 import org.mutabilitydetector.MutabilityCheckerFactory;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.types.EnumType;
-
 
 /**
  * This test acts as an overall progress checker as well as a general acceptance
@@ -68,28 +67,23 @@ public class MutabilityCheckerTest {
 	}
 
 	private void assertImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.DEFINITELY, false);
-	}
-	
-	private void assertProbablyImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, PROBABLY, true);
-		
+		doAssertion(toAnalyse, IsImmutable.DEFINITELY, true);
 	}
 
 	private void assertMaybeImmutable(Class<?> toAnalyse) {
 		doAssertion(toAnalyse, IsImmutable.MAYBE, true);
-	}		
-	
+	}
+
 	private void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
 		IAnalysisSession session = new AnalysisSession(null);
 		checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, toAnalyse);
 		checker.runCheckers(session);
 		String failure = "Exception " + toAnalyse.getName() + " is expected to be immutable.";
-		if(printReasons) failure += "\nReasons:" + checker.reasons();
+		if (printReasons)
+			failure += TestUtil.formatReasons(checker.reasons());
 		assertEquals(failure, expected, checker.isImmutable());
 
 	}
-
 
 	@Test
 	public void testImmutableExample() throws Exception {
@@ -128,15 +122,18 @@ public class MutabilityCheckerTest {
 
 	@Test
 	public void testWellKnownJavaTypes() throws Exception {
-		assertProbablyImmutable(Integer.class);
 		assertImmutable(int.class);
 		assertImmutable(Array.class);
 		// the hash code field is lazily computed, and renders String mutable
-		//assertImmutable(String.class); 
+		// assertImmutable(String.class);
 		assertMaybeImmutable(Object.class);
 		assertNotImmutable(Date.class);
 
 	}
 
+	@Test
+	public void testIntegerIsImmutable() throws Exception {
+		assertImmutable(Integer.class);
+	}
 
 }

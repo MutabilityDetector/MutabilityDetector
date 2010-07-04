@@ -22,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 
 import org.junit.Before;
@@ -61,6 +63,18 @@ public class MutableFieldTest {
 		
 		assertNotImmutable(checker.result());
 		assertTrue(checker.reasons().size() > 0);
+	}
+	
+	@Test
+	public void testInstanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
+		CheckerRunner.createWithCurrentClasspath().run(checker, MutableByHavingArrayTypeAsField.class);
+		assertDefinitelyNotImmutable(checker.result());
+	}
+	
+	@Test
+	public void testStaticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
+		CheckerRunner.createWithCurrentClasspath().run(checker, ImmutableWhenArrayFieldIsStatic.class);
+		assertImmutable(checker.result());
 	}
 	
 }

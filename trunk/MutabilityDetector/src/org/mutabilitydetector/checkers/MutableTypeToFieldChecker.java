@@ -94,15 +94,23 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
 		private void checkIfClassIsMutable(String name, Type type) {
 			int sort = type.getSort();
-			if (sort != Type.OBJECT) {
-				return;
-			}
-			String dottedClassName = dottedClassName(type);
-			IsImmutable isImmutable = analysisSession.isImmutable(dottedClassName);
-			if (!isImmutable.equals(DEFINITELY)) {
-				addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
+			switch(sort) {
+			case Type.OBJECT:
+				String dottedClassName = dottedClassName(type);
+				IsImmutable isImmutable = analysisSession.isImmutable(dottedClassName);
+				if (!isImmutable.equals(DEFINITELY)) {
+					addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
+							+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+					result = DEFINITELY_NOT;
+				}
+				break;
+			case Type.ARRAY:
+				addResult("Field [" + name + "] can have a mutable type (a primitive array) "
 						+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				result = DEFINITELY_NOT;
+				break;
+			default:
+				return;
 			}
 		}
 	}
