@@ -10,17 +10,24 @@
 
 package org.mutabilitydetector;
 
-import static java.lang.String.format;
+import org.mutabilitydetector.benchmarks.MutableByHavingArrayTypeAsField;
+import org.mutabilitydetector.cli.CommandLineOptions;
+import org.mutabilitydetector.cli.RunMutabilityDetector;
 
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 
 public class CheckSomeClass {
 
 	public static void main(String[] args) {
-		AnalysisResult analysisResult = TestUtil.getAnalysisResult(String.class);
+		checkClass(MutableByHavingArrayTypeAsField.class);
+	}
+
+	private static void checkClass(Class<?> toAnalyse) {
 		
-		System.out.print(format("%s is %s", analysisResult.dottedClassName, analysisResult.isImmutable));
-		System.out.println(TestUtil.formatReasons(analysisResult.reasons));
+		ClassPath cp = new ClassPathFactory().createFromJVM();
+		CommandLineOptions options = new CommandLineOptions("-verbose", "-match", toAnalyse.getName());
+		new RunMutabilityDetector(cp, options).run();
 	}
 	
 	

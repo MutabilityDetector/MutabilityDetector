@@ -57,11 +57,11 @@ public class CommandLineOptions {
 		}
 	}
 
-	public CommandLineOptions(String[] args) {
+	public CommandLineOptions(String... args) {
 		options = createOptions();
 		parseOptions(options, args);
 	}
-
+	
 	@SuppressWarnings("static-access")
 	private Options createOptions() {
 		Options opts = new Options();

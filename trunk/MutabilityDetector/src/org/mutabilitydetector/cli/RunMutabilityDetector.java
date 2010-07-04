@@ -27,49 +27,61 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.ClassNameConvertor;
+import org.mutabilitydetector.IAnalysisSession;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
 
-public class RunMutabilityDetector {
+public class RunMutabilityDetector implements Runnable, Callable<String> {
 
-	public static void main(String[] args) {
-		CommandLineOptions options = createOptionsFromArgs(args);
-		ClassPath cp = new ClassPathFactory().createFromPath(options.classpath());
+	private final ClassPath classpath;
+	private final CommandLineOptions options;
 
-		RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
-		String[] findResources = cp.findResources("", regExpResourceFilter);
+	public RunMutabilityDetector(ClassPath classpath, CommandLineOptions options) {
+		this.classpath = classpath;
+		this.options = options;
+	}
+	
+	/**
+	 * Runs mutability detection, printing the results to System.out.
+	 */
+	@Override
+	public void run() {
+		StringBuilder output = getResultString();
+		System.out.println(output);
+	}
 
+
+	/**
+	 * Runs mutability detection, returning the results as a String.
+	 */
+	@Override
+	public String call() throws Exception {
+		return getResultString().toString();
+	}
+	
+	private StringBuilder getResultString() {
 		setCustomClassLoader(options);
+		
+		RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
+		String[] findResources = classpath.findResources("", regExpResourceFilter);
 
-		AnalysisSession session = new AnalysisSession(cp);
-
+		IAnalysisSession session = new AnalysisSession(classpath);
 		List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
-
 		session.runAnalysis(filtered);
 
 		StringBuilder output = new SessionResultsFormatter(options).format(session);
-		System.out.println(output);
-
+		return output;
 	}
-
-	private static CommandLineOptions createOptionsFromArgs(String[] args) {
-		try {
-			CommandLineOptions options = new CommandLineOptions(args);
-			return options;
-		} catch (Throwable e) {
-			System.out.println("Exiting...");
-			System.exit(1);
-			return null; // impossible statement
-		}
-	}
-
-	private static void setCustomClassLoader(CommandLineOptions options) {
+	
+	
+	private void setCustomClassLoader(CommandLineOptions options) {
 		String[] classPathUrls = options.classpath().split(":");
 
 		List<URL> urlList = new ArrayList<URL>();
@@ -85,8 +97,8 @@ public class RunMutabilityDetector {
 		ClassLoader classLoader = new URLClassLoader(urlList.toArray(new URL[] {}));
 		Thread.currentThread().setContextClassLoader(classLoader);
 	}
-
-	private static List<String> getNamesOfClassesToAnalyse(CommandLineOptions options, String[] findResources) {
+	
+	private List<String> getNamesOfClassesToAnalyse(CommandLineOptions options, String[] findResources) {
 		List<String> filtered = new ArrayList<String>();
 		List<String> classNames = new ArrayList<String>();
 		classNames.addAll(Arrays.asList(findResources));
@@ -100,5 +112,27 @@ public class RunMutabilityDetector {
 		}
 		return filtered;
 	}
+
+
+	public static void main(String[] args) {
+		CommandLineOptions options = createOptionsFromArgs(args);
+		ClassPath classpath = new ClassPathFactory().createFromPath(options.classpath());
+		
+		new RunMutabilityDetector(classpath, options).run();
+	}
+
+
+	private static CommandLineOptions createOptionsFromArgs(String[] args) {
+		try {
+			CommandLineOptions options = new CommandLineOptions(args);
+			return options;
+		} catch (Throwable e) {
+			System.out.println("Exiting...");
+			System.exit(1);
+			return null; // impossible statement
+		}
+	}
+
+
 
 }
