@@ -17,6 +17,10 @@
  */
 package org.mutabilitydetector;
 
+import static java.lang.String.format;
+
+import java.util.Collection;
+
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
@@ -28,5 +32,13 @@ public class TestUtil {
 	
 	public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
 		return new AnalysisSession().resultFor(toAnalyse.getName());
+	}
+	
+	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
+		StringBuilder result = new StringBuilder("\nReasons:\n");
+		for(CheckerReasonDetail reason: reasons) {
+			result.append(format("%s%n", reason.message()));
+		}
+		return result.toString();
 	}
 }
