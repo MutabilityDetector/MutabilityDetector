@@ -27,10 +27,9 @@ public final class MutableByAssigningAbstractTypeToField {
 	}
 	
 	abstract class AbstractStringContainer {
-		protected String name;
+		protected final String name = "my name";
 	}
-	
 	final class StringContainer extends AbstractStringContainer {
-		
+		public String someMutableField;
 	}
 }
