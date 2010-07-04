@@ -18,24 +18,23 @@ import org.mutabilitydetector.ImmutableAssert;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.InheritedMutabilityChecker;
 
-
 public class InheritedMutabilityCheckerTest {
 
 	InheritedMutabilityChecker checker;
 	CheckerRunner runner;
 	IAnalysisSession session;
-	
+
 	@Before
 	public void setUp() {
 		runner = CheckerRunner.createWithCurrentClasspath();
-		session =  new AnalysisSession();
+		session = new AnalysisSession();
 		checker = new InheritedMutabilityChecker(session);
 	}
-	
-	//@Test TODO work in progress.
+
+	// @Test TODO work in progress.
 	public void testEnumTypeIsDefinitelyImmutable() throws Exception {
 		runner.run(checker, EnumType.class);
-		
+
 		ImmutableAssert.assertImmutable(checker.result());
 	}
 }
