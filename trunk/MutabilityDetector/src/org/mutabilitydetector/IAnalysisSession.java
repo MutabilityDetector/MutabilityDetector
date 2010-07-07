@@ -22,15 +22,17 @@ import java.util.Collections;
 
 public interface IAnalysisSession {
 
-	public IsImmutable isImmutable(String className);
+	IsImmutable isImmutable(String className);
 	
-	public void addAnalysisResult(AnalysisResult result);
-	public void addAnalysisError(AnalysisError error);
+	AnalysisResult resultFor(String className);
 	
-	public void runAnalysis(Collection<String> classNames);
+	void addAnalysisResult(AnalysisResult result);
+	void addAnalysisError(AnalysisError error);
 	
-	public Collection<AnalysisResult> getResults();
-	public Collection<AnalysisError> getErrors();
+	void runAnalysis(Collection<String> classNames);
+	
+	Collection<AnalysisResult> getResults();
+	Collection<AnalysisError> getErrors();
 	
 	public static enum IsImmutable {
 		COULD_NOT_ANALYSE,
@@ -63,6 +65,8 @@ public interface IAnalysisSession {
 			
 		}
 	}
+
+	
 }
 
 

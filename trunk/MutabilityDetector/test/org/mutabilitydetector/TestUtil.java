@@ -17,12 +17,11 @@
  */
 package org.mutabilitydetector;
 
-import static java.lang.String.format;
-
 import java.util.Collection;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.junit.MutabilityAssert;
 
 public class TestUtil {
 	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
@@ -35,10 +34,6 @@ public class TestUtil {
 	}
 	
 	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
-		StringBuilder result = new StringBuilder("\nReasons:\n");
-		for(CheckerReasonDetail reason: reasons) {
-			result.append(format("%s%n", reason.message()));
-		}
-		return result.toString();
+		return MutabilityAssert.formatReasons(reasons);
 	}
 }

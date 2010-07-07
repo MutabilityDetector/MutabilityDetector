@@ -43,6 +43,14 @@ public class AnalysisSession implements IAnalysisSession {
 		ClassPath classpath = new ClassPathFactory().createFromJVM();
 		checkerRunnerFactory = new CheckerRunnerFactory(classpath);
 	}
+	
+	public static IAnalysisSession createWithGivenClassPath(ClassPath classpath) {
+		return new AnalysisSession(classpath);
+	}
+	
+	public static IAnalysisSession createWithCurrentClassPath() {
+		return new AnalysisSession(new ClassPathFactory().createFromJVM());
+	}
 
 	@Override
 	public IsImmutable isImmutable(String className) {
@@ -54,6 +62,7 @@ public class AnalysisSession implements IAnalysisSession {
 		}
 	}
 	
+	@Override
 	public AnalysisResult resultFor(String className) {
 		AnalysisResult resultForClass = analysedClasses.get(className);
 		if (resultForClass != null) {

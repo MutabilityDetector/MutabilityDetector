@@ -10,7 +10,6 @@
 
 package org.mutabilitydetector;
 
-import org.mutabilitydetector.benchmarks.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.cli.CommandLineOptions;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
 
@@ -20,16 +19,49 @@ import com.google.classpath.ClassPathFactory;
 public class CheckSomeClass {
 
 	public static void main(String[] args) {
-		checkClass(MutableByHavingArrayTypeAsField.class);
+		checkClass(IAmImmutable.class);
+		checkClass(ComposedOfImmutables.class);
 	}
 
 	private static void checkClass(Class<?> toAnalyse) {
-		
 		ClassPath cp = new ClassPathFactory().createFromJVM();
-		CommandLineOptions options = new CommandLineOptions("-verbose", "-match", toAnalyse.getName());
+		String match = toAnalyse.getName().replace("$", "\\$");
+		CommandLineOptions options = new CommandLineOptions("-verbose", "-match", match);
 		new RunMutabilityDetector(cp, options).run();
 	}
-	
-	
+
+	public class IAmImmutable {
+		private String label;
+
+		public IAmImmutable(String label) {
+			this.label = label;
+		}
+
+		public String getLabel() {
+			return this.label;
+		}
+	}
+
+	public class SecondImmutable {
+		private String label;
+
+		public SecondImmutable(String label) {
+			this.label = label;
+		}
+
+		public String getLabel() {
+			return this.label;
+		}
+	}
+
+	public class ComposedOfImmutables {
+		public final IAmImmutable firstField;
+		public final SecondImmutable secondField;
+
+		public ComposedOfImmutables(IAmImmutable first, SecondImmutable second) {
+			firstField = first;
+			secondField = second;
+		}
+	}
 
 }
