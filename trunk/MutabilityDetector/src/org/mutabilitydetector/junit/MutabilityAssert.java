@@ -30,7 +30,7 @@ public class MutabilityAssert {
 	
 	public static void assertImmutable(Class<?> expectedImmutableClass) {
 		String className = expectedImmutableClass.getName();
-		AnalysisResult analysisResult = AnalysisSessionHolder.assertionAnalysisSession.resultFor(className);
+		AnalysisResult analysisResult = getResultFor(className);
 		
 		StringBuilder message = new StringBuilder();
 		String simpleName = expectedImmutableClass.getSimpleName();
@@ -39,6 +39,11 @@ public class MutabilityAssert {
 		formatReasons(analysisResult.reasons, message);
 		
 		Assert.assertTrue(message.toString(), IsImmutable.DEFINITELY == analysisResult.isImmutable);
+	}
+
+	private static AnalysisResult getResultFor(String className) {
+		AnalysisResult analysisResult = AnalysisSessionHolder.assertionAnalysisSession.resultFor(className);
+		return analysisResult;
 	}
 
 	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
@@ -51,6 +56,11 @@ public class MutabilityAssert {
 			builder.append(format("%s%n", reason.message()));
 		}
 		return builder.toString();
+	}
+
+	public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
+		AnalysisResult analysisResult = getResultFor(forClass.getName());
+		Assert.assertEquals(expected, analysisResult.isImmutable);
 	}
 	
 

@@ -10,11 +10,13 @@
 
 package org.mutabilitydetector.junit;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
+import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 
@@ -24,8 +26,8 @@ public class MutabilityAssertTest {
 	private Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
 
 	@Test
-	// No assertion exception means test passes
 	public void testAssertImmutableWithImmutableClass() throws Exception {
+		// No AssertionException means test passes
 		MutabilityAssert.assertImmutable(immutableClass);
 	}
 
@@ -40,11 +42,26 @@ public class MutabilityAssertTest {
 			MutabilityAssert.assertImmutable(mutableClass);
 			fail("Assertion should have failed.");
 		} catch (final AssertionError ae) {
-			String expectedPrefix = String.format(
+			String expectedPrefix = format(
 					"Expected %s to be DEFINITELY immutable. Was: DEFINITELY_NOT immutable.", mutableClass
 							.getSimpleName());
 			assertThat(ae.getMessage(), JUnitMatchers.containsString(expectedPrefix));
 		}
 	}
+	
+	@Test
+	public void testAssertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
+		MutabilityAssert.assertImmutableStatusIs(IsImmutable.DEFINITELY, immutableClass);
+	}
 
+	@Test
+	public void testAssertImmutableStatusIsFailsWhenUnequal() throws Exception {
+		try {
+			MutabilityAssert.assertImmutableStatusIs(IsImmutable.DEFINITELY_NOT, immutableClass);
+		} catch (final AssertionError ae) {
+			String expectedMessage = format("expected:<%s> but was:<%s>", IsImmutable.DEFINITELY_NOT,
+					IsImmutable.DEFINITELY);
+			assertThat(ae.getMessage(), JUnitMatchers.containsString(expectedMessage));
+		}
+	}
 }
