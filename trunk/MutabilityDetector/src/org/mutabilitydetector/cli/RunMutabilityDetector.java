@@ -38,6 +38,13 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
 
+/**
+ * Runs an analysis configured by the given classpath and options.
+ * 
+ * Instances of this class, along with the related analysis, are unlikely to be
+ * thread safe. This class uses {@link Thread#currentThread()} to set a
+ * class loader which can be used in the analysis. 
+ */
 public class RunMutabilityDetector implements Runnable, Callable<String> {
 
 	private final ClassPath classpath;
