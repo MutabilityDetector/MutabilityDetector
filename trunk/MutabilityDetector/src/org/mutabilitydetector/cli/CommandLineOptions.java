@@ -38,7 +38,9 @@ public class CommandLineOptions {
 			extractMatch(line);
 			extractVerboseOption(line);
 			extractReportMode(line);
+			printHelpIfNoOptionsGiven(line);
 		}
+
 	}
 
 	public static enum ReportMode {
@@ -62,29 +64,28 @@ public class CommandLineOptions {
 		parseOptions(options, args);
 	}
 	
-	@SuppressWarnings("static-access")
 	private Options createOptions() {
 		Options opts = new Options();
 		createAndAddOption(opts, "path", "The classpath to be analysed by Mutability Detector", "classpath", "cp");
 		createAndAddOption(opts, "regex", "A regular expression used to match class names to analyse. "
 				+ "This is matched against the fully qualified class name, minus the .class suffix (i.e. it matches " +
 						"against 'java.lang.Object', not 'java/lang/Object.class'). The default is '.*', meaning all " +
-						"classes will be analysed. THIS OPTION IS CURRENTLY IGNORED.",
+						"classes will be analysed.",
 				"match", "m");
 		opts.addOption("v", "verbose", false, "Print details of analysis and reasons for results.");
 		opts.addOption("r", "report", true, "Choose what is reported from the analysis. Valid options are "
 						+ ReportMode.validModes()
 						+ ". If not specified, or doesn't match an available mode, defaults to 'ALL'");
-		opts.addOption(OptionBuilder.withDescription("print this message").create("help"));
+		opts.addOption("h", "help", false, "print this message");
 		return opts;
 	}
 
 	@SuppressWarnings("static-access")
 	private static void createAndAddOption(Options opts, String argumentName, String description, String argumentFlag,
 			String shortFlag) {
-		Option hostOption = OptionBuilder.withArgName(argumentName).hasArg().withDescription(description).withLongOpt(
+		Option newOption = OptionBuilder.withArgName(argumentName).hasArg().withDescription(description).withLongOpt(
 				argumentFlag).create(shortFlag);
-		opts.addOption(hostOption);
+		opts.addOption(newOption);
 
 	}
 
@@ -130,6 +131,12 @@ public class CommandLineOptions {
 			printHelpAndExit();
 		}
 
+	}
+	
+	private void printHelpIfNoOptionsGiven(CommandLine line) {
+		if(line.getOptions().length == 0) {
+			printHelpAndExit();
+		}
 	}
 
 	private void printHelpAndExit() {

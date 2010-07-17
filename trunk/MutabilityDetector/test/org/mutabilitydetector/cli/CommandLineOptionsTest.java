@@ -35,13 +35,7 @@ public class CommandLineOptionsTest {
 		assertEquals("fakeClasspath", options.classpath());
 	}
 	
-	@Test
-	public void testDefaultWhenNoClasspathIsSpecifedIsDot() throws Exception {
-		String[] args = makeArgs();
-		options = new CommandLineOptions(args);
-		assertEquals(".", options.classpath());
-	}
-	
+
 	@Test
 	public void testToAnalyseRegexCanBeSpecified() throws Exception {
 		String[] args = makeArgs("-match", "*.somepackage.*");
