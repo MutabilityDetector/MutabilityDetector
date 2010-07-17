@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project MutabilityDetector with Jar-in-Jar Loader">
+<project default="create_run_jar" name="Create Runnable Jar for Project MutabilityDetector">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/build/MutabilityDetector.jar">
+        <jar destfile="/home/graham/dev/workspaces/projects/MutabilityDetector/build/MutabilityDetector.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="se.mutabilitydetector.cli.RunMutabilityDetector"/>
+                <attribute name="Main-Class" value="org.mutabilitydetector.cli.RunMutabilityDetector"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ asm-3.2.jar classpath-explorer-1.0.jar commons-cli-1.2.jar asm-tree-3.2.jar asm-analysis-3.2.jar"/>
             </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/bin"/>
-            <zipfileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/lib" includes="asm-3.2.jar"/>
-            <zipfileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/lib" includes="classpath-explorer-1.0.jar"/>
-            <zipfileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/lib" includes="commons-cli-1.2.jar"/>
-            <zipfileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/lib" includes="asm-tree-3.2.jar"/>
-            <zipfileset dir="/home/graham/uni/workspaces/software-evaluation/MutabilityDetector/lib" includes="asm-analysis-3.2.jar"/>
+            <fileset dir="/home/graham/dev/workspaces/projects/MutabilityDetector/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/graham/dev/workspaces/projects/MutabilityDetector/lib/asm-3.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/graham/dev/workspaces/projects/MutabilityDetector/lib/classpath-explorer-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/graham/dev/workspaces/projects/MutabilityDetector/lib/commons-cli-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/graham/dev/workspaces/projects/MutabilityDetector/lib/asm-tree-3.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/graham/dev/workspaces/projects/MutabilityDetector/lib/asm-analysis-3.2.jar"/>
         </jar>
     </target>
 </project>
