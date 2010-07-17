@@ -60,4 +60,4 @@ if(result.equals(IsImmutable.DEFINITELY)) {
 }}}
 
 = Contact =
-Contact can be made either by leaving comments or by email at Grundlefleck at gmail dot com
+Contact can be made either by leaving comments or by [mailto:Grundlefleck+md@gmail.com email]
