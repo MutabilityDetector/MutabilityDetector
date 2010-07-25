@@ -18,6 +18,8 @@
 package org.mutabilitydetector.checkers;
 
 
+import static java.lang.Thread.currentThread;
+
 import java.lang.reflect.Modifier;
 
 import org.mutabilitydetector.MutabilityReason;
@@ -88,7 +90,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 			String dottedClassName = dottedClassName(objectType);
 			Class<?> assignedClass = null;
 			try {
-				assignedClass = getClass().getClassLoader().loadClass(dottedClassName);
+				assignedClass = currentThread().getContextClassLoader().loadClass(dottedClassName);
 				if (assignedClass.isInterface() || Modifier.isAbstract(assignedClass.getModifiers())) {
 					addResult("Field [" + name + "] can have an abstract type (" + dottedClassName + ") assigned to it.", 
 							null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
