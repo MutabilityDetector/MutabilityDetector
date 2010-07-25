@@ -20,6 +20,7 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
 
+import org.mutabilitydetector.ClassNameConvertor;
 import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
@@ -43,7 +44,8 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		if (isAbstract(access) || isInterface(access)) {
-			addResult(name + " is inherently mutable, as declared as an abstract type.", null,
+			String dottedName = new ClassNameConvertor().dotted(name);
+			addResult(dottedName + " is inherently mutable, as declared as an abstract type.", null,
 					MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
 			result = DEFINITELY_NOT;
 		}
