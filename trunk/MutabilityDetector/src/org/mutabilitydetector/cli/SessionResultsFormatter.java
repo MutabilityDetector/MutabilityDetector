@@ -37,16 +37,23 @@ import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 public class SessionResultsFormatter {
 
-	private boolean verbose;
-	private ReportMode reportMode;
+	private final boolean verbose;
+	private final ReportMode reportMode;
+	private Collection<String> classesToReport;
+	private final ClassListReaderFactory readerFactory;
+	private final CommandLineOptions options;
 
-	public SessionResultsFormatter(CommandLineOptions options) {
+	public SessionResultsFormatter(CommandLineOptions options, ClassListReaderFactory readerFactory) {
+		this.options = options;
+		this.readerFactory = readerFactory;
 		this.verbose = options.verbose();
 		this.reportMode = options.reportMode();
 	}
 
 	public StringBuilder format(IAnalysisSession completedSession) {
 		StringBuilder output = new StringBuilder();
+		
+		classesToReport = getClassesToReport();
 
 		appendErrors(completedSession, output);
 		appendAnalysisResults(completedSession, output);
@@ -54,8 +61,16 @@ public class SessionResultsFormatter {
 		return output;
 	}
 
+	private Collection<String> getClassesToReport() {
+		return options.isUsingClassList() ? 
+				readerFactory.createReader().classListToReport() :
+				Collections.<String>emptySet();
+	}
+
 	private void appendErrors(IAnalysisSession completedSession, StringBuilder output) {
 
+		if(!options.reportErrors()) return;
+		
 		for (AnalysisError error : completedSession.getErrors()) {
 
 			String message = String.format("Error while running %s on class %s.\n", 
@@ -85,6 +100,9 @@ public class SessionResultsFormatter {
 	}
 
 	private void addResultForClass(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
+		
+		if(options.isUsingClassList() && !classesToReport.contains(result.dottedClassName)) return;
+		
 		if (reportMode.equals(ReportMode.ALL)) {
 			appendClassResult(output, result, isImmutable);
 		} else if (reportMode.equals(ReportMode.IMMUTABLE)) {
@@ -100,7 +118,7 @@ public class SessionResultsFormatter {
 	}
 
 	private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-		output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
+		output.append(String.format("%s is %s immutable.%n", result.dottedClassName, isImmutable.name()));
 		if (!result.isImmutable.equals(DEFINITELY)) {
 			addReasons(result, output);
 		}

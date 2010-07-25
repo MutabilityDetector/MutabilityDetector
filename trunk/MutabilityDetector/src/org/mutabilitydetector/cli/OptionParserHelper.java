@@ -23,8 +23,13 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+/**
+ * Interacts with the Apache CLI to parse the options from the command line
+ * arguments. Delegates to a {@link ParsingAction} to allow extracting the
+ * options.
+ */
 public class OptionParserHelper {
-	
+
 	private Options options;
 	private String[] args;
 
@@ -40,9 +45,9 @@ public class OptionParserHelper {
 			action.doParsingAction(line);
 		} catch (ParseException e) {
 			System.out.println("Parsing command line options failed.\nReason: " + e.getMessage());
-			throw new RuntimeException(e);
+			throw new CommandLineOptionsException(e);
 		}
-		
+
 	}
 }
 

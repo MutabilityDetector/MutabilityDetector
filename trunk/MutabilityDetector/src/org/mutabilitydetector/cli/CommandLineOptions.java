@@ -17,6 +17,10 @@
  */
 package org.mutabilitydetector.cli;
 
+import static java.lang.String.format;
+
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -30,6 +34,9 @@ public class CommandLineOptions {
 	private String match;
 	private boolean verbose = false;
 	private ReportMode reportMode;
+	private File classListFile;
+	private boolean isUsingClassList;
+	private boolean reportErrors;
 
 	private final class ParsingActionImplementation implements ParsingAction {
 		public void doParsingAction(CommandLine line) {
@@ -38,6 +45,8 @@ public class CommandLineOptions {
 			extractMatch(line);
 			extractVerboseOption(line);
 			extractReportMode(line);
+			extractClassListFile(line);
+			extractShowErrorsOption(line);
 			printHelpIfNoOptionsGiven(line);
 		}
 
@@ -63,20 +72,28 @@ public class CommandLineOptions {
 		options = createOptions();
 		parseOptions(options, args);
 	}
-	
+
+
+
 	private Options createOptions() {
 		Options opts = new Options();
 		createAndAddOption(opts, "path", "The classpath to be analysed by Mutability Detector", "classpath", "cp");
 		createAndAddOption(opts, "regex", "A regular expression used to match class names to analyse. "
-				+ "This is matched against the fully qualified class name, minus the .class suffix (i.e. it matches " +
-						"against 'java.lang.Object', not 'java/lang/Object.class'). The default is '.*', meaning all " +
-						"classes will be analysed.",
-				"match", "m");
+				+ "This is matched against the fully qualified class name, minus the .class suffix (i.e. it matches "
+				+ "against 'java.lang.Object', not 'java/lang/Object.class'). The default is '.*', meaning all "
+				+ "classes will be analysed.", "match", "m");
+		createAndAddOption(opts, "filename", "Only report results on the classes listed within <filename>. " + 
+				"Currently this option only supports plain text files with one class per line. " +
+				"It is also rather limited in the format it accepts: each line must contain the equivalent " +
+				"of someClass.getName(), e.g. it must be java.lang.Integer, with dot delimiters and " +
+				"no suffixes such as .java or .class. Can be used in conjunction with -match to reduce " +
+				"the time taken to perform analysis.", "classlist", "cl");
 		opts.addOption("v", "verbose", false, "Print details of analysis and reasons for results.");
 		opts.addOption("r", "report", true, "Choose what is reported from the analysis. Valid options are "
 						+ ReportMode.validModes()
 						+ ". If not specified, or doesn't match an available mode, defaults to 'ALL'");
 		opts.addOption("h", "help", false, "print this message");
+		opts.addOption("e", "reportErrors", false, "Reports on errors in the analysis. Defaults to false.");
 		return opts;
 	}
 
@@ -97,6 +114,9 @@ public class CommandLineOptions {
 		OptionParserHelper parser = new OptionParserHelper(options, args);
 		try {
 			parser.parseOptions(new ParsingActionImplementation());
+		} catch (CommandLineOptionsException cloe) {
+			System.out.println(cloe.getMessage());
+			throw cloe;
 		} catch (Exception e) {
 			printHelpAndExit();
 		}
@@ -126,15 +146,57 @@ public class CommandLineOptions {
 		this.match = line.getOptionValue("match", ".*");
 	}
 
+	private void extractClassListFile(CommandLine line) {
+		if (line.hasOption("classlist")) {
+			String fileName = line.getOptionValue("classlist");
+			this.classListFile = new File(fileName);
+			this.isUsingClassList = true;
+
+			throwExceptionIfClassListFileIsInvalid();
+		}
+	}
+
+	private void throwExceptionIfClassListFileIsInvalid() {
+		StringBuilder reasons = new StringBuilder();
+		boolean isInvalid = false;
+
+		
+		if(!classListFile.exists()) {
+			isInvalid = true;
+			reasons.append("File does not exist.");
+		}
+		
+		if(classListFile.isDirectory()) {
+			isInvalid = true;
+			reasons.append("Specified file is a directory.");
+		}
+		
+		if (classListFile.exists() && !classListFile.canRead()) {
+			isInvalid = true;
+			reasons.append("File exists but cannot be read from.");
+		}
+		
+		if(isInvalid) {
+			String message = format("Could not read class list from file [%s]: ", classListFile.getName());
+			reasons.insert(0, message);
+			throw new CommandLineOptionsException(reasons.toString());
+		}
+		
+	}
+	
+	private void extractShowErrorsOption(CommandLine line) {
+		this.reportErrors = line.hasOption("e") || line.hasOption("showErrors");
+	}
+
 	private void printHelpIfRequired(CommandLine line) {
 		if (line.hasOption("help")) {
 			printHelpAndExit();
 		}
 
 	}
-	
+
 	private void printHelpIfNoOptionsGiven(CommandLine line) {
-		if(line.getOptions().length == 0) {
+		if (line.getOptions().length == 0) {
 			printHelpAndExit();
 		}
 	}
@@ -142,7 +204,11 @@ public class CommandLineOptions {
 	private void printHelpAndExit() {
 		HelpFormatter help = new HelpFormatter();
 		help.printHelp("MutabilityDetector", options);
-		System.exit(0);
+		exit();
+	}
+
+	private void exit() {
+		throw new CommandLineOptionsException();
 	}
 
 	public String match() {
@@ -155,5 +221,17 @@ public class CommandLineOptions {
 
 	public ReportMode reportMode() {
 		return reportMode;
+	}
+
+	public File classListFile() {
+		return classListFile;
+	}
+
+	public boolean isUsingClassList() {
+		return isUsingClassList;
+	}
+
+	public boolean reportErrors() {
+		return reportErrors;
 	}
 }

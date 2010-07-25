@@ -83,7 +83,8 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
 		List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
 		session.runAnalysis(filtered);
 
-		StringBuilder output = new SessionResultsFormatter(options).format(session);
+		ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
+		StringBuilder output = new SessionResultsFormatter(options, readerFactory).format(session);
 		return output;
 	}
 	

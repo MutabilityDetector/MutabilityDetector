@@ -18,7 +18,12 @@
 package org.mutabilitydetector.cli;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
+import org.junit.After;
 import org.junit.Test;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
@@ -27,6 +32,7 @@ import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 public class CommandLineOptionsTest {
 
 	private CommandLineOptions options;
+	private File classListFile;
 
 	@Test
 	public void testOptionsCanParseClasspathOption() throws Exception {
@@ -75,9 +81,54 @@ public class CommandLineOptionsTest {
 		options = new CommandLineOptions(args);
 		assertEquals(reportMode, options.reportMode());
 	}
+	
+	@Test
+	public void testReportClassesOptionStoresFile() throws Exception {
+		classListFile = new File("someFileName.txt");
+		classListFile.createNewFile();
+		
+		String[] args = makeArgs("-classlist", "someFileName.txt");
+		
+		options = new CommandLineOptions(args);
+		assertEquals(classListFile, options.classListFile());
+	}
+	
+	private void removeTestFile() {
+		if(classListFile != null) classListFile.delete();
+	}
+	
+	@Test(expected=CommandLineOptionsException.class)
+	public void testThrowsExceptionIfClassListFileIsInvalid() throws Exception {
+		options = new CommandLineOptions("-classlist", "");
+	}
+	
+	@Test
+	public void testIsUsingClassList() throws Exception {
+		options = new CommandLineOptions("-cp", ".");
+		assertFalse("Should not be using class list.", options.isUsingClassList());
+		
+		classListFile = new File("someFileName.txt");
+		classListFile.createNewFile();
+		options = new CommandLineOptions("-classlist", "someFileName.txt");
+		assertTrue("Should be using class list.", options.isUsingClassList());
+	}
+	
+	@Test
+	public void testShouldReportErrors() throws Exception {
+		options = new CommandLineOptions("-cp", ".");
+		assertFalse("By default, errors should not be shown.", options.reportErrors());
+		
+		options = new CommandLineOptions("-cp", ".", "-e");
+		assertTrue("With the '-e' flag, errors should be shown.", options.reportErrors());
+	}
 
 	private String[] makeArgs(String... args) {
 		return args;
+	}
+	
+	@After
+	public void tearDown() {
+		removeTestFile();
 	}
 	
 }
