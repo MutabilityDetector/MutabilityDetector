@@ -85,7 +85,7 @@ public class CommandLineOptionsTest {
 	@Test
 	public void testReportClassesOptionStoresFile() throws Exception {
 		classListFile = new File("someFileName.txt");
-		classListFile.createNewFile();
+		assertTrue(classListFile.createNewFile());
 		
 		String[] args = makeArgs("-classlist", "someFileName.txt");
 		
@@ -94,7 +94,7 @@ public class CommandLineOptionsTest {
 	}
 	
 	private void removeTestFile() {
-		if(classListFile != null) classListFile.delete();
+		if(classListFile != null) assertTrue(classListFile.delete());
 	}
 	
 	@Test(expected=CommandLineOptionsException.class)
@@ -108,7 +108,7 @@ public class CommandLineOptionsTest {
 		assertFalse("Should not be using class list.", options.isUsingClassList());
 		
 		classListFile = new File("someFileName.txt");
-		classListFile.createNewFile();
+		assertTrue(classListFile.createNewFile());
 		options = new CommandLineOptions("-classlist", "someFileName.txt");
 		assertTrue("Should be using class list.", options.isUsingClassList());
 	}
