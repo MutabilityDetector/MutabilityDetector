@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.settermethod;
 
 /**
  * This class is immutable, but fields are set outwith the constructor. Notice

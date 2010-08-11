@@ -27,6 +27,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass;
+import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsPrivateFieldOfInstanceOfSelf;
+import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
+import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
@@ -85,6 +89,12 @@ public class SetterMethodCheckerTest {
 	@Test
 	public void testFieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
 		doCheck(checker, ImmutableUsingPrivateFieldSettingMethod.class);
+		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
+	}
+	
+	@Test
+	public void testSettingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
+		doCheck(checker, ImmutableButSetsFieldOfOtherClass.class);
 		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
 	}
 

@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.settermethod;
 
 public final class MutableByHavingSetterMethod {
 

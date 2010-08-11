@@ -32,6 +32,7 @@ import org.mutabilitydetector.IMutabilityCheckerFactory;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
 /**
@@ -41,7 +42,7 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  * classes the tool is correct for our definition.
  * 
  * The rules for defining the tool as correct can be found at {@link https
- * ://devweb2009.cis.strath.ac.uk/trac/softeval0/wiki/RulesForImmutability}
+ * ://devweb2009.cis.strath.ac.uk/trac/softeval0/wiki/RulesForImmutability }
  * 
  * The pattern seems to be that either all the classes which are mutable pass
  * the checks, and the single immutable one doesn't. Or the other way round. The
