@@ -23,9 +23,12 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 
 import java.util.Collections;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
 
 
@@ -35,10 +38,15 @@ public class SetterMethodCheckerTest {
 
 	private SetterMethodChecker checker;
 	
+	@Before
+	public void setUp() {
+		checker = new SetterMethodChecker();
+		
+	}
+	
 	@Test
 	public void testImmutableExamplePassesCheck() throws Exception {
-		checker = new SetterMethodChecker();
-		new CheckerRunner(null).run(checker, ImmutableExample.class);
+		doCheck(checker, ImmutableExample.class);
 		
 		assertImmutable(checker.result());
 		assertEquals(checker.reasons().size(), 0);
@@ -46,16 +54,14 @@ public class SetterMethodCheckerTest {
 	
 	@Test
 	public void testMutableByHavingSetterMethodFailsCheck() throws Exception {
-		checker = new SetterMethodChecker();
-		new CheckerRunner(null).run(checker, MutableByHavingSetterMethod.class);
+		doCheck(checker, MutableByHavingSetterMethod.class);
 		
 		assertDefinitelyNotImmutable(checker.result());
 	}
 	
 	@Test
 	public void testIntegerClassPassesCheck() throws Exception {
-		checker = new SetterMethodChecker();
-		new CheckerRunner(null).run(checker, Integer.class);
+		doCheck(checker, Integer.class);
 		
 		assertEquals(Collections.EMPTY_LIST, checker.reasons());
 		assertImmutable(checker.result());
@@ -64,9 +70,25 @@ public class SetterMethodCheckerTest {
 	@Test
 	public void testEnumTypePassesCheck() throws Exception {
 		checker = new SetterMethodChecker();
-		new CheckerRunner(null).run(checker, EnumType.class);
+		doCheck(checker, EnumType.class);
 		
 		assertEquals(Collections.EMPTY_LIST, checker.reasons());
 		assertImmutable(checker.result());
+	}
+	
+	@Test
+	public void testSettingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
+		doCheck(checker, ImmutableButSetsPrivateFieldOfInstanceOfSelf.class);
+		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
+	}
+	
+	@Test
+	public void testFieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
+		doCheck(checker, ImmutableUsingPrivateFieldSettingMethod.class);
+		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
+	}
+
+	private void doCheck(IMutabilityChecker checkerToRun, Class<?> toCheck) {
+		new CheckerRunner(null).run(checkerToRun, toCheck);
 	}
 }
