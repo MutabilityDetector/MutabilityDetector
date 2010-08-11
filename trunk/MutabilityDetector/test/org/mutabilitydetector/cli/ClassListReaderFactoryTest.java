@@ -24,7 +24,7 @@ public class ClassListReaderFactoryTest {
 	@Test
 	public void testDefaultReturnedReaderIsPlainTextClassListReader() throws Exception {
 		classListFile = new File("somePlainTextFile.txt");
-		classListFile.createNewFile();
+		assertTrue(classListFile.createNewFile());
 		ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
 		
 		assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);
@@ -33,6 +33,8 @@ public class ClassListReaderFactoryTest {
 	
 	@After
 	public void tearDown() {
-		if (classListFile != null) classListFile.delete();
+		if (classListFile != null) {
+			assertTrue(classListFile.delete());
+		}
 	}
 }
