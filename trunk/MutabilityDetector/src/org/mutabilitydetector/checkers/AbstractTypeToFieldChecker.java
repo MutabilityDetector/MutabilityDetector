@@ -24,12 +24,9 @@ import java.lang.reflect.Modifier;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.analysis.Analyzer;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -47,41 +44,23 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new AssignAbstractTypeVisitor(access, name, desc, signature, exceptions);
+		return new AssignAbstractTypeVisitor(owner, access, name, desc, signature, exceptions);
 	}
 	
 	class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
 		
-		public AssignAbstractTypeVisitor(int access, String name, String desc, String signature, String[] exceptions) {
-			super(access, name, desc, signature, exceptions);
+		public AssignAbstractTypeVisitor(String owner, int access, String name, String desc, String signature, String[] exceptions) {
+			super(owner, access, name, desc, signature, exceptions);
 		}
 
 		@Override
-		public void visitEnd() {
-			super.visitEnd();
-			if (!fieldAssignments.isEmpty()) {
-		
-				try {
-					
-					Analyzer a = new Analyzer(new CustomClassLoadingSimpleVerifier());
-					Frame[] frames = a.analyze(owner, this);
-		
-					for (FieldInsnNode fieldInsnNode : fieldAssignments) {
-						Frame assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
-						int stackSlot = assignmentFrame.getStackSize() - 1;
-						BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
-						if (stackValue == null || "Lnull;".equals(stackValue.getType().toString())) {
-							continue;
-						}
-						checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
-					}
-		
-				} catch (AnalyzerException forwarded) {
-					throw new RuntimeException(forwarded);
-				}
+		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+			if (isInvalidStackValue(stackValue)) {
+				return;
 			}
+			checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
 		}
-		
+
 		void checkIfClassIsAbstract(String name, Type objectType) {
 			int sort = objectType.getSort();
 			if(sort != Type.OBJECT) {
@@ -101,6 +80,8 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 						null, MutabilityReason.CANNOT_ANALYSE);
 			}
 		}
+
+
 
 	}
 }

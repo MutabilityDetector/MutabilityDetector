@@ -23,13 +23,10 @@ import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.analysis.Analyzer;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -62,34 +59,17 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
 	class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
 
-		private final String owner;
-
 		public AssignMutableTypeToFieldChecker(String owner, int access, String name, String desc, String signature,
 				String[] exceptions) {
-			super(access, name, desc, signature, exceptions);
-			this.owner = owner;
+			super(owner, access, name, desc, signature, exceptions);
 		}
 
 		@Override
-		public void visitEnd() {
-			super.visitEnd();
-			Analyzer a = new Analyzer(new CustomClassLoadingSimpleVerifier());
-			Frame[] frames;
-			try {
-				frames = a.analyze(owner, this);
-
-				for (FieldInsnNode fieldInsnNode : fieldAssignments) {
-					Frame assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
-					int stackSlot = assignmentFrame.getStackSize() - 1;
-					BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
-					if (stackValue == null || "Lnull;".equals(stackValue.getType().toString())) {
-						continue;
-					}
-					checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
-				}
-			} catch (AnalyzerException forwarded) {
-				throw new RuntimeException(forwarded);
+		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+			if (isInvalidStackValue(stackValue)) {
+				return;
 			}
+			checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
 		}
 
 		private void checkIfClassIsMutable(String name, Type type) {
@@ -113,5 +93,6 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 				return;
 			}
 		}
+
 	}
 }

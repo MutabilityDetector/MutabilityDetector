@@ -16,7 +16,12 @@ package org.mutabilitydetector.benchmarks.settermethod;
  */
 public class ImmutableButSetsFieldOfOtherClass {
 
-	public void isThisASetterMethod(AssignMyField otherObject) {
+	public void setFieldOnParameter(AssignMyField otherObject) {
+		otherObject.reassignable = 42;
+	}
+	
+	AssignMyField otherObject;
+	public void setFieldOnField() {
 		otherObject.reassignable = 42;
 	}
 	

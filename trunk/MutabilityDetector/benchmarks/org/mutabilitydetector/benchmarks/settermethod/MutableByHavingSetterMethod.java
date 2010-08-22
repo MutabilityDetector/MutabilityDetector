@@ -17,9 +17,9 @@
  */
 package org.mutabilitydetector.benchmarks.settermethod;
 
+@SuppressWarnings("unused")
 public final class MutableByHavingSetterMethod {
 
-	@SuppressWarnings("unused")
 	private String name;
 	
 	public void setName(String name) {

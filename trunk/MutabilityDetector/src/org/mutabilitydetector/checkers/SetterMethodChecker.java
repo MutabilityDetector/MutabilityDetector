@@ -19,9 +19,10 @@ package org.mutabilitydetector.checkers;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.mutabilitydetector.visitor.MethodVisitorAdapter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.objectweb.asm.tree.analysis.Frame;
 
 
 /**
@@ -36,30 +37,46 @@ import org.objectweb.asm.Opcodes;
  */
 public class SetterMethodChecker extends AbstractMutabilityChecker {
 	
+	private String ownerName;
+
+	@Override
+	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+		this.ownerName = name;
+	}
+	
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new SetterMethodVisitor(name);
+		return new SetterAssignmentVisitor(ownerName, access, name, desc, signature, exceptions);
 	}
 
-	class SetterMethodVisitor extends MethodVisitorAdapter {
+	class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
-		private final String methodName;
-
-		public SetterMethodVisitor(String name) {
-			this.methodName = name;
-		}
-
-		@Override
-		public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-			if("<init>".equals(this.methodName)) return; // We're not concerned with the constructor 
-			
-			if(opcode == Opcodes.PUTFIELD) {
-				addResult("Field [" + name + "] can be reassigned within method [" + this.methodName + "]",
-						null, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
-				result = IsImmutable.DEFINITELY_NOT;
-			}
+		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions) {
+			super(ownerName, access, name, desc, signature, exceptions);
 		}
 		
-	}
+		
+		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+			if (isInvalidStackValue(stackValue) || isConstructor()) {
+				return;
+			}
+			
+			setIsImmutableResult(fieldInsnNode.name);
+			
+		}
+		
+		private boolean isConstructor() {
+			return "<init>".equals(name);
+		}
 
+
+		private void setIsImmutableResult(String fieldName) {
+			addResult("Field [" + fieldName + "] can be reassigned within method [" + this.name + "]",
+					null, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+			result = IsImmutable.DEFINITELY_NOT;
+		}
+		
+
+	}
+	
 }
