@@ -17,6 +17,7 @@
  */
 package org.mutabilitydetector.asmoverride;
 
+import org.mutabilitydetector.cli.URLFallbackClassLoader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
@@ -25,14 +26,18 @@ public class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 	@Override
 	protected Class<?> getClass(Type t) {
 
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		URLFallbackClassLoader classLoader = new URLFallbackClassLoader();
+		String className;
+		
 		try {
 			if (t.getSort() == Type.ARRAY) {
-				return Class.forName(t.getDescriptor().replace('/', '.'), false, loader);
+				className = t.getDescriptor().replace('/', '.');
+			} else {
+				className = t.getClassName();
 			}
-			return Class.forName(t.getClassName(), false, loader);
+			return classLoader.getClass(className);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e.toString());
+			throw new RuntimeException(e);
 		}
 	}
 }
