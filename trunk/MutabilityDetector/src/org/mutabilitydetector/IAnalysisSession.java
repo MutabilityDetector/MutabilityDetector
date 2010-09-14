@@ -52,6 +52,10 @@ public interface IAnalysisSession {
 			this.isImmutable = isImmutable;
 			this.reasons = Collections.unmodifiableCollection(reasons);
 		}
+		
+		public static AnalysisResult definitelyImmutable(String dottedClassName) {
+			return new AnalysisResult(dottedClassName, IsImmutable.DEFINITELY, Collections.<CheckerReasonDetail>emptyList());
+		}
 	}
 	
 	public static final class AnalysisError {
