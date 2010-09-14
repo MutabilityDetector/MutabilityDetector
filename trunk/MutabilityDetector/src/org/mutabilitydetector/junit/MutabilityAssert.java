@@ -10,11 +10,7 @@
 
 package org.mutabilitydetector.junit;
 
-import static java.lang.String.format;
-
 import java.util.Collection;
-
-import junit.framework.Assert;
 
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CheckerReasonDetail;
@@ -24,6 +20,8 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class MutabilityAssert {
 
+	private final static AssertionReporter reporter = new AssertionReporter();
+	
 	private static class AnalysisSessionHolder {
 		static final IAnalysisSession assertionAnalysisSession = AnalysisSession.createWithCurrentClassPath();
 	}
@@ -32,13 +30,7 @@ public class MutabilityAssert {
 		String className = expectedImmutableClass.getName();
 		AnalysisResult analysisResult = getResultFor(className);
 		
-		StringBuilder message = new StringBuilder();
-		String simpleName = expectedImmutableClass.getSimpleName();
-		message.append(format("Expected %s to be %s immutable. Was: %s immutable.%n", 
-				simpleName, IsImmutable.DEFINITELY, analysisResult.isImmutable.toString()));
-		formatReasons(analysisResult.reasons, message);
-		
-		Assert.assertTrue(message.toString(), IsImmutable.DEFINITELY == analysisResult.isImmutable);
+		reporter.expectedImmutable(analysisResult);
 	}
 
 	private static AnalysisResult getResultFor(String className) {
@@ -47,20 +39,12 @@ public class MutabilityAssert {
 	}
 
 	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
-		return formatReasons(reasons, new StringBuilder());
-	}
-	
-	private static String formatReasons(Collection<CheckerReasonDetail> reasons, StringBuilder builder) {
-		builder.append(format("Reasons:%n"));
-		for(CheckerReasonDetail reason: reasons) {
-			builder.append(format("%s%n", reason.message()));
-		}
-		return builder.toString();
+		return reporter.formatReasons(reasons);
 	}
 
 	public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
 		AnalysisResult analysisResult = getResultFor(forClass.getName());
-		Assert.assertEquals(expected, analysisResult.isImmutable);
+		reporter.expectedIsImmutable(expected, analysisResult);
 	}
 	
 

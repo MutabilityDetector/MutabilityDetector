@@ -10,12 +10,13 @@
 
 package org.mutabilitydetector.junit;
 
-import static java.lang.String.format;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
@@ -31,7 +32,7 @@ public class MutabilityAssertTest {
 		MutabilityAssert.assertImmutable(immutableClass);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test(expected = MutabilityAssertionError.class)
 	public void testAssertImmutableWithMutableClass() throws Exception {
 		MutabilityAssert.assertImmutable(mutableClass);
 	}
@@ -42,10 +43,9 @@ public class MutabilityAssertTest {
 			MutabilityAssert.assertImmutable(mutableClass);
 			fail("Assertion should have failed.");
 		} catch (final AssertionError ae) {
-			String expectedPrefix = format(
-					"Expected %s to be DEFINITELY immutable. Was: DEFINITELY_NOT immutable.", mutableClass
-							.getSimpleName());
-			assertThat(ae.getMessage(), JUnitMatchers.containsString(expectedPrefix));
+			assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
+			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}
 	
@@ -57,11 +57,10 @@ public class MutabilityAssertTest {
 	@Test
 	public void testAssertImmutableStatusIsFailsWhenUnequal() throws Exception {
 		try {
-			MutabilityAssert.assertImmutableStatusIs(IsImmutable.DEFINITELY_NOT, immutableClass);
+			MutabilityAssert.assertImmutableStatusIs(DEFINITELY_NOT, immutableClass);
 		} catch (final AssertionError ae) {
-			String expectedMessage = format("expected:<%s> but was:<%s>", IsImmutable.DEFINITELY_NOT,
-					IsImmutable.DEFINITELY);
-			assertThat(ae.getMessage(), JUnitMatchers.containsString(expectedMessage));
+			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}
 }
