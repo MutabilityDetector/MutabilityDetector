@@ -18,13 +18,13 @@
 package org.mutabilitydetector;
 
 import static java.lang.String.format;
-import static java.lang.Thread.currentThread;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.cli.URLFallbackClassLoader;
 import org.objectweb.asm.ClassReader;
 
 import com.google.classpath.ClassPath;
@@ -58,7 +58,7 @@ public class CheckerRunner {
 	public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath) {
 		try {
 			try {
-				Class<?> toCheck = currentThread().getContextClassLoader().loadClass(dottedClassPath);
+				Class<?> toCheck = new URLFallbackClassLoader().getClass(dottedClassPath);
 				cr = new ClassReader(toCheck.getName());
 				cr.accept(checker, 0);
 			} catch (Throwable e) {
@@ -70,6 +70,8 @@ public class CheckerRunner {
 		}
 	}
 
+
+
 	private void analyseAsStream(IMutabilityChecker checker, String dottedClassPath) throws IOException {
 		String slashedClassPath = dottedClassPath.replace(".", "/").concat(".class");
 		InputStream classStream = classpath.getResourceAsStream(slashedClassPath);
@@ -78,6 +80,7 @@ public class CheckerRunner {
 	}
 
 	private void handleException(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath, Throwable e) {
+		e.printStackTrace();
 		String errorDescription = format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
 		AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
 		analysisSession.addAnalysisError(error);
