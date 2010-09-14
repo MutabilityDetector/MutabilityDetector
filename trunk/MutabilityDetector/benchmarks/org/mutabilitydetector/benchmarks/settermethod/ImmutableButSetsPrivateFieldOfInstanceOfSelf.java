@@ -18,7 +18,10 @@ public class ImmutableButSetsPrivateFieldOfInstanceOfSelf {
 	
 	public ImmutableButSetsPrivateFieldOfInstanceOfSelf setPrivateFieldOnInstanceOfSelf() {
 		ImmutableButSetsPrivateFieldOfInstanceOfSelf i = new ImmutableButSetsPrivateFieldOfInstanceOfSelf();
+		this.hashCode();
 		i.myField = 10;
+		this.equals(null);
+		i.myField = 11;
 		return i;
 	}
 		

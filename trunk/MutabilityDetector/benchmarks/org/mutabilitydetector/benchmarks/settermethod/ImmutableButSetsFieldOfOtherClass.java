@@ -17,11 +17,7 @@ package org.mutabilitydetector.benchmarks.settermethod;
 public class ImmutableButSetsFieldOfOtherClass {
 
 	public void setFieldOnParameter(AssignMyField otherObject) {
-		otherObject.reassignable = 42;
-	}
-	
-	AssignMyField otherObject;
-	public void setFieldOnField() {
+		this.toString(); // Ensure the 'this' reference is involved somewhere
 		otherObject.reassignable = 42;
 	}
 	
