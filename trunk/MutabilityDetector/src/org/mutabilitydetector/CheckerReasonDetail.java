@@ -10,6 +10,9 @@
 
 package org.mutabilitydetector;
 
+import static java.lang.Integer.toHexString;
+import static java.lang.String.format;
+
 public class CheckerReasonDetail {
 
 	private final String message;
@@ -28,5 +31,10 @@ public class CheckerReasonDetail {
 	public SourceLocation sourceLocation() { return location; }
 	
 	public String message() { return message; }
+	
+	@Override
+	public String toString() {
+		return format("CheckerReasonDetail[%s, %s, @%s]", message, reason, toHexString(hashCode()));
+	}
 	
 }
