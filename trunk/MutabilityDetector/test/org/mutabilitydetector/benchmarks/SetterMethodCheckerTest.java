@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -30,13 +31,14 @@ import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsPrivateFieldOfInstanceOfSelf;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
+import org.mutabilitydetector.benchmarks.settermethod.ImmutableWithMutatingStaticFactoryMethod;
+import org.mutabilitydetector.benchmarks.settermethod.MutableByAssigningFieldOnInstanceWithinStaticMethod;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
+import org.mutabilitydetector.benchmarks.settermethod.MutableBySettingFieldOfField;
+import org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
-
-
-
 
 public class SetterMethodCheckerTest {
 
@@ -83,18 +85,58 @@ public class SetterMethodCheckerTest {
 	@Test
 	public void testSettingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
 		doCheck(checker, ImmutableButSetsPrivateFieldOfInstanceOfSelf.class);
-		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
+		assertIsImmutable();
 	}
 	
 	@Test
 	public void testFieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
 		doCheck(checker, ImmutableUsingPrivateFieldSettingMethod.class);
-		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
+		assertIsImmutable();
 	}
 	
 	@Test
 	public void testSettingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
 		doCheck(checker, ImmutableButSetsFieldOfOtherClass.class);
+		assertIsImmutable();
+	}
+	
+	@Test
+	public void testSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
+		doCheck(checker, MutableBySettingFieldOfField.class);
+		assertDefinitelyNotImmutable(checker.result());
+	}
+	
+	@Test
+	public void testSubclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
+		doCheck(checker, StillMutableSubclass.class);
+		assertDefinitelyNotImmutable(checker.result());
+	}
+	
+	@Test
+	public void testBigDecimalDoesNotFailCheck() throws Exception {
+		doCheck(checker, BigDecimal.class);
+		assertIsImmutable();
+	}
+	
+	@Test
+	public void testStringDoesNotFailCheck() throws Exception {
+		doCheck(checker, String.class);
+		assertIsImmutable();
+	}
+	
+	@Test
+	public void testFieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
+		doCheck(checker, MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
+		assertDefinitelyNotImmutable(checker.result());
+	}
+	
+	@Test
+	public void testReassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
+		doCheck(checker, ImmutableWithMutatingStaticFactoryMethod.class);
+		assertIsImmutable();
+	}
+	
+	private void assertIsImmutable() {
 		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
 	}
 
