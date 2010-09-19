@@ -87,9 +87,25 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		private void detectInStaticMethod(FieldInsnNode fieldInsnNode) {
 			String ownerOfReassignedField = fieldInsnNode.owner;
 			System.out.printf("Assigning to %s in static method%n", ownerOfReassignedField);
-			if(this.owner.compareTo(ownerOfReassignedField) == 0) {
+			if(reassignedIsThisType(ownerOfReassignedField) && assignmentIsNotOnAParameter(fieldInsnNode)) {
 				setIsImmutableResult(fieldInsnNode.name);
 			}
+		}
+
+		private boolean assignmentIsNotOnAParameter(FieldInsnNode fieldInsnNode) {
+			/*
+			 * This is a temporary hack/workaround. It's quite difficult to tell
+			 * for sure if the owner of the reassigned field is a parameter. But
+			 * if the type is not included in the parameter list, we can guess
+			 * it's not (though it still may be).
+			 */
+			boolean reassignmentIsOnATypeIncludedInParameters = this.desc.contains(fieldInsnNode.owner);
+			
+			return reassignmentIsOnATypeIncludedInParameters;
+		}
+
+		private boolean reassignedIsThisType(String ownerOfReassignedField) {
+			return this.owner.compareTo(ownerOfReassignedField) == 0;
 		}
 
 		private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue) {
@@ -126,7 +142,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		
 		private boolean thisObjectWasAddedToStack() {
 			// the "this" reference is at position 0 of the local variable table
-			return varInstructionIndices.contains(0);// && varInstructionIndices.size() >= 2;
+			return varInstructionIndices.contains(0);
 		}
 
 		@Override
