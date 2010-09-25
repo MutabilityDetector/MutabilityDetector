@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -65,6 +64,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 	class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
 		private List<Integer> varInstructionIndices = new ArrayList<Integer>();
+		private boolean refOnStackIsAField = false;
 
 		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions) {
 			super(ownerName, access, name, desc, signature, exceptions);
@@ -114,7 +114,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 				int stackSpaceToLookBack = reassignedReferenceIsPrimitiveType(stackValue) ? 1 : 2;
 				
 				int indexOfOwningObject = varInstructionIndices.get(varInstructionIndices.size() - stackSpaceToLookBack);
-				if(isThisObject(indexOfOwningObject)) {
+				if(isThisObject(indexOfOwningObject) || refOnStackIsAField) { 
 					setIsImmutableResult(fieldInsnNode.name);
 				} else {
 					System.out.printf("Setting field [%s] on other instance of %s%n", fieldInsnNode.name, ownerClass);
@@ -131,7 +131,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		public void visitFieldInsn(int opcode, String owner, String name, String desc) {
 			super.visitFieldInsn(opcode, owner, name, desc);
 			if(opcode == Opcodes.GETFIELD) {
-				varInstructionIndices.add(varInstructionIndices.size());
+				refOnStackIsAField = true;
 			}
 		}
 		
@@ -146,15 +146,10 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		}
 
 		@Override
-		public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-			super.visitLocalVariable(name, desc, signature, start, end, index);
-			System.out.printf("\tLocalVariable: %s, %s, %s, %s, %s, %d%n", name, desc, signature, start, end, index);
-		}
-		
-		@Override
 		public void visitVarInsn(int opcode, int var) {
 			super.visitVarInsn(opcode, var);
 			varInstructionIndices.add(var);
+			refOnStackIsAField = false;
 			System.out.printf("\tVar Insn: %d, %d%n", opcode, var);
 		}
 
