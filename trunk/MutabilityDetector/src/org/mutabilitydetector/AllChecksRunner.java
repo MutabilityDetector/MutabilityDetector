@@ -74,8 +74,8 @@ public class AllChecksRunner {
 
 	private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {
 		Integer oldCount = results.get(result);
-		if(oldCount == null) oldCount = Integer.valueOf(0);
-		return Integer.valueOf( oldCount + Integer.valueOf(1));
+		if(oldCount == null) oldCount = 0;
+		return (oldCount + 1);
 	}
 
 
