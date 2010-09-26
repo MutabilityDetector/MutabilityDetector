@@ -54,7 +54,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 	private PrivateMethodInvocationInfo privateMethodInvocationInfo;
 	
 	/**
-	 * 
 	 * @see #newSetterMethodChecker(PrivateMethodInvocationInfo)
 	 */
 	private SetterMethodChecker(PrivateMethodInvocationInfo privateMethodInvocationInfo) {
@@ -72,7 +71,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 	
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		System.out.printf("Method: %d, %s, %s, %s%n", access, name, desc, signature);
 		return new SetterAssignmentVisitor(ownerClass, access, name, desc, signature, exceptions, privateMethodInvocationInfo);
 	}
 
@@ -90,7 +88,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		}
 		
 		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-			System.out.printf("\tField Assignment: assigning to %s%n", fieldInsnNode.name);
 			if (isConstructor() || isInvalidStackValue(stackValue) || isOnlyCalledFromConstructor()) {
 				return;
 			}
@@ -111,7 +108,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
 		private void detectInStaticMethod(FieldInsnNode fieldInsnNode) {
 			String ownerOfReassignedField = fieldInsnNode.owner;
-			System.out.printf("Assigning to %s in static method%n", ownerOfReassignedField);
 			if(reassignedIsThisType(ownerOfReassignedField) && assignmentIsNotOnAParameter(fieldInsnNode)) {
 				setIsImmutableResult(fieldInsnNode.name);
 			}
@@ -142,7 +138,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 				if(isThisObject(indexOfOwningObject) || refOnStackIsAField) { 
 					setIsImmutableResult(fieldInsnNode.name);
 				} else {
-					System.out.printf("Setting field [%s] on other instance of %s%n", fieldInsnNode.name, owner);
+					// Setting field on other instance of 'this' type
 				}
 				
 			}
@@ -175,7 +171,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			super.visitVarInsn(opcode, var);
 			varInstructionIndices.add(var);
 			refOnStackIsAField = false;
-			System.out.printf("\tVar Insn: %d, %d%n", opcode, var);
 		}
 
 		private boolean isConstructor() {
