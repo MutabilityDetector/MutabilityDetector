@@ -26,7 +26,7 @@ public class CheckSomeClass {
 	private static void checkClass(Class<?> toAnalyse) {
 		ClassPath cp = new ClassPathFactory().createFromJVM();
 		String match = toAnalyse.getName().replace("$", "\\$");
-		CommandLineOptions options = new CommandLineOptions("-verbose", "-match", match);
+		CommandLineOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
 		new RunMutabilityDetector(cp, options).run();
 	}
 
