@@ -18,6 +18,7 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
@@ -27,6 +28,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsPrivateFieldOfInstanceOfSelf;
@@ -39,11 +41,13 @@ import org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
+import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 public class SetterMethodCheckerTest {
 
 	private SetterMethodChecker checker;
 	private CheckerRunner checkerRunner;
+	private IAnalysisSession analysisSession;
 	
 	
 	@Test public void immutableExamplePassesCheck() throws Exception {
@@ -124,7 +128,8 @@ public class SetterMethodCheckerTest {
 
 	private void doCheck(Class<?> toCheck) {
 		checkerRunner = CheckerRunner.createWithCurrentClasspath();
-		PrivateMethodInvocationInfo info = new PrivateMethodInvocationInfo(checkerRunner);
+		analysisSession = createWithCurrentClassPath();
+		PrivateMethodInvocationInfo info = new PrivateMethodInvocationInfo(new SessionCheckerRunner(analysisSession, checkerRunner));
 		checker = newSetterMethodChecker(info);
 		checkerRunner.run(checker, toCheck);
 	}

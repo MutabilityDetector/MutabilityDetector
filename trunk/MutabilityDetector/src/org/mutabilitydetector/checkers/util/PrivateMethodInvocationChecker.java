@@ -13,6 +13,7 @@ package org.mutabilitydetector.checkers.util;
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
+import static org.mutabilitydetector.checkers.info.Slashed.slashed;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,14 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 	
 	private Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
 	
+	@Override public void visit(int version, int access, String name, String signature, String superName,
+			String[] interfaces) {
+		super.visit(version, access, name, signature, superName, interfaces);
+	}
+	
 	@Override public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+		super.visitMethod(access, name, desc, signature, exceptions);
+		
 		boolean isPrivate = method(access).is(Opcodes.ACC_PRIVATE);
 		String methodDescriptor = makeMethodDescriptor(name, desc);
 		privateMethodCalledFromConstructorMap.put(makeMethodIdentifier(methodDescriptor), isPrivate);
@@ -49,7 +57,7 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 		return format("%s:%s", methodName, methodDesc);
 	}
 	private MethodIdentifier makeMethodIdentifier(String desc) {
-		return forMethod(MethodIdentifier.slashed(ownerClass), desc);
+		return forMethod(slashed(ownerClass), desc);
 	}
 
 	public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {

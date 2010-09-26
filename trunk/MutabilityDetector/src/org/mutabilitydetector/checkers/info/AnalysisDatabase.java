@@ -13,7 +13,7 @@ package org.mutabilitydetector.checkers.info;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 
 public class AnalysisDatabase {
 
@@ -32,14 +32,14 @@ public class AnalysisDatabase {
 	
 	@SuppressWarnings("unchecked") private Map infoMap = new HashMap();
 
-	private final CheckerRunner checkerRunner;
+	private final ISessionCheckerRunner sessionCheckerRunner;
 	
-	private AnalysisDatabase(CheckerRunner checkerRunner) {
-		this.checkerRunner = checkerRunner;
+	private AnalysisDatabase(ISessionCheckerRunner sessionCheckerRunner) {
+		this.sessionCheckerRunner = sessionCheckerRunner;
 	}
 	
-	public static AnalysisDatabase newAnalysisDatabase(CheckerRunner checkerRunner) {
-		return new AnalysisDatabase(checkerRunner);
+	public static AnalysisDatabase newAnalysisDatabase(ISessionCheckerRunner sessionCheckerRunner) {
+		return new AnalysisDatabase(sessionCheckerRunner);
 	}
 	
 	@SuppressWarnings("unchecked") public <I extends AnalysisInformation> I requestInformation(InfoKey<I> infoCategory) {
@@ -58,7 +58,7 @@ public class AnalysisDatabase {
 	@SuppressWarnings("unchecked") 
 	private <I extends AnalysisInformation> I createInfoForCategory(InfoKey<I> infoCategory) {
 		if(infoCategory == PRIVATE_METHOD_INVOCATION) {
-			I info = (I) new PrivateMethodInvocationInfo(checkerRunner);
+			I info = (I) new PrivateMethodInvocationInfo(sessionCheckerRunner);
 			infoMap.put(infoCategory, info);
 			return info;
 		}

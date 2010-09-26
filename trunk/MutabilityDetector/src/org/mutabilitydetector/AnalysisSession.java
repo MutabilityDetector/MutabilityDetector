@@ -17,6 +17,8 @@
  */
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -41,7 +45,8 @@ public class AnalysisSession implements IAnalysisSession {
 
 	public AnalysisSession(ClassPath classpath) {
 		checkerRunnerFactory = new CheckerRunnerFactory(classpath);
-		database = AnalysisDatabase.newAnalysisDatabase(checkerRunnerFactory.createRunner());
+		ISessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
+		database = newAnalysisDatabase(sessionCheckerRunner);
 	}
 
 	public AnalysisSession() {

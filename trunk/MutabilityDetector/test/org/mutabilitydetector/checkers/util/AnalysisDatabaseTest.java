@@ -12,21 +12,25 @@ package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
+import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 public class AnalysisDatabaseTest {
 
 	private AnalysisDatabase db;
 	
 	@Before public void setUp() {
-		db = newAnalysisDatabase(createWithCurrentClasspath());
+		ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
+		db = newAnalysisDatabase(sessionRunner);
 	}
 
 	@Test public void canRequestPrivateMethodInvocationInformation() throws Exception {

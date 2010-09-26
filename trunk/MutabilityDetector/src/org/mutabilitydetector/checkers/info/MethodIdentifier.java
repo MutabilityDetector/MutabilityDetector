@@ -10,15 +10,15 @@
 
 package org.mutabilitydetector.checkers.info;
 
-import org.mutabilitydetector.ClassNameConvertor;
+import static org.mutabilitydetector.checkers.info.Dotted.fromSlashed;
 
 public class MethodIdentifier {
 	
-	private final String dottedClassName;
+	private final Dotted dottedClassName;
 	private final String methodDescriptor;
 
-	public MethodIdentifier(String dottedClassName, String methodDescriptor) {
-		this.dottedClassName = dottedClassName;
+	public MethodIdentifier(Dotted className, String methodDescriptor) {
+		this.dottedClassName = className;
 		this.methodDescriptor = methodDescriptor;
 
 	}
@@ -66,37 +66,15 @@ public class MethodIdentifier {
 	}
 
 	public static MethodIdentifier forMethod(Dotted className, String methodDescriptor) {
-		return new MethodIdentifier(className.className, methodDescriptor);
+		return new MethodIdentifier(className, methodDescriptor);
 	}
 
 	public static MethodIdentifier forMethod(Slashed className, String methodDescriptor) {
-		String dotted = new ClassNameConvertor().dotted(className.className);
+		Dotted dotted = fromSlashed(className);
 		return new MethodIdentifier(dotted, methodDescriptor);
 	}
-	
-	public static class Dotted {
-		String className;
-		private Dotted(String dottedClassName) {
-			className = dottedClassName;
-		}
-	}
-	
-	public static Dotted dotted(String dottedClassName) {
-		return new Dotted(dottedClassName);
-	}
 
-	public static class Slashed {
-		String className;
-		public Slashed(String slashedClassName) {
-			className = slashedClassName;
-		}
-	}
-	
-	public static Slashed slashed(String slashedClassName) {
-		return new Slashed(slashedClassName);
-	}
-
-	public String dottedClassName() {
+	public Dotted dottedClassName() {
 		return dottedClassName;
 	}
 

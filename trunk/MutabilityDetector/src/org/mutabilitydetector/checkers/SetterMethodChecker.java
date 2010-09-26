@@ -20,7 +20,7 @@ package org.mutabilitydetector.checkers;
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
-import static org.mutabilitydetector.checkers.info.MethodIdentifier.slashed;
+import static org.mutabilitydetector.checkers.info.Slashed.slashed;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		}
 		
 		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-			if (isConstructor() || isInvalidStackValue(stackValue) || isOnlyCalledFromConstructor()) {
+			if (isConstructor() || isInvalidStackValue(stackValue)) {
 				return;
 			}
 			
@@ -179,6 +179,11 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
 
 		private void setIsImmutableResult(String fieldName) {
+			
+			if(isOnlyCalledFromConstructor()) {
+				return;
+			}
+			
 			String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
 			addResult(message, null, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
 			result = IsImmutable.DEFINITELY_NOT;

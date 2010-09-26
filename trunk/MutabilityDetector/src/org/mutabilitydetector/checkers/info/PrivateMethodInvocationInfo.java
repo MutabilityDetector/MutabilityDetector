@@ -10,33 +10,40 @@
 
 package org.mutabilitydetector.checkers.info;
 
-import org.mutabilitydetector.CheckerRunner;
+import static org.mutabilitydetector.checkers.info.ClassIdentifier.forClass;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker;
 
 public class PrivateMethodInvocationInfo implements AnalysisInformation {
 
-	private final CheckerRunner checkerRunner;
+	private final Map<Dotted, PrivateMethodInvocationChecker> checkerCache 
+						= new HashMap<Dotted, PrivateMethodInvocationChecker>();
+	private final ISessionCheckerRunner sessionCheckerRunner;
 
-	public PrivateMethodInvocationInfo(CheckerRunner checkerRunner) {
-		this.checkerRunner = checkerRunner;
+	public PrivateMethodInvocationInfo(ISessionCheckerRunner sessionCheckerRunner) {
+		this.sessionCheckerRunner = sessionCheckerRunner;
 		
 	}
 
 	public boolean isOnlyCalledFromConstructor(MethodIdentifier forMethod) {
-		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newInstance();
-		Class<?> toCheck = getClassToCheck(forMethod.dottedClassName());
-		
-		checkerRunner.run(checker, toCheck);
-		
-		return checker.isPrivateMethodCalledOnlyFromConstructor(forMethod.methodDescriptor());
+		PrivateMethodInvocationChecker checker = null;
+		if (checkerCache.containsKey(forMethod.dottedClassName())) {
+			checker = checkerCache.get(forMethod.dottedClassName());
+			
+		} else {
+			checker = PrivateMethodInvocationChecker.newInstance();
+			sessionCheckerRunner.run(checker, forClass(forMethod.dottedClassName()));
+			checkerCache.put(forMethod.dottedClassName(), checker);
+		}
+		return result(checker, forMethod);
 	}
 
-	private Class<?> getClassToCheck(String className) {
-		try {
-			return Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load " + className + ".", e);
-		}
+	private boolean result(PrivateMethodInvocationChecker checker, MethodIdentifier forMethod) {
+		return checker.isPrivateMethodCalledOnlyFromConstructor(forMethod.methodDescriptor());
 	}
 
 }
