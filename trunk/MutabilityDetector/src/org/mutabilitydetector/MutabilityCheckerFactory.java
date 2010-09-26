@@ -17,14 +17,15 @@
  */
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.checkers.AbstractTypeToFieldChecker.newAbstractTypeToFieldChecker;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
@@ -37,11 +38,12 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 
 	@Override
 	public Collection<IMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
+		AnalysisDatabase database = analysisSession.analysisDatabase();
+
 		Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
 		checkers.add(new FinalClassChecker());
-		checkers.add(new AbstractTypeToFieldChecker());
+		checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
 		checkers.add(new PublishedNonFinalFieldChecker());
-		AnalysisDatabase database = analysisSession.analysisDatabase();
 		checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
 		checkers.add(new MutableTypeToFieldChecker(analysisSession));
 		checkers.add(new InherentTypeMutabilityChecker());
