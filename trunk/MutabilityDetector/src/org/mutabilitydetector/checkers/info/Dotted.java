@@ -32,4 +32,8 @@ public class Dotted extends ClassName {
 		return dotted(dottedClassNameString);
 	}
 
+	public static Dotted fromClass(Class<?> clazz) {
+		return dotted(clazz.getName());
+	}
+
 }
