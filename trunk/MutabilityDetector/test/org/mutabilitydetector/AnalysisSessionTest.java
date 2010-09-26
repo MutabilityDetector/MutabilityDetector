@@ -56,5 +56,4 @@ public class AnalysisSessionTest {
 		assertImmutable(result);
 	}
 	
-	
 }
