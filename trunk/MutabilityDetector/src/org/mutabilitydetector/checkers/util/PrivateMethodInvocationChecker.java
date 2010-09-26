@@ -11,33 +11,56 @@
 package org.mutabilitydetector.checkers.util;
 
 import static java.lang.String.format;
+import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
+import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
 
 public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
+	/**
+	 * @see #newInstance()
+	 */
+	private PrivateMethodInvocationChecker() {}
+	
 	public static PrivateMethodInvocationChecker newInstance() {
 		return new PrivateMethodInvocationChecker();
 	}
 	
-	private Map<String, Boolean> privateMethodCalledFromConstructorMap = new HashMap<String, Boolean>();
+	private Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
 	
 	@Override public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		privateMethodCalledFromConstructorMap.put(makeMethodDescriptor(name, desc), true);
+		boolean isPrivate = method(access).is(Opcodes.ACC_PRIVATE);
+		String methodDescriptor = makeMethodDescriptor(name, desc);
+		privateMethodCalledFromConstructorMap.put(makeMethodIdentifier(methodDescriptor), isPrivate);
+		
 		return new MethodInvocationVisitor(access, name, desc, signature, exceptions);
 	}
 
-	private String makeMethodDescriptor(String name, String desc) {
-		return format("%s:%s", name, desc);
+	private String makeMethodDescriptor(String methodName, String methodDesc) {
+		return format("%s:%s", methodName, methodDesc);
+	}
+	private MethodIdentifier makeMethodIdentifier(String desc) {
+		return forMethod(MethodIdentifier.slashed(ownerClass), desc);
 	}
 
 	public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {
-		return privateMethodCalledFromConstructorMap.get(methodDescriptor);
+		MethodIdentifier identifier = makeMethodIdentifier(methodDescriptor);
+		if(privateMethodCalledFromConstructorMap.containsKey(identifier)) {
+			return privateMethodCalledFromConstructorMap.get(identifier);
+		}
+		
+		String message = format("Could not find method descriptor %s. Available descriptors are: %n%s", 
+				identifier, privateMethodCalledFromConstructorMap.keySet().toString());
+		throw new MutabilityAnalysisException(message);
 	}
 	
 	private class MethodInvocationVisitor extends MethodNode {
@@ -51,7 +74,8 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 				return;
 			}
 			
-			privateMethodCalledFromConstructorMap.put(makeMethodDescriptor(name, desc), false);
+			MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(name, desc));
+			privateMethodCalledFromConstructorMap.put(identifier, false);
 		}
 	}
 

@@ -19,6 +19,8 @@ package org.mutabilitydetector.checkers;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
+import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
+import static org.mutabilitydetector.checkers.info.MethodIdentifier.slashed;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ import java.util.List;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.checkers.info.MethodIdentifier;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -46,36 +50,51 @@ import org.objectweb.asm.tree.analysis.Frame;
  */
 public class SetterMethodChecker extends AbstractMutabilityChecker {
 	
-	private String ownerName;
+	
+	private PrivateMethodInvocationInfo privateMethodInvocationInfo;
+	
+	/**
+	 * 
+	 * @see #newSetterMethodChecker(PrivateMethodInvocationInfo)
+	 */
+	private SetterMethodChecker(PrivateMethodInvocationInfo privateMethodInvocationInfo) {
+		this.privateMethodInvocationInfo = privateMethodInvocationInfo;
+	}
+	
+	public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInfo privateMethodInvocationInfo) {
+		return new SetterMethodChecker(privateMethodInvocationInfo);
+	}
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		super.visit(version, access, name, signature, superName, interfaces);
-		this.ownerName = name;
 	}
 	
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		System.out.printf("Method: %d, %s, %s, %s%n", access, name, desc, signature);
-		return new SetterAssignmentVisitor(ownerName, access, name, desc, signature, exceptions);
+		return new SetterAssignmentVisitor(ownerClass, access, name, desc, signature, exceptions, privateMethodInvocationInfo);
 	}
-	
-	
 
 	class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
 		private List<Integer> varInstructionIndices = new ArrayList<Integer>();
 		private boolean refOnStackIsAField = false;
+		private final PrivateMethodInvocationInfo privateMethodInvocationInfo;
 
-		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions) {
+		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions, 
+				PrivateMethodInvocationInfo privateMethodInvocationInfo) 
+		{
 			super(ownerName, access, name, desc, signature, exceptions);
+			this.privateMethodInvocationInfo = privateMethodInvocationInfo;
 		}
 		
 		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
 			System.out.printf("\tField Assignment: assigning to %s%n", fieldInsnNode.name);
-			if (isConstructor() || isInvalidStackValue(stackValue)) {
+			if (isConstructor() || isInvalidStackValue(stackValue) || isOnlyCalledFromConstructor()) {
 				return;
 			}
+			
 			
 			if(method(access).is(ACC_STATIC)) {
 				detectInStaticMethod(fieldInsnNode);
@@ -83,6 +102,11 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 				detectInInstanceMethod(fieldInsnNode, stackValue);
 			}
 			
+		}
+
+		private boolean isOnlyCalledFromConstructor() {
+			MethodIdentifier methodId = forMethod(slashed(this.owner), name + ":" + desc);
+			return privateMethodInvocationInfo.isOnlyCalledFromConstructor(methodId);
 		}
 
 		private void detectInStaticMethod(FieldInsnNode fieldInsnNode) {
@@ -118,7 +142,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 				if(isThisObject(indexOfOwningObject) || refOnStackIsAField) { 
 					setIsImmutableResult(fieldInsnNode.name);
 				} else {
-					System.out.printf("Setting field [%s] on other instance of %s%n", fieldInsnNode.name, ownerClass);
+					System.out.printf("Setting field [%s] on other instance of %s%n", fieldInsnNode.name, owner);
 				}
 				
 			}

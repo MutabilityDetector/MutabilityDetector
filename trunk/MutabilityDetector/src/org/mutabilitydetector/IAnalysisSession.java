@@ -20,6 +20,8 @@ package org.mutabilitydetector;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+
 public interface IAnalysisSession {
 
 	IsImmutable isImmutable(String className);
@@ -33,6 +35,8 @@ public interface IAnalysisSession {
 	
 	Collection<AnalysisResult> getResults();
 	Collection<AnalysisError> getErrors();
+	
+	AnalysisDatabase analysisDatabase();
 	
 	public static enum IsImmutable {
 		COULD_NOT_ANALYSE,
@@ -69,6 +73,8 @@ public interface IAnalysisSession {
 			
 		}
 	}
+
+
 
 	
 }

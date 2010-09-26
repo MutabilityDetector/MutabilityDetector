@@ -17,6 +17,9 @@
  */
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +30,7 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
-import org.mutabilitydetector.checkers.SetterMethodChecker;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
 
 public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
@@ -38,7 +41,8 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 		checkers.add(new FinalClassChecker());
 		checkers.add(new AbstractTypeToFieldChecker());
 		checkers.add(new PublishedNonFinalFieldChecker());
-		checkers.add(new SetterMethodChecker());
+		AnalysisDatabase database = analysisSession.analysisDatabase();
+		checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
 		checkers.add(new MutableTypeToFieldChecker(analysisSession));
 		checkers.add(new InherentTypeMutabilityChecker());
 //		checkers.add(new InheritedMutabilityChecker(analysisSession));
