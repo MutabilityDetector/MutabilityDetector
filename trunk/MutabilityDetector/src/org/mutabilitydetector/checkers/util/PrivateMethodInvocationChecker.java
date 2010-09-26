@@ -28,20 +28,15 @@ import org.objectweb.asm.tree.MethodNode;
 public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
 	/**
-	 * @see #newInstance()
+	 * @see #newChecker()
 	 */
 	private PrivateMethodInvocationChecker() {}
 	
-	public static PrivateMethodInvocationChecker newInstance() {
+	public static PrivateMethodInvocationChecker newChecker() {
 		return new PrivateMethodInvocationChecker();
 	}
 	
 	private Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
-	
-	@Override public void visit(int version, int access, String name, String signature, String superName,
-			String[] interfaces) {
-		super.visit(version, access, name, signature, superName, interfaces);
-	}
 	
 	@Override public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		super.visitMethod(access, name, desc, signature, exceptions);

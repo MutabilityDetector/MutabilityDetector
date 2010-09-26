@@ -35,7 +35,7 @@ public class PrivateMethodInvocationInfo implements AnalysisInformation {
 			checker = checkerCache.get(forMethod.dottedClassName());
 			
 		} else {
-			checker = PrivateMethodInvocationChecker.newInstance();
+			checker = PrivateMethodInvocationChecker.newChecker();
 			sessionCheckerRunner.run(checker, forClass(forMethod.dottedClassName()));
 			checkerCache.put(forMethod.dottedClassName(), checker);
 		}

@@ -27,4 +27,9 @@ public class Dotted extends ClassName {
 		return dotted(converted);
 	}
 
+	public static Dotted fromSlashedString(String slashedClassNameString) {
+		String dottedClassNameString = new ClassNameConvertor().dotted(slashedClassNameString);
+		return dotted(dottedClassNameString);
+	}
+
 }

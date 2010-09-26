@@ -17,7 +17,7 @@ import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 
 public class AnalysisDatabase {
 
-	private static final class InfoKey<C> {
+	public static final class InfoKey<C> {
 		private final Class<C> clazz;
 
 		private InfoKey(Class<C> clazz) {
@@ -29,6 +29,9 @@ public class AnalysisDatabase {
 	
 	public static final InfoKey<PrivateMethodInvocationInfo> PRIVATE_METHOD_INVOCATION 
 						= new InfoKey<PrivateMethodInvocationInfo>(PrivateMethodInvocationInfo.class);
+
+	public static final InfoKey<TypeStructureInformation> TYPE_STRUCTURE
+						= new InfoKey<TypeStructureInformation>(TypeStructureInformation.class);
 	
 	@SuppressWarnings("unchecked") private Map infoMap = new HashMap();
 
@@ -57,11 +60,18 @@ public class AnalysisDatabase {
 
 	@SuppressWarnings("unchecked") 
 	private <I extends AnalysisInformation> I createInfoForCategory(InfoKey<I> infoCategory) {
+		I info = null;
 		if(infoCategory == PRIVATE_METHOD_INVOCATION) {
-			I info = (I) new PrivateMethodInvocationInfo(sessionCheckerRunner);
+			info = (I) new PrivateMethodInvocationInfo(sessionCheckerRunner);
+		} else if(infoCategory == TYPE_STRUCTURE) {
+			info = (I) new TypeStructureInformation(sessionCheckerRunner);
+		}
+		
+		if(info == null) {
+			throw newException(infoCategory);
+		} else {
 			infoMap.put(infoCategory, info);
 			return info;
 		}
-		throw newException(infoCategory);
 	}
 }

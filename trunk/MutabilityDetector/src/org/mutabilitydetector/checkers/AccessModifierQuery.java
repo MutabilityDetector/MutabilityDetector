@@ -41,4 +41,8 @@ public class AccessModifierQuery {
 	public static AccessModifierQuery method(int access) {
 		return new AccessModifierQuery(access);
 	}
+
+	public static AccessModifierQuery type(int access) {
+		return new AccessModifierQuery(access);
+	}
 }

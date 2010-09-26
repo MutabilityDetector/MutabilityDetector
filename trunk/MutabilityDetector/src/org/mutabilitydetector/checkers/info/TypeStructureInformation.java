@@ -10,17 +10,12 @@
 
 package org.mutabilitydetector.checkers.info;
 
-public class Slashed extends ClassName {
-	
-	private Slashed(String slashedClassName) {
-		super(slashedClassName);
+import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+
+public class TypeStructureInformation implements AnalysisInformation {
+
+	public TypeStructureInformation(ISessionCheckerRunner sessionCheckerRunner) {
+		// TODO Auto-generated constructor stub
 	}
-	
-	public Dotted toDotted() {
-		return Dotted.fromSlashed(this);
-	}
-	
-	public static Slashed slashed(String slashedClassName) {
-		return new Slashed(slashedClassName);
-	}
+
 }

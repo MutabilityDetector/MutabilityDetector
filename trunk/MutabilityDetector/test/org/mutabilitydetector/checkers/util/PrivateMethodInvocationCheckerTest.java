@@ -20,7 +20,7 @@ import org.mutabilitydetector.CheckerRunner;
 public class PrivateMethodInvocationCheckerTest {
 
 	@Test public void testCanQueryIfAMethodIsOnlyCalledFromTheConstructor() throws Exception {
-		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newInstance();
+		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
 		CheckerRunner.createWithCurrentClasspath().run(checker, PrivateMethodsCalledOnlyInConstructor.class);
 		
 		String methodDescriptor = "privateMethod:()V";
@@ -29,7 +29,7 @@ public class PrivateMethodInvocationCheckerTest {
 	}
 	
 	@Test public void isPrivateMethodCalledOnlyFromConstructorReturnsFalseWhenPrivateMethodIsInvokedInPublicMethod() throws Exception {
-		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newInstance();
+		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
 		CheckerRunner.createWithCurrentClasspath().run(checker, PrivateMethodsCalledOutsideConstructor.class);
 		
 		String methodDescriptor = "privateMethod:()V";
