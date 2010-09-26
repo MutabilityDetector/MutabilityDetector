@@ -18,6 +18,8 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 
@@ -26,6 +28,8 @@ import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 
 
 
@@ -35,7 +39,10 @@ public class AbstractTypeToFieldCheckerTest {
 
 	@Before
 	public void setUp() {
-		checker = new AbstractTypeToFieldChecker();
+		SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(), 
+															   createWithCurrentClasspath());
+		TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
+		checker = new AbstractTypeToFieldChecker(typeInfo);
 	}
 
 	@Test

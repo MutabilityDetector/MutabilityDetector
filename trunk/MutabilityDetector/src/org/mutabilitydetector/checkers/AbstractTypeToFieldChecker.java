@@ -18,12 +18,12 @@
 package org.mutabilitydetector.checkers;
 
 
-import static java.lang.Thread.currentThread;
-
-import java.lang.reflect.Modifier;
+import static java.lang.String.format;
+import static org.mutabilitydetector.checkers.info.Dotted.dotted;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -34,17 +34,24 @@ import org.objectweb.asm.tree.analysis.Frame;
 
 public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
-	String owner;
+	private final TypeStructureInformation typeStructureInformation;
+	
+	public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation) {
+		this.typeStructureInformation = typeStructureInformation;
+	}
 
+	public static AbstractTypeToFieldChecker newAbstractTypeToFieldChecker(TypeStructureInformation requestInformation) {
+		return new AbstractTypeToFieldChecker(requestInformation);
+	}
+	
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		super.visit(version, access, name, signature, superName, interfaces);
-		owner = name;
 	}
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new AssignAbstractTypeVisitor(owner, access, name, desc, signature, exceptions);
+		return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions);
 	}
 	
 	class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
@@ -67,21 +74,14 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 				return;
 			}
 			String dottedClassName = dottedClassName(objectType);
-			Class<?> assignedClass = null;
-			try {
-				assignedClass = currentThread().getContextClassLoader().loadClass(dottedClassName);
-				if (assignedClass.isInterface() || Modifier.isAbstract(assignedClass.getModifiers())) {
-					addResult("Field [" + name + "] can have an abstract type (" + dottedClassName + ") assigned to it.", 
-							null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
-					result = IsImmutable.DEFINITELY_NOT;
-				}
-			} catch (ClassNotFoundException e) {
-				addResult("Cannot analyse [" + dottedClassName + "] because the class cannot be loaded.", 
-						null, MutabilityReason.CANNOT_ANALYSE);
+			boolean isAbstract = typeStructureInformation.isTypeAbstract(dotted(dottedClassName));
+			
+			if(isAbstract) {
+				String message = format("Field [%s] can have an abstract type (%s) assigned to it.", name, dottedClassName);
+				addResult(message, null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+				result = IsImmutable.DEFINITELY_NOT;
+				
 			}
 		}
-
-
-
 	}
 }
