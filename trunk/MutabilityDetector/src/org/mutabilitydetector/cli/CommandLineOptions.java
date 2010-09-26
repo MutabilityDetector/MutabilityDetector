@@ -20,6 +20,7 @@ package org.mutabilitydetector.cli;
 import static java.lang.String.format;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -37,6 +38,7 @@ public class CommandLineOptions {
 	private File classListFile;
 	private boolean isUsingClassList;
 	private boolean reportErrors;
+	private final PrintStream errorStream;
 
 	private final class ParsingActionImplementation implements ParsingAction {
 		public void doParsingAction(CommandLine line) {
@@ -68,8 +70,9 @@ public class CommandLineOptions {
 		}
 	}
 
-	public CommandLineOptions(String... args) {
-		options = createOptions();
+	public CommandLineOptions(PrintStream errorStream, String... args) {
+		this.errorStream = errorStream;
+		this.options = createOptions();
 		parseOptions(options, args);
 	}
 
@@ -115,7 +118,7 @@ public class CommandLineOptions {
 		try {
 			parser.parseOptions(new ParsingActionImplementation());
 		} catch (CommandLineOptionsException cloe) {
-			System.out.println(cloe.getMessage());
+			this.errorStream.println(cloe.getMessage());
 			throw cloe;
 		} catch (Exception e) {
 			printHelpAndExit();

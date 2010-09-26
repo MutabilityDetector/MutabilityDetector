@@ -22,6 +22,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import org.junit.After;
 import org.junit.Test;
@@ -33,11 +36,21 @@ public class CommandLineOptionsTest {
 
 	private CommandLineOptions options;
 	private File classListFile;
+	
+	private final PrintStream errorStream = new PrintStream(new OutputStream() {
+		@Override public void write(int b) throws IOException {
+			// suppress output in tests
+		}
+	});
 
+	private CommandLineOptions createOptions(String... args) {
+		return new CommandLineOptions(errorStream, args);
+	}
+	
 	@Test
 	public void testOptionsCanParseClasspathOption() throws Exception {
 		String[] args = makeArgs("-classpath", "fakeClasspath");
-		CommandLineOptions options = new CommandLineOptions(args);
+		CommandLineOptions options = createOptions(args);
 		assertEquals("fakeClasspath", options.classpath());
 	}
 	
@@ -45,28 +58,28 @@ public class CommandLineOptionsTest {
 	@Test
 	public void testToAnalyseRegexCanBeSpecified() throws Exception {
 		String[] args = makeArgs("-match", "*.somepackage.*");
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals("*.somepackage.*", options.match());
 	}
 	
 	@Test
 	public void testVerboseOptionCanBeSetWithShortOpt() throws Exception {
 		String[] args = makeArgs("-v");
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals(true, options.verbose());
 	}
 	
 	@Test
 	public void testVerboseOptionCanBeSetWithLongOpt() throws Exception {
 		String[] args = makeArgs("-verbose");
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals(true, options.verbose());
 	}
 	
 	@Test
 	public void testReportModeCanBeSetToAll() throws Exception {
 		String[] args = makeArgs("-report", "all");
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals(ReportMode.ALL, options.reportMode());
 	}
 	
@@ -78,7 +91,7 @@ public class CommandLineOptionsTest {
 	
 	private void assertModeAvailable(String reportArg, ReportMode reportMode) {
 		String[] args = makeArgs("-r", reportArg);
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals(reportMode, options.reportMode());
 	}
 	
@@ -89,7 +102,7 @@ public class CommandLineOptionsTest {
 		
 		String[] args = makeArgs("-classlist", "someFileName.txt");
 		
-		options = new CommandLineOptions(args);
+		options = createOptions(args);
 		assertEquals(classListFile, options.classListFile());
 	}
 	
@@ -99,26 +112,26 @@ public class CommandLineOptionsTest {
 	
 	@Test(expected=CommandLineOptionsException.class)
 	public void testThrowsExceptionIfClassListFileIsInvalid() throws Exception {
-		options = new CommandLineOptions("-classlist", "");
+		options = createOptions("-classlist", "");
 	}
 	
 	@Test
 	public void testIsUsingClassList() throws Exception {
-		options = new CommandLineOptions("-cp", ".");
+		options = createOptions("-cp", ".");
 		assertFalse("Should not be using class list.", options.isUsingClassList());
 		
 		classListFile = new File("someFileName.txt");
 		assertTrue(classListFile.createNewFile());
-		options = new CommandLineOptions("-classlist", "someFileName.txt");
+		options = createOptions("-classlist", "someFileName.txt");
 		assertTrue("Should be using class list.", options.isUsingClassList());
 	}
 	
 	@Test
 	public void testShouldReportErrors() throws Exception {
-		options = new CommandLineOptions("-cp", ".");
+		options = createOptions("-cp", ".");
 		assertFalse("By default, errors should not be shown.", options.reportErrors());
 		
-		options = new CommandLineOptions("-cp", ".", "-e");
+		options = createOptions("-cp", ".", "-e");
 		assertTrue("With the '-e' flag, errors should be shown.", options.reportErrors());
 	}
 

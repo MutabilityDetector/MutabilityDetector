@@ -132,7 +132,7 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
 
 	private static CommandLineOptions createOptionsFromArgs(String[] args) {
 		try {
-			CommandLineOptions options = new CommandLineOptions(args);
+			CommandLineOptions options = new CommandLineOptions(System.err, args);
 			return options;
 		} catch (Throwable e) {
 			System.out.println("Exiting...");
