@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<stringAttribute key="bad_container_name" value="/MutabilityDetector/launch/rt.jar.launch"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/MutabilityDetector/src/org/mutabilitydetector/cli/RunMutabilityDetector.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.mutabilitydetector.cli.RunMutabilityDetector"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-cp /home/graham/dev/jdks/jdk1.6.0_12/jre/lib/rt.jar&#10;-verbose"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MutabilityDetector"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:+CMSClassUnloadingEnabled&#10;-XX:MaxPermSize=256m"/>
+</launchConfiguration>
