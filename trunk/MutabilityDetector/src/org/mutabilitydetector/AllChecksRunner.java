@@ -17,6 +17,9 @@
  */
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.checkers.info.Dotted.dotted;
+import static org.mutabilitydetector.checkers.info.Dotted.fromClass;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,12 +29,13 @@ import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
+import org.mutabilitydetector.checkers.info.Dotted;
 
 
 public class AllChecksRunner {
 
 	private IsImmutable isImmutable;
-	private final String toAnalyse;
+	private final Dotted toAnalyse;
 	private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
 	private IMutabilityCheckerFactory factory;
 	private final ICheckerRunnerFactory checkerRunnerFactory;
@@ -40,14 +44,14 @@ public class AllChecksRunner {
 			Class<?> toAnalyse) {
 		this.factory = factory;
 		this.checkerRunnerFactory = checkerRunnerFactory;
-		this.toAnalyse = toAnalyse.getCanonicalName();
+		this.toAnalyse = fromClass(toAnalyse);
 	}
 
 	public AllChecksRunner(MutabilityCheckerFactory factory, ICheckerRunnerFactory checkerRunnerFactory,
 			String className) {
 		this.factory = factory;
 		this.checkerRunnerFactory = checkerRunnerFactory;
-		this.toAnalyse = className;
+		this.toAnalyse = dotted(className);
 
 	}
 
@@ -68,7 +72,7 @@ public class AllChecksRunner {
 		
 		isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 			
-		AnalysisResult result = new AnalysisResult(toAnalyse, isImmutable, reasons);
+		AnalysisResult result = new AnalysisResult(toAnalyse.asString(), isImmutable, reasons);
 		analysisSession.addAnalysisResult(result);
 	}
 

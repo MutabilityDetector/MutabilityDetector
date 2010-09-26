@@ -26,7 +26,7 @@ public class SessionCheckerRunner implements ISessionCheckerRunner {
 	}
 
 	@Override public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier) {
-		checkerRunner.run(analysisSession, checker, classIdentifier.asDotted().asString());
+		checkerRunner.run(analysisSession, checker, classIdentifier.asDotted());
 	}
 
 }

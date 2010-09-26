@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
-import org.mutabilitydetector.cli.URLFallbackClassLoader;
+import org.mutabilitydetector.checkers.info.Dotted;
 import org.objectweb.asm.ClassReader;
 
 import com.google.classpath.ClassPath;
@@ -56,11 +56,10 @@ public class CheckerRunner {
 		cr.accept(checker, 0);
 	}
 
-	public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath) {
+	public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, Dotted className) {
 		try {
 			try {
-				Class<?> toCheck = new URLFallbackClassLoader().getClass(dottedClassPath);
-				cr = new ClassReader(toCheck.getName());
+				cr = new ClassReader(className.asString());
 				cr.accept(checker, 0);
 			} catch(OutOfMemoryError e) {
 				e.printStackTrace();
@@ -68,10 +67,10 @@ public class CheckerRunner {
 			}
 			catch (Throwable e) {
 				// Has to catch NoClassDefFoundError
-				analyseAsStream(checker, dottedClassPath);
+				analyseAsStream(checker, className.asString());
 			}
 		} catch (Throwable e) {
-			handleException(analysisSession, checker, dottedClassPath, e);
+			handleException(analysisSession, checker, className.asString(), e);
 		}
 	}
 
