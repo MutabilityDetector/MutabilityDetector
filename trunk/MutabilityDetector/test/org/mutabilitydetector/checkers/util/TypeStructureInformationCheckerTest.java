@@ -12,7 +12,7 @@ package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mutabilitydetector.checkers.info.Dotted.dotted;
+import static org.mutabilitydetector.checkers.info.Dotted.fromClass;
 import static org.mutabilitydetector.checkers.util.TypeStructureInformationChecker.newChecker;
 
 import org.junit.Test;
@@ -27,21 +27,20 @@ public class TypeStructureInformationCheckerTest {
 	private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();;
 
 	@Test public void isAbstractIsTrueForAbstractType() throws Exception {
-		TypeStructureInformationChecker checker = newChecker();
+		Dotted className = fromClass(AbstractType.class);
+		TypeStructureInformationChecker checker = newChecker(className);
 		checkerRunner.run(checker, AbstractType.class);
 		
-		Dotted dottedClassName = dotted(AbstractType.class.getName());
-		boolean isAbstract = checker.isAbstract(dottedClassName);
-		assertTrue("Class is abstract.", isAbstract);
+		assertTrue("Class is abstract.", checker.isAbstract());
 		
 	}
 	
 	@Test public void isAbstractIsFalseForConcreteType() throws Exception {
-		TypeStructureInformationChecker checker = newChecker();
+		Dotted className = fromClass(ConcreteType.class);
+		TypeStructureInformationChecker checker = newChecker(className);
 		checkerRunner.run(checker, ConcreteType.class);
 		
-		boolean isAbstract = checker.isAbstract(dotted(ConcreteType.class.getName()));
-		assertFalse("Class is concrete.", isAbstract);
+		assertFalse("Class is concrete.", checker.isAbstract());
 	}
 	
 }

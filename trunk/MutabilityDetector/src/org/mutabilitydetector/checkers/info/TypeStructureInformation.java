@@ -10,12 +10,34 @@
 
 package org.mutabilitydetector.checkers.info;
 
+import static org.mutabilitydetector.checkers.info.ClassIdentifier.forClass;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.util.TypeStructureInformationChecker;
 
 public class TypeStructureInformation implements AnalysisInformation {
 
+	private final ISessionCheckerRunner sessionCheckerRunner;
+	private final Map<Dotted, Boolean> isAbstractMap = new HashMap<Dotted, Boolean>();
+
 	public TypeStructureInformation(ISessionCheckerRunner sessionCheckerRunner) {
-		// TODO Auto-generated constructor stub
+		this.sessionCheckerRunner = sessionCheckerRunner;
 	}
 
+	public boolean isTypeAbstract(Dotted className) {
+		Boolean result = false;
+		if (isAbstractMap.containsKey(className)) {
+			result = isAbstractMap.get(className);
+			
+		} else {
+			TypeStructureInformationChecker checker = TypeStructureInformationChecker.newChecker(className);
+			sessionCheckerRunner.run(checker, forClass(className));
+			result =  checker.isAbstract();
+			isAbstractMap.put(className, result);
+		}
+		return result;
+	}
 }
