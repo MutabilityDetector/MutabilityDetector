@@ -13,25 +13,43 @@ package org.mutabilitydetector.cli;
 import static java.lang.String.format;
 
 import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class URLFallbackClassLoader {
 
 	private final URLClassLoader urlClassLoader;
+	private Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
+	
 
 	public URLFallbackClassLoader() {
 		this.urlClassLoader = getURLClassLoader();
 	}
 
 	public Class<?> getClass(String dottedClassPath) throws ClassNotFoundException {
-		Class<?> toReturn = null;
-		try {
-			toReturn = Class.forName(dottedClassPath);
-			return toReturn;
-		} catch (ClassNotFoundException e) {
-			toReturn = urlClassLoader.loadClass(dottedClassPath);
-			return toReturn;
+		if(classCache.containsKey(dottedClassPath)) {
+			return classCache.get(dottedClassPath);
 		}
+		
+		Class<?> toReturn;
+		try {
+			toReturn = fromJVMClassLoader(dottedClassPath);
+		} catch (ClassNotFoundException e) {
+			toReturn = fromURLClassLoader(dottedClassPath);
+		}
+		
+		classCache.put(dottedClassPath, toReturn);
+		return toReturn;
 	}
+
+	private Class<?> fromJVMClassLoader(String dottedClassPath) throws ClassNotFoundException {
+		return Class.forName(dottedClassPath);
+	}
+
+	private Class<?> fromURLClassLoader(String dottedClassPath) throws ClassNotFoundException {
+		return urlClassLoader.loadClass(dottedClassPath);
+	}
+
 	
 	private URLClassLoader getURLClassLoader() {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
