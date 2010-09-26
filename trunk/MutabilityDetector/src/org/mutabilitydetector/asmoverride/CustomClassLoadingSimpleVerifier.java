@@ -23,10 +23,15 @@ import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
+	
+	private URLFallbackClassLoader classLoader;
+	
+	public CustomClassLoadingSimpleVerifier() {
+		classLoader = new URLFallbackClassLoader();
+	}
+
 	@Override
 	protected Class<?> getClass(Type t) {
-
-		URLFallbackClassLoader classLoader = new URLFallbackClassLoader();
 		String className;
 		
 		try {
