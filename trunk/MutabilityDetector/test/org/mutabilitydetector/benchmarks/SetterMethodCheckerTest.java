@@ -44,103 +44,88 @@ public class SetterMethodCheckerTest {
 
 	private SetterMethodChecker checker;
 	
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		checker = new SetterMethodChecker();
-		
 	}
 	
-	@Test
-	public void testImmutableExamplePassesCheck() throws Exception {
+	@Test public void immutableExamplePassesCheck() throws Exception {
 		doCheck(checker, ImmutableExample.class);
-		
+
 		assertImmutable(checker.result());
 		assertEquals(checker.reasons().size(), 0);
 	}
 	
-	@Test
-	public void testMutableByHavingSetterMethodFailsCheck() throws Exception {
+	@Test public void mutableByHavingSetterMethodFailsCheck() throws Exception {
 		doCheck(checker, MutableByHavingSetterMethod.class);
-		
+
 		assertDefinitelyNotImmutable(checker.result());
 	}
 	
-	@Test
-	public void testIntegerClassPassesCheck() throws Exception {
+	@Test public void integerClassPassesCheck() throws Exception {
 		doCheck(checker, Integer.class);
-		
+
 		assertEquals(Collections.EMPTY_LIST, checker.reasons());
 		assertImmutable(checker.result());
 	}
 	
-	@Test
-	public void testEnumTypePassesCheck() throws Exception {
+	@Test public void enumTypePassesCheck() throws Exception {
 		checker = new SetterMethodChecker();
 		doCheck(checker, EnumType.class);
-		
+
 		assertEquals(Collections.EMPTY_LIST, checker.reasons());
 		assertImmutable(checker.result());
 	}
 	
-	@Test
-	public void testSettingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
+	@Test public void settingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
 		doCheck(checker, ImmutableButSetsPrivateFieldOfInstanceOfSelf.class);
 		assertIsImmutable();
 	}
 	
-	@Test
-	public void testFieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
+	@Test public void fieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
 		doCheck(checker, ImmutableUsingPrivateFieldSettingMethod.class);
 		assertIsImmutable();
 	}
-	
-	@Test
-	public void testSettingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
+
+	@Test public void settingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
 		doCheck(checker, ImmutableButSetsFieldOfOtherClass.class);
 		assertIsImmutable();
 	}
 	
-	@Test
-	public void testSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
+	@Test public void testSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
 		doCheck(checker, MutableBySettingFieldOfField.class);
 		assertDefinitelyNotImmutable(checker.result());
 	}
-	
-	@Test
-	public void testSubclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
+
+	@Test public void subclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
 		doCheck(checker, StillMutableSubclass.class);
 		assertDefinitelyNotImmutable(checker.result());
 	}
-	
-	@Test
-	public void testBigDecimalDoesNotFailCheck() throws Exception {
+
+	@Test public void bigDecimalDoesNotFailCheck() throws Exception {
 		doCheck(checker, BigDecimal.class);
 		assertIsImmutable();
 	}
 	
-	@Test
-	public void testStringDoesNotFailCheck() throws Exception {
+	@Test public void stringDoesNotFailCheck() throws Exception {
 		doCheck(checker, String.class);
 		assertIsImmutable();
 	}
-	
-	@Test
-	public void testFieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
+
+	@Test public void fieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
 		doCheck(checker, MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
 		assertDefinitelyNotImmutable(checker.result());
 	}
-	
-	@Test
-	public void testReassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
+
+	@Test public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
 		doCheck(checker, ImmutableWithMutatingStaticFactoryMethod.class);
 		assertIsImmutable();
 	}
-	
+
 	private void assertIsImmutable() {
 		assertEquals(TestUtil.formatReasons(checker.reasons()), Collections.EMPTY_LIST, checker.reasons());
 	}
 
 	private void doCheck(IMutabilityChecker checkerToRun, Class<?> toCheck) {
-		new CheckerRunner(null).run(checkerToRun, toCheck);
+		CheckerRunner.createWithCurrentClasspath().run(checkerToRun, toCheck);
 	}
 }
