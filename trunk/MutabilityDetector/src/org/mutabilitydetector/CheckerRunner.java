@@ -80,7 +80,6 @@ public class CheckerRunner {
 	}
 
 	private void handleException(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath, Throwable e) {
-		e.printStackTrace();
 		String errorDescription = format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
 		AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
 		analysisSession.addAnalysisError(error);
