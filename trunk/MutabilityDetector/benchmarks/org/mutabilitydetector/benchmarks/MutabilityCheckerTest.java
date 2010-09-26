@@ -22,15 +22,12 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Array;
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.AllChecksRunner;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IMutabilityCheckerFactory;
-import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.IAnalysisSession.AnalysisError;
+import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -53,16 +50,6 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  */
 public class MutabilityCheckerTest {
 
-	private AllChecksRunner checker;
-	private CheckerRunnerFactory checkerRunnerFactory;
-	private IMutabilityCheckerFactory checkerFactory;
-
-	@Before
-	public void setUp() {
-		checkerFactory = new MutabilityCheckerFactory();
-		checkerRunnerFactory = new CheckerRunnerFactory(null);
-	}
-
 	private void assertNotImmutable(Class<?> toAnalyse) {
 		doAssertion(toAnalyse, IsImmutable.DEFINITELY_NOT, true);
 	}
@@ -76,13 +63,20 @@ public class MutabilityCheckerTest {
 	}
 
 	private void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
-		IAnalysisSession session = new AnalysisSession(null);
-		checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, toAnalyse);
-		checker.runCheckers(session);
-		String failure = "Exception " + toAnalyse.getName() + " is expected to be immutable.";
-		if (printReasons)
-			failure += TestUtil.formatReasons(checker.reasons());
-		assertEquals(failure, expected, checker.isImmutable());
+		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
+		AnalysisResult result = session.resultFor(toAnalyse.getName());
+		
+		if(printReasons) {
+			for (AnalysisError error : session.getErrors()) {
+				System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n", 
+								      error.checkerName, error.onClass, error.description);
+			}
+		}
+		String failure = "Exception " + toAnalyse.getName() + " is expected to be " + expected + " immutable.";
+		if (printReasons) {
+			failure += TestUtil.formatReasons(result.reasons);
+		}
+		assertEquals(failure, expected, result.isImmutable);
 
 	}
 
