@@ -14,13 +14,13 @@ package org.mutabilitydetector.benchmarks.settermethod;
 public class ImmutableButSetsPrivateFieldOfInstanceOfSelf {
 
 	private int myField = 0;
-	private ImmutableButSetsPrivateFieldOfInstanceOfSelf fieldOfSelfType = new ImmutableButSetsPrivateFieldOfInstanceOfSelf();
+	private ImmutableButSetsPrivateFieldOfInstanceOfSelf fieldOfSelfType = null;
 	
 	public ImmutableButSetsPrivateFieldOfInstanceOfSelf setPrivateFieldOnInstanceOfSelf() {
 		ImmutableButSetsPrivateFieldOfInstanceOfSelf i = new ImmutableButSetsPrivateFieldOfInstanceOfSelf();
 		this.hashCode();
 		i.myField = 10;
-		this.equals(null);
+		this.hashCode();
 		i.myField = 11;
 		return i;
 	}

@@ -26,12 +26,12 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 public class ImmutableAssert {
 
 	public static void assertImmutable(IsImmutable result) {
-		String failString = "Expected Immutable result.\n";
+		String failString = "Expected Immutable result.%n";
 		assertEquals(failString, IsImmutable.DEFINITELY, result);
 	}
 	
 	public static void assertImmutable(AnalysisResult result) {
-		String failString = "Expected Immutable result.\n";
+		String failString = "Expected Immutable result.%n";
 		failString += result.reasons.toString();
 		assertEquals(failString, IsImmutable.DEFINITELY, result.isImmutable);
 	}
@@ -45,7 +45,7 @@ public class ImmutableAssert {
 	}
 	
 	public static void assertNotImmutable(IsImmutable result) {
-		String error = "Expected any result but Immutable. \nActual: " + result.name();
+		String error = "Expected any result but Immutable. %nActual: " + result.name();
 		assertFalse(error, IsImmutable.DEFINITELY.equals(result));
 		
 	}

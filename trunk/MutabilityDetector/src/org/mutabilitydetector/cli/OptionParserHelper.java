@@ -44,7 +44,7 @@ public class OptionParserHelper {
 			CommandLine line = parser.parse(options, args);
 			action.doParsingAction(line);
 		} catch (ParseException e) {
-			System.out.println("Parsing command line options failed.\nReason: " + e.getMessage());
+			System.out.println("Parsing command line options failed.%nReason: " + e.getMessage());
 			throw new CommandLineOptionsException(e);
 		}
 

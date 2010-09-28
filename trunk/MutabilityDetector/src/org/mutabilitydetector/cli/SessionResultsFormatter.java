@@ -73,11 +73,11 @@ public class SessionResultsFormatter {
 		
 		for (AnalysisError error : completedSession.getErrors()) {
 
-			String message = String.format("Error while running %s on class %s.\n", 
+			String message = String.format("Error while running %s on class %s.%n", 
 					error.checkerName, error.onClass);
 			output.append(message);
 			if (verbose) {
-				String description = String.format("\t%s\n", error.description);
+				String description = String.format("\t%s%n", error.description);
 				output.append(description);
 			}
 		}
@@ -129,7 +129,7 @@ public class SessionResultsFormatter {
 			return;
 
 		for (CheckerReasonDetail resultDetail : result.reasons) {
-			output.append(String.format("\t%10s\n", resultDetail.message()));
+			output.append(String.format("\t%10s%n", resultDetail.message()));
 		}
 	}
 

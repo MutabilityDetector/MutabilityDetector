@@ -18,7 +18,6 @@
 package org.mutabilitydetector;
 
 import static java.lang.String.format;
-import static java.lang.System.exit;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,7 +62,7 @@ public class CheckerRunner {
 				cr.accept(checker, 0);
 			} catch(OutOfMemoryError e) {
 				e.printStackTrace();
-				exit(1);
+				throw e;
 			}
 			catch (Throwable e) {
 				// Has to catch NoClassDefFoundError

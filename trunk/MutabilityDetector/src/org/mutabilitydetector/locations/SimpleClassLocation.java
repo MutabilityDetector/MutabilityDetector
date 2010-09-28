@@ -33,6 +33,36 @@ public class SimpleClassLocation implements SourceLocation {
 	public int compareTo(SourceLocation other) {
 		return typeName().compareTo(other.typeName());
 	}
+	
+	
+
+	@Override public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dottedClassName == null) ? 0 : dottedClassName.hashCode());
+		return result;
+	}
+
+	@Override public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		SimpleClassLocation other = (SimpleClassLocation) obj;
+		if (dottedClassName == null) {
+			if (other.dottedClassName != null) {
+				return false;
+			}
+		} else if (!dottedClassName.equals(other.dottedClassName)) {
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * @param internalClassName

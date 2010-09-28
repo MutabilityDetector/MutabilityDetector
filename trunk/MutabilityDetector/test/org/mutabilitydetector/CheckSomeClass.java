@@ -42,7 +42,7 @@ public class CheckSomeClass {
 		}
 	}
 
-	public class SecondImmutable {
+	public static class SecondImmutable {
 		private String label;
 
 		public SecondImmutable(String label) {

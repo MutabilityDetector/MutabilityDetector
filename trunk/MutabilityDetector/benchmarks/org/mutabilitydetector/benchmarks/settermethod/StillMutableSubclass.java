@@ -16,7 +16,8 @@ public class StillMutableSubclass extends MutableBySettingFieldOfField {
 	
 	public static void doSomething() {
 		MutableBySettingFieldOfField.staticField = null;
-		new BigDecimal(0).negate();
+		BigDecimal negate = new BigDecimal(0).negate();
+		System.out.println(negate);
 	}
 	
 }
