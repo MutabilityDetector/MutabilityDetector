@@ -117,6 +117,7 @@ public class MutabilityCheckerTest {
 
 	@Test
 	public void testWellKnownJavaTypes() throws Exception {
+		assertImmutable(Integer.class);
 		assertImmutable(int.class);
 		assertImmutable(Array.class);
 		// the hash code field is lazily computed, and renders String mutable
