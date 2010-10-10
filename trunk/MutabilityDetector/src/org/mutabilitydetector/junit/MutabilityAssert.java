@@ -10,9 +10,11 @@
 
 package org.mutabilitydetector.junit;
 
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+
 import java.util.Collection;
 
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
@@ -23,7 +25,7 @@ public class MutabilityAssert {
 	private final static AssertionReporter reporter = new AssertionReporter();
 	
 	private static class AnalysisSessionHolder {
-		static final IAnalysisSession assertionAnalysisSession = AnalysisSession.createWithCurrentClassPath();
+		static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 	}
 	
 	public static void assertImmutable(Class<?> expectedImmutableClass) {
@@ -47,5 +49,25 @@ public class MutabilityAssert {
 		reporter.expectedIsImmutable(expected, analysisResult);
 	}
 	
+	public static class SingleMutabilityAssert {
+		
+		private final Class<?> clazz;
+
+		public SingleMutabilityAssert(Class<?> clazz) {
+			this.clazz = clazz;
+		}
+		
+		public void isImmutable() {
+			assertImmutable(clazz);
+		}
+
+		public void isNotImmutable() {
+			assertImmutableStatusIs(DEFINITELY_NOT, clazz);
+		}
+	}
+
+	public static SingleMutabilityAssert assertThat(Class<?> clazz) {
+		return new SingleMutabilityAssert(clazz);
+	}
 
 }
