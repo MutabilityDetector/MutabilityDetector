@@ -10,25 +10,41 @@
 
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.junit.MutabilityAssert.assertThat;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class WellKnownJavaTypesTest {
-	@Test public void testWellKnownJavaTypes() throws Exception {
-		assertImmutable(Integer.class);
-		assertImmutable(int.class);
-		assertImmutable(Array.class);
-		// the hash code field is lazily computed, and renders String
-		// mutable
-		// assertImmutable(String.class);
-		assertMaybeImmutable(Object.class);
-		assertNotImmutable(Date.class);
-
+	
+	@Ignore
+	@Test public void BigDecimal() {
+		assertThat(BigDecimal.class).isImmutable();
 	}
+	
+	@Ignore
+	@Test public void String() {
+		assertThat(String.class).isImmutable();
+	}
+	
+	@Test public void Integer() {
+		assertThat(Integer.class).isImmutable();
+	}
+	
+	@Test public void Array() {
+		assertThat(Array.class).isImmutable();
+	}
+	
+	@Test public void primitive_int() {
+		assertThat(int.class).isImmutable();
+	}
+	
+	@Test public void Date() {
+		assertThat(Date.class).isNotImmutable();
+	}
+	
 }

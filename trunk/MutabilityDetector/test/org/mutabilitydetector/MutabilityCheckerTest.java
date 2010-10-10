@@ -21,8 +21,6 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 
-import java.lang.reflect.Array;
-import java.util.Date;
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -47,8 +45,6 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  * 
  */
 public class MutabilityCheckerTest {
-
-
 
 	@Test
 	public void testImmutableExample() throws Exception {
@@ -83,18 +79,6 @@ public class MutabilityCheckerTest {
 	@Test
 	public void testEnumTypesAreImmutable() throws Exception {
 		assertImmutable(EnumType.class);
-	}
-
-	@Test
-	public void testWellKnownJavaTypes() throws Exception {
-		assertImmutable(Integer.class);
-		assertImmutable(int.class);
-		assertImmutable(Array.class);
-		// the hash code field is lazily computed, and renders String mutable
-		// assertImmutable(String.class);
-		assertMaybeImmutable(Object.class);
-		assertNotImmutable(Date.class);
-
 	}
 
 	@Test
