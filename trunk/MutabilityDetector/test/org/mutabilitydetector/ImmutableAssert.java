@@ -20,6 +20,7 @@ package org.mutabilitydetector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
@@ -58,5 +59,35 @@ public class ImmutableAssert {
 		String error = actualResult.reasons.toString();
 		assertEquals(error, expected, actualResult.isImmutable);
 		
+	}
+	
+	public static void assertNotImmutable(Class<?> toAnalyse) {
+		doAssertion(toAnalyse, IsImmutable.DEFINITELY_NOT, true);
+	}
+
+	public static void assertImmutable(Class<?> toAnalyse) {
+		doAssertion(toAnalyse, IsImmutable.DEFINITELY, true);
+	}
+
+	public static void assertMaybeImmutable(Class<?> toAnalyse) {
+		doAssertion(toAnalyse, IsImmutable.MAYBE, true);
+	}
+
+	private static void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
+		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
+		AnalysisResult result = session.resultFor(toAnalyse.getName());
+		
+		if(printReasons) {
+			for (AnalysisError error : session.getErrors()) {
+				System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n", 
+								      error.checkerName, error.onClass, error.description);
+			}
+		}
+		String failure = "Exception " + toAnalyse.getName() + " is expected to be " + expected + " immutable.";
+		if (printReasons) {
+			failure += TestUtil.formatReasons(result.reasons);
+		}
+		assertEquals(failure, expected, result.isImmutable);
+
 	}
 }

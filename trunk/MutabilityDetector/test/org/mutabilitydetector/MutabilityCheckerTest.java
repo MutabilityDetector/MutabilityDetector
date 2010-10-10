@@ -17,17 +17,14 @@
  */
 package org.mutabilitydetector;
 
-import static org.junit.Assert.assertEquals;
+import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 
 import java.lang.reflect.Array;
 import java.util.Date;
 
 import org.junit.Test;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.AnalysisError;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
@@ -42,9 +39,6 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  * tell if the tool is correct. Once the checker can correctly assess these
  * classes the tool is correct for our definition.
  * 
- * The rules for defining the tool as correct can be found at {@link https
- * ://devweb2009.cis.strath.ac.uk/trac/softeval0/wiki/RulesForImmutability }
- * 
  * The pattern seems to be that either all the classes which are mutable pass
  * the checks, and the single immutable one doesn't. Or the other way round. The
  * tool won't be correct until every check passes.
@@ -54,35 +48,7 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  */
 public class MutabilityCheckerTest {
 
-	private void assertNotImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.DEFINITELY_NOT, true);
-	}
 
-	private void assertImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.DEFINITELY, true);
-	}
-
-	private void assertMaybeImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.MAYBE, true);
-	}
-
-	private void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
-		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
-		AnalysisResult result = session.resultFor(toAnalyse.getName());
-		
-		if(printReasons) {
-			for (AnalysisError error : session.getErrors()) {
-				System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n", 
-								      error.checkerName, error.onClass, error.description);
-			}
-		}
-		String failure = "Exception " + toAnalyse.getName() + " is expected to be " + expected + " immutable.";
-		if (printReasons) {
-			failure += TestUtil.formatReasons(result.reasons);
-		}
-		assertEquals(failure, expected, result.isImmutable);
-
-	}
 
 	@Test
 	public void testImmutableExample() throws Exception {
