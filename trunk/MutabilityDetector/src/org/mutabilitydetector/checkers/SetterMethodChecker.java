@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.checkers.info.Slashed.slashed;
+import static org.mutabilitydetector.locations.SimpleClassLocation.fromInternalName;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.ArrayList;
@@ -185,7 +186,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			}
 			
 			String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
-			addResult(message, null, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+			addResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
 			result = IsImmutable.DEFINITELY_NOT;
 		}
 		
