@@ -10,7 +10,7 @@
 
 package org.mutabilitydetector;
 
-public interface SourceLocation extends Comparable<SourceLocation> {
+public interface CodeLocation extends Comparable<CodeLocation> {
 
 	String typeName();
 	

@@ -25,7 +25,7 @@ import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.Reason;
-import org.mutabilitydetector.SourceLocation;
+import org.mutabilitydetector.CodeLocation;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -113,11 +113,11 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 		return dottedClassName;
 	}
 	
-	protected CheckerReasonDetail createResult(String message, SourceLocation location, Reason reason) {
+	protected CheckerReasonDetail createResult(String message, CodeLocation location, Reason reason) {
 		return new CheckerReasonDetail(message, location, reason);
 	}
 	
-	protected void addResult(String message, SourceLocation location, Reason reason) {
+	protected void addResult(String message, CodeLocation location, Reason reason) {
 		reasons.add(createResult(message, location, reason));
 	}
 

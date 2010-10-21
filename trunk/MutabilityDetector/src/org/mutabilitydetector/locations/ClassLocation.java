@@ -11,16 +11,16 @@
 package org.mutabilitydetector.locations;
 
 import org.mutabilitydetector.ClassNameConvertor;
-import org.mutabilitydetector.SourceLocation;
+import org.mutabilitydetector.CodeLocation;
 
-public class SimpleClassLocation implements SourceLocation {
+public class ClassLocation implements CodeLocation {
 
 	private final String dottedClassName;
 
 	/**
 	 * @param dottedClassName
 	 */
-	public SimpleClassLocation(String dottedClassName) {
+	public ClassLocation(String dottedClassName) {
 		this.dottedClassName = dottedClassName;
 	}
 
@@ -30,7 +30,7 @@ public class SimpleClassLocation implements SourceLocation {
 	}
 
 	@Override
-	public int compareTo(SourceLocation other) {
+	public int compareTo(CodeLocation other) {
 		return typeName().compareTo(other.typeName());
 	}
 	
@@ -53,7 +53,7 @@ public class SimpleClassLocation implements SourceLocation {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		SimpleClassLocation other = (SimpleClassLocation) obj;
+		ClassLocation other = (ClassLocation) obj;
 		if (dottedClassName == null) {
 			if (other.dottedClassName != null) {
 				return false;
@@ -68,9 +68,9 @@ public class SimpleClassLocation implements SourceLocation {
 	 * @param internalClassName
 	 * @return
 	 */
-	public static SourceLocation fromInternalName(String internalClassName) {
+	public static CodeLocation fromInternalName(String internalClassName) {
 		String dottedClassName = new ClassNameConvertor().dotted(internalClassName);
-		return new SimpleClassLocation(dottedClassName);
+		return new ClassLocation(dottedClassName);
 	}
 
 
