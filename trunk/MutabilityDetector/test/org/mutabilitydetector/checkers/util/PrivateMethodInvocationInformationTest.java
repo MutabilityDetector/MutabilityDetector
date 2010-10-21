@@ -13,8 +13,8 @@ package org.mutabilitydetector.checkers.util;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
-import static org.mutabilitydetector.checkers.info.Dotted.dotted;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;

@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.checkers.info;
+package org.mutabilitydetector.locations;
 
 import org.mutabilitydetector.ClassNameConvertor;
 

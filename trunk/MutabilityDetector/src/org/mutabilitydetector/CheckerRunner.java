@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
-import org.mutabilitydetector.checkers.info.Dotted;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
 import com.google.classpath.ClassPath;

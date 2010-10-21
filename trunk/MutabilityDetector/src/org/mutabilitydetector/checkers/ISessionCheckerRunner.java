@@ -10,7 +10,7 @@
 
 package org.mutabilitydetector.checkers;
 
-import org.mutabilitydetector.checkers.info.ClassIdentifier;
+import org.mutabilitydetector.locations.ClassIdentifier;
 
 public interface ISessionCheckerRunner {
 

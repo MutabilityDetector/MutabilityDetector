@@ -8,9 +8,9 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.checkers.info;
+package org.mutabilitydetector.locations;
 
-import static org.mutabilitydetector.checkers.info.Dotted.dotted;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.ClassNameConvertor;
 

@@ -10,13 +10,14 @@
 
 package org.mutabilitydetector.checkers.info;
 
-import static org.mutabilitydetector.checkers.info.ClassIdentifier.forClass;
+import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.TypeStructureInformationChecker;
+import org.mutabilitydetector.locations.Dotted;
 
 public class TypeStructureInformation implements AnalysisInformation {
 

@@ -20,8 +20,8 @@ package org.mutabilitydetector.checkers;
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
-import static org.mutabilitydetector.checkers.info.Slashed.slashed;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.Slashed.slashed;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.ArrayList;

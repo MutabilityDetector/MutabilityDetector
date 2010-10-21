@@ -12,11 +12,11 @@ package org.mutabilitydetector.checkers.util;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
-import static org.mutabilitydetector.checkers.info.Dotted.fromSlashedString;
+import static org.mutabilitydetector.locations.Dotted.fromSlashedString;
 
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
-import org.mutabilitydetector.checkers.info.Dotted;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 
 public class TypeStructureInformationChecker extends AbstractMutabilityChecker {

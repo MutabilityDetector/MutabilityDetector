@@ -14,6 +14,7 @@ import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.locations.ClassIdentifier;
 
 public class SessionCheckerRunner implements ISessionCheckerRunner {
 

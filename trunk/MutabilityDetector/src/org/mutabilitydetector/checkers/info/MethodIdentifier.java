@@ -10,7 +10,10 @@
 
 package org.mutabilitydetector.checkers.info;
 
-import static org.mutabilitydetector.checkers.info.Dotted.fromSlashed;
+import static org.mutabilitydetector.locations.Dotted.fromSlashed;
+
+import org.mutabilitydetector.locations.Dotted;
+import org.mutabilitydetector.locations.Slashed;
 
 public class MethodIdentifier {
 	

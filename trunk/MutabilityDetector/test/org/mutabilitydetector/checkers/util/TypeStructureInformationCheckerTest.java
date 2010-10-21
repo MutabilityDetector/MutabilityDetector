@@ -12,14 +12,14 @@ package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mutabilitydetector.checkers.info.Dotted.fromClass;
 import static org.mutabilitydetector.checkers.util.TypeStructureInformationChecker.newChecker;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ConcreteType;
-import org.mutabilitydetector.checkers.info.Dotted;
+import org.mutabilitydetector.locations.Dotted;
 
 
 public class TypeStructureInformationCheckerTest {

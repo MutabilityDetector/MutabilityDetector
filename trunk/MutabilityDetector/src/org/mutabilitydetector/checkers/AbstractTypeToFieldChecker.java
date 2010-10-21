@@ -19,7 +19,7 @@ package org.mutabilitydetector.checkers;
 
 
 import static java.lang.String.format;
-import static org.mutabilitydetector.checkers.info.Dotted.dotted;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;

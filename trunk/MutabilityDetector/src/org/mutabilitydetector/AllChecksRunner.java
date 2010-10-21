@@ -17,8 +17,8 @@
  */
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.checkers.info.Dotted.dotted;
-import static org.mutabilitydetector.checkers.info.Dotted.fromClass;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
-import org.mutabilitydetector.checkers.info.Dotted;
+import org.mutabilitydetector.locations.Dotted;
 
 
 public class AllChecksRunner {
