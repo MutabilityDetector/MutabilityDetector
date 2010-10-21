@@ -13,6 +13,7 @@ package org.mutabilitydetector;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.mutabilitydetector.locations.ClassNameConvertor;
 
 /**
  * @author Graham Allan (grundlefleck@gmail.com)

@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector;
+package org.mutabilitydetector.locations;
 
 /**
  * @author Graham Allan (grundlefleck@gmail.com)

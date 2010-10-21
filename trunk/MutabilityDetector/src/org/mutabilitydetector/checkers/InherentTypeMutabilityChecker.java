@@ -20,8 +20,8 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
 
-import org.mutabilitydetector.ClassNameConvertor;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.locations.ClassNameConvertor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
 

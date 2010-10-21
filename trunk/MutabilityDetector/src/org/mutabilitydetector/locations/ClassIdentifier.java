@@ -12,7 +12,6 @@ package org.mutabilitydetector.locations;
 
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-import org.mutabilitydetector.ClassNameConvertor;
 
 public class ClassIdentifier {
 

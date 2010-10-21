@@ -20,8 +20,8 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
-import org.mutabilitydetector.ClassNameConvertor;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.locations.ClassNameConvertor;
 
 public class InheritedMutabilityChecker extends AbstractMutabilityChecker {
 

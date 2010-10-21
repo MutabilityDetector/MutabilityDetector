@@ -10,7 +10,6 @@
 
 package org.mutabilitydetector.locations;
 
-import org.mutabilitydetector.ClassNameConvertor;
 
 public class Dotted extends ClassName {
 	

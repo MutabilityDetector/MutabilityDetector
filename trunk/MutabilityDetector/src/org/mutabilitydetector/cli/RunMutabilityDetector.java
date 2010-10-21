@@ -31,8 +31,8 @@ import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.ClassNameConvertor;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.locations.ClassNameConvertor;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
