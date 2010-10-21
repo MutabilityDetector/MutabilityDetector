@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector;
+package org.mutabilitydetector.locations;
 
 public interface CodeLocation extends Comparable<CodeLocation> {
 

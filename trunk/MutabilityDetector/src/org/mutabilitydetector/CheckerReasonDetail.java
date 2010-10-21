@@ -13,6 +13,8 @@ package org.mutabilitydetector;
 import static java.lang.Integer.toHexString;
 import static java.lang.String.format;
 
+import org.mutabilitydetector.locations.CodeLocation;
+
 public class CheckerReasonDetail {
 
 	private final String message;

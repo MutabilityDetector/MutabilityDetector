@@ -11,7 +11,6 @@
 package org.mutabilitydetector.locations;
 
 import org.mutabilitydetector.ClassNameConvertor;
-import org.mutabilitydetector.CodeLocation;
 
 public class ClassLocation implements CodeLocation {
 

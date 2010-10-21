@@ -15,7 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
 import org.junit.Test;
-import org.mutabilitydetector.CodeLocation;
 
 
 public class ClassLocationTest {

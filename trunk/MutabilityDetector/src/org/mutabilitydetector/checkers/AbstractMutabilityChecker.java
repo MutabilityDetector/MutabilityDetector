@@ -25,8 +25,8 @@ import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.Reason;
-import org.mutabilitydetector.CodeLocation;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
