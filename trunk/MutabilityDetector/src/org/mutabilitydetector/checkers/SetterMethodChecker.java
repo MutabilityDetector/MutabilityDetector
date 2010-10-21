@@ -30,7 +30,7 @@ import java.util.List;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
-import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -52,16 +52,16 @@ import org.objectweb.asm.tree.analysis.Frame;
 public class SetterMethodChecker extends AbstractMutabilityChecker {
 	
 	
-	private PrivateMethodInvocationInfo privateMethodInvocationInfo;
+	private PrivateMethodInvocationInformation privateMethodInvocationInfo;
 	
 	/**
-	 * @see #newSetterMethodChecker(PrivateMethodInvocationInfo)
+	 * @see #newSetterMethodChecker(PrivateMethodInvocationInformation)
 	 */
-	private SetterMethodChecker(PrivateMethodInvocationInfo privateMethodInvocationInfo) {
+	private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
 		this.privateMethodInvocationInfo = privateMethodInvocationInfo;
 	}
 	
-	public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInfo privateMethodInvocationInfo) {
+	public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
 		return new SetterMethodChecker(privateMethodInvocationInfo);
 	}
 
@@ -79,10 +79,10 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
 		private List<Integer> varInstructionIndices = new ArrayList<Integer>();
 		private boolean refOnStackIsAField = false;
-		private final PrivateMethodInvocationInfo privateMethodInvocationInfo;
+		private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
 
 		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions, 
-				PrivateMethodInvocationInfo privateMethodInvocationInfo) 
+				PrivateMethodInvocationInformation privateMethodInvocationInfo) 
 		{
 			super(ownerName, access, name, desc, signature, exceptions);
 			this.privateMethodInvocationInfo = privateMethodInvocationInfo;

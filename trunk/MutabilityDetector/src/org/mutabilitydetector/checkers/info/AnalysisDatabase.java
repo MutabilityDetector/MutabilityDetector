@@ -27,8 +27,8 @@ public class AnalysisDatabase {
 		Class<C> classForInfo() { return clazz; }
 	}
 	
-	public static final InfoKey<PrivateMethodInvocationInfo> PRIVATE_METHOD_INVOCATION 
-						= new InfoKey<PrivateMethodInvocationInfo>(PrivateMethodInvocationInfo.class);
+	public static final InfoKey<PrivateMethodInvocationInformation> PRIVATE_METHOD_INVOCATION 
+						= new InfoKey<PrivateMethodInvocationInformation>(PrivateMethodInvocationInformation.class);
 
 	public static final InfoKey<TypeStructureInformation> TYPE_STRUCTURE
 						= new InfoKey<TypeStructureInformation>(TypeStructureInformation.class);
@@ -62,7 +62,7 @@ public class AnalysisDatabase {
 	private <I extends AnalysisInformation> I createInfoForCategory(InfoKey<I> infoCategory) {
 		I info = null;
 		if(infoCategory == PRIVATE_METHOD_INVOCATION) {
-			info = (I) new PrivateMethodInvocationInfo(sessionCheckerRunner);
+			info = (I) new PrivateMethodInvocationInformation(sessionCheckerRunner);
 		} else if(infoCategory == TYPE_STRUCTURE) {
 			info = (I) new TypeStructureInformation(sessionCheckerRunner);
 		}

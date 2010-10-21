@@ -41,7 +41,7 @@ import org.mutabilitydetector.benchmarks.settermethod.MutableBySettingFieldOfFie
 import org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
-import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 public class SetterMethodCheckerTest {
@@ -133,7 +133,7 @@ public class SetterMethodCheckerTest {
 	private void doCheck(Class<?> toCheck) {
 		checkerRunner = CheckerRunner.createWithCurrentClasspath();
 		analysisSession = createWithCurrentClassPath();
-		PrivateMethodInvocationInfo info = new PrivateMethodInvocationInfo(new SessionCheckerRunner(analysisSession, checkerRunner));
+		PrivateMethodInvocationInformation info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
 		checker = newSetterMethodChecker(info);
 		checkerRunner.run(checker, toCheck);
 	}

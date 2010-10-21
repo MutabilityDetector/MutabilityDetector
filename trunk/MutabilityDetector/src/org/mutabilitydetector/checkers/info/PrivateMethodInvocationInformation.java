@@ -18,13 +18,13 @@ import java.util.Map;
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker;
 
-public class PrivateMethodInvocationInfo implements AnalysisInformation {
+public class PrivateMethodInvocationInformation implements AnalysisInformation {
 
 	private final Map<Dotted, PrivateMethodInvocationChecker> checkerCache 
 						= new HashMap<Dotted, PrivateMethodInvocationChecker>();
 	private final ISessionCheckerRunner sessionCheckerRunner;
 
-	public PrivateMethodInvocationInfo(ISessionCheckerRunner sessionCheckerRunner) {
+	public PrivateMethodInvocationInformation(ISessionCheckerRunner sessionCheckerRunner) {
 		this.sessionCheckerRunner = sessionCheckerRunner;
 		
 	}

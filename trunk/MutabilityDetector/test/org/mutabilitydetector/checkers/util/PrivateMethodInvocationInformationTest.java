@@ -20,22 +20,22 @@ import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
-import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInfo;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 
-public class PrivateMethodInvocationInfoTest {
+public class PrivateMethodInvocationInformationTest {
 
 	private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
-	private PrivateMethodInvocationInfo createInfo() {
+	private PrivateMethodInvocationInformation createInfo() {
 		ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(), checkerRunner);
-		return new PrivateMethodInvocationInfo(sessionRunner);
+		return new PrivateMethodInvocationInformation(sessionRunner);
 	}
 	
 	@Test public void returnsTrueForPrivateMethodCalledOnlyFromConstructor() throws Exception {
 		String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
 		String methodDescriptor = "setFields:()V";
-		PrivateMethodInvocationInfo info = createInfo();
+		PrivateMethodInvocationInformation info = createInfo();
 		boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
 		assertTrue("Result should be true for private method called only from constructor.", result);
 	}
@@ -44,7 +44,7 @@ public class PrivateMethodInvocationInfoTest {
 	@Test public void returnsFalseForPublicMethod() throws Exception {
 		String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
 		String methodDescriptor = "getField1:()I";
-		PrivateMethodInvocationInfo info = createInfo();
+		PrivateMethodInvocationInformation info = createInfo();
 		boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
 		assertFalse("Cannot guarantee a public method is called only from constructor.", result);
 	}
