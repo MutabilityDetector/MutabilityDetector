@@ -10,6 +10,12 @@
 
 package org.mutabilitydetector.checkers;
 
+import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
+import static org.objectweb.asm.Opcodes.ACC_FINAL;
+import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+
 /**
  * Used to check for the existence of an access flag used in ASM visitors.
  * 
@@ -33,11 +39,7 @@ public class AccessModifierQuery {
 	private boolean includesAccess(int access) {
 		return (this.access & access) != 0;
 	}
-
-	public boolean is(int flag) {
-		return includesAccess(flag);
-	}
-
+	
 	public static AccessModifierQuery method(int access) {
 		return new AccessModifierQuery(access);
 	}
@@ -45,4 +47,25 @@ public class AccessModifierQuery {
 	public static AccessModifierQuery type(int access) {
 		return new AccessModifierQuery(access);
 	}
+	
+	public static AccessModifierQuery field(int access) {
+		return new AccessModifierQuery(access);
+	}
+
+	public boolean is(int flag) {
+		return includesAccess(flag);
+	}
+
+	public boolean isPrivate() { return includesAccess(ACC_PRIVATE); }
+	public boolean isNotPrivate() { return !includesAccess(ACC_PRIVATE); }
+
+	public boolean isFinal() { return includesAccess(ACC_FINAL); }
+
+	public boolean isAbstract() { return includesAccess(ACC_ABSTRACT); }
+
+	public boolean isInterface() { return includesAccess(ACC_INTERFACE); }
+
+	public boolean isStatic() { return includesAccess(ACC_STATIC); }
+	public boolean isNotStatic() { return !includesAccess(ACC_STATIC); }
+
 }

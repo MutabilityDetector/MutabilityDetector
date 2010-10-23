@@ -17,6 +17,9 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
+import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
+
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassNameConvertor;
 import org.objectweb.asm.FieldVisitor;
@@ -40,7 +43,7 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		if (isAbstract(access) || isInterface(access)) {
+		if (type(access).isAbstract() || type(access).isInterface()) {
 			String dottedName = new ClassNameConvertor().dotted(name);
 			addResult(dottedName + " is inherently mutable, as declared as an abstract type.", null,
 					MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
@@ -52,7 +55,7 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 		/*
 		 * Static fields should not count against the instance.
 		 */
-		if (!isStatic(access)) {
+		if (field(access).isNotStatic()){
 			/*
 			 * This check was causing far too many classes to be called mutable.
 			 * It would be better if it was possible to check that an inherently

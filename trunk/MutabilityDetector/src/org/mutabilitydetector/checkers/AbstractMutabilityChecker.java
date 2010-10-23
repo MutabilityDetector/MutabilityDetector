@@ -17,9 +17,6 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static org.objectweb.asm.Opcodes.ACC_FINAL;
-import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,7 +28,6 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
@@ -96,14 +92,6 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 		
 	}
 
-	protected boolean isFinal(int access) {
-		return (access & ACC_FINAL) != 0;
-	}
-
-	protected boolean isPrivate(int access) {
-		return (access & ACC_PRIVATE) != 0;
-	}
-
 	protected String dottedClassName(Type objectType) {
 		String className = objectType.getInternalName();
 		String dottedClassName = className.replace("/", ".");
@@ -118,18 +106,5 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 		reasons.add(createResult(message, location, reason));
 		result = reason.createsResult();
 	}
-
-	protected boolean isInterface(int access) {
-		return (access & Opcodes.ACC_INTERFACE) != 0;
-	}
-
-	protected boolean isAbstract(int access) {
-		return (access & Opcodes.ACC_ABSTRACT) != 0;
-	}
-
-	protected boolean isStatic(int access) {
-		return (access & Opcodes.ACC_STATIC) != 0;
-	}
-	
 
 }

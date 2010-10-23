@@ -18,15 +18,17 @@
 package org.mutabilitydetector.checkers;
 
 
+import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
+
 import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.FieldVisitor;
 
 public class PublishedNonFinalFieldChecker extends AbstractMutabilityChecker {
-
+	
 	@Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		if (!isPrivate(access)) {
-			if (!isFinal(access)) {
+		if (method(access).isNotPrivate()){
+			if (!method(access).isFinal()) {
 				addResult("Field [" + name + "] is visible outwith this class, and is not declared final.",
 						null, MutabilityReason.PUBLISHED_NON_FINAL_FIELD);
 			}
