@@ -21,7 +21,6 @@ import static java.lang.Integer.valueOf;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.MAYBE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
 
 import java.util.Map;
 
@@ -32,7 +31,6 @@ public final class ResultCalculator {
 	public IsImmutable calculateImmutableStatus(Map<IsImmutable, Integer> results) {
 		IsImmutable isImmutable;
 		int numDefinitely = getNumOfResult(results, DEFINITELY);
-		int numProbably = getNumOfResult(results, PROBABLY);
 		int numMaybe = getNumOfResult(results, MAYBE);
 		int numDefinitelyNot = getNumOfResult(results, DEFINITELY_NOT);
 		
@@ -40,12 +38,10 @@ public final class ResultCalculator {
 			isImmutable = DEFINITELY_NOT; 
 		} else if(numMaybe > 0) {
 			isImmutable = MAYBE;
-		} else if(numProbably > 0) {
-			isImmutable = PROBABLY;
 		} else if(numDefinitely > 0) {
 			isImmutable = DEFINITELY;
 		} else {
-			isImmutable = numProbably > numMaybe ? PROBABLY : MAYBE;
+			isImmutable = MAYBE;
 		}
 		
 		return isImmutable;
