@@ -17,9 +17,6 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.PROBABLY;
-
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassNameConvertor;
 import org.objectweb.asm.FieldVisitor;
@@ -47,7 +44,6 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 			String dottedName = new ClassNameConvertor().dotted(name);
 			addResult(dottedName + " is inherently mutable, as declared as an abstract type.", null,
 					MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
-			result = DEFINITELY_NOT;
 		}
 	}
 
@@ -67,7 +63,6 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 			if (isPrimitiveArray(desc) && !("ENUM$VALUES".equals(name))) {
 				addResult("Field [" + name + "] is a primitive array.", null,
 						MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
-				result = PROBABLY;
 			}
 		}
 
