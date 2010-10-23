@@ -22,7 +22,6 @@ import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
 
 public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
@@ -41,7 +40,7 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 	@Override public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		super.visitMethod(access, name, desc, signature, exceptions);
 		
-		boolean isPrivate = method(access).is(Opcodes.ACC_PRIVATE);
+		boolean isPrivate = method(access).isPrivate();
 		String methodDescriptor = makeMethodDescriptor(name, desc);
 		privateMethodCalledFromConstructorMap.put(makeMethodIdentifier(methodDescriptor), isPrivate);
 		

@@ -17,7 +17,6 @@ import static org.mutabilitydetector.locations.Dotted.fromSlashedString;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.Opcodes;
 
 public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 
@@ -55,7 +54,7 @@ public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 	}
 
 	private void storeIsAbstract(int access) {
-		result = type(access).is(Opcodes.ACC_ABSTRACT);
+		result = type(access).isAbstract();
 	}
 
 }

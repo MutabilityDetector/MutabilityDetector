@@ -22,10 +22,9 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
  * The class is designed to be used in a fluent way, a typical usage would be:
  * 
  * <code>
- * import AccessModifierQuery.doesAccess;
- * import Opcodes.ACC_STATIC;
- * ...
- * {@link #method(access)}.is(ACC_STATIC);
+ * 
+ * {@link #method(access)}.isPrivate();
+ * {@link #field(access)}.isStatic();
  * </code>
  * 
  */
@@ -52,20 +51,20 @@ public class AccessModifierQuery {
 		return new AccessModifierQuery(access);
 	}
 
-	public boolean is(int flag) {
+	private boolean is(int flag) {
 		return includesAccess(flag);
 	}
 
-	public boolean isPrivate() { return includesAccess(ACC_PRIVATE); }
-	public boolean isNotPrivate() { return !includesAccess(ACC_PRIVATE); }
+	public boolean isPrivate() { return is(ACC_PRIVATE); }
+	public boolean isNotPrivate() { return !is(ACC_PRIVATE); }
 
-	public boolean isFinal() { return includesAccess(ACC_FINAL); }
+	public boolean isFinal() { return is(ACC_FINAL); }
 
-	public boolean isAbstract() { return includesAccess(ACC_ABSTRACT); }
+	public boolean isAbstract() { return is(ACC_ABSTRACT); }
 
-	public boolean isInterface() { return includesAccess(ACC_INTERFACE); }
+	public boolean isInterface() { return is(ACC_INTERFACE); }
 
-	public boolean isStatic() { return includesAccess(ACC_STATIC); }
-	public boolean isNotStatic() { return !includesAccess(ACC_STATIC); }
+	public boolean isStatic() { return is(ACC_STATIC); }
+	public boolean isNotStatic() { return !is(ACC_STATIC); }
 
 }
