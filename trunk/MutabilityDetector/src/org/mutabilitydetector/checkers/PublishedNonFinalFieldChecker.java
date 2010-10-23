@@ -18,8 +18,6 @@
 package org.mutabilitydetector.checkers;
 
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-
 import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.FieldVisitor;
 
@@ -31,7 +29,6 @@ public class PublishedNonFinalFieldChecker extends AbstractMutabilityChecker {
 			if (!isFinal(access)) {
 				addResult("Field [" + name + "] is visible outwith this class, and is not declared final.",
 						null, MutabilityReason.PUBLISHED_NON_FINAL_FIELD);
-				result = DEFINITELY_NOT;
 			}
 		}
 		return super.visitField(access, name, desc, signature, value);

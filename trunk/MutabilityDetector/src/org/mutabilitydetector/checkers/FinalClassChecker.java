@@ -17,9 +17,6 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.MAYBE;
-
 import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.Opcodes;
 
@@ -28,12 +25,8 @@ public class FinalClassChecker extends AbstractMutabilityChecker {
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		if((access & Opcodes.ACC_FINAL) == 0) {
-			result = MAYBE;
 			addResult("Is not declared final, and thus may be immutable.", null, MutabilityReason.NOT_DECLARED_FINAL);
-		} else {
-			result = DEFINITELY;
-		}
-		
+		} 
 	}
 
 }

@@ -38,14 +38,11 @@ import org.objectweb.asm.Type;
 public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
 	protected Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-	protected IsImmutable result;
+	private IsImmutable result = IsImmutable.DEFINITELY;
 	protected String ownerClass;
 	
 	@Override
 	public IsImmutable result() {
-		if(result == null && reasons.size() == 0) {
-			result = IsImmutable.DEFINITELY;
-		}
 		return result;
 	}
 	
@@ -119,6 +116,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	
 	protected void addResult(String message, CodeLocation location, Reason reason) {
 		reasons.add(createResult(message, location, reason));
+		result = reason.createsResult();
 	}
 
 	protected boolean isInterface(int access) {

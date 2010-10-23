@@ -22,7 +22,6 @@ import static java.lang.String.format;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -79,8 +78,6 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 			if(isAbstract) {
 				String message = format("Field [%s] can have an abstract type (%s) assigned to it.", name, dottedClassName);
 				addResult(message, null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
-				result = IsImmutable.DEFINITELY_NOT;
-				
 			}
 		}
 	}

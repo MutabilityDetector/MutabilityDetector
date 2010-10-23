@@ -18,7 +18,6 @@
 package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityReason;
@@ -81,13 +80,11 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 				if (!isImmutable.equals(DEFINITELY)) {
 					addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
 							+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-					result = DEFINITELY_NOT;
 				}
 				break;
 			case Type.ARRAY:
 				addResult("Field [" + name + "] can have a mutable type (a primitive array) "
 						+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-				result = DEFINITELY_NOT;
 				break;
 			default:
 				return;
