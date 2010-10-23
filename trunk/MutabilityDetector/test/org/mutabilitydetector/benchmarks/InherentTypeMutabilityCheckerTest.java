@@ -83,7 +83,7 @@ public class InherentTypeMutabilityCheckerTest {
 	@Test
 	public void testArrayTypesAreInherentlyMutable() throws Exception {
 		CheckerRunner.createWithCurrentClasspath().run(checker, ClassWithAllPrimitives.Array.class);
-		assertIsImmutableResult(IsImmutable.PROBABLY, checker.result());
+		assertIsImmutableResult(IsImmutable.MAYBE, checker.result());
 	}
 	
 	@Test

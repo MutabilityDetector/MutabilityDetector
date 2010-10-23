@@ -41,7 +41,6 @@ public interface IAnalysisSession {
 	public static enum IsImmutable {
 		COULD_NOT_ANALYSE,
 		DEFINITELY,
-		PROBABLY,
 		MAYBE,
 		DEFINITELY_NOT;
 		
