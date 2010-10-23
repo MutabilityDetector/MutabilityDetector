@@ -1,13 +1,13 @@
-/* 
+/*
  * Mutability Detector
- *
+ * 
  * Copyright 2009 Graham Allan
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  * 
- * 		http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -20,7 +20,6 @@ package org.mutabilitydetector;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
-
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -46,43 +45,35 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  */
 public class MutabilityCheckerTest {
 
-	@Test
-	public void testImmutableExample() throws Exception {
+	@Test public void testImmutableExample() throws Exception {
 		assertImmutable(ImmutableExample.class);
 	}
 
-	@Test
-	public void testMutableByAssigningAbstractTypeToField() throws Exception {
+	@Test public void testMutableByAssigningAbstractTypeToField() throws Exception {
 		assertNotImmutable(MutableByAssigningInterfaceToField.class);
 	}
 
-	@Test
-	public void testMutableByHavingMutableFieldAssigned() throws Exception {
+	@Test public void testMutableByHavingMutableFieldAssigned() throws Exception {
 		assertNotImmutable(MutableByHavingMutableFieldAssigned.class);
 	}
 
-	@Test
-	public void testMutableByHavingSetterMethod() throws Exception {
+	@Test public void testMutableByHavingSetterMethod() throws Exception {
 		assertNotImmutable(MutableByHavingSetterMethod.class);
 	}
 
-	@Test
-	public void testMutableByNoCopyOfIndirectlyConstructedField() throws Exception {
+	@Test public void testMutableByNoCopyOfIndirectlyConstructedField() throws Exception {
 		assertNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
 	}
 
-	@Test
-	public void testMutableByNotBeingFinalClass() throws Exception {
+	@Test public void testMutableByNotBeingFinalClass() throws Exception {
 		assertMaybeImmutable(MutableByNotBeingFinalClass.class);
 	}
 
-	@Test
-	public void testEnumTypesAreImmutable() throws Exception {
+	@Test public void testEnumTypesAreImmutable() throws Exception {
 		assertImmutable(EnumType.class);
 	}
 
-	@Test
-	public void testIntegerIsImmutable() throws Exception {
+	@Test public void testIntegerIsImmutable() throws Exception {
 		assertImmutable(Integer.class);
 	}
 
