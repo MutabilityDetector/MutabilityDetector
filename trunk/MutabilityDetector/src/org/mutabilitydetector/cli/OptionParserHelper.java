@@ -17,7 +17,7 @@
  */
 package org.mutabilitydetector.cli;
 
-import static java.lang.System.arraycopy;
+import static java.util.Arrays.copyOf;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -37,8 +37,7 @@ public class OptionParserHelper {
 
 	public OptionParserHelper(Options options, String[] args) {
 		this.options = options;
-		this.args = new String[args.length];
-		arraycopy(args, 0, this.args, 0, args.length);
+		this.args = copyOf(args, args.length);
 	}
 
 	public void parseOptions(ParsingAction action) {
