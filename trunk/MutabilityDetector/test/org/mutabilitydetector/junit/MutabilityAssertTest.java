@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.junit.matchers.MutabilityMatchers.isImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -62,5 +63,14 @@ public class MutabilityAssertTest {
 			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
+	}
+	
+	@Test public void assertThatIsImmutableDoesNotFailForImmutableClass() throws Exception {
+		assertThat(ImmutableExample.class, isImmutable());
+	}
+	
+	@Test(expected=AssertionError.class)
+	public void assertThatIsImmutableFailsForMutableClass() throws Exception {
+		assertThat(MutableByHavingPublicNonFinalField.class, isImmutable());
 	}
 }

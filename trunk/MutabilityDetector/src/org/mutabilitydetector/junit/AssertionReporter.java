@@ -12,7 +12,7 @@ package org.mutabilitydetector.junit;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
-import static org.mutabilitydetector.junit.MutabilityMatchers.noWarningsAllowed;
+import static org.mutabilitydetector.junit.matchers.MutabilityMatchers.noWarningsAllowed;
 
 import java.util.Collection;
 

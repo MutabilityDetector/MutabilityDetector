@@ -10,13 +10,12 @@
 
 package org.mutabilitydetector.junit;
 
-import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.junit.AnalysisSessionHolder.analysisResultFor;
 
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
@@ -24,20 +23,12 @@ public class MutabilityAssert {
 
 	private final static AssertionReporter reporter = new AssertionReporter();
 	
-	private static class AnalysisSessionHolder {
-		static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
-	}
-	
 	public static void assertImmutable(Class<?> expectedImmutableClass) {
-		String className = expectedImmutableClass.getName();
-		AnalysisResult analysisResult = getResultFor(className);
-		
-		reporter.expectedImmutable(analysisResult);
+		reporter.expectedImmutable(getResultFor(expectedImmutableClass));
 	}
 
-	private static AnalysisResult getResultFor(String className) {
-		AnalysisResult analysisResult = AnalysisSessionHolder.assertionAnalysisSession.resultFor(className);
-		return analysisResult;
+	private static AnalysisResult getResultFor(Class<?> clazz) {
+		return analysisResultFor(clazz);
 	}
 
 	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
@@ -45,7 +36,7 @@ public class MutabilityAssert {
 	}
 
 	public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
-		AnalysisResult analysisResult = getResultFor(forClass.getName());
+		AnalysisResult analysisResult = getResultFor(forClass);
 		reporter.expectedIsImmutable(expected, analysisResult);
 	}
 	
