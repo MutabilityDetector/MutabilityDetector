@@ -12,9 +12,11 @@ package org.mutabilitydetector.junit;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.junit.MutabilityMatchers.noWarningsAllowed;
 
 import java.util.Collection;
 
+import org.hamcrest.Matcher;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -26,16 +28,9 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 public class AssertionReporter {
 
 	public void expectedImmutable(AnalysisResult analysisResult) {
-		if(analysisResult.isImmutable != IsImmutable.DEFINITELY) {
-			String message = buildExpectedImmutableExceptionMessage(analysisResult);
-			throw new MutabilityAssertionError(message);
-		}
+		expectedIsImmutable(DEFINITELY, analysisResult, noWarningsAllowed());
 	}
 
-	private String buildExpectedImmutableExceptionMessage(AnalysisResult analysisResult) {
-		return buildExpectedIsImmutableExceptionMessage(DEFINITELY, analysisResult);
-	}
-	
 	public String formatReasons(Collection<CheckerReasonDetail> reasons) {
 		return formatReasons(reasons, new StringBuilder());
 	}
@@ -48,11 +43,8 @@ public class AssertionReporter {
 		return builder.toString();
 	}
 
-	public void expectedIsImmutable(IsImmutable expected , AnalysisResult analysisResult) {
-		if(expected != analysisResult.isImmutable) {
-			String message = buildExpectedIsImmutableExceptionMessage(expected, analysisResult);
-			throw new MutabilityAssertionError(message);
-		}
+	public void expectedIsImmutable(IsImmutable expected, AnalysisResult analysisResult) {
+		this.expectedIsImmutable(expected, analysisResult, noWarningsAllowed());
 	}
 
 	private String buildExpectedIsImmutableExceptionMessage(IsImmutable expected, AnalysisResult analysisResult) {
@@ -61,6 +53,28 @@ public class AssertionReporter {
 				analysisResult.dottedClassName, expected, analysisResult.isImmutable));
 		formatReasons(analysisResult.reasons, messageBuilder);
 		return messageBuilder.toString();
+	}
+
+	public void expectedIsImmutable(IsImmutable expected, AnalysisResult analysisResult, Matcher<AnalysisResult> allowed) {
+		if(gotTheExpectedResult(expected, analysisResult) 
+			|| mutabilityReasonsHaveBeenSuppressed(analysisResult, allowed)) {
+			return; 
+		} else {
+			reportAssertionError(expected, analysisResult);
+		}
+	}
+
+	private void reportAssertionError(IsImmutable expected, AnalysisResult analysisResult) {
+		String message = buildExpectedIsImmutableExceptionMessage(expected, analysisResult);
+		throw new MutabilityAssertionError(message);
+	}
+
+	private boolean mutabilityReasonsHaveBeenSuppressed(AnalysisResult analysisResult, Matcher<AnalysisResult> allowed) {
+		return allowed.matches(analysisResult);
+	}
+
+	private boolean gotTheExpectedResult(IsImmutable expected, AnalysisResult analysisResult) {
+		return expected == analysisResult.isImmutable;
 	}
 
 }

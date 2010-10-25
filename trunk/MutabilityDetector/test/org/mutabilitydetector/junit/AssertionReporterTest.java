@@ -15,11 +15,15 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 
+import java.util.Collection;
+
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerReasonDetail;
@@ -40,10 +44,8 @@ public class AssertionReporterTest {
 	}
 
 	@Test(expected = MutabilityAssertionError.class) 
-	public void reporterThrowsExceptionForMutableResult()
-			throws Exception {
-		CheckerReasonDetail reason = new CheckerReasonDetail("", null, PUBLISHED_NON_FINAL_FIELD);
-		AnalysisResult analysisResult = new AnalysisResult("a.b.c", DEFINITELY_NOT, asList(reason));
+	public void reporterThrowsExceptionForMutableResult() {
+		AnalysisResult analysisResult = new AnalysisResult("a.b.c", DEFINITELY_NOT, unusedReasons());
 		reporter.expectedImmutable(analysisResult);
 	}
 
@@ -64,8 +66,20 @@ public class AssertionReporterTest {
 	}
 	
 	@Test public void expectedIsImmutableStatusDoesNotThrowException() throws Exception {
-		CheckerReasonDetail reason = new CheckerReasonDetail("message", null, NOT_DECLARED_FINAL);
-		AnalysisResult analysisResult = new AnalysisResult("g.h.i", IsImmutable.MAYBE, asList(reason));
+		AnalysisResult analysisResult = new AnalysisResult("g.h.i", IsImmutable.MAYBE, unusedReasons());
 		reporter.expectedIsImmutable(IsImmutable.MAYBE, analysisResult);
+	}
+	
+	@SuppressWarnings("unchecked") @Test public void allowedReasonDoesNotThrowException() {
+		Matcher<AnalysisResult> allowed = mock(Matcher.class);
+		AnalysisResult result = new AnalysisResult("j.k.l", DEFINITELY_NOT, unusedReasons());
+		
+		when(allowed.matches(result)).thenReturn(true);
+		
+		reporter.expectedIsImmutable(DEFINITELY, result, allowed);
+	}
+
+	private Collection<CheckerReasonDetail> unusedReasons() {
+		return asList(new CheckerReasonDetail("this reason is not meant to be involved", null, PUBLISHED_NON_FINAL_FIELD));
 	}
 }
