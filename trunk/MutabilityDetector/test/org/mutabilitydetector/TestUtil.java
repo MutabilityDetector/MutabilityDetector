@@ -21,7 +21,7 @@ import java.util.Collection;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.mutabilitydetector.junit.MutabilityAssert;
+import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class TestUtil {
 	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {

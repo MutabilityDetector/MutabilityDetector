@@ -8,10 +8,10 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit;
+package org.mutabilitydetector.unittesting;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.junit.AnalysisSessionHolder.analysisResultFor;
+import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisResultFor;
 
 import java.util.Collection;
 

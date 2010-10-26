@@ -10,7 +10,7 @@
 
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.junit.MutabilityAssert.assertThat;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertThat;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;

@@ -8,7 +8,7 @@
  * license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit.matchers;
+package org.mutabilitydetector.unittesting.matchers;
 
 import org.hamcrest.Description;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;

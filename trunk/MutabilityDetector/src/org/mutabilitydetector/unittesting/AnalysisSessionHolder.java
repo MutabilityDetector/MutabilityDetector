@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit;
+package org.mutabilitydetector.unittesting;
 
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 

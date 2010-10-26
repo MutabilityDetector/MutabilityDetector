@@ -8,11 +8,11 @@
  * license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit;
+package org.mutabilitydetector.unittesting;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
-import static org.mutabilitydetector.junit.matchers.MutabilityMatchers.noWarningsAllowed;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.noWarningsAllowed;
 
 import java.util.Collection;
 

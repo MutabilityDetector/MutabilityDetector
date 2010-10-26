@@ -8,9 +8,9 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit.matchers;
+package org.mutabilitydetector.unittesting.matchers;
 
-import static org.mutabilitydetector.junit.AnalysisSessionHolder.analysisResultFor;
+import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisResultFor;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;

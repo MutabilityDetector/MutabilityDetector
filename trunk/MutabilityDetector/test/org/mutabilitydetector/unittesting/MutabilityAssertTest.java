@@ -8,19 +8,21 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit;
+package org.mutabilitydetector.unittesting;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.junit.matchers.MutabilityMatchers.isImmutable;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.isImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
+import org.mutabilitydetector.unittesting.MutabilityAssert;
+import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 public class MutabilityAssertTest {
 

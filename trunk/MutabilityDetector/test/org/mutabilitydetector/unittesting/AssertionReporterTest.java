@@ -8,7 +8,7 @@
  * license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit;
+package org.mutabilitydetector.unittesting;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.unittesting.AssertionReporter;
+import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 public class AssertionReporterTest {
 
