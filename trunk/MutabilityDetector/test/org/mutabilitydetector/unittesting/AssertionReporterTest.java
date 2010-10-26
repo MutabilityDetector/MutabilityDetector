@@ -27,6 +27,7 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.unittesting.AssertionReporter;
@@ -82,6 +83,6 @@ public class AssertionReporterTest {
 	}
 
 	private Collection<CheckerReasonDetail> unusedReasons() {
-		return asList(new CheckerReasonDetail("this reason is not meant to be involved", null, PUBLISHED_NON_FINAL_FIELD));
+		return TestUtil.unusedCheckerReasonDetails();
 	}
 }
