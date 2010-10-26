@@ -10,13 +10,21 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetails;
+import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.hamcrest.StringDescription;
 import org.junit.Test;
+import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 
 public class IsImmutableMatcherTest {
@@ -31,6 +39,21 @@ public class IsImmutableMatcherTest {
 		IsImmutableMatcher matcher = new IsImmutableMatcher(DEFINITELY);
 		AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", DEFINITELY_NOT, unusedCheckerReasonDetails());
 		assertThat(matcher.matches(nonMatchingResult), is(false));
+	}
+	
+	@Test public void hasDescriptiveErrorMessageForMismatch() throws Exception {
+		IsImmutableMatcher matcher = new IsImmutableMatcher(DEFINITELY);
+		Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
+		reasons.add(new CheckerReasonDetail("mutable coz i sez so", 
+							fromInternalName("c/d/e"), ABSTRACT_TYPE_INHERENTLY_MUTABLE));
+		AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", DEFINITELY_NOT, reasons);
+		
+		StringDescription description = new StringDescription();
+		matcher.describeMismatch(nonMatchingResult, description);
+
+		assertThat(description.toString(), containsString("mutable coz i sez so"));
+		assertThat(description.toString(), containsString(DEFINITELY.name()));
+		assertThat(description.toString(), containsString(DEFINITELY_NOT.name()));
 	}
 	
 }

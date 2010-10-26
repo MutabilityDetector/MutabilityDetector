@@ -32,17 +32,9 @@ public class AssertionReporter {
 	}
 
 	public String formatReasons(Collection<CheckerReasonDetail> reasons) {
-		return formatReasons(reasons, new StringBuilder());
+		return ReasonsFormatter.formatReasons(reasons, new StringBuilder());
 	}
 	
-	private static String formatReasons(Collection<CheckerReasonDetail> reasons, StringBuilder builder) {
-		builder.append(format("    Reasons:%n"));
-		for(CheckerReasonDetail reason: reasons) {
-			builder.append(format("        %s%n", reason.message()));
-		}
-		return builder.toString();
-	}
-
 	public void expectedIsImmutable(IsImmutable expected, AnalysisResult analysisResult) {
 		this.expectedIsImmutable(expected, analysisResult, noWarningsAllowed());
 	}
@@ -51,7 +43,7 @@ public class AssertionReporter {
 		StringBuilder messageBuilder = new StringBuilder();
 		messageBuilder.append(format("Expected class %s to be [%s] immutable, but was [%s] immutable.%n", 
 				analysisResult.dottedClassName, expected, analysisResult.isImmutable));
-		formatReasons(analysisResult.reasons, messageBuilder);
+		ReasonsFormatter.formatReasons(analysisResult.reasons, messageBuilder);
 		return messageBuilder.toString();
 	}
 
