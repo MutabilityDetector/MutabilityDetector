@@ -17,6 +17,9 @@
  */
 package org.mutabilitydetector;
 
+import static java.util.Arrays.asList;
+import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
+
 import java.util.Collection;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
@@ -35,5 +38,9 @@ public class TestUtil {
 	
 	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
 		return MutabilityAssert.formatReasons(reasons);
+	}
+
+	public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
+		return asList(new CheckerReasonDetail("this reason is not meant to be involved", null, PUBLISHED_NON_FINAL_FIELD));
 	}
 }
