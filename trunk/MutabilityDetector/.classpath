@@ -8,9 +8,10 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/src/commons-cli/commons-cli-1.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/asm-tree-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
 	<classpathentry kind="lib" path="lib/asm-analysis-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
-	<classpathentry kind="lib" path="lib/mockito-all-1.8.1-rc1.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-all-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-all-1.2.jar" sourcepath="lib/hamcrest-all-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/junit-dep-4.8.2.jar" sourcepath="lib/src/junit-4.8.2-src.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-core-1.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/com.springsource.org.objenesis-1.0.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
