@@ -13,11 +13,10 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.mutabilitydetector.unittesting.ReasonsFormatter.formatReasons;
 
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
-public class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
+public class IsImmutableMatcher extends AnalysisResultMatcher {
 	private final IsImmutable isImmutable;
 	private AnalysisResult item;
 	public IsImmutableMatcher(IsImmutable isImmutable) {
@@ -30,7 +29,7 @@ public class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult
 		return this.isImmutable == item.isImmutable;
 	}
 	@Override public void describeTo(Description description) {
-		description.appendText(item.dottedClassName + " to be " + isImmutable + " immutable");
+		description.appendText(item.dottedClassName + " which is " + isImmutable + " immutable");
 	}
 	
 	

@@ -10,7 +10,8 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
-import static org.hamcrest.Matchers.not;
+
+import static org.hamcrest.core.IsNot.not;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -39,7 +40,7 @@ public class MutabilityMatchers {
 	}
 	
 
-	public static Matcher<Class<?>> isImmutable() {
-		return new ClassAnalysisResultMatcher(new IsImmutableMatcher(IsImmutable.DEFINITELY));
+	public static IsImmutableMatcher areImmutable() {
+		return new IsImmutableMatcher(IsImmutable.DEFINITELY);
 	}
 }

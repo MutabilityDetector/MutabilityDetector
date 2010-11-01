@@ -15,14 +15,13 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.isImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
-import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 public class MutabilityAssertTest {
 
@@ -67,12 +66,22 @@ public class MutabilityAssertTest {
 		}
 	}
 	
-	@Test public void assertThatIsImmutableDoesNotFailForImmutableClass() throws Exception {
-		assertThat(ImmutableExample.class, isImmutable());
+	
+	@Test public void assertInstancesOfClassAreImmutableDoesNotFailForImmutableClass() throws Exception {
+		assertInstancesOf(ImmutableExample.class, areImmutable());
 	}
 	
 	@Test(expected=AssertionError.class)
 	public void assertThatIsImmutableFailsForMutableClass() throws Exception {
-		assertThat(MutableByHavingPublicNonFinalField.class, isImmutable());
+		assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
+	}
+	
+	@Test public void failedMatchMessageFromAssertThatIsDescriptive() throws Exception {
+		try {
+			assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
+		} catch (AssertionError ae) {
+			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
+		}
 	}
 }
