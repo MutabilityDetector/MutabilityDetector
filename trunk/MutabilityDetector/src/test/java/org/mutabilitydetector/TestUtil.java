@@ -22,10 +22,12 @@ import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
+@Ignore
 public class TestUtil {
 	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
 		IsImmutable result = new AnalysisSession().isImmutable(toAnalyse.getName());

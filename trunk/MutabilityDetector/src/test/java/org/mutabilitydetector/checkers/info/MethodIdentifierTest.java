@@ -10,6 +10,9 @@
 
 package org.mutabilitydetector.checkers.info;
 
+import org.junit.Ignore;
+
+@Ignore
 public class MethodIdentifierTest {
 
 }
