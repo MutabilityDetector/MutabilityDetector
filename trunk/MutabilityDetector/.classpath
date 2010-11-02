@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="lib" path="lib/asm-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
 	<classpathentry kind="lib" path="lib/classpath-explorer-1.0.jar" sourcepath="lib/src/classpath-explorer-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/src/commons-cli/commons-cli-1.2-src.zip"/>
