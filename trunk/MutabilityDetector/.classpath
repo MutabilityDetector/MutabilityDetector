@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="lib" path="lib/asm-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
-	<classpathentry kind="lib" path="lib/classpath-explorer-1.0.jar" sourcepath="lib/src/classpath-explorer-src.zip"/>
-	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/src/commons-cli/commons-cli-1.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/asm-tree-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
-	<classpathentry kind="lib" path="lib/asm-analysis-3.2.jar" sourcepath="lib/src/asm/asm-3.2.zip"/>
-	<classpathentry kind="lib" path="lib/hamcrest-all-1.2.jar" sourcepath="lib/hamcrest-all-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/junit-dep-4.8.2.jar" sourcepath="lib/src/junit-4.8.2-src.jar"/>
-	<classpathentry kind="lib" path="lib/mockito-core-1.8.5.jar"/>
-	<classpathentry kind="lib" path="lib/com.springsource.org.objenesis-1.0.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm/3.2/asm-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm-analysis/3.2/asm-analysis-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm-tree/3.2/asm-tree-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0.jar" sourcepath="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit-dep/4.8.2/junit-dep-4.8.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-core/1.8.5/mockito-core-1.8.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0.jar"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>
