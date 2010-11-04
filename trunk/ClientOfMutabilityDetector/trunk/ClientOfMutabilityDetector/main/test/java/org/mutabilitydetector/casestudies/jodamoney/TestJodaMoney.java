@@ -1,38 +1,46 @@
 package org.mutabilitydetector.casestudies.jodamoney;
 
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+
+import java.util.Locale;
+
+import org.joda.money.BigMoney;
+import org.joda.money.Money;
+import org.joda.money.format.MoneyAmountStyle;
+import org.joda.money.format.MoneyFormatter;
+import org.joda.money.format.MoneyPrintContext;
 import org.junit.Test;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class TestJodaMoney {
 	
 	@Test
 	public void testLocale() throws Exception {
-		MutabilityAssert.assertImmutable(java.util.Locale.class);
+		assertImmutable(Locale.class);
 	}
 	
     @Test
     public void testorg_joda_money_format_MoneyPrintContext() {
-        MutabilityAssert.assertImmutable(org.joda.money.format.MoneyPrintContext.class);
+        assertImmutable(MoneyPrintContext.class);
     }
 
     @Test
     public void testorg_joda_money_format_MoneyAmountStyle() {
-        MutabilityAssert.assertImmutable(org.joda.money.format.MoneyAmountStyle.class);
+        assertImmutable(MoneyAmountStyle.class);
     }
 
     @Test
     public void testorg_joda_money_format_MoneyFormatter() {
-        MutabilityAssert.assertImmutable(org.joda.money.format.MoneyFormatter.class);
+        assertImmutable(MoneyFormatter.class);
     }
 
     @Test
     public void testorg_joda_money_BigMoney() {
-        MutabilityAssert.assertImmutable(org.joda.money.BigMoney.class);
+        assertImmutable(BigMoney.class);
     }
 
     @Test
     public void testorg_joda_money_Money() {
-        MutabilityAssert.assertImmutable(org.joda.money.Money.class);
+        assertImmutable(Money.class);
     }
 
 }

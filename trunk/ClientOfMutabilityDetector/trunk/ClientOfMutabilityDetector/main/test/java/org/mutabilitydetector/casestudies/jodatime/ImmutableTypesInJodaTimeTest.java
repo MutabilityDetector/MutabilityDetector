@@ -11,8 +11,82 @@ package org.mutabilitydetector.casestudies.jodatime;
  */
 
 
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.Duration;
+import org.joda.time.Hours;
+import org.joda.time.Instant;
+import org.joda.time.Interval;
+import org.joda.time.JodaTimePermission;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
+import org.joda.time.Months;
+import org.joda.time.MutableDateTime;
+import org.joda.time.Partial;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
+import org.joda.time.Seconds;
+import org.joda.time.TimeOfDay;
+import org.joda.time.Weeks;
+import org.joda.time.YearMonthDay;
+import org.joda.time.Years;
+import org.joda.time.base.AbstractInstant;
+import org.joda.time.chrono.AssembledChronology;
+import org.joda.time.chrono.BaseChronology;
+import org.joda.time.chrono.BuddhistChronology;
+import org.joda.time.chrono.CopticChronology;
+import org.joda.time.chrono.EthiopicChronology;
+import org.joda.time.chrono.GJChronology;
+import org.joda.time.chrono.GregorianChronology;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.chrono.IslamicChronology;
+import org.joda.time.chrono.JulianChronology;
+import org.joda.time.chrono.LenientChronology;
+import org.joda.time.chrono.LimitChronology;
+import org.joda.time.chrono.StrictChronology;
+import org.joda.time.chrono.ZonedChronology;
+import org.joda.time.field.AbstractReadableInstantFieldProperty;
+import org.joda.time.field.BaseDateTimeField;
+import org.joda.time.field.BaseDurationField;
+import org.joda.time.field.DecoratedDateTimeField;
+import org.joda.time.field.DecoratedDurationField;
+import org.joda.time.field.DelegatedDateTimeField;
+import org.joda.time.field.DelegatedDurationField;
+import org.joda.time.field.DividedDateTimeField;
+import org.joda.time.field.FieldUtils;
+import org.joda.time.field.ImpreciseDateTimeField;
+import org.joda.time.field.LenientDateTimeField;
+import org.joda.time.field.MillisDurationField;
+import org.joda.time.field.OffsetDateTimeField;
+import org.joda.time.field.PreciseDateTimeField;
+import org.joda.time.field.PreciseDurationDateTimeField;
+import org.joda.time.field.PreciseDurationField;
+import org.joda.time.field.RemainderDateTimeField;
+import org.joda.time.field.ScaledDurationField;
+import org.joda.time.field.SkipDateTimeField;
+import org.joda.time.field.SkipUndoDateTimeField;
+import org.joda.time.field.StrictDateTimeField;
+import org.joda.time.field.UnsupportedDateTimeField;
+import org.joda.time.field.UnsupportedDurationField;
+import org.joda.time.field.ZeroIsMaxDateTimeField;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.FormatUtils;
+import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.tz.CachedDateTimeZone;
+import org.joda.time.tz.DefaultNameProvider;
+import org.joda.time.tz.FixedDateTimeZone;
+import org.joda.time.tz.UTCProvider;
 import org.junit.Test;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @SuppressWarnings("deprecation") 
 public class ImmutableTypesInJodaTimeTest {
@@ -20,367 +94,367 @@ public class ImmutableTypesInJodaTimeTest {
 	
 	@Test
 	public void testorg_joda_time_base_AbstractInstant() {
-	    MutabilityAssert.assertImmutable(org.joda.time.base.AbstractInstant.class);
+	    assertImmutable(AbstractInstant.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_AssembledChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.AssembledChronology.class);
+	    assertImmutable(AssembledChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_BaseChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.BaseChronology.class);
+	    assertImmutable(BaseChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_BuddhistChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.BuddhistChronology.class);
+	    assertImmutable(BuddhistChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_CopticChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.CopticChronology.class);
+	    assertImmutable(CopticChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_EthiopicChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.EthiopicChronology.class);
+	    assertImmutable(EthiopicChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_GJChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.GJChronology.class);
+	    assertImmutable(GJChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_GregorianChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.GregorianChronology.class);
+	    assertImmutable(GregorianChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_IslamicChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.IslamicChronology.class);
+	    assertImmutable(IslamicChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_ISOChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.ISOChronology.class);
+	    assertImmutable(ISOChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_JulianChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.JulianChronology.class);
+	    assertImmutable(JulianChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_LenientChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.LenientChronology.class);
+	    assertImmutable(LenientChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_LimitChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.LimitChronology.class);
+	    assertImmutable(LimitChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_StrictChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.StrictChronology.class);
+	    assertImmutable(StrictChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_chrono_ZonedChronology() {
-	    MutabilityAssert.assertImmutable(org.joda.time.chrono.ZonedChronology.class);
+	    assertImmutable(ZonedChronology.class);
 	}
 
 	@Test
 	public void testorg_joda_time_DateMidnight() {
-	    MutabilityAssert.assertImmutable(org.joda.time.DateMidnight.class);
+	    assertImmutable(DateMidnight.class);
 	}
 
 	@Test
 	public void testorg_joda_time_DateTimeComparator() {
-	    MutabilityAssert.assertImmutable(org.joda.time.DateTimeComparator.class);
+	    assertImmutable(DateTimeComparator.class);
 	}
 
 	@Test
 	public void testorg_joda_time_DateTimeConstants() {
-	    MutabilityAssert.assertImmutable(org.joda.time.DateTimeConstants.class);
+	    assertImmutable(DateTimeConstants.class);
 	}
 
 	@Test
 	public void testorg_joda_time_DateTime() {
-	    MutabilityAssert.assertImmutable(org.joda.time.DateTime.class);
+	    assertImmutable(DateTime.class);
 	}
 
 	@Test
 	public void testorg_joda_time_DateTimeZone() {
-	    MutabilityAssert.assertImmutable(org.joda.time.DateTimeZone.class);
+	    assertImmutable(DateTimeZone.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Days() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Days.class);
+	    assertImmutable(Days.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Duration() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Duration.class);
+	    assertImmutable(Duration.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_AbstractReadableInstantFieldProperty() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.AbstractReadableInstantFieldProperty.class);
+	    assertImmutable(AbstractReadableInstantFieldProperty.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_BaseDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.BaseDateTimeField.class);
+	    assertImmutable(BaseDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_BaseDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.BaseDurationField.class);
+	    assertImmutable(BaseDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_DecoratedDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.DecoratedDateTimeField.class);
+	    assertImmutable(DecoratedDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_DecoratedDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.DecoratedDurationField.class);
+	    assertImmutable(DecoratedDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_DelegatedDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.DelegatedDateTimeField.class);
+	    assertImmutable(DelegatedDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_DelegatedDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.DelegatedDurationField.class);
+	    assertImmutable(DelegatedDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_DividedDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.DividedDateTimeField.class);
+	    assertImmutable(DividedDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_FieldUtils() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.FieldUtils.class);
+	    assertImmutable(FieldUtils.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_ImpreciseDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.ImpreciseDateTimeField.class);
+	    assertImmutable(ImpreciseDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_LenientDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.LenientDateTimeField.class);
+	    assertImmutable(LenientDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_MillisDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.MillisDurationField.class);
+	    assertImmutable(MillisDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_OffsetDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.OffsetDateTimeField.class);
+	    assertImmutable(OffsetDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_PreciseDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.PreciseDateTimeField.class);
+	    assertImmutable(PreciseDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_PreciseDurationDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.PreciseDurationDateTimeField.class);
+	    assertImmutable(PreciseDurationDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_PreciseDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.PreciseDurationField.class);
+	    assertImmutable(PreciseDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_RemainderDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.RemainderDateTimeField.class);
+	    assertImmutable(RemainderDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_ScaledDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.ScaledDurationField.class);
+	    assertImmutable(ScaledDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_SkipDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.SkipDateTimeField.class);
+	    assertImmutable(SkipDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_SkipUndoDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.SkipUndoDateTimeField.class);
+	    assertImmutable(SkipUndoDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_StrictDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.StrictDateTimeField.class);
+	    assertImmutable(StrictDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_UnsupportedDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.UnsupportedDateTimeField.class);
+	    assertImmutable(UnsupportedDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_UnsupportedDurationField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.UnsupportedDurationField.class);
+	    assertImmutable(UnsupportedDurationField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_field_ZeroIsMaxDateTimeField() {
-	    MutabilityAssert.assertImmutable(org.joda.time.field.ZeroIsMaxDateTimeField.class);
+	    assertImmutable(ZeroIsMaxDateTimeField.class);
 	}
 
 	@Test
 	public void testorg_joda_time_format_DateTimeFormat() {
-	    MutabilityAssert.assertImmutable(org.joda.time.format.DateTimeFormat.class);
+	    assertImmutable(DateTimeFormat.class);
 	}
 
 	@Test
 	public void testorg_joda_time_format_FormatUtils() {
-	    MutabilityAssert.assertImmutable(org.joda.time.format.FormatUtils.class);
+	    assertImmutable(FormatUtils.class);
 	}
 
 	@Test
 	public void testorg_joda_time_format_ISODateTimeFormat() {
-	    MutabilityAssert.assertImmutable(org.joda.time.format.ISODateTimeFormat.class);
+	    assertImmutable(ISODateTimeFormat.class);
 	}
 
 	@Test
 	public void testorg_joda_time_format_ISOPeriodFormat() {
-	    MutabilityAssert.assertImmutable(org.joda.time.format.ISOPeriodFormat.class);
+	    assertImmutable(ISOPeriodFormat.class);
 	}
 
 	@Test
 	public void testorg_joda_time_format_PeriodFormat() {
-	    MutabilityAssert.assertImmutable(org.joda.time.format.PeriodFormat.class);
+	    assertImmutable(PeriodFormat.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Hours() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Hours.class);
+	    assertImmutable(Hours.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Instant() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Instant.class);
+	    assertImmutable(Instant.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Interval() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Interval.class);
+	    assertImmutable(Interval.class);
 	}
 
 	@Test
 	public void testorg_joda_time_JodaTimePermission() {
-	    MutabilityAssert.assertImmutable(org.joda.time.JodaTimePermission.class);
+	    assertImmutable(JodaTimePermission.class);
 	}
 
 	@Test
 	public void testorg_joda_time_LocalDate() {
-	    MutabilityAssert.assertImmutable(org.joda.time.LocalDate.class);
+	    assertImmutable(LocalDate.class);
 	}
 
 	@Test
 	public void testorg_joda_time_LocalDateTime() {
-	    MutabilityAssert.assertImmutable(org.joda.time.LocalDateTime.class);
+	    assertImmutable(LocalDateTime.class);
 	}
 
 	@Test
 	public void testorg_joda_time_LocalTime() {
-	    MutabilityAssert.assertImmutable(org.joda.time.LocalTime.class);
+	    assertImmutable(LocalTime.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Minutes() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Minutes.class);
+	    assertImmutable(Minutes.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Months() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Months.class);
+	    assertImmutable(Months.class);
 	}
 
 	@Test
 	public void testorg_joda_time_MutableDateTime() {
-	    MutabilityAssert.assertImmutable(org.joda.time.MutableDateTime.class);
+	    assertImmutable(MutableDateTime.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Partial() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Partial.class);
+	    assertImmutable(Partial.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Period() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Period.class);
+	    assertImmutable(Period.class);
 	}
 
 	@Test
 	public void testorg_joda_time_PeriodType() {
-	    MutabilityAssert.assertImmutable(org.joda.time.PeriodType.class);
+	    assertImmutable(PeriodType.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Seconds() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Seconds.class);
+	    assertImmutable(Seconds.class);
 	}
 
 	@Test
 	public void testorg_joda_time_TimeOfDay() {
-	    MutabilityAssert.assertImmutable(org.joda.time.TimeOfDay.class);
+	    assertImmutable(TimeOfDay.class);
 	}
 
 	@Test
 	public void testorg_joda_time_tz_CachedDateTimeZone() {
-	    MutabilityAssert.assertImmutable(org.joda.time.tz.CachedDateTimeZone.class);
+	    assertImmutable(CachedDateTimeZone.class);
 	}
 
 	@Test
 	public void testorg_joda_time_tz_DefaultNameProvider() {
-	    MutabilityAssert.assertImmutable(org.joda.time.tz.DefaultNameProvider.class);
+	    assertImmutable(DefaultNameProvider.class);
 	}
 
 	@Test
 	public void testorg_joda_time_tz_FixedDateTimeZone() {
-	    MutabilityAssert.assertImmutable(org.joda.time.tz.FixedDateTimeZone.class);
+	    assertImmutable(FixedDateTimeZone.class);
 	}
 
 	@Test
 	public void testorg_joda_time_tz_UTCProvider() {
-	    MutabilityAssert.assertImmutable(org.joda.time.tz.UTCProvider.class);
+	    assertImmutable(UTCProvider.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Weeks() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Weeks.class);
+	    assertImmutable(Weeks.class);
 	}
 
 	@Test
 	public void testorg_joda_time_YearMonthDay() {
-	    MutabilityAssert.assertImmutable(org.joda.time.YearMonthDay.class);
+	    assertImmutable(YearMonthDay.class);
 	}
 
 	@Test
 	public void testorg_joda_time_Years() {
-	    MutabilityAssert.assertImmutable(org.joda.time.Years.class);
+	    assertImmutable(Years.class);
 	}
 
 
