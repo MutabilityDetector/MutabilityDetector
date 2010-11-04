@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mutabilitydetector</groupId>
+	<artifactId>ClientOfMutabilityDetector</artifactId>
+	<name>ClientOfMutabilityDetector</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>Client project used to test Mutability Detector.
+	</description>
+	<url>http://code.google.com/p/mutability-detector</url>
+	<issueManagement>
+		<url>http://code.google.com/p/mutability-detector/issues/list</url>
+	</issueManagement>
+	<scm>
+		<url>http://mutability-detector.googlecode.com/svn/trunk/</url>
+	</scm>
+	<repositories>
+		<repository>
+			<id>Maven Central</id>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>[4.0,)</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.classpath-explorer</groupId>
+			<artifactId>classpath-explorer</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mutabilitydetector</groupId>
+			<artifactId>MutabilityDetector</artifactId>
+			<version>[0.01,)</version>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
+</project>
