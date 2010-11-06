@@ -25,7 +25,6 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
@@ -37,32 +36,28 @@ public class AbstractTypeToFieldCheckerTest {
 
 	IMutabilityChecker checker;
 
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(), 
 															   createWithCurrentClasspath());
 		TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
 		checker = new AbstractTypeToFieldChecker(typeInfo);
 	}
 
-	@Test
-	public void testImmutableExamplePassesCheck() throws Exception {
-		new CheckerRunner(null).run(checker, ImmutableExample.class);
+	@Test public void testImmutableExamplePassesCheck() throws Exception {
+		createWithCurrentClasspath().run(checker, ImmutableExample.class);
 
 		assertImmutable(checker.result());		
 		assertEquals(checker.reasons().size(), 0);
 	}
 	
-	@Test
-	public void testMutableByAssigningInterfaceTypeToFieldFailsCheck() throws Exception {
-		new CheckerRunner(null).run(checker, MutableByAssigningInterfaceToField.class);
+	@Test public void testMutableByAssigningInterfaceTypeToFieldFailsCheck() throws Exception {
+		createWithCurrentClasspath().run(checker, MutableByAssigningInterfaceToField.class);
 		
 		assertDefinitelyNotImmutable(checker.result());
 	}
 	
-	@Test
-	public void testMutableByAssigningAbstractClassToFieldFailsCheck() throws Exception {
-		new CheckerRunner(null).run(checker, MutableByAssigningAbstractTypeToField.class);
+	@Test public void testMutableByAssigningAbstractClassToFieldFailsCheck() throws Exception {
+		createWithCurrentClasspath().run(checker, MutableByAssigningAbstractTypeToField.class);
 		assertDefinitelyNotImmutable(checker.result());
 	}
 
