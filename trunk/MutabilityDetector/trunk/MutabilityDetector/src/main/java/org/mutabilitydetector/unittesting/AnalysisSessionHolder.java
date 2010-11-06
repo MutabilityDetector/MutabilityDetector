@@ -12,8 +12,8 @@ package org.mutabilitydetector.unittesting;
 
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 
 public class AnalysisSessionHolder {
 	private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();

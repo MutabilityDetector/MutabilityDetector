@@ -13,7 +13,7 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.mutabilitydetector.unittesting.ReasonsFormatter.formatReasons;
 
 import org.hamcrest.Description;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class IsImmutableMatcher extends AnalysisResultMatcher {

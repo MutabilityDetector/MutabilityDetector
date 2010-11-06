@@ -27,10 +27,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 

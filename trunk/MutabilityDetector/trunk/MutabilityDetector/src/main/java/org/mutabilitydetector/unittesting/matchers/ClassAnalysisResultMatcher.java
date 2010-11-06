@@ -14,7 +14,7 @@ import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisR
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
+import org.mutabilitydetector.AnalysisResult;
 
 public  class ClassAnalysisResultMatcher extends ConvertingTypeSafeMatcher<Class<?>, AnalysisResult> {
 

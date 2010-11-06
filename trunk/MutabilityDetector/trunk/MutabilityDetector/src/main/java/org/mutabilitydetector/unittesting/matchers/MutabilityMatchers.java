@@ -16,7 +16,7 @@ import static org.hamcrest.core.IsNot.not;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsAnything;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class MutabilityMatchers {

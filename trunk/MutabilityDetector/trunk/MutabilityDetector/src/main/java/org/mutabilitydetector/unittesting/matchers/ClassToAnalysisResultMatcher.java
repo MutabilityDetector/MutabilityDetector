@@ -11,7 +11,7 @@
 package org.mutabilitydetector.unittesting.matchers;
 
 import org.hamcrest.Description;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
+import org.mutabilitydetector.AnalysisResult;
 
 public class ClassToAnalysisResultMatcher extends ConvertingTypeSafeMatcher<Class<?>, AnalysisResult> {
 

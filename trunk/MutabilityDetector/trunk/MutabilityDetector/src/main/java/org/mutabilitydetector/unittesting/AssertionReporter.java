@@ -17,8 +17,8 @@ import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.noW
 import java.util.Collection;
 
 import org.hamcrest.Matcher;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 /**

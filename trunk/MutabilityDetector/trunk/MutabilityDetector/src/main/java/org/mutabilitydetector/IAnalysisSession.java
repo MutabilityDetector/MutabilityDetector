@@ -18,7 +18,6 @@
 package org.mutabilitydetector;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
@@ -46,21 +45,6 @@ public interface IAnalysisSession {
 		
 	}
 
-	public static final class AnalysisResult {
-		public final String dottedClassName;
-		public final IsImmutable isImmutable;
-		public final Collection<CheckerReasonDetail> reasons;
-		public AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
-			this.dottedClassName = dottedClassName;
-			this.isImmutable = isImmutable;
-			this.reasons = Collections.unmodifiableCollection(reasons);
-		}
-		
-		public static AnalysisResult definitelyImmutable(String dottedClassName) {
-			return new AnalysisResult(dottedClassName, IsImmutable.DEFINITELY, Collections.<CheckerReasonDetail>emptyList());
-		}
-	}
-	
 	public static final class AnalysisError {
 		public final String checkerName;
 		public final String description;

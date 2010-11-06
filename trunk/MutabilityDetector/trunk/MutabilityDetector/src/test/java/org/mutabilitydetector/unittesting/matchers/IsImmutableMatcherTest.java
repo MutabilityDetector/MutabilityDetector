@@ -24,8 +24,8 @@ import java.util.Collection;
 
 import org.hamcrest.StringDescription;
 import org.junit.Test;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession.AnalysisResult;
 
 public class IsImmutableMatcherTest {
 
