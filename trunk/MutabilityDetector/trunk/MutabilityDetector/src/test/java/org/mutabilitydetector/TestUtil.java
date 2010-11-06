@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import org.junit.Ignore;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @Ignore
@@ -43,5 +44,10 @@ public class TestUtil {
 
 	public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
 		return asList(new CheckerReasonDetail("this reason is not meant to be involved", null, PUBLISHED_NON_FINAL_FIELD));
+	}
+	
+	public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
+		CheckerRunner.createWithCurrentClasspath().run(checker, toAnalyse);
+		return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
 	}
 }
