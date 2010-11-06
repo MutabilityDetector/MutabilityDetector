@@ -54,7 +54,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 		return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions);
 	}
 	
-	class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
+	private class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
 		
 		public AssignAbstractTypeVisitor(String owner, int access, String name, String desc, String signature, String[] exceptions) {
 			super(owner, access, name, desc, signature, exceptions);

@@ -17,6 +17,7 @@
  */
 package org.mutabilitydetector.benchmarks;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -24,12 +25,13 @@ import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.TestUtil.getAnalysisResult;
+import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField.AbstractStringContainer;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
@@ -50,27 +52,40 @@ public class AbstractTypeToFieldCheckerTest {
 	}
 
 	@Test public void testImmutableExamplePassesCheck() throws Exception {
-		result = getAnalysisResult(ImmutableExample.class);
+		result = runChecker(checker, ImmutableExample.class);
 		assertImmutable(result);		
 		assertEquals(result.reasons.size(), 0);
 	}
 	
 	@Test public void testMutableByAssigningInterfaceTypeToFieldFailsCheck() throws Exception {
-		result = getAnalysisResult(MutableByAssigningInterfaceToField.class);
+		result = runChecker(checker, MutableByAssigningInterfaceToField.class);
 		
 		assertDefinitelyNotImmutable(result);
 	}
 	
 	@Test public void testMutableByAssigningAbstractClassToFieldFailsCheck() throws Exception {
-		result = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
+		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Test public void reasonCreatedByCheckerIncludesClassLocationPointingToAbstractType() throws Exception {
-		result = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
+	@Test public void classLocationOfResultIsSet() throws Exception {
+		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
+		
+		assertThat(result.reasons.size(), is(1));
+		
 		CheckerReasonDetail reasonDetail = result.reasons.iterator().next();
 		String typeName = reasonDetail.sourceLocation().typeName();
 		assertThat(typeName, is(MutableByAssigningAbstractTypeToField.class.getName()));
+	}
+	
+	@Test public void reasonCreatedByCheckerIncludesMessagePointingToAbstractType() throws Exception {
+		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
+		Class<?> abstractTypeAssigned = AbstractStringContainer.class;
+		
+		assertThat(result.reasons.size(), is(1));
+		
+		CheckerReasonDetail reasonDetail = result.reasons.iterator().next();
+		assertThat(reasonDetail.message(), containsString(abstractTypeAssigned.getName()));
 	}
 
 }
