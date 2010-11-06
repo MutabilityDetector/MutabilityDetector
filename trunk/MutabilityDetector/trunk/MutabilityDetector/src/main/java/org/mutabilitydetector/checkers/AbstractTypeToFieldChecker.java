@@ -19,6 +19,7 @@ package org.mutabilitydetector.checkers;
 
 
 import static java.lang.String.format;
+import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.MutabilityReason;
@@ -77,7 +78,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 			
 			if(isAbstract) {
 				String message = format("Field [%s] can have an abstract type (%s) assigned to it.", name, dottedClassName);
-				addResult(message, null, MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+				addResult(message, fromInternalName(ownerClass), MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
 			}
 		}
 	}
