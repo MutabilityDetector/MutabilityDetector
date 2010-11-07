@@ -17,32 +17,26 @@
  */
 package org.mutabilitydetector.benchmarks.circular;
 
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.TestUtil.runChecker;
+
 import org.junit.Test;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 
-
-
-
-public class TestCircularReferenceAnalysisOfBothImmutable {
+public class CircularReferenceAnalysisOfBothImmutableTest {
 
 	@Test
-	public void testImmutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-		IAnalysisSession session = new AnalysisSession(null);
+	public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
+		IAnalysisSession session = createWithCurrentClassPath();
 		session.isImmutable(ImmutableClassA.class.getName());
 	}
 	
-	
-	@Test
-	public void testMutableFieldCheckerHandlesCircularReferences() throws Exception {
-		// finer grained, because it's this checker that causes the problem
-		IAnalysisSession session = new AnalysisSession(null);
+	@Test public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
+		IAnalysisSession session = createWithCurrentClassPath();
 		IMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session);
 		
-		new CheckerRunner(null).run(mutableFieldChecker, ImmutableClassA.class);
-		
+		runChecker(mutableFieldChecker, ImmutableClassA.class);
 	}
 }
