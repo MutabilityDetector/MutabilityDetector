@@ -25,56 +25,48 @@ import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
-
-
-
 
 public class MutableTypeToFieldCheckerTest {
 
 	private IAnalysisSession mockSession;
 	private MutableTypeToFieldChecker checker;
 
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		mockSession = mock(IAnalysisSession.class);
 		checker = new MutableTypeToFieldChecker(mockSession);
-		
 	}
 	
-	@Test
-	public void testCheckerRequestsMutableStatusOfPublishedField() throws Exception {
+	@Test public void requestsMutableStatusOfPublishedField() throws Exception {
 		when(mockSession.isImmutable(MutableExample.class.getCanonicalName())).thenReturn(DEFINITELY_NOT);
-		new CheckerRunner(null).run(checker, MutableByHavingMutableFieldAssigned.class);
+		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 		
 		verify(mockSession).isImmutable(MutableExample.class.getCanonicalName());
 	}
 	
-	@Test
-	public void testCheckerFailsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
+	@Test public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
 		when(mockSession.isImmutable(MutableExample.class.getCanonicalName())).thenReturn(DEFINITELY_NOT);
 
-		new CheckerRunner(null).run(checker, MutableByHavingMutableFieldAssigned.class);
+		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 		
 		assertNotImmutable(checker.result());
 		assertTrue(checker.reasons().size() > 0);
 	}
 	
-	@Test
-	public void testInstanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
-		CheckerRunner.createWithCurrentClasspath().run(checker, MutableByHavingArrayTypeAsField.class);
+	@Test public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
+		runChecker(checker, MutableByHavingArrayTypeAsField.class);
 		assertDefinitelyNotImmutable(checker.result());
 	}
 	
-	@Test
-	public void testStaticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
-		CheckerRunner.createWithCurrentClasspath().run(checker, ImmutableWhenArrayFieldIsStatic.class);
+	@Test public void staticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
+		runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
 		assertImmutable(checker.result());
 	}
+	
 	
 }
