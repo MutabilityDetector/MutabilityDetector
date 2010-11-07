@@ -35,7 +35,7 @@ import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 
 
 
-public class MutableFieldTest {
+public class MutableTypeToFieldCheckerTest {
 
 	private IAnalysisSession mockSession;
 	private MutableTypeToFieldChecker checker;
