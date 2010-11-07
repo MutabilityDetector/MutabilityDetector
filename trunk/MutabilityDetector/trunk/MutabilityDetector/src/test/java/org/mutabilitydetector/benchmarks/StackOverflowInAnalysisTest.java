@@ -35,8 +35,7 @@ public class StackOverflowInAnalysisTest {
 	public void testInnerClassDoesNotCauseStackOverflowError() throws Exception {
 		session.isImmutable(ImmutableExample.class.getName());
 		
-		AbstractStringContainer abstractNameContainer = new MutableByAssigningAbstractTypeToField(null).new StringContainer();
-		session.isImmutable(abstractNameContainer.getClass().getName());
+		session.isImmutable(AbstractStringContainer.class.getName());
 		session.isImmutable(MutableByAssigningAbstractTypeToField.class.getName());
 		session.isImmutable(MutableByAssigningAbstractTypeToField.AbstractStringContainer.class.getName());
 	}
