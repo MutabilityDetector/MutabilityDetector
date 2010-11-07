@@ -10,7 +10,12 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
+import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 
-public abstract class AnalysisResultMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> { }
+public abstract class AnalysisResultMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
+	
+	@Override protected abstract boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription);
+
+}

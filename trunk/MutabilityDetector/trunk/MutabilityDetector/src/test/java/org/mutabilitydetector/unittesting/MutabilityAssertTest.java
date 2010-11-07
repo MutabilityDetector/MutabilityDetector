@@ -15,13 +15,18 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
+import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
+import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 
 public class MutabilityAssertTest {
 
@@ -84,4 +89,19 @@ public class MutabilityAssertTest {
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}
+	
+	@Ignore("MutableTypeToField is still a problem.")
+	@Test public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {
+		assertInstancesOf(ImmutableProvidedOtherClassIsImmutable.class, areImmutable(), 
+				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+		
+	}
+	
+	@Test(expected=AssertionError.class)
+	public void failsWhenAllowingReasonWhichIsNotTheCauseOfMutability() {
+		assertInstancesOf(MutableByHavingSetterMethod.class, areImmutable(), 
+				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+	}
+
+
 }

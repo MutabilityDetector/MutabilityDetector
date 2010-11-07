@@ -12,14 +12,17 @@ package org.mutabilitydetector.unittesting;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisResultFor;
+import static org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcher.withAllowedReasons;
 
 import java.util.Collection;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
+import org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcher;
 
 public class MutabilityAssert {
 
@@ -83,6 +86,12 @@ public class MutabilityAssert {
 
 	public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable) {
 		MatcherAssert.assertThat(getResultFor(clazz), areImmutable);
+	}
+
+	public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable, Matcher<AnalysisResult> allowing) {
+		WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable, allowing);
+		MatcherAssert.assertThat(getResultFor(clazz), areImmutable_withReasons);
+		
 	}
 
 }

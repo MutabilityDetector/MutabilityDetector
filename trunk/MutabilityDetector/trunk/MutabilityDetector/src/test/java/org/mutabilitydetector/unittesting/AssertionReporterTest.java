@@ -30,8 +30,6 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
-import org.mutabilitydetector.unittesting.AssertionReporter;
-import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 public class AssertionReporterTest {
 
