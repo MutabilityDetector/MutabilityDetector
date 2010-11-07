@@ -10,7 +10,7 @@
 
 package org.mutabilitydetector.benchmarks;
 
-public class ImmutableProvidedOtherClassIsImmutable {
+public final class ImmutableProvidedOtherClassIsImmutable {
 	
 	public final ThisHasToBeImmutable assigned;
 
