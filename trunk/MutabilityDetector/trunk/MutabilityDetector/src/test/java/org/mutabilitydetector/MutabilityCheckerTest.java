@@ -36,44 +36,40 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
  * tell if the tool is correct. Once the checker can correctly assess these
  * classes the tool is correct for our definition.
  * 
- * The pattern seems to be that either all the classes which are mutable pass
- * the checks, and the single immutable one doesn't. Or the other way round. The
- * tool won't be correct until every check passes.
- * 
- * @author graham
+ * @author Graham Allan (grundlefleck@gmail.com)
  * 
  */
 public class MutabilityCheckerTest {
 
-	@Test public void testImmutableExample() throws Exception {
+	@Test public void immutableExample() throws Exception {
 		assertImmutable(ImmutableExample.class);
 	}
 
-	@Test public void testMutableByAssigningAbstractTypeToField() throws Exception {
+	@Test public void mutableByAssigningAbstractTypeToField() throws Exception {
 		assertNotImmutable(MutableByAssigningInterfaceToField.class);
 	}
 
-	@Test public void testMutableByHavingMutableFieldAssigned() throws Exception {
+	@Test public void mutableByHavingMutableFieldAssigned() throws Exception {
 		assertNotImmutable(MutableByHavingMutableFieldAssigned.class);
 	}
 
-	@Test public void testMutableByHavingSetterMethod() throws Exception {
+	@Test public void mutableByHavingSetterMethod() throws Exception {
 		assertNotImmutable(MutableByHavingSetterMethod.class);
 	}
 
-	@Test public void testMutableByNoCopyOfIndirectlyConstructedField() throws Exception {
+	@Test public void mutableByNoCopyOfIndirectlyConstructedField() throws Exception {
 		assertNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
 	}
 
-	@Test public void testMutableByNotBeingFinalClass() throws Exception {
+	@Test public void mutableByNotBeingFinalClass() throws Exception {
 		assertMaybeImmutable(MutableByNotBeingFinalClass.class);
 	}
 
-	@Test public void testEnumTypesAreImmutable() throws Exception {
+	@Test public void enumTypesAreImmutable() throws Exception {
 		assertImmutable(EnumType.class);
 	}
 
-	@Test public void testIntegerIsImmutable() throws Exception {
+	@Test public void javaLangIntegerIsImmutable() throws Exception {
 		assertImmutable(Integer.class);
 	}
 
