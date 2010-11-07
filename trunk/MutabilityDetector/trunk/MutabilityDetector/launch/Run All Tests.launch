@@ -3,7 +3,8 @@
 <stringAttribute key="bad_container_name" value="/MutabilityDetector/launch/R"/>
 <booleanAttribute key="com.mountainminds.eclemma.core.INPLACE_INSTRUMENTATION" value="false"/>
 <listAttribute key="com.mountainminds.eclemma.core.INSTRUMENTATION_PATHS">
-<listEntry value="/MutabilityDetector/bin"/>
+<listEntry value="/MutabilityDetector/target/test-classes"/>
+<listEntry value="/MutabilityDetector/target/classes"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/MutabilityDetector"/>
