@@ -17,12 +17,20 @@
  */
 package org.mutabilitydetector;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.TestUtil.formatReasons;
+import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 
+import java.util.Collection;
+
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
@@ -73,4 +81,14 @@ public class MutabilityCheckerTest {
 		assertImmutable(Integer.class);
 	}
 
+	@Test public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {
+		AnalysisResult analysisResult = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
+		Collection<CheckerReasonDetail> reasons = analysisResult.reasons;
+		assertThat(formatReasons(reasons), reasons.size(), is(1));
+		
+		Reason reason = reasons.iterator().next().reason();
+		assertThat(reason, CoreMatchers.<Reason>is(MutabilityReason.ABSTRACT_TYPE_TO_FIELD));
+	}
+	
+	
 }

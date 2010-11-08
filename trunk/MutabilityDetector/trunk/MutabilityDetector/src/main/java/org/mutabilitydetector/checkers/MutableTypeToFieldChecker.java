@@ -18,10 +18,13 @@
 package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -33,16 +36,16 @@ import org.objectweb.asm.tree.analysis.Frame;
 public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
 	private final IAnalysisSession analysisSession;
+	private final TypeStructureInformation typeStructureInformation;
 
-	public MutableTypeToFieldChecker(IAnalysisSession analysisSession) {
+	public MutableTypeToFieldChecker(IAnalysisSession analysisSession, TypeStructureInformation typeStructureInformation) {
 		this.analysisSession = analysisSession;
+		this.typeStructureInformation = typeStructureInformation;
 	}
 
-	private String owner;
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		this.owner = name;
 		super.visit(version, access, name, signature, superName, interfaces);
 	}
 
@@ -53,10 +56,11 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new AssignMutableTypeToFieldChecker(owner, access, name, desc, signature, exceptions);
+		return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions);
 	}
 
 	class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
+
 
 		public AssignMutableTypeToFieldChecker(String owner, int access, String name, String desc, String signature,
 				String[] exceptions) {
@@ -77,7 +81,9 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 			case Type.OBJECT:
 				String dottedClassName = dottedClassName(type);
 				IsImmutable isImmutable = analysisSession.isImmutable(dottedClassName);
-				if (!isImmutable.equals(DEFINITELY)) {
+				
+				boolean isConcreteType = isConcreteType(dotted(dottedClassName));
+				if (!isImmutable.equals(DEFINITELY) && isConcreteType) {
 					addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
 							+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				}
@@ -89,6 +95,11 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 			default:
 				return;
 			}
+		}
+
+		private boolean isConcreteType(Dotted className) {
+			return !(typeStructureInformation.isTypeAbstract(className)
+					|| typeStructureInformation.isTypeInterface(className));
 		}
 
 	}

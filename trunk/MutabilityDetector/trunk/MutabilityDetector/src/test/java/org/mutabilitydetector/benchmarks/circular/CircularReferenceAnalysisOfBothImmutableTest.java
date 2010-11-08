@@ -18,12 +18,15 @@
 package org.mutabilitydetector.benchmarks.circular;
 
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 
 public class CircularReferenceAnalysisOfBothImmutableTest {
 
@@ -35,7 +38,8 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 	
 	@Test public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
 		IAnalysisSession session = createWithCurrentClassPath();
-		IMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session);
+		TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+		IMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session, information);
 		
 		runChecker(mutableFieldChecker, ImmutableClassA.class);
 	}

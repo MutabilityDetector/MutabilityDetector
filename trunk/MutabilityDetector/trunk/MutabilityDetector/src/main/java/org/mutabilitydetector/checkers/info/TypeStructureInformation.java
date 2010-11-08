@@ -45,6 +45,7 @@ public class TypeStructureInformation implements AnalysisInformation {
 	}
 
 	public boolean isTypeInterface(Dotted className) {
+		// TODO: reface these methods to use common logic.
 		Boolean result = false;
 		if (isInterfaceMap.containsKey(className)) {
 			result = isInterfaceMap.get(className);

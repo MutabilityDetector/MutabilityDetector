@@ -45,7 +45,7 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 		checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
 		checkers.add(new PublishedNonFinalFieldChecker());
 		checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
-		checkers.add(new MutableTypeToFieldChecker(analysisSession));
+		checkers.add(new MutableTypeToFieldChecker(analysisSession, database.requestInformation(TYPE_STRUCTURE)));
 		checkers.add(new InherentTypeMutabilityChecker());
 //		checkers.add(new InheritedMutabilityChecker(analysisSession));
 //		checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
