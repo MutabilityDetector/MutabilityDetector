@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ConcreteType;
+import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.locations.Dotted;
 
 
@@ -43,4 +44,19 @@ public class TypeStructureInformationCheckerTest {
 		assertFalse("Class is concrete.", checker.isAbstract());
 	}
 	
+	@Test public void isInterfaceIsTrueForInterfaceType() throws Exception {
+		Dotted className = fromClass(InterfaceType.class);
+		TypeStructureInformationChecker checker = newChecker(className);
+		checkerRunner.run(checker, InterfaceType.class);
+		
+		assertTrue("Type is an interface.", checker.isInterface());
+	}
+	
+	@Test public void isInterfaceIsFalseForConcreteType() throws Exception {
+		Dotted className = fromClass(ConcreteType.class);
+		TypeStructureInformationChecker checker = newChecker(className);
+		checkerRunner.run(checker, ConcreteType.class);
+		
+		assertFalse("Type is a concrete class.", checker.isInterface());
+	}
 }

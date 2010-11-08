@@ -21,7 +21,8 @@ import org.mutabilitydetector.locations.Dotted;
 public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 
 	private final Dotted className;
-	private Boolean result;
+	private Boolean isAbstract;
+	private boolean isInterface;
 	
 	private TypeStructureInformationChecker(Dotted className) {
 		this.className = className;
@@ -32,7 +33,11 @@ public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 	}
 
 	public boolean isAbstract() {
-		return result;
+		return isAbstract;
+	}
+	
+	public boolean isInterface() {
+		return isInterface;
 	}
 	
 	@Override public void visit(int version, int access, String name, String signature, String superName,
@@ -42,6 +47,7 @@ public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 		checkIsVisitingCorrectClass();
 		
 		storeIsAbstract(access);
+		storeIsInterface(access);
 	}
 
 	private void checkIsVisitingCorrectClass() {
@@ -54,7 +60,12 @@ public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 	}
 
 	private void storeIsAbstract(int access) {
-		result = type(access).isAbstract();
+		isAbstract = type(access).isAbstract();
 	}
+
+	private void storeIsInterface(int access) {
+		isInterface = type(access).isInterface();
+	}
+
 
 }

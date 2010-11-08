@@ -10,6 +10,7 @@
 
 package org.mutabilitydetector.checkers.info;
 
+import static org.mutabilitydetector.checkers.util.TypeStructureInformationChecker.newChecker;
 import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class TypeStructureInformation implements AnalysisInformation {
 
 	private final ISessionCheckerRunner sessionCheckerRunner;
 	private final Map<Dotted, Boolean> isAbstractMap = new HashMap<Dotted, Boolean>();
+	private final Map<Dotted, Boolean> isInterfaceMap = new HashMap<Dotted, Boolean>();
 
 	public TypeStructureInformation(ISessionCheckerRunner sessionCheckerRunner) {
 		this.sessionCheckerRunner = sessionCheckerRunner;
@@ -34,10 +36,23 @@ public class TypeStructureInformation implements AnalysisInformation {
 			result = isAbstractMap.get(className);
 			
 		} else {
-			TypeStructureInformationChecker checker = TypeStructureInformationChecker.newChecker(className);
+			TypeStructureInformationChecker checker = newChecker(className);
 			sessionCheckerRunner.run(checker, forClass(className));
 			result =  checker.isAbstract();
 			isAbstractMap.put(className, result);
+		}
+		return result;
+	}
+
+	public boolean isTypeInterface(Dotted className) {
+		Boolean result = false;
+		if (isInterfaceMap.containsKey(className)) {
+			result = isInterfaceMap.get(className);
+		} else {
+			TypeStructureInformationChecker checker = newChecker(className);
+			sessionCheckerRunner.run(checker, forClass(className));
+			result =  checker.isAbstract();
+			isInterfaceMap.put(className, result);
 		}
 		return result;
 	}
