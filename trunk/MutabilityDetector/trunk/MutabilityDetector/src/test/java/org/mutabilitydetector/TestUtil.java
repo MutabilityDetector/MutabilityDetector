@@ -21,12 +21,14 @@ import static java.util.Arrays.asList;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 
 import java.util.Collection;
 
 import org.junit.Ignore;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
@@ -61,5 +63,9 @@ public class TestUtil {
 	public static SessionCheckerRunner sessionCheckerRunner() {
 		return new SessionCheckerRunner(createWithCurrentClassPath(),
 										createWithCurrentClasspath());
+	}
+	
+	public static AnalysisDatabase analysisDatabase() {
+		return newAnalysisDatabase(sessionCheckerRunner());
 	}
 }
