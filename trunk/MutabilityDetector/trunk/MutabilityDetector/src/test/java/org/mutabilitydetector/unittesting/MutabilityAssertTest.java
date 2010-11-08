@@ -19,7 +19,6 @@ import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -90,7 +89,6 @@ public class MutabilityAssertTest {
 		}
 	}
 	
-	@Ignore("MutableTypeToField is still a problem.")
 	@Test public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {
 		assertInstancesOf(ImmutableProvidedOtherClassIsImmutable.class, areImmutable(), 
 				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
