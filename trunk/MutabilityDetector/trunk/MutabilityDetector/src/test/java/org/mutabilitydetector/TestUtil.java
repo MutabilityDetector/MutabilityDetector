@@ -18,6 +18,8 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
+import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 
 import java.util.Collection;
@@ -25,6 +27,7 @@ import java.util.Collection;
 import org.junit.Ignore;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @Ignore
@@ -53,5 +56,10 @@ public class TestUtil {
 	public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
 		CheckerRunner.createWithCurrentClasspath().run(checker, toAnalyse);
 		return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+	}
+
+	public static SessionCheckerRunner sessionCheckerRunner() {
+		return new SessionCheckerRunner(createWithCurrentClassPath(),
+										createWithCurrentClasspath());
 	}
 }
