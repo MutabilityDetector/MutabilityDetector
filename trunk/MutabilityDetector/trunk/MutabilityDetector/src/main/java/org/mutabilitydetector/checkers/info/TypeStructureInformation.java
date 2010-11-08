@@ -30,31 +30,30 @@ public class TypeStructureInformation implements AnalysisInformation {
 		this.sessionCheckerRunner = sessionCheckerRunner;
 	}
 
-	public boolean isTypeAbstract(Dotted className) {
+	private void runCheckerAndPopulateResultMaps(Dotted className) {
+		TypeStructureInformationChecker checker = newChecker(className);
+		sessionCheckerRunner.run(checker, forClass(className));
+		
+		isAbstractMap.put(className, checker.isAbstract());
+		isInterfaceMap.put(className, checker.isInterface());
+	}
+	
+	private Boolean getResultFrom(Dotted className, Map<Dotted, Boolean> resultMap) {
 		Boolean result = false;
-		if (isAbstractMap.containsKey(className)) {
-			result = isAbstractMap.get(className);
-			
+		if (resultMap.containsKey(className)) {
+			result = resultMap.get(className);
 		} else {
-			TypeStructureInformationChecker checker = newChecker(className);
-			sessionCheckerRunner.run(checker, forClass(className));
-			result =  checker.isAbstract();
-			isAbstractMap.put(className, result);
+			runCheckerAndPopulateResultMaps(className);
+			result = resultMap.get(className);
 		}
 		return result;
 	}
+	
+	public boolean isTypeAbstract(Dotted className) {
+		return getResultFrom(className, isAbstractMap);
+	}
 
 	public boolean isTypeInterface(Dotted className) {
-		// TODO: reface these methods to use common logic.
-		Boolean result = false;
-		if (isInterfaceMap.containsKey(className)) {
-			result = isInterfaceMap.get(className);
-		} else {
-			TypeStructureInformationChecker checker = newChecker(className);
-			sessionCheckerRunner.run(checker, forClass(className));
-			result =  checker.isAbstract();
-			isInterfaceMap.put(className, result);
-		}
-		return result;
+		return getResultFrom(className, isInterfaceMap);
 	}
 }
