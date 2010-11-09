@@ -50,6 +50,13 @@
 	
 	<organization>
 	</organization>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>5</version>
+	</parent>
+	
 	<build>
 		<plugins>
 			<plugin>
