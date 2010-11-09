@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>MutabilityDetector</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3</version>
 	<packaging>jar</packaging>
 
 	<name>MutabilityDetector</name>
@@ -36,9 +35,9 @@
 		<url>http://code.google.com/p/mutability-detector/issues/list</url>
 	</issueManagement>
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/tags/0.3-SNAPSHOT</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/tags/0.3-SNAPSHOT</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/tags/0.3-SNAPSHOT</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -79,8 +78,7 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>org.mutabilitydetector.cli.RunMutabilityDetector
 									</mainClass>
 								</transformer>
