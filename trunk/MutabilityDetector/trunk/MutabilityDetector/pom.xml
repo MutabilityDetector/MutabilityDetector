@@ -15,6 +15,14 @@
 		<dependencies>
 		</dependencies>
 	</dependencyManagement>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
 	<distributionManagement>
 		<site>
 			<url>http://code.google.com/p/mutability-detector/</url>
@@ -28,8 +36,18 @@
 		<url>http://code.google.com/p/mutability-detector/issues/list</url>
 	</issueManagement>
 	<scm>
-		<url>http://mutability-detector.googlecode.com/svn/trunk/</url>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</developerConnection>
 	</scm>
+	<developers>
+		<developer>
+			<id>grundlefleck</id>
+			<name>Graham Allan</name>
+			<email>grundlefleck@gmail.com</email>
+		</developer>
+	</developers>
+	
 	<organization>
 	</organization>
 	<build>
@@ -42,8 +60,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -66,8 +82,19 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
