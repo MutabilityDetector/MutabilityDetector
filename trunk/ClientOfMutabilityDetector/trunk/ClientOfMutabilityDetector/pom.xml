@@ -37,11 +37,18 @@
 		</plugins>
 	</build>
 
+
 	<dependencies>
+		<dependency>
+			<groupId>org.mutabilitydetector</groupId>
+			<artifactId>MutabilityDetector</artifactId>
+			<version>[0.01,)</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit-dep</artifactId>
-			<version>[4.0,)</version>
+			<version>[4.6,)</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -62,7 +69,7 @@
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
 			<version>[0.01,)</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>

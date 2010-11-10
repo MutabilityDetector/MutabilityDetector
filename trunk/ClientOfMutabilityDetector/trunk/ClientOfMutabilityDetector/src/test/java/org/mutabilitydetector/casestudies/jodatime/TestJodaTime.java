@@ -1,28 +1,49 @@
 package org.mutabilitydetector.casestudies.jodatime;
 
-import org.junit.Test;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
+
+import org.joda.time.Chronology;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.Hours;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
+import org.joda.time.Months;
+import org.joda.time.Partial;
+import org.joda.time.Period;
+import org.joda.time.TimeOfDay;
+import org.joda.time.Weeks;
+import org.joda.time.YearMonthDay;
+import org.joda.time.Years;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation") 
 public class TestJodaTime {
     @Test
     public void testorg_joda_time_LocalDateTime() {
-        assertImmutable(org.joda.time.LocalDateTime.class);
+        assertInstancesOf(LocalDateTime.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
     @Test
     public void testorg_joda_time_LocalTime() {
-        assertImmutable(org.joda.time.LocalTime.class);
+    	assertInstancesOf(LocalTime.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
     @Test
     public void testorg_joda_time_format_DateTimeFormatter() {
-        assertImmutable(org.joda.time.format.DateTimeFormatter.class);
+        assertImmutable(DateTimeFormatter.class);
     }
 
     @Test
     public void testorg_joda_time_format_PeriodFormatter() {
-        assertImmutable(org.joda.time.format.PeriodFormatter.class);
+        assertImmutable(PeriodFormatter.class);
     }
 
     @Test
@@ -47,62 +68,62 @@ public class TestJodaTime {
 
     @Test
     public void testorg_joda_time_LocalDate() {
-        assertImmutable(org.joda.time.LocalDate.class);
+    	assertInstancesOf(LocalDate.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
     @Test
     public void testorg_joda_time_DateTimeZone() {
-        assertImmutable(org.joda.time.DateTimeZone.class);
+        assertImmutable(DateTimeZone.class);
     }
 
     @Test
     public void testorg_joda_time_Months() {
-        assertImmutable(org.joda.time.Months.class);
+        assertImmutable(Months.class);
     }
 
     @Test
     public void testorg_joda_time_Years() {
-        assertImmutable(org.joda.time.Years.class);
+        assertImmutable(Years.class);
     }
 
     @Test
     public void testorg_joda_time_YearMonthDay() {
-        assertImmutable(org.joda.time.YearMonthDay.class);
+        assertImmutable(YearMonthDay.class);
     }
 
     @Test
     public void testorg_joda_time_TimeOfDay() {
-        assertImmutable(org.joda.time.TimeOfDay.class);
+        assertImmutable(TimeOfDay.class);
     }
 
     @Test
     public void testorg_joda_time_Days() {
-        assertImmutable(org.joda.time.Days.class);
+        assertImmutable(Days.class);
     }
 
     @Test
     public void testorg_joda_time_Weeks() {
-        assertImmutable(org.joda.time.Weeks.class);
+        assertImmutable(Weeks.class);
     }
 
     @Test
     public void testorg_joda_time_Hours() {
-        assertImmutable(org.joda.time.Hours.class);
+        assertImmutable(Hours.class);
     }
 
     @Test
     public void testorg_joda_time_Period() {
-        assertImmutable(org.joda.time.Period.class);
+        assertImmutable(Period.class);
     }
 
     @Test
     public void testorg_joda_time_Partial() {
-        assertImmutable(org.joda.time.Partial.class);
+        assertInstancesOf(Partial.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
     @Test
     public void testorg_joda_time_Minutes() {
-        assertImmutable(org.joda.time.Minutes.class);
+        assertImmutable(Minutes.class);
     }
 
 }
