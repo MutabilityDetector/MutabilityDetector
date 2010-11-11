@@ -62,12 +62,7 @@ public class AnalysisSession implements IAnalysisSession {
 	}
 
 	@Override public IsImmutable isImmutable(String className) {
-		AnalysisResult resultForClass = analysedClasses.get(className);
-		if (resultForClass != null) {
-			return resultForClass.isImmutable;
-		} else {
-			return requestAnalysis(className);
-		}
+		return resultFor(className).isImmutable;
 	}
 
 	@Override public AnalysisResult resultFor(String className) {
