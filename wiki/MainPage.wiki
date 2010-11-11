@@ -8,7 +8,7 @@ Mutability Detector is designed to analyse Java classes and report on whether in
   * A JSR-305 implementation - the tool does not yet recognise the annotations for concurrency described in that JSR. Thus, Mutability Detector does not look for, or change behaviour on finding, a class annotated with `@Immutable`.
 
 = Getting Started =
-Both static analysis and runtime analysis should use the same jar, available from [http://mutability-detector.googlecode.com/files/MutabilityDetector-0.01.jar here]. In the former case the tool is a command line app, in the latter it should be added to your classpath for inclusion in your project.
+Both static analysis and runtime analysis should use the same jar, available from [http://mutability-detector.googlecode.com/files/MutabilityDetector-0.02.jar here]. In the former case the tool is a command line app, in the latter it should be added to your classpath for inclusion in your project.
 
 == Static Analysis ==
 
