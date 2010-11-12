@@ -28,13 +28,11 @@ public class ClassListToReportReaderTest {
 	private BufferedReader reader;
 	private ClassListToReportCollector classListReader;
 	
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		reader = mock(BufferedReader.class);
 	}
 
-	@Test
-	public void testReadsClassesFromPlainTextFile() throws Exception {
+	@Test public void testReadsClassesFromPlainTextFile() throws Exception {
 		when(reader.readLine()).thenReturn("java.lang.String", "java.io.FileReader", "org.junit.Test", null);
 		classListReader = new PlainTextClassListToReportReader(reader);
 		Collection<String> classListToReport = classListReader.classListToReport();
