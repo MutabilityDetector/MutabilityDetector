@@ -14,7 +14,7 @@
  * Create an `allowingSubclassing()` allowed reason for unit tests (mainly for classes not marked as final)
  * Create a video to show off the unit testing capability of the tool
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
- * Annotate ignored unit tests with a brief overview of why they're ignored
+ * ~~Annotate ignored unit tests with a brief overview of why they're ignored~~
  * Gather more immutable types from the JDK which can be tested
  * Find tests using ad-hoc assertion methods and make them consistent
  
