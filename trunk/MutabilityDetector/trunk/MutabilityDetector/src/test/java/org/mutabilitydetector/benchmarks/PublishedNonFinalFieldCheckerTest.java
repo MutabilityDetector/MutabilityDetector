@@ -17,58 +17,53 @@
  */
 package org.mutabilitydetector.benchmarks;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.TestMatchers.hasNoReasons;
+import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
-
-
-
 
 public class PublishedNonFinalFieldCheckerTest {
 
 	private IMutabilityChecker checker;
+	private AnalysisResult result;
 	
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		checker = new PublishedNonFinalFieldChecker();
 	}
 	
-	@Test
-	public void testImmutableExamplePassesCheck() throws Exception {
-		new CheckerRunner(null).run(checker, ImmutableExample.class);
-		assertImmutable(checker.result());
-		assertEquals(0, checker.reasons().size());
+	@Test public void immutableExamplePassesCheck() throws Exception {
+		result = runChecker(checker, ImmutableExample.class);
+
+		assertThat(checker, hasNoReasons());
+		assertImmutable(result);
 	}
 	
 	
-	@Test
-	public void testClassWithPublicNonFinalFieldFailsCheck() throws Exception {
-		new CheckerRunner(null).run(checker, MutableByHavingPublicNonFinalField.class);
-		assertDefinitelyNotImmutable(checker.result());
+	@Test public void classWithPublicNonFinalFieldFailsCheck() throws Exception {
+		result = runChecker(checker, MutableByHavingPublicNonFinalField.class);
+		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Test
-	public void testClassWithProtectedNonFinalFieldFailsCheck() throws Exception {
-		new CheckerRunner(null).run(checker, MutableByHavingProtectedNonFinalField.class);
-		assertDefinitelyNotImmutable(checker.result());
+	@Test public void classWithProtectedNonFinalFieldFailsCheck() throws Exception {
+		result = runChecker(checker, MutableByHavingProtectedNonFinalField.class);
+		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Test
-	public void testClassWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
-		new CheckerRunner(null).run(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-		assertDefinitelyNotImmutable(checker.result());
+	@Test public void classWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
+		result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
+		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Test
-	public void testClassWithPublicFinalFieldPassesCheck() throws Exception {
-		new CheckerRunner(null).run(checker, ImmutableWithPublicFinalField.class);
-		assertImmutable(checker.result());
-		assertEquals(0, checker.reasons().size());
+	@Test public void classWithPublicFinalFieldPassesCheck() throws Exception {
+		result = runChecker(checker, ImmutableWithPublicFinalField.class);
+		assertThat(checker, hasNoReasons());
+		assertImmutable(result);
 	}
 }
