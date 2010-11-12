@@ -17,16 +17,16 @@
  */
 package org.mutabilitydetector.benchmarks;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertIsImmutableResult;
+import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
+import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.ImmutableAssert;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -39,35 +39,34 @@ import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 public class InherentTypeMutabilityCheckerTest {
 
 	private IMutabilityChecker checker;
+	private AnalysisResult result;
 
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		checker = new InherentTypeMutabilityChecker();
 	}
 
-	@Test
-	public void testAbstractTypesAreInherentlyMutable() throws Exception {
-		new CheckerRunner(null).run(checker, AbstractType.class);
-		assertDefinitelyNotImmutable(checker.result());
-		assertTrue(checker.reasons().size() > 0);
+	@Test public void abstractTypesAreInherentlyMutable() throws Exception {
+		result = runChecker(checker, AbstractType.class);
+
+		assertThat(checker, hasReasons());
+		assertDefinitelyNotImmutable(result);
 	}
 	
 	
-	@Test
-	public void testEnumTypesAreInherentlyImmutable() throws Exception {
-		new CheckerRunner(null).run(checker, EnumType.class);
-		assertImmutable(checker.result());
+	@Test public void enumTypesAreInherentlyImmutable() throws Exception {
+		result = runChecker(checker, EnumType.class);
+		
+		assertImmutable(result);
 	}
 	
-	@Test
-	public void testInterfacesAreInherentlyMutable() throws Exception {
-		new CheckerRunner(null).run(checker, InterfaceType.class);
-		assertDefinitelyNotImmutable(checker.result());
-		assertTrue(checker.reasons().size() > 0);
+	@Test public void interfacesAreInherentlyMutable() throws Exception {
+		result = runChecker(checker, InterfaceType.class);
+		
+		assertThat(checker, hasReasons());
+		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Test
-	public void testPrimitiveTypesAreInherentlyImmutable() throws Exception {
+	@Test public void primitiveTypesAreInherentlyImmutable() throws Exception {
 		assertImmutableClass(ClassWithAllPrimitives.Boolean.class);
 		assertImmutableClass(ClassWithAllPrimitives.Byte.class);
 		assertImmutableClass(ClassWithAllPrimitives.Char.class);
@@ -80,27 +79,20 @@ public class InherentTypeMutabilityCheckerTest {
 		assertMutableClass(ClassWithAllPrimitives.Array.class); */ 
 	}
 	
-	@Test
-	public void testArrayTypesAreInherentlyMutable() throws Exception {
-		CheckerRunner.createWithCurrentClasspath().run(checker, ClassWithAllPrimitives.Array.class);
-		assertIsImmutableResult(IsImmutable.MAYBE, checker.result());
+	@Test public void arrayTypesAreInherentlyMutable() throws Exception {
+		result = runChecker(checker, ClassWithAllPrimitives.Array.class);
+		
+		assertThat(checker, hasReasons());
+		assertMaybeImmutable(result);
 	}
 	
-	@Test
-	public void testArrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
-		CheckerRunner.createWithCurrentClasspath().run(checker, ImmutableWhenArrayFieldIsStatic.class);
-		ImmutableAssert.assertImmutable(checker.result());
-	}
-
-	@SuppressWarnings("unused")
-	private void assertMutableClass(Class<?> toCheck) {
-		new CheckerRunner(null).run(checker, toCheck);
-		assertDefinitelyNotImmutable(checker.result());
-		assertTrue(checker.reasons().size() > 0);
+	@Test public void arrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
+		result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
+		
+		assertImmutable(result);
 	}
 
 	private void assertImmutableClass(Class<?> toCheck) {
-		new CheckerRunner(null).run(checker, toCheck);
-		assertImmutable(checker.result());
+		assertImmutable(runChecker(checker, toCheck));
 	}
 }
