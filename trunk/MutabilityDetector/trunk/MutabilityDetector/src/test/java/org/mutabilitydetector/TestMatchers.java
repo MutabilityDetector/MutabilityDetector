@@ -6,6 +6,7 @@ import static org.mutabilitydetector.TestUtil.formatReasons;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.Ignore;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 
 /*
@@ -18,6 +19,7 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
  * 		license/LICENSE.txt
  */
 
+@Ignore
 public class TestMatchers {
 
 	
