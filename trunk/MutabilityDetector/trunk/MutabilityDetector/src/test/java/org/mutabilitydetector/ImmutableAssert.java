@@ -19,6 +19,8 @@ package org.mutabilitydetector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -31,9 +33,7 @@ public class ImmutableAssert {
 	}
 	
 	public static void assertImmutable(AnalysisResult result) {
-		String failString = "Expected Immutable result.%n";
-		failString += result.reasons.toString();
-		assertEquals(failString, IsImmutable.DEFINITELY, result.isImmutable);
+		doAssertion(result.dottedClassName, DEFINITELY, result, true);
 	}
 	
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
@@ -41,7 +41,7 @@ public class ImmutableAssert {
 	}
 
 	public static void assertDefinitelyNotImmutable(AnalysisResult result) {
-		assertEquals("Expected Not Immutable result.", IsImmutable.DEFINITELY_NOT, result.isImmutable);
+		doAssertion(result.dottedClassName, DEFINITELY_NOT, result, true);
 	}
 	
 	public static void assertNotImmutable(IsImmutable result) {
@@ -74,7 +74,8 @@ public class ImmutableAssert {
 
 	private static void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
 		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
-		AnalysisResult result = session.resultFor(toAnalyse.getName());
+		String className = toAnalyse.getName();
+		AnalysisResult result = session.resultFor(className);
 		
 		if(printReasons) {
 			for (AnalysisError error : session.getErrors()) {
@@ -82,11 +83,18 @@ public class ImmutableAssert {
 								      error.checkerName, error.onClass, error.description);
 			}
 		}
-		String failure = "Exception " + toAnalyse.getName() + " is expected to be " + expected + " immutable.";
-		if (printReasons) {
-			failure += TestUtil.formatReasons(result.reasons);
-		}
-		assertEquals(failure, expected, result.isImmutable);
+		
+		doAssertion(className, expected, result, printReasons);
 
 	}
+
+	private static void doAssertion(String className, IsImmutable expected, AnalysisResult actual, boolean printReasons) {
+		String failure = "Exception " + className + " is expected to be " + expected + " immutable.";
+		if (printReasons) {
+			failure += "\n" + TestUtil.formatReasons(actual.reasons);
+		}
+		assertEquals(failure, expected, actual.isImmutable);
+	}
+	
+	
 }
