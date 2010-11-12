@@ -14,6 +14,7 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertThat;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.junit.Ignore;
@@ -21,12 +22,25 @@ import org.junit.Test;
 
 public class WellKnownJavaTypesTest {
 	
-	@Ignore
+	@Ignore("Not final " +
+			"Reassigned field " +
+			"Mutable type to field (BigInteger, String)")
 	@Test public void BigDecimal() {
 		assertThat(BigDecimal.class).isImmutable();
 	}
 	
-	@Ignore
+	
+	@Ignore("Not final" +
+			"Published fields can be reassigned" +
+			"Reassigning field" +
+			"Mutable type to field (primitive array)" +
+			"Field which is a mutable type")
+	@Test public void BigInteger() {
+		assertThat(BigInteger.class).isImmutable();
+	}
+	
+	@Ignore("Mutable type to field (primitive array)" +
+			"Field which is a mutable type")
 	@Test public void String() {
 		assertThat(String.class).isImmutable();
 	}
