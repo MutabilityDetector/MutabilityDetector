@@ -39,19 +39,19 @@ public class AllChecksRunner {
 	private IMutabilityCheckerFactory factory;
 	private final ICheckerRunnerFactory checkerRunnerFactory;
 
-	public AllChecksRunner(IMutabilityCheckerFactory factory, ICheckerRunnerFactory checkerRunnerFactory,
-			Class<?> toAnalyse) {
-		this.factory = factory;
-		this.checkerRunnerFactory = checkerRunnerFactory;
-		this.toAnalyse = fromClass(toAnalyse);
+	public AllChecksRunner(IMutabilityCheckerFactory factory, ICheckerRunnerFactory checkerRunnerFactory, Class<?> toAnalyse) {
+		this(factory, checkerRunnerFactory, fromClass(toAnalyse));
 	}
 
-	public AllChecksRunner(MutabilityCheckerFactory factory, ICheckerRunnerFactory checkerRunnerFactory,
-			String className) {
-		this.factory = factory;
+	public AllChecksRunner(IMutabilityCheckerFactory factory, ICheckerRunnerFactory checkerRunnerFactory, String className) {
+		this(factory, checkerRunnerFactory, dotted(className));
+	}
+	
+	private AllChecksRunner(IMutabilityCheckerFactory checkerFactory, ICheckerRunnerFactory checkerRunnerFactory, Dotted toAnalyse) {
+		factory = checkerFactory;
 		this.checkerRunnerFactory = checkerRunnerFactory;
-		this.toAnalyse = dotted(className);
-
+		this.toAnalyse = toAnalyse;
+		
 	}
 
 	public IsImmutable isImmutable() {
