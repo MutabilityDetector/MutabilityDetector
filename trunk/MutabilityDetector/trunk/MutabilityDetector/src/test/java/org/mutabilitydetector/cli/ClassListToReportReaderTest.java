@@ -32,7 +32,7 @@ public class ClassListToReportReaderTest {
 		reader = mock(BufferedReader.class);
 	}
 
-	@Test public void testReadsClassesFromPlainTextFile() throws Exception {
+	@Test public void readsClassesFromPlainTextFile() throws Exception {
 		when(reader.readLine()).thenReturn("java.lang.String", "java.io.FileReader", "org.junit.Test", null);
 		classListReader = new PlainTextClassListToReportReader(reader);
 		Collection<String> classListToReport = classListReader.classListToReport();
@@ -48,7 +48,7 @@ public class ClassListToReportReaderTest {
 	}
 	
 	@Test(expected=ClassListException.class)
-	public void testClassListExceptionIsThrownWhenReaderThrowsIOException() throws Exception {
+	public void classListExceptionIsThrownWhenReaderThrowsIOException() throws Exception {
 		when(reader.readLine()).thenReturn("java.lang.String");
 		when(reader.readLine()).thenThrow(new IOException());
 		classListReader = new PlainTextClassListToReportReader(reader);
