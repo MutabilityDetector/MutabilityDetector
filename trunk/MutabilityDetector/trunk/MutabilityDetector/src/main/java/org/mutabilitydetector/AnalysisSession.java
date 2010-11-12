@@ -37,7 +37,7 @@ public class AnalysisSession implements IAnalysisSession {
 
 	private final Map<String, AnalysisResult> analysedClasses = new HashMap<String, AnalysisResult>();
 	private final List<AnalysisError> analysisErrors = new ArrayList<AnalysisError>();
-	private final MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
+	private final IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
 	private final CheckerRunnerFactory checkerRunnerFactory;
 	private final List<String> requestedAnalysis = new ArrayList<String>();
 	private final AnalysisDatabase database;
