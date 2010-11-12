@@ -16,6 +16,8 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutableStatusIs;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
@@ -32,21 +34,18 @@ public class MutabilityAssertTest {
 	private Class<?> immutableClass = ImmutableExample.class;
 	private Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
 
-	@Test
-	public void testAssertImmutableWithImmutableClass() throws Exception {
-		// No AssertionException means test passes
-		MutabilityAssert.assertImmutable(immutableClass);
+	@Test public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {
+		assertImmutable(immutableClass);
 	}
 
 	@Test(expected = MutabilityAssertionError.class)
-	public void testAssertImmutableWithMutableClass() throws Exception {
-		MutabilityAssert.assertImmutable(mutableClass);
+	public void assertImmutableWithMutableClassThrowsAssertionError() throws Exception {
+		assertImmutable(mutableClass);
 	}
 
-	@Test
-	public void testReasonsArePrintedWithAssertionFailure() throws Exception {
+	@Test public void reasonsArePrintedWithAssertionFailure() throws Exception {
 		try {
-			MutabilityAssert.assertImmutable(mutableClass);
+			assertImmutable(mutableClass);
 			fail("Assertion should have failed.");
 		} catch (final AssertionError ae) {
 			assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
@@ -55,15 +54,13 @@ public class MutabilityAssertTest {
 		}
 	}
 	
-	@Test
-	public void testAssertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
-		MutabilityAssert.assertImmutableStatusIs(IsImmutable.DEFINITELY, immutableClass);
+	@Test public void assertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
+		assertImmutableStatusIs(IsImmutable.DEFINITELY, immutableClass);
 	}
 
-	@Test
-	public void testAssertImmutableStatusIsFailsWhenUnequal() throws Exception {
+	@Test public void assertImmutableStatusIsFailsWhenUnequal() throws Exception {
 		try {
-			MutabilityAssert.assertImmutableStatusIs(DEFINITELY_NOT, immutableClass);
+			assertImmutableStatusIs(DEFINITELY_NOT, immutableClass);
 		} catch (final AssertionError ae) {
 			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));

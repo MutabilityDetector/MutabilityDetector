@@ -42,61 +42,44 @@ public class CommandLineOptionsTest {
 			// suppress output in tests
 		}
 	});
-
-	private CommandLineOptions createOptions(String... args) {
-		return new CommandLineOptions(errorStream, args);
-	}
 	
-	@Test
-	public void testOptionsCanParseClasspathOption() throws Exception {
+	@Test public void canParseClasspathOption() throws Exception {
 		String[] args = makeArgs("-classpath", "fakeClasspath");
 		CommandLineOptions options = createOptions(args);
 		assertEquals("fakeClasspath", options.classpath());
 	}
 	
 
-	@Test
-	public void testToAnalyseRegexCanBeSpecified() throws Exception {
+	@Test public void toAnalyseRegexCanBeSpecified() throws Exception {
 		String[] args = makeArgs("-match", "*.somepackage.*");
 		options = createOptions(args);
 		assertEquals("*.somepackage.*", options.match());
 	}
 	
-	@Test
-	public void testVerboseOptionCanBeSetWithShortOpt() throws Exception {
+	@Test public void verboseOptionCanBeSetWithShortOpt() throws Exception {
 		String[] args = makeArgs("-v");
 		options = createOptions(args);
 		assertEquals(true, options.verbose());
 	}
 	
-	@Test
-	public void testVerboseOptionCanBeSetWithLongOpt() throws Exception {
+	@Test public void verboseOptionCanBeSetWithLongOpt() throws Exception {
 		String[] args = makeArgs("-verbose");
 		options = createOptions(args);
 		assertEquals(true, options.verbose());
 	}
 	
-	@Test
-	public void testReportModeCanBeSetToAll() throws Exception {
+	@Test public void reportModeCanBeSetToAll() throws Exception {
 		String[] args = makeArgs("-report", "all");
 		options = createOptions(args);
 		assertEquals(ReportMode.ALL, options.reportMode());
 	}
 	
-	@Test
-	public void testReportModes() throws Exception {
+	@Test public void immutableAndMutableReportModesAvailable() throws Exception {
 		assertModeAvailable("immutable", ReportMode.IMMUTABLE);
 		assertModeAvailable("mutable", ReportMode.MUTABLE);
 	}
 	
-	private void assertModeAvailable(String reportArg, ReportMode reportMode) {
-		String[] args = makeArgs("-r", reportArg);
-		options = createOptions(args);
-		assertEquals(reportMode, options.reportMode());
-	}
-	
-	@Test
-	public void testReportClassesOptionStoresFile() throws Exception {
+	@Test public void testReportClassesOptionStoresFile() throws Exception {
 		classListFile = new File("someFileName.txt");
 		assertTrue(classListFile.createNewFile());
 		
@@ -106,17 +89,12 @@ public class CommandLineOptionsTest {
 		assertEquals(classListFile, options.classListFile());
 	}
 	
-	private void removeTestFile() {
-		if(classListFile != null) assertTrue(classListFile.delete());
-	}
-	
 	@Test(expected=CommandLineOptionsException.class)
-	public void testThrowsExceptionIfClassListFileIsInvalid() throws Exception {
+	public void throwsExceptionIfClassListFileIsInvalid() throws Exception {
 		options = createOptions("-classlist", "");
 	}
 	
-	@Test
-	public void testIsUsingClassList() throws Exception {
+	@Test public void isUsingClassList() throws Exception {
 		options = createOptions("-cp", ".");
 		assertFalse("Should not be using class list.", options.isUsingClassList());
 		
@@ -126,8 +104,7 @@ public class CommandLineOptionsTest {
 		assertTrue("Should be using class list.", options.isUsingClassList());
 	}
 	
-	@Test
-	public void testShouldReportErrors() throws Exception {
+	@Test public void shouldReportErrors() throws Exception {
 		options = createOptions("-cp", ".");
 		assertFalse("By default, errors should not be shown.", options.reportErrors());
 		
@@ -135,13 +112,26 @@ public class CommandLineOptionsTest {
 		assertTrue("With the '-e' flag, errors should be shown.", options.reportErrors());
 	}
 
+	@After public void tearDown() {
+		removeTestFile();
+	}
+
+	private CommandLineOptions createOptions(String... args) {
+		return new CommandLineOptions(errorStream, args);
+	}
+	
 	private String[] makeArgs(String... args) {
 		return args;
 	}
 	
-	@After
-	public void tearDown() {
-		removeTestFile();
+	private void assertModeAvailable(String reportArg, ReportMode reportMode) {
+		String[] args = makeArgs("-r", reportArg);
+		options = createOptions(args);
+		assertEquals(reportMode, options.reportMode());
+	}
+	
+	private void removeTestFile() {
+		if(classListFile != null) assertTrue(classListFile.delete());
 	}
 	
 }

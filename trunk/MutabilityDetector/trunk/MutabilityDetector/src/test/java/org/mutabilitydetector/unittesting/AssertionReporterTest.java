@@ -80,7 +80,7 @@ public class AssertionReporterTest {
 		reporter.expectedIsImmutable(DEFINITELY, result, allowed);
 	}
 
-	private Collection<CheckerReasonDetail> unusedReasons() {
+	private static Collection<CheckerReasonDetail> unusedReasons() {
 		return TestUtil.unusedCheckerReasonDetails();
 	}
 }

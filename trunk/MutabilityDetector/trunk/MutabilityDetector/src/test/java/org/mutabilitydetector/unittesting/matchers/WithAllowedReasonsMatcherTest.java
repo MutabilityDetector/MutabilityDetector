@@ -21,7 +21,6 @@ import static org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatc
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.unittesting.AllowedReason;
 
 public class WithAllowedReasonsMatcherTest {
 
@@ -36,10 +35,9 @@ public class WithAllowedReasonsMatcherTest {
 	
 	@Test public void passesWhenPrimaryResultPasses() throws Exception {
 		IsImmutableMatcher isImmutable = new IsImmutableMatcher(DEFINITELY);
-		AnalysisResultMatcher allowedReason = AllowedReason.noneAllowed();
 		AnalysisResult analysisResult = definitelyImmutable("some.class");
 		
-		WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, allowedReason);
+		WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
 		
 		assertThat(withReasonsMatcher.matches(analysisResult), is(true));
 	}

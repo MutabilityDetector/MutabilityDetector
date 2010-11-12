@@ -28,20 +28,17 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 
 public class AnalysisSessionTest {
 
-	private IAnalysisSession analysisSession;
 	private Class<ImmutableExample> immutableClass;
 	
-	@Before
-	public void setUp() {
+	@Before public void setUp() {
 		immutableClass = ImmutableExample.class;
 	}
 
-	@Test
-	public void testAnalysisOfImmutableExampleWillBeRegistered() throws Exception {
-		analysisSession = new AnalysisSession(null);
-		IMutabilityCheckerFactory mockFactory = new MutabilityCheckerFactory();
+	@Test public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
+		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
+		IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
 		ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
-		AllChecksRunner checker = new AllChecksRunner(mockFactory, checkerRunnerFactory, immutableClass);
+		AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, immutableClass);
 
 		checker.runCheckers(analysisSession);
 		
@@ -50,8 +47,8 @@ public class AnalysisSessionTest {
 	}
 	
 	@Test
-	public void testAnalysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-		analysisSession = new AnalysisSession(null);
+	public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
+		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
 		IsImmutable result = analysisSession.isImmutable(immutableClass.getCanonicalName());
 		assertImmutable(result);
 	}
