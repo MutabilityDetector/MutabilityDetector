@@ -1,5 +1,8 @@
 package org.mutabilitydetector;
 
+import static java.lang.String.format;
+import static org.mutabilitydetector.TestUtil.formatReasons;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -28,10 +31,28 @@ public class TestMatchers {
 			}
 
 			@Override public void describeTo(Description description) {
-				description.appendText(" got a checker reporting at least one reason ");
+				description.appendText(" a checker reporting at least one reason ");
 			}
 
 		};
 	}
+	
+	public static Matcher<? super IMutabilityChecker> hasNoReasons() {
+		return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
+
+			@Override protected boolean matchesSafely(IMutabilityChecker checker, Description mismatchDescription) {
+				String mismatch = format(" got a checker containing %d reasons, %n%s", 
+						checker.reasons().size(), formatReasons(checker.reasons()));
+				mismatchDescription.appendText(mismatch);
+				return (checker.reasons().isEmpty());
+			}
+
+			@Override public void describeTo(Description description) {
+				description.appendText(" a checker reporting zero reasons ");
+			}
+
+		};
+	}
+		
 	
 }
