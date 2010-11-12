@@ -22,6 +22,7 @@ import static org.mutabilitydetector.ImmutableAssert.assertIsImmutableResult;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.getIsImmutableResult;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.MutableByExtendingMutableType;
@@ -31,34 +32,29 @@ import org.mutabilitydetector.benchmarks.types.AbstractType.ImmutableSubtypeOfAb
 public class TestSubclassingOfMutableType {
 
 
-	@Test
-	public void testSupertypeIsMaybeImmutable() throws Exception {
+	@Test public void testSupertypeIsMaybeImmutable() throws Exception {
 		assertIsImmutableResult(IsImmutable.MAYBE, getIsImmutableResult(ImmutableSupertype.class));
 	}
 	
-	@Test
-	public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
+	@Test public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
 		assertImmutable(getIsImmutableResult(ImmutableSubtypeOfImmutableSupertype.class));
 	}
 
 	
-	@Test
-	public void testMutableSubtype() throws Exception {
+	@Test public void testMutableSubtype() throws Exception {
 		assertDefinitelyNotImmutable(getIsImmutableResult(MutableSubtypeOfImmutableSupertype.class));
 	}
 	
-	@Test
-	public void testClassExtendingObjectIsNotRenderedMutable() throws Exception {
+	@Test public void testClassExtendingObjectIsNotRenderedMutable() throws Exception {
 		assertImmutable(getIsImmutableResult(ImmutableSubtypeWithNoSuperclass.class));
 	}
 	
-	//@Test TODO replace when InheritedMutabilityChecker works properly.
-	public void testClassIsNotMadeMutableJustByExtendingAbstractClass() throws Exception {
+	@Ignore("InheritedMutabilityChecker doesn't work properly yet.")
+	@Test public void testClassIsNotMadeMutableJustByExtendingAbstractClass() throws Exception {
 		assertImmutable(getIsImmutableResult(ImmutableSubtypeOfAbstractType.class));
 	}
 	
-	@Test
-	public void testImmutableSubclassIsMutableIfSuperclassIsMutable() throws Exception {
+	@Test public void testImmutableSubclassIsMutableIfSuperclassIsMutable() throws Exception {
 		assertNotImmutable(getIsImmutableResult(MutableByExtendingMutableType.class));
 	}
 }
