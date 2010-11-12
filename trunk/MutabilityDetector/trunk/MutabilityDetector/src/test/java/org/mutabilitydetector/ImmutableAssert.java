@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.MAYBE;
+import static org.mutabilitydetector.TestUtil.formatReasons;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -47,7 +49,10 @@ public class ImmutableAssert {
 	public static void assertNotImmutable(IsImmutable result) {
 		String error = "Expected any result but Immutable. %nActual: " + result.name();
 		assertFalse(error, IsImmutable.DEFINITELY.equals(result));
-		
+	}
+	
+	public static void assertNotImmutable(AnalysisResult result) {
+		doAssertion(result.dottedClassName, DEFINITELY_NOT, result, true);
 	}
 	
 	public static void assertIsImmutableResult(IsImmutable expected, IsImmutable actual) {
@@ -71,6 +76,10 @@ public class ImmutableAssert {
 	public static void assertMaybeImmutable(Class<?> toAnalyse) {
 		doAssertion(toAnalyse, IsImmutable.MAYBE, true);
 	}
+	
+	public static void assertMaybeImmutable(AnalysisResult result) {
+		doAssertion(result.dottedClassName, MAYBE, result, true);
+	}
 
 	private static void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
 		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
@@ -91,10 +100,12 @@ public class ImmutableAssert {
 	private static void doAssertion(String className, IsImmutable expected, AnalysisResult actual, boolean printReasons) {
 		String failure = "Exception " + className + " is expected to be " + expected + " immutable.";
 		if (printReasons) {
-			failure += "\n" + TestUtil.formatReasons(actual.reasons);
+			failure += "\n" + formatReasons(actual.reasons);
 		}
 		assertEquals(failure, expected, actual.isImmutable);
 	}
+
+
 	
 	
 }
