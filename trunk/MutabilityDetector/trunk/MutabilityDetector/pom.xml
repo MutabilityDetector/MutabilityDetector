@@ -3,7 +3,7 @@
 
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>MutabilityDetector</artifactId>
-	<version>0.4</version>
+	<version>0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>MutabilityDetector</name>
@@ -43,11 +43,11 @@
 		<url>http://code.google.com/p/mutability-detector/issues/list</url>
 	</issueManagement>
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/tags/MutabilityDetector-0.4
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector
 		</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/tags/MutabilityDetector-0.4
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk
 		</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/tags/MutabilityDetector-0.4
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk
 		</developerConnection>
 	</scm>
 	<developers>
