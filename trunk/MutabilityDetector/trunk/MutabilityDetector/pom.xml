@@ -30,7 +30,7 @@
     <snapshotRepository>
       <id>cloudbees.repo</id>
       <name>Cloudbees Hudson Internal Repository</name>
-      <url>http://repository-mutability-detector.forge.cloudbees.com/</url>
+      <url>http://repository-mutability-detector.forge.cloudbees.com/snapshots</url>
     </snapshotRepository>
 
 		
@@ -95,19 +95,6 @@
 								</transformer>
 							</transformers>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
