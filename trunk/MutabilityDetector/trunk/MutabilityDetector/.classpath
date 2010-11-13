@@ -1,33 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="**/*.java" kind="src" output="target/test-classes" path="src/test/java"/>
-	<classpathentry excluding="**/*.java" kind="src" output="target/test-classes" path="src/test/resources"/>
-	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
-	<classpathentry kind="var" path="M2_REPO/asm/asm/3.2/asm-3.2.jar" sourcepath="/WORKSPACE_ROOT/asm3.2"/>
-	<classpathentry kind="var" path="M2_REPO/asm/asm-analysis/3.2/asm-analysis-3.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/asm/asm-tree/3.2/asm-tree-3.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0.jar" sourcepath="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/graham/.m2/repository/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2.jar" sourcepath="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/graham/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/graham/.m2/repository/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/junit/junit-dep/4.4/junit-dep-4.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0.jar" sourcepath="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0.jar" sourcepath="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/graham/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="src" path="src/main/benchmarks" including="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm/3.2/asm-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm-analysis/3.2/asm-analysis-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm-tree/3.2/asm-tree-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0.jar" sourcepath="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/graham/.m2/repository/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2.jar" sourcepath="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/graham/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/graham/.m2/repository/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/junit/junit-dep/4.4/junit-dep-4.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0.jar" sourcepath="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0.jar" sourcepath="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/graham/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>

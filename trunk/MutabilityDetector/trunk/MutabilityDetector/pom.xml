@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.mutabilitydetector</groupId>
@@ -21,7 +22,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<distributionManagement>
 		<site>
 			<url>http://code.google.com/p/mutability-detector/</url>
@@ -35,9 +36,12 @@
 		<url>http://code.google.com/p/mutability-detector/issues/list</url>
 	</issueManagement>
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector
+		</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk
+		</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk
+		</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -46,7 +50,7 @@
 			<email>grundlefleck@gmail.com</email>
 		</developer>
 	</developers>
-	
+
 	<organization>
 	</organization>
 
@@ -55,7 +59,7 @@
 		<artifactId>oss-parent</artifactId>
 		<version>5</version>
 	</parent>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -78,7 +82,8 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>org.mutabilitydetector.cli.RunMutabilityDetector
 									</mainClass>
 								</transformer>
@@ -100,6 +105,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/benchmarks</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
