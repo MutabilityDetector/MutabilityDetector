@@ -27,6 +27,14 @@
 		<site>
 			<url>http://code.google.com/p/mutability-detector/</url>
 		</site>
+		
+    <snapshotRepository>
+      <id>cloudbees.repo</id>
+      <name>Cloudbees Hudson Internal Repository</name>
+      <url>http://repository-mutability-detector.forge.cloudbees.com/</url>
+    </snapshotRepository>
+
+		
 	</distributionManagement>
 
 	<properties>
@@ -125,6 +133,35 @@
 
 		</plugins>
 	</build>
+	
+	  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 	<dependencies>
 		<dependency>
