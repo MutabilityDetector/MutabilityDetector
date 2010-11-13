@@ -17,13 +17,15 @@
  */
 package org.mutabilitydetector.benchmarks;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 
@@ -36,8 +38,9 @@ public class FinalClassCheckerTest {
 	}
 
 	@Test public void aClassWhichIsNotFinalIsMaybeImmutable() throws Exception {
-		assertMaybeImmutable(runChecker(checker, MutableByNotBeingFinalClass.class));
-		assertTrue("There should be a reason given when the class is not immutable.", checker.reasons().size() > 0);
+		AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
+		assertThat(checker, hasReasons());
+		assertMaybeImmutable(result);
 	}
 
 	
