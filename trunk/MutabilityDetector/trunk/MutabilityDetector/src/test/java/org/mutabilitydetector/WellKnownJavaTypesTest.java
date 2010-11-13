@@ -10,7 +10,9 @@
 
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertThat;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areNotImmutable;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -26,9 +28,8 @@ public class WellKnownJavaTypesTest {
 			"Reassigned field " +
 			"Mutable type to field (BigInteger, String)")
 	@Test public void BigDecimal() {
-		assertThat(BigDecimal.class).isImmutable();
+		assertInstancesOf(BigDecimal.class, areImmutable());
 	}
-	
 	
 	@Ignore("Not final" +
 			"Published fields can be reassigned" +
@@ -36,29 +37,29 @@ public class WellKnownJavaTypesTest {
 			"Mutable type to field (primitive array)" +
 			"Field which is a mutable type")
 	@Test public void BigInteger() {
-		assertThat(BigInteger.class).isImmutable();
+		assertInstancesOf(BigInteger.class, areImmutable());
 	}
 	
 	@Ignore("Mutable type to field (primitive array)" +
 			"Field which is a mutable type")
 	@Test public void String() {
-		assertThat(String.class).isImmutable();
+		assertInstancesOf(String.class, areImmutable());
 	}
 	
 	@Test public void Integer() {
-		assertThat(Integer.class).isImmutable();
+		assertInstancesOf(Integer.class, areImmutable());
 	}
 	
 	@Test public void Array() {
-		assertThat(Array.class).isImmutable();
+		assertInstancesOf(Array.class, areImmutable());
 	}
 	
 	@Test public void primitive_int() {
-		assertThat(int.class).isImmutable();
+		assertInstancesOf(int.class, areImmutable());
 	}
 	
 	@Test public void Date() {
-		assertThat(Date.class).isNotImmutable();
+		assertInstancesOf(Date.class, areNotImmutable());
 	}
 	
 }

@@ -21,7 +21,6 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 
 
@@ -42,14 +41,13 @@ public class AnalysisSessionTest {
 
 		checker.runCheckers(analysisSession);
 		
-		IsImmutable result = analysisSession.isImmutable(immutableClass.getCanonicalName());
+		AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
 		assertImmutable(result);
 	}
 	
-	@Test
-	public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
+	@Test public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
 		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-		IsImmutable result = analysisSession.isImmutable(immutableClass.getCanonicalName());
+		AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
 		assertImmutable(result);
 	}
 	

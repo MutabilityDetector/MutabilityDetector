@@ -29,83 +29,66 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class ImmutableAssert {
 
-	public static void assertImmutable(IsImmutable result) {
-		String failString = "Expected Immutable result.%n";
-		assertEquals(failString, IsImmutable.DEFINITELY, result);
-	}
-	
 	public static void assertImmutable(AnalysisResult result) {
-		doAssertion(result.dottedClassName, DEFINITELY, result, true);
+		doAssertEquals(result.dottedClassName, DEFINITELY, result);
 	}
 	
+	public static void assertImmutable(Class<?> toAnalyse) {
+		doAssertEquals(toAnalyse.getName(), DEFINITELY, getResultAndPrintErrors(toAnalyse));
+	}
+
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
-		assertEquals("Expected Not Immutable result.", IsImmutable.DEFINITELY_NOT, result);
+		assertEquals("Expected Not Immutable result.", DEFINITELY_NOT, result);
 	}
 
 	public static void assertDefinitelyNotImmutable(AnalysisResult result) {
-		doAssertion(result.dottedClassName, DEFINITELY_NOT, result, true);
+		doAssertEquals(result.dottedClassName, DEFINITELY_NOT, result);
 	}
 	
-	public static void assertNotImmutable(IsImmutable result) {
-		String error = "Expected any result but Immutable. %nActual: " + result.name();
-		assertFalse(error, IsImmutable.DEFINITELY.equals(result));
-	}
-	
-	public static void assertNotImmutable(AnalysisResult result) {
-		doAssertion(result.dottedClassName, DEFINITELY_NOT, result, true);
-	}
-	
-	public static void assertIsImmutableResult(IsImmutable expected, IsImmutable actual) {
-		assertEquals(expected, actual);
-	}
-	
-	public static void assertIsImmutableResult(IsImmutable expected, AnalysisResult actualResult) {
-		String error = actualResult.reasons.toString();
-		assertEquals(error, expected, actualResult.isImmutable);
-		
-	}
-	
-	public static void assertNotImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.DEFINITELY_NOT, true);
-	}
-
-	public static void assertImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.DEFINITELY, true);
+	public static void assertDefinitelyNotImmutable(Class<?> toAnalyse) {
+		doAssertEquals(toAnalyse.getName(), DEFINITELY_NOT, getResultAndPrintErrors(toAnalyse));
 	}
 
 	public static void assertMaybeImmutable(Class<?> toAnalyse) {
-		doAssertion(toAnalyse, IsImmutable.MAYBE, true);
+		doAssertEquals(toAnalyse.getName(), MAYBE, getResultAndPrintErrors(toAnalyse));
 	}
 	
 	public static void assertMaybeImmutable(AnalysisResult result) {
-		doAssertion(result.dottedClassName, MAYBE, result, true);
+		doAssertEquals(result.dottedClassName, MAYBE, result);
+	}
+	
+	public static void assertNotImmutable(AnalysisResult result) {
+		doAssertNotEquals(result.dottedClassName, DEFINITELY_NOT, result);
 	}
 
-	private static void doAssertion(Class<?> toAnalyse, IsImmutable expected, boolean printReasons) {
+	public static void assertNotImmutable(Class<?> toAnalyse) {
+		doAssertNotEquals(toAnalyse.getName(), DEFINITELY_NOT, getResultAndPrintErrors(toAnalyse));
+	}
+	
+
+	private static AnalysisResult getResultAndPrintErrors(Class<?> toAnalyse) {
 		IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
 		String className = toAnalyse.getName();
 		AnalysisResult result = session.resultFor(className);
 		
-		if(printReasons) {
-			for (AnalysisError error : session.getErrors()) {
-				System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n", 
-								      error.checkerName, error.onClass, error.description);
-			}
+		for (AnalysisError error : session.getErrors()) {
+			System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n", 
+					error.checkerName, error.onClass, error.description);
 		}
 		
-		doAssertion(className, expected, result, printReasons);
-
+		return result;
 	}
 
-	private static void doAssertion(String className, IsImmutable expected, AnalysisResult actual, boolean printReasons) {
-		String failure = "Exception " + className + " is expected to be " + expected + " immutable.";
-		if (printReasons) {
-			failure += "\n" + formatReasons(actual.reasons);
-		}
+	private static void doAssertEquals(String className, IsImmutable expected, AnalysisResult actual) {
+		String failure = "Class " + className + " is expected to be " + expected + " immutable.";
+		failure += "\n" + formatReasons(actual.reasons);
 		assertEquals(failure, expected, actual.isImmutable);
 	}
-
-
 	
+	private static void doAssertNotEquals(String className, IsImmutable expected, AnalysisResult actual) {
+		String failure = "Class " + className + " is expected NOT to be " + expected + " immutable.";
+		failure += "\n" + formatReasons(actual.reasons);
+		assertFalse(failure, expected.equals(actual.isImmutable));
+	}
 	
 }

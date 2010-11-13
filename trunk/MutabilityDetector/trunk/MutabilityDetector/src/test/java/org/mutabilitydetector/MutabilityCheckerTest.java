@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 
@@ -54,19 +54,19 @@ public class MutabilityCheckerTest {
 	}
 
 	@Test public void mutableByAssigningAbstractTypeToField() throws Exception {
-		assertNotImmutable(MutableByAssigningInterfaceToField.class);
+		assertDefinitelyNotImmutable(MutableByAssigningInterfaceToField.class);
 	}
 
 	@Test public void mutableByHavingMutableFieldAssigned() throws Exception {
-		assertNotImmutable(MutableByHavingMutableFieldAssigned.class);
+		assertDefinitelyNotImmutable(MutableByHavingMutableFieldAssigned.class);
 	}
 
 	@Test public void mutableByHavingSetterMethod() throws Exception {
-		assertNotImmutable(MutableByHavingSetterMethod.class);
+		assertDefinitelyNotImmutable(MutableByHavingSetterMethod.class);
 	}
 
 	@Test public void mutableByNoCopyOfIndirectlyConstructedField() throws Exception {
-		assertNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
+		assertDefinitelyNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
 	}
 
 	@Test public void mutableByNotBeingFinalClass() throws Exception {

@@ -10,7 +10,6 @@
 
 package org.mutabilitydetector.unittesting;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisResultFor;
 import static org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcher.withAllowedReasons;
 
@@ -45,45 +44,6 @@ public class MutabilityAssert {
 		reporter.expectedIsImmutable(expected, analysisResult);
 	}
 	
-	public static class SingleMutabilityAssert {
-		
-		private final Class<?> clazz;
-
-		public SingleMutabilityAssert(Class<?> clazz) {
-			this.clazz = clazz;
-		}
-		
-		public void isImmutable() {
-			assertImmutable(clazz);
-		}
-
-		public void isNotImmutable() {
-			assertImmutableStatusIs(DEFINITELY_NOT, clazz);
-		}
-	}
-
-	public static SingleMutabilityAssert assertThat(Class<?> clazz) {
-		return new SingleMutabilityAssert(clazz);
-	}
-
-	public static InstancesOf instancesOf(Class<?> clazz) {
-		return new InstancesOf(clazz, getResultFor(clazz));
-	}
-	
-	public static class InstancesOf {
-
-		public final Class<?> clazz;
-		public final AnalysisResult analysisResult;
-
-		public InstancesOf(Class<?> clazz, AnalysisResult analysisResult) {
-			this.clazz = clazz;
-			this.analysisResult = analysisResult;
-		}
-		
-		
-		
-	}
-
 	public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable) {
 		MatcherAssert.assertThat(getResultFor(clazz), areImmutable);
 	}
