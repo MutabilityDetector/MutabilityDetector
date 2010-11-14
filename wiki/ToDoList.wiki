@@ -17,4 +17,5 @@
  * ~~Annotate ignored unit tests with a brief overview of why they're ignored~~
  * Gather more immutable types from the JDK which can be tested
  * ~~Find tests using ad-hoc assertion methods and make them consistent~~
+ * Create a google group for the project
  
