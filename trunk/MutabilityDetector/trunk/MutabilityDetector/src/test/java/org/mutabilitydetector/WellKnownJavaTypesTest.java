@@ -17,7 +17,10 @@ import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.are
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.AbstractMap;
 import java.util.Date;
+
+import javax.management.ImmutableDescriptor;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,6 +63,23 @@ public class WellKnownJavaTypesTest {
 	
 	@Test public void Date() {
 		assertInstancesOf(Date.class, areNotImmutable());
+	}
+	
+	@Ignore("Not final" +
+			"Mutable type to field (java.lang.Object)")
+	@Test public void AbstractMap$SimpleImmutableEntry() {
+		assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable());
+	}
+	
+	@Ignore("Not final" +
+			"Field hashCode reassigned" +
+			"Field of mutable type (primitive array)")
+	@Test public void ImmutableDescriptor() {
+		assertInstancesOf(ImmutableDescriptor.class, areImmutable());
+	}
+	
+	@Test public void Class() {
+		assertInstancesOf(Class.class, areNotImmutable());
 	}
 	
 }
