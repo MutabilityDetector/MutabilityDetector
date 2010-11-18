@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
-			<version>[0.01,)</version>
+			<version>[0.0.5,)</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
