@@ -42,8 +42,8 @@
 		<dependency>
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
-			<version>0.0.5</version>
-			<scope>test</scope>
+			<version>0.0.5-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
