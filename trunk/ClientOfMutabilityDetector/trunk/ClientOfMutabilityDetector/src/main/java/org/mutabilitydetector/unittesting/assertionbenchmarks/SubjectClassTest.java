@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit.assertionbenchmarks;
+package org.mutabilitydetector.unittesting.assertionbenchmarks;
 
 //import org.junit.Test;
 import org.mutabilitydetector.unittesting.MutabilityAssert;

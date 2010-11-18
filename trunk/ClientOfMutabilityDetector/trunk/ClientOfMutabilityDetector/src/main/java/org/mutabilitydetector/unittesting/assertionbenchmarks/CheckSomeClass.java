@@ -8,7 +8,7 @@
  * 		license/LICENSE.txt
  */
 
-package org.mutabilitydetector.junit.assertionbenchmarks;
+package org.mutabilitydetector.unittesting.assertionbenchmarks;
 
 import java.math.BigDecimal;
 
