@@ -59,6 +59,7 @@ public class AccessModifierQuery {
 	public boolean isNotPrivate() { return !is(ACC_PRIVATE); }
 
 	public boolean isFinal() { return is(ACC_FINAL); }
+	public boolean isNotFinal() { return !is(ACC_FINAL); }
 
 	public boolean isAbstract() { return is(ACC_ABSTRACT); }
 
