@@ -17,14 +17,18 @@ public class MutableBySettingFieldOfField {
 	FieldObject directField = new FieldObject();
 	
 	public void setIndirectField() {
-		directField.indirectField = 43;
+		IndirectField otherObject = new IndirectField();
+		otherObject.field = 10;
+		
+		directField.intermediateField.field = 20;
 	}
 	
-	public void setDirectField() {
-		directField = null;
-	}
 }
 
 class FieldObject {
-	public int indirectField = 42;
+	public IndirectField intermediateField = new IndirectField();
+}
+
+class IndirectField {
+	public int field;
 }
