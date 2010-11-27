@@ -27,12 +27,13 @@ public class ImmutableButSetsPrivateFieldOfInstanceOfSelf {
 		
 }
 
-class MutableBySettingFieldOnThisInstance {
+class MutableBySettingFieldOnThisInstanceAndOtherInstance {
 	@SuppressWarnings("unused")
 	private int myField = 0;
 	
-	public void setMyField(int newMyField) {
+	public void setMyField(int newMyField, MutableBySettingFieldOnThisInstanceAndOtherInstance otherInstance) {
 		this.myField = newMyField;
+		otherInstance.myField = 42;
 		
 	}
 }
