@@ -71,8 +71,8 @@ public class SetsFieldsOfDifferentTypes {
 	public static class SetsBoolean {
 		private boolean field;
 
-		public void setField(boolean field) {
-			this.field = field;
+		public void setField(boolean parameter) {
+			this.field = parameter;
 		}
 	}
 
