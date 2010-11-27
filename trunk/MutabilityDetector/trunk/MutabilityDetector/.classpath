@@ -6,6 +6,7 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="var" path="M2_REPO/asm/asm/3.2/asm-3.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/asm/asm-analysis/3.2/asm-analysis-3.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/asm/asm-debug-all/3.2/asm-debug-all-3.2.jar" sourcepath="M2_REPO/asm/asm-debug-all/3.2/asm-debug-all-3.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/asm/asm-tree/3.2/asm-tree-3.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0.jar" sourcepath="M2_REPO/com/google/classpath-explorer/classpath-explorer/1.0/classpath-explorer-1.0-sources.jar">
     <attributes>
@@ -22,7 +23,11 @@
       <attribute value="jar:file:/home/graham/.m2/repository/org/hamcrest/hamcrest-core/1.2/hamcrest-core-1.2-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/junit/junit-dep/4.4/junit-dep-4.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit-dep/4.8/junit-dep-4.8.jar" sourcepath="M2_REPO/junit/junit-dep/4.8/junit-dep-4.8-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/graham/.m2/repository/junit/junit-dep/4.8/junit-dep-4.8-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
   <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0.jar" sourcepath="M2_REPO/org/mockito/mockito-core/1.8.0/mockito-core-1.8.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0.jar" sourcepath="M2_REPO/org/objenesis/objenesis/1.0/objenesis-1.0-sources.jar">
     <attributes>
