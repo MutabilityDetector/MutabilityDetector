@@ -23,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 
 import java.math.BigDecimal;
@@ -30,34 +31,44 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass;
-import org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsPrivateFieldOfInstanceOfSelf;
-import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
-import org.mutabilitydetector.benchmarks.settermethod.ImmutableWithMutatingStaticFactoryMethod;
-import org.mutabilitydetector.benchmarks.settermethod.MutableByAssigningFieldOnInstanceWithinStaticMethod;
-import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
-import org.mutabilitydetector.benchmarks.settermethod.MutableBySettingFieldOfField;
-import org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsBoolean;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsByte;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsChar;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsDouble;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsFloat;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsInt;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsLong;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsObjectArray;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsObjectArrayArray;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsReference;
+import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsShort;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
+
+@RunWith(Theories.class)
 public class SetterMethodCheckerTest {
 
 	private SetterMethodChecker checker;
 	private CheckerRunner checkerRunner;
 	private IAnalysisSession analysisSession;
+	private PrivateMethodInvocationInformation info;
 	
 	@Before public void setUp() {
 		checkerRunner = CheckerRunner.createWithCurrentClasspath();
 		analysisSession = createWithCurrentClassPath();
-		PrivateMethodInvocationInformation info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
+		info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
 		checker = newSetterMethodChecker(info);
 	}
 	
@@ -85,6 +96,10 @@ public class SetterMethodCheckerTest {
 		assertImmutable(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class));
 	}
 	
+	@Test public void settingFieldOfOtherInstanceAndThisInstanceRendersClassMutable() throws Exception {
+		assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
+	}
+	
 	@Test public void fieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
 		assertImmutable(doCheck(ImmutableUsingPrivateFieldSettingMethod.class));
 	}
@@ -105,12 +120,12 @@ public class SetterMethodCheckerTest {
 		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Ignore("Fields can be reassigned")
+//	@Ignore("Fields can be reassigned")
 	@Test public void bigDecimalDoesNotFailCheck() throws Exception {
 		assertImmutable(doCheck(BigDecimal.class));
 	}
 	
-	@Ignore("Incorrectly passes.")
+//	@Ignore("Field [hash] can be reassigned within method [hashCode]")
 	@Test public void stringDoesNotFailCheck() throws Exception {
 		assertImmutable(doCheck(String.class));
 	}
@@ -123,6 +138,28 @@ public class SetterMethodCheckerTest {
 	@Ignore("Field can be reassigned.")
 	@Test public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
 		assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
+	}
+	
+	@DataPoints public static Class<?>[] classes = new Class[] {
+			SetsBoolean.class,
+			SetsByte.class,
+			SetsChar.class,
+			SetsDouble.class,
+			SetsFloat.class,
+			SetsInt.class,
+			SetsLong.class,
+			SetsObjectArray.class,
+			SetsObjectArrayArray.class,
+			SetsReference.class,
+			SetsShort.class
+	};
+	
+	
+	
+	@Theory public void 
+	settingFieldsOfAnyTypeShouldBeMutable(Class<?> mutableSettingField) throws Exception {
+		AnalysisResult result = runChecker(checker, mutableSettingField);
+		assertDefinitelyNotImmutable(result);
 	}
 
 }
