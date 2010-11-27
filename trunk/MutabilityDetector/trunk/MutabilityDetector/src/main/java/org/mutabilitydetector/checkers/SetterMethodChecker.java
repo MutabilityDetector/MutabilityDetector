@@ -23,15 +23,12 @@ import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
@@ -75,8 +72,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
 	class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
-		private List<Integer> varInstructionIndices = new ArrayList<Integer>();
-		private boolean refOnStackIsAField = false;
+		private VarStack varStack = new VarStack();
 		private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
 
 		public SetterAssignmentVisitor(String ownerName, int access, String name, String desc, String signature, String[] exceptions, 
@@ -91,11 +87,11 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 				return;
 			}
 			
-			
 			if(method(access).isStatic()) {
 				detectInStaticMethod(fieldInsnNode);
 			} else {
-				detectInInstanceMethod(fieldInsnNode, stackValue);
+				VarStackSnapshot varStackAtTimeOfPutfield = varStack.next();
+				detectInInstanceMethod(fieldInsnNode, stackValue, varStackAtTimeOfPutfield);
 			}
 			
 		}
@@ -128,13 +124,11 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			return this.owner.compareTo(ownerOfReassignedField) == 0;
 		}
 
-		private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-			if(thisObjectWasAddedToStack()) {
+		private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue, VarStackSnapshot varStack) {
+			if(varStack.thisObjectWasAddedToStack()) {
 				
-				int stackSpaceToLookBack = reassignedReferenceIsPrimitiveType(stackValue) ? 1 : 2;
-				
-				int indexOfOwningObject = varInstructionIndices.get(varInstructionIndices.size() - stackSpaceToLookBack);
-				if(isThisObject(indexOfOwningObject) || refOnStackIsAField) { 
+				int indexOfOwningObject = varStack.indexOfOwningObject();
+				if(isThisObject(indexOfOwningObject)) { 
 					setIsImmutableResult(fieldInsnNode.name);
 				} else {
 					// Setting field on other instance of 'this' type
@@ -143,15 +137,11 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			}
 		}
 
-		private boolean reassignedReferenceIsPrimitiveType(BasicValue stackValue) {
-			return stackValue.getType().getSort() != Type.OBJECT; 
-		}
-
 		@Override
 		public void visitFieldInsn(int opcode, String owner, String name, String desc) {
 			super.visitFieldInsn(opcode, owner, name, desc);
-			if(opcode == Opcodes.GETFIELD) {
-				refOnStackIsAField = true;
+			if(opcode == Opcodes.PUTFIELD) {
+				varStack.takeSnapshotOfVarsAtPutfield();
 			}
 		}
 		
@@ -160,16 +150,10 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 		}
 		
 		
-		private boolean thisObjectWasAddedToStack() {
-			// the "this" reference is at position 0 of the local variable table
-			return varInstructionIndices.contains(0);
-		}
-
 		@Override
 		public void visitVarInsn(int opcode, int var) {
 			super.visitVarInsn(opcode, var);
-			varInstructionIndices.add(var);
-			refOnStackIsAField = false;
+			varStack.visitVarInsn(opcode, var);
 		}
 
 		private boolean isConstructor() {
