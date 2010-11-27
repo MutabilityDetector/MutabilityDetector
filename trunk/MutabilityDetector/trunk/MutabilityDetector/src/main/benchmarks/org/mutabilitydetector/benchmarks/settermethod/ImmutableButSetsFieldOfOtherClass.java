@@ -15,7 +15,8 @@ package org.mutabilitydetector.benchmarks.settermethod;
  * being set is being checked for, regardless of what object holds the field.
  */
 public class ImmutableButSetsFieldOfOtherClass {
-
+	@SuppressWarnings("unused") private int myField = 43;
+	
 	public void setFieldOnParameter(AssignMyField otherObject) {
 		this.toString(); // Ensure the 'this' reference is involved somewhere
 		otherObject.reassignable = 42;
