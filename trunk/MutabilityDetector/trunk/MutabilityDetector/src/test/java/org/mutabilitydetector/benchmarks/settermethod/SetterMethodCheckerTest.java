@@ -124,8 +124,8 @@ public class SetterMethodCheckerTest {
 		assertDefinitelyNotImmutable(result);
 	}
 	
-	@Ignore("Field [precision] can be reassigned within method [precision]\n" + 
-			"Field [stringCache] can be reassigned within method [toString]\n" + 
+	@Ignore("Field [precision] can be reassigned within method [precision]" + 
+			"Field [stringCache] can be reassigned within method [toString]" + 
 			"Field [intVal] can be reassigned within method [inflate]")
 	@Test public void bigDecimalDoesNotFailCheck() throws Exception {
 		assertImmutable(doCheck(BigDecimal.class));
