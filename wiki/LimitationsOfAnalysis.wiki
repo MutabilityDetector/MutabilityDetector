@@ -2,4 +2,25 @@
 #labels Phase-Design,Phase-Requirements,Phase-Implementation
 
 = Introduction =
-Mutability Detector is not perfect in it's analysis, this page will discuss some of the limitations of the analysis.
+Mutability Detector is not perfect in it's analysis, this page will discuss some of the limitations of the analysis. For each of the patterns listed below, Mutability Detector cannot correctly detect them.
+
+
+== Field can be reassigned after construction (SetterMethodChecker) ==
+=== Benign Data Races ===
+
+A benign data race is when there is the potential for a data race, but however the data is read and written, the effects are harmless. A simple example could be:
+
+{{{
+public int benign() {
+    if(this.field == 0) {
+        this.field = 42;
+    }
+    return this.field;
+}
+}}}
+
+Here there is the potential for a data race between threads calling `benign()`, but no matter how the threads call the method, the result is always going to be 42. (Note this is not necessarily the case for `long` or `double` fields, where reassignment is not atomic). A rough rule of thumb is that if the value is calculated from immutable state, it's a benign data race.
+
+This kind of pattern allows lazy calculation of fields. A prominent example is `java.lang.String.hashCode()` with the `hash` field. 
+
+This is currently the only reason `String` is considered mutable.
