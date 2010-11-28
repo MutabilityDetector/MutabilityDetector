@@ -13,15 +13,16 @@ package org.mutabilitydetector.benchmarks.settermethod;
 @SuppressWarnings("unused")
 public class ImmutableButSetsPrivateFieldOfInstanceOfSelf {
 
-	private int myField = 0;
+	private Object myField = null;
+	private int primitiveField = 0;
 	private ImmutableButSetsPrivateFieldOfInstanceOfSelf fieldOfSelfType = null;
 	
 	public ImmutableButSetsPrivateFieldOfInstanceOfSelf setPrivateFieldOnInstanceOfSelf() {
 		ImmutableButSetsPrivateFieldOfInstanceOfSelf i = new ImmutableButSetsPrivateFieldOfInstanceOfSelf();
 		this.hashCode();
-		i.myField = 10;
+		i.myField = new Object();
 		this.hashCode();
-		i.myField = 11;
+		i.primitiveField++;
 		return i;
 	}
 		

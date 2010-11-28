@@ -27,8 +27,6 @@ public class VarStack {
 		indices.add(var);
 	}
 
-
-
 	public void takeSnapshotOfVarsAtPutfield() {
 		snapshots.add(new VarStackSnapshot(indices));
 		snapshotsIterator = snapshots.iterator();
@@ -43,7 +41,7 @@ public class VarStack {
 		private final List<Integer> indices;
 
 		public VarStackSnapshot(List<Integer> indices) {
-			this.indices = unmodifiableList(new ArrayList<Integer>(indices));;
+			this.indices = unmodifiableList(new ArrayList<Integer>(indices));
 		}
 		
 		public boolean thisObjectWasAddedToStack() {
@@ -53,7 +51,7 @@ public class VarStack {
 		
 		public int indexOfOwningObject() {
 			int stackSpaceToLookBack = 1;
-			return indices.get(indices.size() - stackSpaceToLookBack);
+			return indices.get((indices.size() -1) - stackSpaceToLookBack);
 		}
 
 	}

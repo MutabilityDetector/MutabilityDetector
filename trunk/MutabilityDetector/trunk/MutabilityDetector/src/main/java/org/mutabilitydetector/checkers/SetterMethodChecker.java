@@ -90,8 +90,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			if(method(access).isStatic()) {
 				detectInStaticMethod(fieldInsnNode);
 			} else {
-				VarStackSnapshot varStackAtTimeOfPutfield = varStack.next();
-				detectInInstanceMethod(fieldInsnNode, stackValue, varStackAtTimeOfPutfield);
+				detectInInstanceMethod(fieldInsnNode, stackValue);
 			}
 			
 		}
@@ -124,10 +123,15 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 			return this.owner.compareTo(ownerOfReassignedField) == 0;
 		}
 
-		private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue, VarStackSnapshot varStack) {
-			if(varStack.thisObjectWasAddedToStack()) {
+		private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+			if(isOnlyCalledFromConstructor()) {
+				return;
+			}
+			
+			VarStackSnapshot varStackSnapshot = varStack.next();
+			if(varStackSnapshot.thisObjectWasAddedToStack()) {
 				
-				int indexOfOwningObject = varStack.indexOfOwningObject();
+				int indexOfOwningObject = varStackSnapshot.indexOfOwningObject();
 				if(isThisObject(indexOfOwningObject)) { 
 					setIsImmutableResult(fieldInsnNode.name);
 				} else {
@@ -162,11 +166,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
 
 		private void setIsImmutableResult(String fieldName) {
-			
-			if(isOnlyCalledFromConstructor()) {
-				return;
-			}
-			
 			String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
 			addResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
 		}
