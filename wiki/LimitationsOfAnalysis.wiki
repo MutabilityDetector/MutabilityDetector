@@ -1,0 +1,5 @@
+#summary Current state of play regarding the analysis performed by Mutability Detector
+#labels Phase-Design,Phase-Requirements,Phase-Implementation
+
+= Introduction =
+Mutability Detector is not perfect in it's analysis, this page will discuss some of the limitations of the analysis.
