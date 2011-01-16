@@ -13,7 +13,7 @@ package org.mutabilitydetector.unittesting.matchers;
 import org.hamcrest.Description;
 import org.mutabilitydetector.AnalysisResult;
 
-public class NoReasonAllowedMatcher extends AnalysisResultMatcher {
+public class NoReasonAllowedMatcher extends BaseAnalysisResultMatcher {
 
 	@Override protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
 		return (analysisResult.reasons.size() == 0);

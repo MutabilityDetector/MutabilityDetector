@@ -17,7 +17,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.IsAnything;
 import org.mutabilitydetector.AnalysisResult;
 
-public class NoWarningsAllowedMatcher extends AnalysisResultMatcher {
+public class NoWarningsAllowedMatcher extends BaseAnalysisResultMatcher {
 	private Matcher<AnalysisResult> isAnything = not(IsAnything.<AnalysisResult>anything());
 	
 	public static NoWarningsAllowedMatcher noWarningsAllowed() {

@@ -97,6 +97,18 @@ public class MutabilityAssertTest {
 		assertInstancesOf(MutableByHavingSetterMethod.class, areImmutable(), 
 				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
 	}
+	
+	@Test
+	public void providesUsefulFailureMessageWhenAssertionFails() {
+		try {
+		assertInstancesOf(MutableByHavingSetterMethod.class, areImmutable(), 
+				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+		} catch (AssertionError e) {
+			System.out.print(e.getMessage());
+			assertThat(e.getMessage(), containsString("can be reassigned"));
+		}
+	}
+
 
 
 }

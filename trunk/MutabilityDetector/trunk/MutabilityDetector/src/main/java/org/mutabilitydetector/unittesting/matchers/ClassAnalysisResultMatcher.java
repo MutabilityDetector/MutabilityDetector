@@ -13,14 +13,13 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.mutabilitydetector.unittesting.AnalysisSessionHolder.analysisResultFor;
 
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 
 public  class ClassAnalysisResultMatcher extends ConvertingTypeSafeMatcher<Class<?>, AnalysisResult> {
 
-	private final TypeSafeDiagnosingMatcher<AnalysisResult> resultMatcher;
+	private final AnalysisResultMatcher resultMatcher;
 
-	public ClassAnalysisResultMatcher(TypeSafeDiagnosingMatcher<AnalysisResult> resultMatcher) {
+	public ClassAnalysisResultMatcher(AnalysisResultMatcher resultMatcher) {
 		this.resultMatcher = resultMatcher;
 	}
 	

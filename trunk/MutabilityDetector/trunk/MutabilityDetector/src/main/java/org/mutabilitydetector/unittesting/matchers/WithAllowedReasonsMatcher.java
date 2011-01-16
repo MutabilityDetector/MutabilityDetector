@@ -11,21 +11,20 @@
 package org.mutabilitydetector.unittesting.matchers;
 
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
 
-public class WithAllowedReasonsMatcher extends AnalysisResultMatcher {
+public class WithAllowedReasonsMatcher extends BaseAnalysisResultMatcher {
 
 
 	public static WithAllowedReasonsMatcher withAllowedReasons(IsImmutableMatcher isImmutable, 
-															   Matcher<AnalysisResult> allowedReason) {
+															   AnalysisResultMatcher allowedReason) {
 		return new WithAllowedReasonsMatcher(isImmutable, allowedReason);
 	}
 
 	private final IsImmutableMatcher isImmutable;
-	private final Matcher<AnalysisResult> allowedReason;
+	private final AnalysisResultMatcher allowedReason;
 
-	public WithAllowedReasonsMatcher(IsImmutableMatcher isImmutable, Matcher<AnalysisResult> allowedReason) {
+	public WithAllowedReasonsMatcher(IsImmutableMatcher isImmutable, AnalysisResultMatcher allowedReason) {
 		this.isImmutable = isImmutable;
 		this.allowedReason = allowedReason;
 
@@ -38,12 +37,13 @@ public class WithAllowedReasonsMatcher extends AnalysisResultMatcher {
 		} else if(allowedReason.matches(analysisResult)){
 			return true;
 		} else {
+			isImmutable.describeMismatch(analysisResult, mismatchDescription);
 			return false;
 		}		
 	}
 
 	@Override public void describeTo(Description description) {
-		
+		isImmutable.describeTo(description);
 	}
 
 }

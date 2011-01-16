@@ -20,9 +20,9 @@ import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.matchers.AllowedIfOtherClassIsImmutable;
 import org.mutabilitydetector.unittesting.matchers.AllowedReasonCollector;
-import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
+import org.mutabilitydetector.unittesting.matchers.BaseAnalysisResultMatcher;
 
-public class ProvidedOtherClass extends AnalysisResultMatcher {
+public class ProvidedOtherClass extends BaseAnalysisResultMatcher {
 
 	private final Dotted dottedClassName;
 	private final Set<AllowedReasonCollector> allowedReasonCollectors = new HashSet<AllowedReasonCollector>();

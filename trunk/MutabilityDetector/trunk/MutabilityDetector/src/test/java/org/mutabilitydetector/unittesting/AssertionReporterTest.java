@@ -23,13 +23,14 @@ import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 
 import java.util.Collection;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
 
 public class AssertionReporterTest {
 
@@ -54,13 +55,15 @@ public class AssertionReporterTest {
 		CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable", null,
 				PUBLISHED_NON_FINAL_FIELD);
 
-		AnalysisResult analysisResult = new AnalysisResult("d.e.f", DEFINITELY_NOT, asList(reason));
+		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", DEFINITELY_NOT, asList(reason));
 		try {
 			reporter.expectedImmutable(analysisResult);
 			fail("expected exception");
 		} catch (MutabilityAssertionError e) {
-			String expectedMessage = format("Expected class %s to be [%s] immutable, but was [%s] immutable.", 
-					"d.e.f", DEFINITELY, DEFINITELY_NOT);
+			String expectedMessage = format(
+					"\nExpected class [%s] to be [%s] immutable," +
+					"\nbut was [%s] immutable.", 
+					"SimpleClassName", DEFINITELY, DEFINITELY_NOT);
 			assertThat(e.getMessage(), containsString(expectedMessage));
 			assertThat(e.getMessage(), containsString("a reason the class is mutable"));
 		}
@@ -71,13 +74,30 @@ public class AssertionReporterTest {
 		reporter.expectedIsImmutable(IsImmutable.MAYBE, analysisResult);
 	}
 	
-	@SuppressWarnings("unchecked") @Test public void allowedReasonDoesNotThrowException() {
-		Matcher<AnalysisResult> allowed = mock(Matcher.class);
+	@Test public void allowedReasonDoesNotThrowException() {
+		AnalysisResultMatcher allowed = mock(AnalysisResultMatcher.class);
 		AnalysisResult result = new AnalysisResult("j.k.l", DEFINITELY_NOT, unusedReasons());
 		
 		when(allowed.matches(result)).thenReturn(true);
 		
 		reporter.expectedIsImmutable(DEFINITELY, result, allowed);
+	}
+	
+	@Ignore("In progress")
+	@Test public void thrownExceptionContainsMessageAboutWarningsWhichAreSuppressed() throws Exception {
+		CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable", null,
+															 PUBLISHED_NON_FINAL_FIELD);
+
+		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", DEFINITELY_NOT, asList(reason));
+		try {
+			reporter.expectedImmutable(analysisResult);
+			fail("expected exception");
+		} catch (MutabilityAssertionError e) {
+			String expectedMessage = format(
+					"\nSuppressed reasons:" +
+					"\n\tNo reasons have been suppressed.");
+			assertThat(e.getMessage(), containsString(expectedMessage));
+		}
 	}
 
 	private static Collection<CheckerReasonDetail> unusedReasons() {

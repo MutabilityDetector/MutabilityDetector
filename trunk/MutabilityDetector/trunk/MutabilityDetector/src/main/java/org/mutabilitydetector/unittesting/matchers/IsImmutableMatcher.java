@@ -16,7 +16,7 @@ import org.hamcrest.Description;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
-public class IsImmutableMatcher extends AnalysisResultMatcher {
+public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
 	private final IsImmutable isImmutable;
 	private AnalysisResult item;
 	public IsImmutableMatcher(IsImmutable isImmutable) {
