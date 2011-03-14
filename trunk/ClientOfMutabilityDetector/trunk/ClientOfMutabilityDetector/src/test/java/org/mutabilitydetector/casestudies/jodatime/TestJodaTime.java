@@ -5,6 +5,8 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutabl
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
+import java.util.Locale;
+
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
@@ -16,12 +18,14 @@ import org.joda.time.Minutes;
 import org.joda.time.Months;
 import org.joda.time.Partial;
 import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.joda.time.TimeOfDay;
 import org.joda.time.Weeks;
 import org.joda.time.YearMonthDay;
 import org.joda.time.Years;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodPrinter;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation") 
@@ -38,12 +42,22 @@ public class TestJodaTime {
 
     @Test
     public void testorg_joda_time_format_DateTimeFormatter() {
-        assertImmutable(DateTimeFormatter.class);
+    	assertInstancesOf(DateTimeFormatter.class, areImmutable(), provided(Locale.class).isAlsoImmutable());
     }
 
     @Test
+    public void testjava_util_Locale() {
+        assertImmutable(Locale.class);
+    }
+    
+    @Test
     public void testorg_joda_time_format_PeriodFormatter() {
-        assertImmutable(PeriodFormatter.class);
+    	assertInstancesOf(PeriodFormatter.class, areImmutable(), provided(PeriodPrinter.class).isAlsoImmutable());
+    }
+    
+    @Test
+    public void testorg_joda_time_format_PeriodType() {
+    	assertInstancesOf(PeriodType.class, areImmutable());
     }
 
     @Test
