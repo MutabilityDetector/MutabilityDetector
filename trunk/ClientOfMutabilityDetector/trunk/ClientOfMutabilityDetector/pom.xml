@@ -19,8 +19,8 @@
 	</scm>
 	<repositories>
 		<repository>
-			<id>Maven Central</id>
-			<url>http://repo1.maven.org/maven2/</url>
+			<id>Sonatype Snapshots</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
 
@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
-			<version>0.0.5-SNAPSHOT</version>
+			<version>0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		
