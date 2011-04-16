@@ -10,6 +10,7 @@
 
 package org.mutabilitydetector.cli;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -22,19 +23,24 @@ public class ClassListReaderFactoryTest {
 	private File classListFile;
 
 	@Test
-	public void testDefaultReturnedReaderIsPlainTextClassListReader() throws Exception {
-		classListFile = new File("somePlainTextFile.txt");
-		assertTrue(classListFile.createNewFile());
+	public void defaultReturnedReaderIsPlainTextClassListReader() throws Exception {
+		classListFile = File.createTempFile("somePlainTextClassListFile", "noFileExtension");
+
 		ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
 		
 		assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);
 	}
 	
+	@Test
+	public void returnsAPlainTextReaderWhenFileExtensionIsDotTxt() throws Exception {
+		classListFile = File.createTempFile("somePlainTextClassListFile", ".txt");
+
+		ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
+		
+		assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);		
+	}
 	
-	@After
-	public void tearDown() {
-		if (classListFile != null) {
-			assertTrue(classListFile.delete());
-		}
+	@After public void cleanUpFileOnExit() {
+		if(classListFile != null) classListFile.deleteOnExit();
 	}
 }
