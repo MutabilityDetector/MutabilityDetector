@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 
@@ -34,13 +35,13 @@ public class AnalysisDatabaseTest {
 		db = newAnalysisDatabase(sessionRunner);
 	}
 
-	@SuppressWarnings("unchecked") private void assertCachedCorrectly(InfoKey infoKey) {
+	private void assertCachedCorrectly(InfoKey<? extends AnalysisInformation> infoKey) {
 		assertSame("Should be the same instance from each invocation.", 
 				db.requestInformation(infoKey), 
 				db.requestInformation(infoKey));
 	}
 	
-	@SuppressWarnings("unchecked") private void assertNotNull(InfoKey infoKey) {
+	private void assertNotNull(InfoKey<? extends AnalysisInformation> infoKey) {
 		Assert.assertNotNull("Should return an instance of requested information.", db.requestInformation(infoKey));
 	}
 	

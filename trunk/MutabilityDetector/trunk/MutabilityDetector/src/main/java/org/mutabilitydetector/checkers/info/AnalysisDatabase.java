@@ -33,7 +33,7 @@ public class AnalysisDatabase {
 	public static final InfoKey<TypeStructureInformation> TYPE_STRUCTURE
 						= new InfoKey<TypeStructureInformation>(TypeStructureInformation.class);
 	
-	@SuppressWarnings("unchecked") private Map infoMap = new HashMap();
+	@SuppressWarnings("rawtypes") private Map infoMap = new HashMap();
 
 	private final ISessionCheckerRunner sessionCheckerRunner;
 	
