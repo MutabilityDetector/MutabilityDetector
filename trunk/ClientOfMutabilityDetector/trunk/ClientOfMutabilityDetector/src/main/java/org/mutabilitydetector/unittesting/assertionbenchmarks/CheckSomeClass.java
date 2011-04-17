@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 
 import org.mutabilitydetector.cli.CommandLineOptions;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
+import org.mutabilitydetector.repackaged.com.google.classpath.ClassPath;
+import org.mutabilitydetector.repackaged.com.google.classpath.ClassPathFactory;
 
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
 
 public class CheckSomeClass {
 
