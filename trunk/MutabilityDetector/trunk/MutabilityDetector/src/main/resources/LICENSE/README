@@ -1,0 +1,12 @@
+The license for Mutability Detector source is contained in LICENSE
+
+There are several third party libraries used by and distributed with Mutability Detector.
+The relevant licenses for each library are mapped below.
+
+The license for the various ASM libraries are available within LICENSE-ASM, retrieved from http://asm.ow2.org/license.html, Dec 2009
+
+The license for classpath-explorer is not included with the distribution, but is available from http://www.apache.org/licenses/LICENSE-2.0
+
+The license for commons-cli is included in LICENSE-commons-CLI.
+
+The license for Hamcrest is included in LICENSE-hamcrest
