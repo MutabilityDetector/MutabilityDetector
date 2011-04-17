@@ -4,7 +4,7 @@
 
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>MutabilityDetector</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>MutabilityDetector</name>
@@ -152,20 +152,14 @@
 	</profiles>
 
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit-dep</artifactId>
-			<version>4.8</version>
-			<scope>test</scope>
-		</dependency>
 
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.8.0</version>
-			<scope>test</scope>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.google.classpath-explorer</groupId>
 			<artifactId>classpath-explorer</artifactId>
@@ -179,7 +173,6 @@
 			<version>3.2</version>
 			<scope>compile</scope>
 		</dependency>
-
 
 		<dependency>
 			<groupId>asm</groupId>
@@ -203,12 +196,18 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>1.2</version>
-			<scope>compile</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.0</version>
+			<scope>test</scope>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.8</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 </project>
