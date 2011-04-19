@@ -28,6 +28,7 @@ import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
 import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 
 public class CheckerRunner {
 
@@ -43,7 +44,7 @@ public class CheckerRunner {
 	}
 
 	public static CheckerRunner createWithCurrentClasspath() {
-		return new CheckerRunner(null);
+		return new CheckerRunner(new ClassPathFactory().createFromJVM());
 	}
 
 	public void run(IMutabilityChecker checker, Class<?> toCheck) {
