@@ -103,7 +103,7 @@
 
 							<shadedArtifactAttached>false</shadedArtifactAttached>
 							<createDependencyReducedPom>true</createDependencyReducedPom>
-							<shadedClassifierName>all</shadedClassifierName>
+			
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
