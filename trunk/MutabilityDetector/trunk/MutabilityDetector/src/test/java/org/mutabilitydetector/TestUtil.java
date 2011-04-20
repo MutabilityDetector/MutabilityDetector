@@ -22,6 +22,7 @@ import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import java.util.Collection;
 
@@ -56,7 +57,7 @@ public class TestUtil {
 	}
 	
 	public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
-		CheckerRunner.createWithCurrentClasspath().run(checker, toAnalyse);
+		CheckerRunner.createWithCurrentClasspath().run(new AnalysisSession(), checker, fromClass(toAnalyse));
 		return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
 	}
 

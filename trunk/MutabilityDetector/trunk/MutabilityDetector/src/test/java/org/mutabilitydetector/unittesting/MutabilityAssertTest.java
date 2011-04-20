@@ -25,8 +25,8 @@ import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
-import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
+import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 
 public class MutabilityAssertTest {

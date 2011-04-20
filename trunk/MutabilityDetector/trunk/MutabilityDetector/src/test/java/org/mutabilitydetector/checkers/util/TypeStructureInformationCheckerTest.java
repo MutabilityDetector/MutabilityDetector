@@ -16,7 +16,7 @@ import static org.mutabilitydetector.checkers.util.TypeStructureInformationCheck
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ConcreteType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
@@ -25,12 +25,10 @@ import org.mutabilitydetector.locations.Dotted;
 
 public class TypeStructureInformationCheckerTest {
 
-	private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();;
-
 	@Test public void isAbstractIsTrueForAbstractType() throws Exception {
 		Dotted className = fromClass(AbstractType.class);
 		TypeStructureInformationChecker checker = newChecker(className);
-		checkerRunner.run(checker, AbstractType.class);
+		TestUtil.runChecker(checker, AbstractType.class);
 		
 		assertTrue("Class is abstract.", checker.isAbstract());
 		
@@ -39,7 +37,7 @@ public class TypeStructureInformationCheckerTest {
 	@Test public void isAbstractIsFalseForConcreteType() throws Exception {
 		Dotted className = fromClass(ConcreteType.class);
 		TypeStructureInformationChecker checker = newChecker(className);
-		checkerRunner.run(checker, ConcreteType.class);
+		TestUtil.runChecker(checker, ConcreteType.class);
 		
 		assertFalse("Class is concrete.", checker.isAbstract());
 	}
@@ -47,7 +45,7 @@ public class TypeStructureInformationCheckerTest {
 	@Test public void isInterfaceIsTrueForInterfaceType() throws Exception {
 		Dotted className = fromClass(InterfaceType.class);
 		TypeStructureInformationChecker checker = newChecker(className);
-		checkerRunner.run(checker, InterfaceType.class);
+		TestUtil.runChecker(checker, InterfaceType.class);
 		
 		assertTrue("Type is an interface.", checker.isInterface());
 	}
@@ -55,7 +53,7 @@ public class TypeStructureInformationCheckerTest {
 	@Test public void isInterfaceIsFalseForConcreteType() throws Exception {
 		Dotted className = fromClass(ConcreteType.class);
 		TypeStructureInformationChecker checker = newChecker(className);
-		checkerRunner.run(checker, ConcreteType.class);
+		TestUtil.runChecker(checker, ConcreteType.class);
 		
 		assertFalse("Type is a concrete class.", checker.isInterface());
 	}

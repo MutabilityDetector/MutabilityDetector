@@ -28,8 +28,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
 
 public class AssertionReporterTest {

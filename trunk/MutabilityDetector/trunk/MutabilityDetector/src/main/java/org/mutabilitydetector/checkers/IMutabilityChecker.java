@@ -29,5 +29,7 @@ public interface IMutabilityChecker extends ClassVisitor {
 	public Collection<CheckerReasonDetail> reasons();
 
 	public IsImmutable result();
+
+    public void visitAnalysisException(Throwable toBeThrown);
 	
 }

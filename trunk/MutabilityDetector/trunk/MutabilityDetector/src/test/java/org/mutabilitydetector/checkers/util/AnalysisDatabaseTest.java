@@ -22,9 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 import org.mutabilitydetector.checkers.info.AnalysisInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
-import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 
 public class AnalysisDatabaseTest {
 

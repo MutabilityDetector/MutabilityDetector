@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -90,6 +90,11 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	@Override
 	public void visitSource(String source, String debug) {
 		
+	}
+	
+	@Override
+	public void visitAnalysisException(Throwable toBeThrown) {
+	    
 	}
 
 	protected String dottedClassName(Type objectType) {

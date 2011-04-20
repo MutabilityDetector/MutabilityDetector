@@ -21,8 +21,8 @@ import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;

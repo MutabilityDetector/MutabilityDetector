@@ -14,14 +14,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
+import org.mutabilitydetector.TestUtil;
 
 
 public class PrivateMethodInvocationCheckerTest {
 
 	@Test public void testCanQueryIfAMethodIsOnlyCalledFromTheConstructor() throws Exception {
 		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
-		CheckerRunner.createWithCurrentClasspath().run(checker, PrivateMethodsCalledOnlyInConstructor.class);
+		TestUtil.runChecker(checker, PrivateMethodsCalledOnlyInConstructor.class);
 		
 		String methodDescriptor = "privateMethod:()V";
 		boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);
@@ -30,7 +30,7 @@ public class PrivateMethodInvocationCheckerTest {
 	
 	@Test public void isPrivateMethodCalledOnlyFromConstructorReturnsFalseWhenPrivateMethodIsInvokedInPublicMethod() throws Exception {
 		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
-		CheckerRunner.createWithCurrentClasspath().run(checker, PrivateMethodsCalledOutsideConstructor.class);
+		TestUtil.runChecker(checker, PrivateMethodsCalledOutsideConstructor.class);
 		
 		String methodDescriptor = "privateMethod:()V";
 		boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);

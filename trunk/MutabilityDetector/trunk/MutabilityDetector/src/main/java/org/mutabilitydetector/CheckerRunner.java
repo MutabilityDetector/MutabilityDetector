@@ -47,15 +47,6 @@ public class CheckerRunner {
 		return new CheckerRunner(new ClassPathFactory().createFromJVM());
 	}
 
-	public void run(IMutabilityChecker checker, Class<?> toCheck) {
-		try {
-			cr = new ClassReader(toCheck.getName());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		cr.accept(checker, 0);
-	}
-
 	public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, Dotted className) {
 		try {
 			try {
@@ -84,6 +75,7 @@ public class CheckerRunner {
 	}
 
 	private void handleException(IAnalysisSession analysisSession, IMutabilityChecker checker, String dottedClassPath, Throwable e) {
+	    checker.visitAnalysisException(e);
 		String errorDescription = format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
 		AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
 		analysisSession.addAnalysisError(error);
