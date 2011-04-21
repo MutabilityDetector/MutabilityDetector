@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -94,7 +95,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	
 	@Override
 	public void visitAnalysisException(Throwable toBeThrown) {
-	    
+	    addResult("Encountered an unhandled error in analysis.", null, MutabilityReason.CANNOT_ANALYSE);
 	}
 
 	protected String dottedClassName(Type objectType) {

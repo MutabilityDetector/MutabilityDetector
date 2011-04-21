@@ -36,7 +36,7 @@ public class CheckerReasonDetail {
 	
 	@Override
 	public String toString() {
-		return format("CheckerReasonDetail[%s, %s, @%s]", message, reason, toHexString(hashCode()));
+		return format("CheckerReasonDetail@%s[%s, %s, %s]", toHexString(hashCode()), message, reason, location);
 	}
 	
 }

@@ -57,10 +57,6 @@ public class WellKnownJavaTypesTest {
 		assertInstancesOf(Array.class, areImmutable());
 	}
 	
-	@Test public void primitive_int() {
-		assertInstancesOf(int.class, areImmutable());
-	}
-	
 	@Test public void Date() {
 		assertInstancesOf(Date.class, areNotImmutable());
 	}
