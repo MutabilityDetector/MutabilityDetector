@@ -13,6 +13,7 @@ package org.mutabilitydetector.locations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import org.junit.Test;
 
@@ -22,6 +23,11 @@ public class ClassLocationTest {
 	@Test public void testConstructedFromInternalTypeName() throws Exception {
 		CodeLocation location = ClassLocation.fromInternalName("some/package/Class");
 		assertEquals("some.package.Class", location.typeName());
+	}
+	
+	@Test public void canConstructFromSlashed() {
+		 CodeLocation location = ClassLocation.fromSlashed(slashed("some/package/Class"));
+		 assertEquals("some.package.Class", location.typeName());
 	}
 	
 	@Test public void compareTo() throws Exception {
