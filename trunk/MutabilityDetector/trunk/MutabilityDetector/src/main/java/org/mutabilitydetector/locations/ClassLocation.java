@@ -15,9 +15,6 @@ public class ClassLocation implements CodeLocation {
 
 	private final String dottedClassName;
 
-	/**
-	 * @param dottedClassName
-	 */
 	public ClassLocation(String dottedClassName) {
 		this.dottedClassName = dottedClassName;
 	}
@@ -62,12 +59,13 @@ public class ClassLocation implements CodeLocation {
 		return true;
 	}
 
-	/**
-	 * @param internalClassName
-	 * @return
-	 */
 	public static CodeLocation fromInternalName(String internalClassName) {
 		String dottedClassName = new ClassNameConvertor().dotted(internalClassName);
+		return new ClassLocation(dottedClassName);
+	}
+
+	public static CodeLocation fromSlashed(Slashed slashed) {
+		String dottedClassName = ClassIdentifier.forClass(slashed).asDotted().asString();
 		return new ClassLocation(dottedClassName);
 	}
 

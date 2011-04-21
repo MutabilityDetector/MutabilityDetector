@@ -17,13 +17,16 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.locations.Slashed.slashed;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.Reason;
+import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -95,7 +98,9 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 	
 	@Override
 	public void visitAnalysisException(Throwable toBeThrown) {
-	    addResult("Encountered an unhandled error in analysis.", null, MutabilityReason.CANNOT_ANALYSE);
+	    addResult("Encountered an unhandled error in analysis.", 
+	    		ClassLocation.fromSlashed(slashed(ownerClass)), 
+	    		MutabilityReason.CANNOT_ANALYSE);
 	}
 
 	protected String dottedClassName(Type objectType) {
