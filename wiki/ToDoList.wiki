@@ -9,8 +9,8 @@
  * Add JUnit documentation to Getting Started guide
  * ~~Get the Hudson build of ClientOfMutabilityDetector working properly~~
  * ~~Move benchmark code into a separate source directory which isn't included in deliverable jar~~
- * Make a prioritised list of the limitations of the analysis performed and the work required to fix them
- * Investigate getting a release into Maven Central
+ * ~~Make a prioritised list of the limitations of the analysis performed and the work required to fix them~~
+ * ~~Investigate getting a release into Maven Central~~
  * Create an `allowingSubclassing()` allowed reason for unit tests (mainly for classes not marked as final)
  * Create a video to show off the unit testing capability of the tool
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
