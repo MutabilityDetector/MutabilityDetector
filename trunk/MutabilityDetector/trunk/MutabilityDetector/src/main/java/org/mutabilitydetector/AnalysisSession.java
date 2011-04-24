@@ -61,7 +61,7 @@ public class AnalysisSession implements IAnalysisSession {
 		return new AnalysisSession(new ClassPathFactory().createFromJVM());
 	}
 
-	@Override public IsImmutable isImmutable(String className) {
+	private IsImmutable isImmutable(String className) {
 		return resultFor(className).isImmutable;
 	}
 

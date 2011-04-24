@@ -80,7 +80,7 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 			switch(sort) {
 			case Type.OBJECT:
 				String dottedClassName = dottedClassName(type);
-				IsImmutable isImmutable = analysisSession.isImmutable(dottedClassName);
+				IsImmutable isImmutable = analysisSession.resultFor(dottedClassName).isImmutable;
 				
 				boolean isConcreteType = isConcreteType(dotted(dottedClassName));
 				if (!isImmutable.equals(DEFINITELY) && isConcreteType) {

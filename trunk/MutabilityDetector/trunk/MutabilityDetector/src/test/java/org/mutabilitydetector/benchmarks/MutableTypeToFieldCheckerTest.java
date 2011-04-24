@@ -28,6 +28,7 @@ import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Before;
@@ -43,6 +44,7 @@ public class MutableTypeToFieldCheckerTest {
 	private IAnalysisSession mockSession;
 	private MutableTypeToFieldChecker checker;
 	private AnalysisResult result;
+	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", DEFINITELY_NOT);;
 
 	@Before public void setUp() {
 		mockSession = mock(IAnalysisSession.class);
@@ -51,14 +53,14 @@ public class MutableTypeToFieldCheckerTest {
 	}
 	
 	@Test public void requestsMutableStatusOfPublishedField() throws Exception {
-		when(mockSession.isImmutable(MutableExample.class.getCanonicalName())).thenReturn(DEFINITELY_NOT);
+		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
 		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 		
-		verify(mockSession).isImmutable(MutableExample.class.getCanonicalName());
+		verify(mockSession).resultFor(MutableExample.class.getCanonicalName());
 	}
 	
 	@Test public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
-		when(mockSession.isImmutable(MutableExample.class.getCanonicalName())).thenReturn(DEFINITELY_NOT);
+		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
 		result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 		
 		assertThat(checker, hasReasons());
@@ -66,7 +68,7 @@ public class MutableTypeToFieldCheckerTest {
 	}
 	
 	@Test public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
-		when(mockSession.isImmutable(MutableExample.class.getCanonicalName())).thenReturn(DEFINITELY_NOT);
+		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
 
 		result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 		
@@ -85,7 +87,7 @@ public class MutableTypeToFieldCheckerTest {
 	}
 	
 	@Test public void doesNotRaiseErrorForAbstractTypeSinceThisIsRaisedByAbstractTypeToFieldChecker() throws Exception {
-		when(mockSession.isImmutable(AbstractStringContainer.class.getName())).thenReturn(DEFINITELY_NOT);
+		when(mockSession.resultFor(AbstractStringContainer.class.getName())).thenReturn(unusedAnalysisResult);
 		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 		
 		assertThat(checker, hasNoReasons());

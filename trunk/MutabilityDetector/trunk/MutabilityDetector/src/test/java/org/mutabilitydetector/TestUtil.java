@@ -36,7 +36,7 @@ import org.mutabilitydetector.unittesting.MutabilityAssert;
 @Ignore
 public class TestUtil {
 	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-		IsImmutable result = new AnalysisSession().isImmutable(toAnalyse.getName());
+		IsImmutable result = new AnalysisSession().resultFor(toAnalyse.getName()).isImmutable;
 		return result;
 	}
 	
@@ -68,5 +68,9 @@ public class TestUtil {
 	
 	public static AnalysisDatabase analysisDatabase() {
 		return newAnalysisDatabase(sessionCheckerRunner());
+	}
+
+	public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
+		return new AnalysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
 	}
 }

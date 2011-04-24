@@ -18,6 +18,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.management.ImmutableDescriptor;
@@ -76,6 +77,10 @@ public class WellKnownJavaTypesTest {
 	
 	@Test public void Class() {
 		assertInstancesOf(Class.class, areNotImmutable());
+	}
+	
+	@Test public void ArrayList() {
+		 assertInstancesOf(ArrayList.class, areNotImmutable());
 	}
 	
 }

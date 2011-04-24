@@ -13,8 +13,7 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 
 public class CheckerRunnerTest {
 
-    @Test public void
-    will_visit_analysis_exception_when_an_unhandled_exception_is_thrown() {
+    @Test public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
         IMutabilityChecker checker = Mockito.mock(IMutabilityChecker.class);
         
         Throwable toBeThrown = new NoSuchMethodError();

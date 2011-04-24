@@ -23,8 +23,6 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
 public interface IAnalysisSession {
 
-	IsImmutable isImmutable(String className);
-	
 	AnalysisResult resultFor(String className);
 	
 	void addAnalysisResult(AnalysisResult result);

@@ -27,25 +27,25 @@ public class StackOverflowInAnalysisTest {
 	private IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
 
 	@Test public void innerClassDoesNotCauseStackOverflowError() throws Exception {
-		session.isImmutable(ImmutableExample.class.getName());
+		session.resultFor(ImmutableExample.class.getName());
 
-		session.isImmutable(AbstractStringContainer.class.getName());
-		session.isImmutable(MutableByAssigningAbstractTypeToField.class.getName());
-		session.isImmutable(MutableByAssigningAbstractTypeToField.AbstractStringContainer.class.getName());
+		session.resultFor(AbstractStringContainer.class.getName());
+		session.resultFor(MutableByAssigningAbstractTypeToField.class.getName());
+		session.resultFor(MutableByAssigningAbstractTypeToField.AbstractStringContainer.class.getName());
 	}
 
 	@Test public void visitingEnumTypeDoesNotCauseStackOverflowError() throws Exception {
-		session.isImmutable(EnumType.class.getName());
+		session.resultFor(EnumType.class.getName());
 	}
 
 	@Test public void analysingThisTestDoesNotCauseStackOverflowError() throws Exception {
-		session.isImmutable(this.getClass().getName());
+		session.resultFor(this.getClass().getName());
 	}
 
 	@Test public void analysingConstructorClassDoesNotCauseStackOverflow() throws Exception {
 		// Constructor has a field of type 'Class'
 		// Class has a field of type 'Constructor'
-		session.isImmutable(Constructor.class.getName());
+		session.resultFor(Constructor.class.getName());
 	}
 
 }

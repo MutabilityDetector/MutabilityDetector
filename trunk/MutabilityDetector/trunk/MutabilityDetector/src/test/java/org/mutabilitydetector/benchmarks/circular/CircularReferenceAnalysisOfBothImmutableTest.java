@@ -33,7 +33,7 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 	@Test
 	public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
 		IAnalysisSession session = createWithCurrentClassPath();
-		session.isImmutable(ImmutableClassA.class.getName());
+		session.resultFor(ImmutableClassA.class.getName());
 	}
 	
 	@Test public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
