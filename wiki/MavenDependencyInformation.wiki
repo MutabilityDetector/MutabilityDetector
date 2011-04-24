@@ -2,21 +2,10 @@
 
 = Introduction =
 
-The Mutability Detector is now available with maven (and compatible build tools) from the Sonatype OSS snapshot repository.
+The Mutability Detector is now available with maven (and compatible build tools) from Maven Central.
 
 
 = Details =
-
-For now, until a full release goes to Maven Central, the Sonatype repository must be made available to your maven build. This can be done by adding the following snippet to your pom.xml:
-
-{{{
-<repositories>
-  <repository>
-    <id>Sonatype Snapshots</id>  
-    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-  </repository>
-</repositories>
-}}}
 
 The dependency snippet for Mutability Detector is:
 
@@ -24,7 +13,7 @@ The dependency snippet for Mutability Detector is:
 <dependency>
   <groupId>org.mutabilitydetector</groupId>
   <artifactId>MutabilityDetector</artifactId>
-  <version>[0.6, )</version>
+  <version>0.6</version>
   <scope>test</scope>
 </dependency>
 }}}
@@ -32,4 +21,4 @@ The dependency snippet for Mutability Detector is:
 For users of other dependency/build tools, the relevant information is:
 
 || Group ID	|| Artifact ID	|| Version ||
-|| org.mutabilitydetector	|| MutabilityDetector	|| 0.6-SNAPSHOT ||
+|| org.mutabilitydetector	|| MutabilityDetector	|| 0.6 ||
