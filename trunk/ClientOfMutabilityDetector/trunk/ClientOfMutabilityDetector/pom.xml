@@ -67,6 +67,14 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/joda-money-0.5-SNAPSHOT.jar</systemPath>
 		</dependency>
+		
+		<dependency>
+			<groupId>net.ttsui</groupId>
+			<artifactId>pending</artifactId>
+			<version>0.0.3</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/pending-0.0.3.jar</systemPath>
+		</dependency>
 
 
 	</dependencies>

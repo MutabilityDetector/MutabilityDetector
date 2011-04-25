@@ -7,6 +7,9 @@ import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.are
 
 import java.util.Locale;
 
+import net.ttsui.junit.rules.pending.PendingImplementation;
+import net.ttsui.junit.rules.pending.PendingRule;
+
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
@@ -26,10 +29,15 @@ import org.joda.time.Years;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodPrinter;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 
 @SuppressWarnings("deprecation") 
 public class TestJodaTime {
+	
+	@Rule public MethodRule pendingRule = new PendingRule();
+	
     @Test
     public void testorg_joda_time_LocalDateTime() {
         assertInstancesOf(LocalDateTime.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
@@ -40,22 +48,22 @@ public class TestJodaTime {
     	assertInstancesOf(LocalTime.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
-    @Test
+    @Test @PendingImplementation
     public void testorg_joda_time_format_DateTimeFormatter() {
     	assertInstancesOf(DateTimeFormatter.class, areImmutable(), provided(Locale.class).isAlsoImmutable());
     }
 
-    @Test
+    @Test @PendingImplementation
     public void testjava_util_Locale() {
         assertImmutable(Locale.class);
     }
     
-    @Test
+    @Test @PendingImplementation
     public void testorg_joda_time_format_PeriodFormatter() {
     	assertInstancesOf(PeriodFormatter.class, areImmutable(), provided(PeriodPrinter.class).isAlsoImmutable());
     }
     
-    @Test
+    @Test @PendingImplementation
     public void testorg_joda_time_format_PeriodType() {
     	assertInstancesOf(PeriodType.class, areImmutable());
     }
@@ -85,7 +93,7 @@ public class TestJodaTime {
     	assertInstancesOf(LocalDate.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
 
-    @Test
+    @Test @PendingImplementation
     public void testorg_joda_time_DateTimeZone() {
         assertImmutable(DateTimeZone.class);
     }
@@ -130,7 +138,7 @@ public class TestJodaTime {
         assertImmutable(Period.class);
     }
 
-    @Test
+    @Test @PendingImplementation
     public void testorg_joda_time_Partial() {
         assertInstancesOf(Partial.class, areImmutable(),provided(Chronology.class).isAlsoImmutable());
     }
