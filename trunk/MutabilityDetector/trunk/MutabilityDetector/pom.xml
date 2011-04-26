@@ -78,11 +78,11 @@
 					<execution>
 						<phase>generate-sources</phase>
 						<goals>
-							<goal>add-source</goal>
+							<goal>add-test-source</goal>
 						</goals>
 						<configuration>
 							<sources>
-								<source>src/main/benchmarks</source>
+								<source>src/test/benchmarks</source>
 							</sources>
 						</configuration>
 					</execution>
