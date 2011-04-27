@@ -146,6 +146,11 @@ public class SetterMethodCheckerTest {
 		assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
 	}
 	
+	@Ignore("Could not analyse - issue 14")
+	@Test public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
+		assertDefinitelyNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
+	}
+	
 	@DataPoints public static Class<?>[] classes = new Class[] {
 			SetsBoolean.class,
 			SetsByte.class,

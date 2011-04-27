@@ -62,8 +62,7 @@ public class TestUtil {
 	}
 
 	public static SessionCheckerRunner sessionCheckerRunner() {
-		return new SessionCheckerRunner(createWithCurrentClassPath(),
-										createWithCurrentClasspath());
+		return new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
 	}
 	
 	public static AnalysisDatabase analysisDatabase() {
