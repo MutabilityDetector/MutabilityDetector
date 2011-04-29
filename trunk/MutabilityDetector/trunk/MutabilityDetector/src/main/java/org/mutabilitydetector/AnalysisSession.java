@@ -18,6 +18,7 @@
 package org.mutabilitydetector;
 
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +42,6 @@ public class AnalysisSession implements IAnalysisSession {
 	private final CheckerRunnerFactory checkerRunnerFactory;
 	private final List<String> requestedAnalysis = new ArrayList<String>();
 	private final AnalysisDatabase database;
-	
 
 	public AnalysisSession(ClassPath classpath) {
 		checkerRunnerFactory = new CheckerRunnerFactory(classpath);
@@ -61,29 +61,26 @@ public class AnalysisSession implements IAnalysisSession {
 		return new AnalysisSession(new ClassPathFactory().createFromJVM());
 	}
 
-	private IsImmutable isImmutable(String className) {
-		return resultFor(className).isImmutable;
-	}
-
 	@Override public AnalysisResult resultFor(String className) {
 		AnalysisResult resultForClass = analysedClasses.get(className);
 		if (resultForClass != null) {
 			return resultForClass;
 		} else {
 			requestAnalysis(className);
-			return analysedClasses.get(className);
+			return resultFor(className);
 		}
 	}
 
-	private IsImmutable requestAnalysis(String className) {
+	private void requestAnalysis(String className) {
 		if (requestedAnalysis.contains(className)) {
 			// isImmutable has already been called for this class, and the
 			// result not yet generated
-			return IsImmutable.MAYBE;
+			return;
 		} else {
 			requestedAnalysis.add(className);
-			new AllChecksRunner(checkerFactory, checkerRunnerFactory, className).runCheckers(this);
-			return isImmutable(className);
+			AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory, checkerRunnerFactory, dotted(className));
+			AnalysisResult result = allChecksRunner.runCheckers(this);
+			addAnalysisResult(result);
 		}
 	}
 
@@ -93,7 +90,7 @@ public class AnalysisSession implements IAnalysisSession {
 			if (resource.endsWith(".class")) {
 				resource = resource.substring(0, resource.lastIndexOf(".class"));
 			}
-			isImmutable(resource);
+			requestAnalysis(resource);
 		}
 	}
 

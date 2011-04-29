@@ -18,6 +18,7 @@
 package org.mutabilitydetector;
 
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class AnalysisSessionTest {
 		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
 		IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
 		ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
-		AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, immutableClass);
+		AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, fromClass(immutableClass));
 
 		checker.runCheckers(analysisSession);
 		
