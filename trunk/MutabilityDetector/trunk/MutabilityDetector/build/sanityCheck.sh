@@ -7,7 +7,11 @@ RT_JAR=$JAVA_HOME/jre/lib/rt.jar
 COMMAND="java -jar ${MD_JAR} -cp $RT_JAR"
 
 echo "Running command: ${COMMAND}"
-date
+START=`date`
 $COMMAND
-date
+END=`date`
+
+echo "Started:		${START}"
+echo "Ended:			${END}"
+
 exit 0
