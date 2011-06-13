@@ -7,13 +7,13 @@
     <SrcDir>/home/graham/dev/workspaces/projects/MutabilityDetector/src/main/benchmarks</SrcDir>
     <SrcDir>/home/graham/dev/workspaces/projects/MutabilityDetector/src/main/java</SrcDir>
     <SrcDir>/home/graham/dev/workspaces/projects/MutabilityDetector/src/test/java</SrcDir>
-    <WrkDir>/home/graham/dev/workspaces/projects/MutabilityDetector/etc</WrkDir>
+    <WrkDir>/home/graham/dev/workspace/MutabilityDetector/etc</WrkDir>
     <SuppressionFilter>
       <LastVersion value="-1" relOp="NEQ"/>
     </SuppressionFilter>
   </Project>
   <CloudDetails online="false"/>
-  <BugInstance type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UuF" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UuF" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField$StringContainer">
       <SourceLine classname="org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField$StringContainer" sourcefile="MutableByAssigningAbstractTypeToField.java" sourcepath="org/mutabilitydetector/benchmarks/MutableByAssigningAbstractTypeToField.java"/>
     </Class>
@@ -21,7 +21,7 @@
       <SourceLine classname="org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField$StringContainer" sourcefile="MutableByAssigningAbstractTypeToField.java" sourcepath="org/mutabilitydetector/benchmarks/MutableByAssigningAbstractTypeToField.java"/>
     </Field>
   </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.circular.CircularReferenceAnalysisOfBothImmutableTest">
       <SourceLine classname="org.mutabilitydetector.benchmarks.circular.CircularReferenceAnalysisOfBothImmutableTest" sourcefile="CircularReferenceAnalysisOfBothImmutableTest.java" sourcepath="org/mutabilitydetector/benchmarks/circular/CircularReferenceAnalysisOfBothImmutableTest.java"/>
     </Class>
@@ -34,7 +34,7 @@
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="session"/>
   </BugInstance>
-  <BugInstance type="UUF_UNUSED_FIELD" priority="2" abbrev="UuF" category="PERFORMANCE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="UUF_UNUSED_FIELD" priority="2" abbrev="UuF" category="PERFORMANCE">
     <Class classname="org.mutabilitydetector.benchmarks.circular.ImmutableClassB">
       <SourceLine classname="org.mutabilitydetector.benchmarks.circular.ImmutableClassB" sourcefile="CircularReferenceClasses.java" sourcepath="org/mutabilitydetector/benchmarks/circular/CircularReferenceClasses.java"/>
     </Class>
@@ -42,7 +42,7 @@
       <SourceLine classname="org.mutabilitydetector.benchmarks.circular.ImmutableClassB" sourcefile="CircularReferenceClasses.java" sourcepath="org/mutabilitydetector/benchmarks/circular/CircularReferenceClasses.java"/>
     </Field>
   </BugInstance>
-  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE">
     <Class classname="org.mutabilitydetector.benchmarks.escapedthis.Safe$SaveThisReferenceToPrivateInstanceField">
       <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Safe$SaveThisReferenceToPrivateInstanceField" sourcefile="Safe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Safe.java"/>
     </Class>
@@ -51,12 +51,12 @@
     </Field>
     <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Safe$SaveThisReferenceToPrivateInstanceField" start="19" end="19" startBytecode="6" endBytecode="6" sourcefile="Safe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Safe.java"/>
   </BugInstance>
-  <BugInstance type="SIC_INNER_SHOULD_BE_STATIC" priority="2" abbrev="SIC" category="PERFORMANCE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="SIC_INNER_SHOULD_BE_STATIC" priority="2" abbrev="SIC" category="PERFORMANCE">
     <Class classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$PassInnerClassWithImplicitReferenceToThis$InnerClass">
       <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$PassInnerClassWithImplicitReferenceToThis$InnerClass" start="75" end="75" sourcefile="Unsafe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Unsafe.java"/>
     </Class>
   </BugInstance>
-  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="2" abbrev="ST" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="2" abbrev="ST" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SaveThisReferenceAsStaticFieldOfThisClass">
       <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SaveThisReferenceAsStaticFieldOfThisClass" sourcefile="Unsafe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Unsafe.java"/>
     </Class>
@@ -68,7 +68,7 @@
     </Field>
     <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SaveThisReferenceAsStaticFieldOfThisClass" start="61" end="61" startBytecode="5" endBytecode="5" sourcefile="Unsafe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Unsafe.java"/>
   </BugInstance>
-  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="2" abbrev="ST" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="2" abbrev="ST" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SetThisReferenceAsFieldOfOtherInstance">
       <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SetThisReferenceAsFieldOfOtherInstance" sourcefile="Unsafe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Unsafe.java"/>
     </Class>
@@ -80,7 +80,7 @@
     </Field>
     <SourceLine classname="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$SetThisReferenceAsFieldOfOtherInstance" start="42" end="42" startBytecode="5" endBytecode="5" sourcefile="Unsafe.java" sourcepath="org/mutabilitydetector/benchmarks/escapedthis/Unsafe.java"/>
   </BugInstance>
-  <BugInstance type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UrF" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UrF" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.settermethod.AssignMyField">
       <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.AssignMyField" sourcefile="ImmutableButSetsFieldOfOtherClass.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/ImmutableButSetsFieldOfOtherClass.java"/>
     </Class>
@@ -89,7 +89,7 @@
     </Field>
     <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass" start="22" end="22" startBytecode="8" endBytecode="8" sourcefile="ImmutableButSetsFieldOfOtherClass.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/ImmutableButSetsFieldOfOtherClass.java"/>
   </BugInstance>
-  <BugInstance type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UrF" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" priority="2" abbrev="UrF" category="STYLE">
     <Class classname="org.mutabilitydetector.benchmarks.settermethod.IndirectField">
       <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.IndirectField" sourcefile="MutableBySettingFieldOfField.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/MutableBySettingFieldOfField.java"/>
     </Class>
@@ -98,7 +98,7 @@
     </Field>
     <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.MutableBySettingFieldOfField" start="21" end="21" startBytecode="11" endBytecode="11" sourcefile="MutableBySettingFieldOfField.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/MutableBySettingFieldOfField.java"/>
   </BugInstance>
-  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE">
     <Class classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArray">
       <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArray" sourcefile="SetsFieldsOfDifferentTypes.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/SetsFieldsOfDifferentTypes.java"/>
     </Class>
@@ -111,7 +111,7 @@
     <LocalVariable name="field" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
     <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArray" start="91" end="91" startBytecode="2" endBytecode="2" sourcefile="SetsFieldsOfDifferentTypes.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/SetsFieldsOfDifferentTypes.java"/>
   </BugInstance>
-  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" abbrev="EI2" category="MALICIOUS_CODE">
     <Class classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArrayArray">
       <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArrayArray" sourcefile="SetsFieldsOfDifferentTypes.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/SetsFieldsOfDifferentTypes.java"/>
     </Class>
@@ -124,7 +124,7 @@
     <LocalVariable name="field" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
     <SourceLine classname="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArrayArray" start="99" end="99" startBytecode="2" endBytecode="2" sourcefile="SetsFieldsOfDifferentTypes.java" sourcepath="org/mutabilitydetector/benchmarks/settermethod/SetsFieldsOfDifferentTypes.java"/>
   </BugInstance>
-  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" abbrev="Dm" category="I18N" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" abbrev="Dm" category="I18N">
     <Class classname="org.mutabilitydetector.cli.ClassListReaderFactory">
       <SourceLine classname="org.mutabilitydetector.cli.ClassListReaderFactory" sourcefile="ClassListReaderFactory.java" sourcepath="org/mutabilitydetector/cli/ClassListReaderFactory.java"/>
     </Class>
@@ -136,7 +136,7 @@
     </Method>
     <SourceLine classname="org.mutabilitydetector.cli.ClassListReaderFactory" start="45" end="45" startBytecode="12" endBytecode="12" sourcefile="ClassListReaderFactory.java" sourcepath="org/mutabilitydetector/cli/ClassListReaderFactory.java"/>
   </BugInstance>
-  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" abbrev="Dm" category="I18N" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" abbrev="Dm" category="I18N">
     <Class classname="org.mutabilitydetector.cli.CommandLineOptionsTest">
       <SourceLine classname="org.mutabilitydetector.cli.CommandLineOptionsTest" sourcefile="CommandLineOptionsTest.java" sourcepath="org/mutabilitydetector/cli/CommandLineOptionsTest.java"/>
     </Class>
@@ -148,7 +148,7 @@
     </Method>
     <SourceLine classname="org.mutabilitydetector.cli.CommandLineOptionsTest" start="40" end="40" startBytecode="17" endBytecode="17" sourcefile="CommandLineOptionsTest.java" sourcepath="org/mutabilitydetector/cli/CommandLineOptionsTest.java"/>
   </BugInstance>
-  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE">
     <Class classname="org.mutabilitydetector.unittesting.AssertionReporter">
       <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporter" sourcefile="AssertionReporter.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporter.java"/>
     </Class>
@@ -161,7 +161,7 @@
     <String value="\nExpected class [%s] to be [%s] immutable,\nbut was [%s] immutable.%n" role="STRING_FORMAT_STRING"/>
     <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporter" start="45" end="45" startBytecode="40" endBytecode="40" sourcefile="AssertionReporter.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporter.java"/>
   </BugInstance>
-  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE">
     <Class classname="org.mutabilitydetector.unittesting.AssertionReporterTest">
       <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
     </Class>
@@ -174,7 +174,7 @@
     <String value="\nExpected class [%s] to be [%s] immutable,\nbut was [%s] immutable." role="STRING_FORMAT_STRING"/>
     <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" start="63" end="63" startBytecode="78" endBytecode="78" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
   </BugInstance>
-  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE">
     <Class classname="org.mutabilitydetector.unittesting.AssertionReporterTest">
       <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
     </Class>
@@ -187,7 +187,7 @@
     <String value="\nSuppressed reasons:\n No reasons have been suppressed." role="STRING_FORMAT_STRING"/>
     <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" start="96" end="96" startBytecode="61" endBytecode="61" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
   </BugInstance>
-  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE" last="0" removedByChange="true" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" abbrev="FS" category="BAD_PRACTICE" last="0" removedByChange="true">
     <Class classname="org.mutabilitydetector.unittesting.AssertionReporterTest">
       <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
     </Class>
@@ -200,7 +200,7 @@
     <String value="\nSuppressed reasons:\n No reasons have been suppressed." role="STRING_FORMAT_STRING"/>
     <SourceLine classname="org.mutabilitydetector.unittesting.AssertionReporterTest" start="96" end="96" startBytecode="61" endBytecode="61" sourcefile="AssertionReporterTest.java" sourcepath="org/mutabilitydetector/unittesting/AssertionReporterTest.java"/>
   </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" abbrev="DLS" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" abbrev="DLS" category="STYLE">
     <Class classname="org.mutabilitydetector.unittesting.matchers.IsImmutableMatcherTest">
       <SourceLine classname="org.mutabilitydetector.unittesting.matchers.IsImmutableMatcherTest" sourcefile="IsImmutableMatcherTest.java" sourcepath="org/mutabilitydetector/unittesting/matchers/IsImmutableMatcherTest.java"/>
     </Class>
@@ -213,7 +213,7 @@
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="matcher"/>
   </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" abbrev="DLS" category="STYLE" firstSeen="2/5/11 5:19 PM">
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" abbrev="DLS" category="STYLE">
     <Class classname="org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcherTest">
       <SourceLine classname="org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcherTest" sourcefile="WithAllowedReasonsMatcherTest.java" sourcepath="org/mutabilitydetector/unittesting/matchers/WithAllowedReasonsMatcherTest.java"/>
     </Class>
@@ -276,8 +276,8 @@
     <MissingClass>org.objectweb.asm.tree.analysis.SimpleVerifier</MissingClass>
     <MissingClass>org.objectweb.asm.tree.analysis.Value</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Sat, 5 Feb 2011 17:19:28 +0000" total_classes="1362" referenced_classes="298" total_bugs="19" total_size="20334" num_packages="16" vm_version="11.2-b01" cpu_seconds="107.80" clock_seconds="782.29" peak_mbytes="148.32" alloc_mbytes="479.56" gc_seconds="3.94" priority_2="15" priority_1="4">
-    <PackageStats package="org.mutabilitydetector" total_bugs="0" total_types="28" total_size="3276">
+  <FindBugsSummary timestamp="Sat, 5 Feb 2011 17:19:28 +0000" total_classes="1816" referenced_classes="298" total_bugs="18" total_size="27112" num_packages="16" vm_version="11.2-b01" cpu_seconds="44.59" clock_seconds="77008.73" peak_mbytes="57.73" alloc_mbytes="455.12" gc_seconds="0.00" priority_2="14" priority_1="4">
+    <PackageStats package="org.mutabilitydetector" total_bugs="0" total_types="28" total_size="4368">
       <ClassStats class="org.mutabilitydetector.AllChecksRunner" sourceFile="AllChecksRunner.java" interface="false" size="39" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.AnalysisResult" sourceFile="AnalysisResult.java" interface="false" size="20" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.AnalysisResultTest" sourceFile="AnalysisResultTest.java" interface="false" size="12" bugs="0"/>
@@ -307,10 +307,10 @@
       <ClassStats class="org.mutabilitydetector.TestUtil" sourceFile="TestUtil.java" interface="false" size="19" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.WellKnownJavaTypesTest" sourceFile="WellKnownJavaTypesTest.java" interface="false" size="33" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.asmoverride" total_bugs="0" total_types="1" total_size="78">
+    <PackageStats package="org.mutabilitydetector.asmoverride" total_bugs="0" total_types="1" total_size="104">
       <ClassStats class="org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier" sourceFile="CustomClassLoadingSimpleVerifier.java" interface="false" size="13" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks" total_bugs="1" total_types="33" total_size="2136" priority_2="1">
+    <PackageStats package="org.mutabilitydetector.benchmarks" total_bugs="1" total_types="33" total_size="2848" priority_2="1">
       <ClassStats class="org.mutabilitydetector.benchmarks.AbstractTypeToFieldCheckerTest" sourceFile="AbstractTypeToFieldCheckerTest.java" interface="false" size="38" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.BadPracticeByPublishingReference" sourceFile="BadPracticeByPublishingReference.java" interface="false" size="8" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.Fakeout" sourceFile="Fakeout.java" interface="false" size="14" bugs="0"/>
@@ -345,13 +345,13 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.PublishedNonFinalFieldCheckerTest" sourceFile="PublishedNonFinalFieldCheckerTest.java" interface="false" size="30" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.StackOverflowInAnalysisTest" sourceFile="StackOverflowInAnalysisTest.java" interface="false" size="20" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks.circular" total_bugs="2" total_types="4" total_size="144" priority_2="2">
+    <PackageStats package="org.mutabilitydetector.benchmarks.circular" total_bugs="2" total_types="4" total_size="192" priority_2="2">
       <ClassStats class="org.mutabilitydetector.benchmarks.circular.CircularReferenceAnalysisOfBothImmutableTest" sourceFile="CircularReferenceAnalysisOfBothImmutableTest.java" interface="false" size="13" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.circular.CircularReferenceClasses" sourceFile="CircularReferenceClasses.java" interface="false" size="3" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.circular.ImmutableClassA" sourceFile="CircularReferenceClasses.java" interface="false" size="4" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.circular.ImmutableClassB" sourceFile="CircularReferenceClasses.java" interface="false" size="4" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks.escapedthis" total_bugs="4" total_types="19" total_size="654" priority_2="4">
+    <PackageStats package="org.mutabilitydetector.benchmarks.escapedthis" total_bugs="4" total_types="19" total_size="872" priority_2="4">
       <ClassStats class="org.mutabilitydetector.benchmarks.escapedthis.GiveMeYourThisReference" sourceFile="GiveMeYourThisReference.java" interface="false" size="17" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.escapedthis.Safe" sourceFile="Safe.java" interface="false" size="3" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.escapedthis.Safe$JustAssignTheReference" sourceFile="Safe.java" interface="false" size="6" bugs="0"/>
@@ -372,7 +372,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference" sourceFile="Unsafe.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.escapedthis.Unsafe$ThisPassedToPrivateStaticMethodWhichDoesPublishReference" sourceFile="Unsafe.java" interface="false" size="8" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks.inheritance" total_bugs="0" total_types="9" total_size="462">
+    <PackageStats package="org.mutabilitydetector.benchmarks.inheritance" total_bugs="0" total_types="9" total_size="616">
       <ClassStats class="org.mutabilitydetector.benchmarks.inheritance.ImmutableSubtypeOfImmutableSupertype" sourceFile="ImmutableSupertype.java" interface="false" size="6" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.inheritance.ImmutableSubtypeOfMutableSupertype" sourceFile="MutableSupertype.java" interface="false" size="6" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.inheritance.ImmutableSubtypeWithNoSuperclass" sourceFile="MutableSupertype.java" interface="false" size="5" bugs="0"/>
@@ -383,7 +383,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.inheritance.TestSubclassingOfImmutableType" sourceFile="TestSubclassingOfImmutableType.java" interface="false" size="15" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.inheritance.TestSubclassingOfMutableType" sourceFile="TestSubclassingOfMutableType.java" interface="false" size="21" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks.settermethod" total_bugs="4" total_types="25" total_size="1710" priority_2="4">
+    <PackageStats package="org.mutabilitydetector.benchmarks.settermethod" total_bugs="4" total_types="25" total_size="2280" priority_2="4">
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.AssignMyField" sourceFile="ImmutableButSetsFieldOfOtherClass.java" interface="false" size="4" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.FieldObject" sourceFile="MutableBySettingFieldOfField.java" interface="false" size="5" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.ImmutableButSetsFieldOfOtherClass" sourceFile="ImmutableButSetsFieldOfOtherClass.java" interface="false" size="9" bugs="0"/>
@@ -410,7 +410,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest" sourceFile="SetterMethodCheckerTest.java" interface="false" size="78" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass" sourceFile="StillMutableSubclass.java" interface="false" size="8" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.benchmarks.types" total_bugs="0" total_types="15" total_size="354">
+    <PackageStats package="org.mutabilitydetector.benchmarks.types" total_bugs="0" total_types="15" total_size="472">
       <ClassStats class="org.mutabilitydetector.benchmarks.types.AbstractType" sourceFile="AbstractType.java" interface="false" size="3" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.types.AbstractType$ImmutableSubtypeOfAbstractType" sourceFile="AbstractType.java" interface="false" size="3" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives" sourceFile="ClassWithAllPrimitives.java" interface="false" size="3" bugs="0"/>
@@ -427,7 +427,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.types.EnumType" sourceFile="EnumType.java" interface="false" size="10" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.types.InterfaceType" sourceFile="InterfaceType.java" interface="true" size="1" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.checkers" total_bugs="0" total_types="20" total_size="2370">
+    <PackageStats package="org.mutabilitydetector.checkers" total_bugs="0" total_types="20" total_size="3160">
       <ClassStats class="org.mutabilitydetector.checkers.AbstractMutabilityChecker" sourceFile="AbstractMutabilityChecker.java" interface="false" size="41" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.AbstractTypeToFieldChecker" sourceFile="AbstractTypeToFieldChecker.java" interface="false" size="15" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.AbstractTypeToFieldChecker$AssignAbstractTypeVisitor" sourceFile="AbstractTypeToFieldChecker.java" interface="false" size="20" bugs="0"/>
@@ -449,7 +449,7 @@
       <ClassStats class="org.mutabilitydetector.checkers.VarStack" sourceFile="VarStack.java" interface="false" size="18" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.VarStack$VarStackSnapshot" sourceFile="VarStack.java" interface="false" size="11" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.checkers.info" total_bugs="0" total_types="10" total_size="1050">
+    <PackageStats package="org.mutabilitydetector.checkers.info" total_bugs="0" total_types="10" total_size="1400">
       <ClassStats class="org.mutabilitydetector.checkers.info.AnalysisDatabase" sourceFile="AnalysisDatabase.java" interface="false" size="35" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.info.AnalysisDatabase$InfoKey" sourceFile="AnalysisDatabase.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.info.AnalysisInformation" sourceFile="AnalysisInformation.java" interface="true" size="1" bugs="0"/>
@@ -461,7 +461,7 @@
       <ClassStats class="org.mutabilitydetector.checkers.info.TypeStructureInformation" sourceFile="TypeStructureInformation.java" interface="false" size="27" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.info.TypeStructureInformationTest" sourceFile="TypeStructureInformationTest.java" interface="false" size="19" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.checkers.util" total_bugs="0" total_types="9" total_size="1104">
+    <PackageStats package="org.mutabilitydetector.checkers.util" total_bugs="0" total_types="9" total_size="1472">
       <ClassStats class="org.mutabilitydetector.checkers.util.AnalysisDatabaseTest" sourceFile="AnalysisDatabaseTest.java" interface="false" size="28" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker" sourceFile="PrivateMethodInvocationChecker.java" interface="false" size="29" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker$MethodInvocationVisitor" sourceFile="PrivateMethodInvocationChecker.java" interface="false" size="11" bugs="0"/>
@@ -472,7 +472,7 @@
       <ClassStats class="org.mutabilitydetector.checkers.util.TypeStructureInformationChecker" sourceFile="TypeStructureInformationChecker.java" interface="false" size="33" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.util.TypeStructureInformationCheckerTest" sourceFile="TypeStructureInformationCheckerTest.java" interface="false" size="29" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.cli" total_bugs="2" total_types="18" total_size="3180" priority_1="2">
+    <PackageStats package="org.mutabilitydetector.cli" total_bugs="2" total_types="18" total_size="4240" priority_1="2">
       <ClassStats class="org.mutabilitydetector.cli.ClassListException" sourceFile="ClassListException.java" interface="false" size="14" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.cli.ClassListReaderFactory" sourceFile="ClassListReaderFactory.java" interface="false" size="17" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.cli.ClassListReaderFactoryTest" sourceFile="ClassListReaderFactoryTest.java" interface="false" size="14" bugs="0"/>
@@ -492,7 +492,7 @@
       <ClassStats class="org.mutabilitydetector.cli.SessionResultsFormatter$ClassnameComparator" sourceFile="SessionResultsFormatter.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.cli.URLFallbackClassLoader" sourceFile="URLFallbackClassLoader.java" interface="false" size="27" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.locations" total_bugs="0" total_types="8" total_size="720">
+    <PackageStats package="org.mutabilitydetector.locations" total_bugs="0" total_types="8" total_size="960">
       <ClassStats class="org.mutabilitydetector.locations.ClassIdentifier" sourceFile="ClassIdentifier.java" interface="false" size="14" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.locations.ClassLocation" sourceFile="ClassLocation.java" interface="false" size="34" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.locations.ClassLocationTest" sourceFile="ClassLocationTest.java" interface="false" size="14" bugs="0"/>
@@ -502,7 +502,7 @@
       <ClassStats class="org.mutabilitydetector.locations.Dotted" sourceFile="Dotted.java" interface="false" size="14" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.locations.Slashed" sourceFile="Slashed.java" interface="false" size="8" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.unittesting" total_bugs="4" total_types="10" total_size="1548" priority_2="4">
+    <PackageStats package="org.mutabilitydetector.unittesting" total_bugs="3" total_types="10" total_size="2064" priority_2="3">
       <ClassStats class="org.mutabilitydetector.unittesting.AllowedReason" sourceFile="AllowedReason.java" interface="false" size="11" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.AllowedReasonsTest" sourceFile="AllowedReasonsTest.java" interface="false" size="36" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.AnalysisSessionHolder" sourceFile="AnalysisSessionHolder.java" interface="false" size="8" bugs="0"/>
@@ -514,7 +514,7 @@
       <ClassStats class="org.mutabilitydetector.unittesting.ProvidedOtherClass" sourceFile="ProvidedOtherClass.java" interface="false" size="21" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.ReasonsFormatter" sourceFile="ReasonsFormatter.java" interface="false" size="10" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.unittesting.matchers" total_bugs="2" total_types="16" total_size="1188" priority_1="2">
+    <PackageStats package="org.mutabilitydetector.unittesting.matchers" total_bugs="2" total_types="16" total_size="1584" priority_1="2">
       <ClassStats class="org.mutabilitydetector.unittesting.matchers.AllowedIfOtherClassIsImmutable" sourceFile="AllowedIfOtherClassIsImmutable.java" interface="false" size="13" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.matchers.AllowedIfOtherClassIsImmutableTest" sourceFile="AllowedIfOtherClassIsImmutableTest.java" interface="false" size="20" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.matchers.AllowedReasonCollector" sourceFile="AllowedReasonCollector.java" interface="false" size="4" bugs="0"/>
@@ -532,12 +532,12 @@
       <ClassStats class="org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcher" sourceFile="WithAllowedReasonsMatcher.java" interface="false" size="20" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcherTest" sourceFile="WithAllowedReasonsMatcherTest.java" interface="false" size="15" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.mutabilitydetector.visitor" total_bugs="0" total_types="2" total_size="360">
+    <PackageStats package="org.mutabilitydetector.visitor" total_bugs="0" total_types="2" total_size="480">
       <ClassStats class="org.mutabilitydetector.visitor.FieldVisitorAdapter" sourceFile="FieldVisitorAdapter.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.visitor.MethodVisitorAdapter" sourceFile="MethodVisitorAdapter.java" interface="false" size="51" bugs="0"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="175" invocations="1" avgMicrosecondsPerInvocation="175335" maxMicrosecondsPerInvocation="175335" standardDeviationMircosecondsPerInvocation="0"/>
+      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="254" invocations="1" avgMicrosecondsPerInvocation="254238" maxMicrosecondsPerInvocation="254238" standardDeviationMircosecondsPerInvocation="0"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
