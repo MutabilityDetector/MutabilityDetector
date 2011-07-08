@@ -25,7 +25,7 @@ public class FinalClassChecker extends AbstractMutabilityChecker {
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		if((access & Opcodes.ACC_FINAL) == 0) {
-			addResult("Is not declared final, and thus may be immutable.", null, MutabilityReason.NOT_DECLARED_FINAL);
+			addResult("Is not declared final, and thus may be mutable.", null, MutabilityReason.NOT_DECLARED_FINAL);
 		} 
 	}
 
