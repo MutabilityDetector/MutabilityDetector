@@ -109,10 +109,6 @@ public class CommandLineOptions {
 
 	}
 
-	public String classpath() {
-		return classpath;
-	}
-
 	private void parseOptions(Options options, String[] args) {
 		OptionParserHelper parser = new OptionParserHelper(options, args);
 		try {
@@ -211,8 +207,14 @@ public class CommandLineOptions {
 	}
 
 	private void exit() {
-		throw new CommandLineOptionsException();
+		throw new CommandLineOptionsException("");
 	}
+	
+
+	public String classpath() {
+		return classpath;
+	}
+
 
 	public String match() {
 		return match;
