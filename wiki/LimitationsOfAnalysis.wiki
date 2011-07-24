@@ -24,3 +24,7 @@ Here there is the potential for a data race between threads calling `benign()`, 
 This kind of pattern allows lazy calculation of fields. A prominent example is `java.lang.String.hashCode()` with the `hash` field. 
 
 This is currently the only reason `String` is considered mutable.
+
+== Reference to 'this' can escape during construction ==
+
+JCIP warns of the danger of letting the 'this' reference escape, as clients may see the object change between that point and when the constructor completes. There's more discussion of this issue [http://mutability-detector.blogspot.com/2010/07/escapedthisreferencechecker-sketch-of.html in this blog entry]. Beyond made up test cases for this problem, there's basically been no work done on this. I've so far hit a bit of a wall where control and data flow analysis will need to get more complicated to support this.
