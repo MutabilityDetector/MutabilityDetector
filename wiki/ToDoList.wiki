@@ -4,7 +4,6 @@
 (in no particular order)
 
  * Add JUnit documentation to Getting Started guide
- * Create a google group for the project
  * Create an `allowingSubclassing()` allowed reason for unit tests (mainly for classes not marked as final)
  * Create a video to show off the unit testing capability of the tool
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
@@ -19,3 +18,4 @@
  * ~~Gather more immutable types from the JDK which can be tested~~
  * ~~Find tests using ad-hoc assertion methods and make them consistent~~
  * ~~Produce materials to present a lightning talk~~
+ * ~~Create a google group for the project~~
