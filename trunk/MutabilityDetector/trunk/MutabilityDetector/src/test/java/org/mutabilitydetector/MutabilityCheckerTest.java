@@ -30,11 +30,11 @@ import java.util.Collection;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField;
-import org.mutabilitydetector.benchmarks.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
+import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
+import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 

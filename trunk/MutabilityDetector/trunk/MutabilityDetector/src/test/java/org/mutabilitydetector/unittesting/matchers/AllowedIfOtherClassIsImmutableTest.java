@@ -44,4 +44,18 @@ public class AllowedIfOtherClassIsImmutableTest {
 		assertThat(matcher.allowedReasons(result), hasItem(reason));
 	}
 	
+	@Test public void doesNotMatchWhenThereAreManyAbstractTypesAssignedToFieldAndOnlyOneIsAllowed() {
+		CheckerReasonDetail allowed = new CheckerReasonDetail(
+				"Field can have an abstract type [some.mutable.class] assigned to it.",
+				unusedClassLocation, ABSTRACT_TYPE_TO_FIELD);
+		CheckerReasonDetail notAllowed = new CheckerReasonDetail(
+				"Field can have an abstract type [some.othermutable.class] assigned to it.",
+				unusedClassLocation, ABSTRACT_TYPE_TO_FIELD);
+		AnalysisResult result = new AnalysisResult("possibly.immutable.class", DEFINITELY_NOT, allowed, notAllowed);
+		matcher = new AllowedIfOtherClassIsImmutable(dotted("some.mutable.class"));
+		
+		assertThat(matcher.allowedReasons(result), hasItem(allowed));
+		assertThat(matcher.allowedReasons(result).size(), is(1));
+	}
+	
 }

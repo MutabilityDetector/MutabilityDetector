@@ -35,7 +35,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.abstracttofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 
@@ -44,7 +45,7 @@ public class MutableTypeToFieldCheckerTest {
 	private IAnalysisSession mockSession;
 	private MutableTypeToFieldChecker checker;
 	private AnalysisResult result;
-	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", DEFINITELY_NOT);;
+	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", DEFINITELY_NOT);
 
 	@Before public void setUp() {
 		mockSession = mock(IAnalysisSession.class);

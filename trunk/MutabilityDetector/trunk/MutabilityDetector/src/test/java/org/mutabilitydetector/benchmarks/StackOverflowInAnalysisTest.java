@@ -19,7 +19,8 @@ import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.MutableByAssigningAbstractTypeToField.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.abstracttofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
 public class StackOverflowInAnalysisTest {
@@ -31,7 +32,7 @@ public class StackOverflowInAnalysisTest {
 
 		session.resultFor(AbstractStringContainer.class.getName());
 		session.resultFor(MutableByAssigningAbstractTypeToField.class.getName());
-		session.resultFor(MutableByAssigningAbstractTypeToField.AbstractStringContainer.class.getName());
+		session.resultFor(AbstractStringContainer.class.getName());
 	}
 
 	@Test public void visitingEnumTypeDoesNotCauseStackOverflowError() throws Exception {
