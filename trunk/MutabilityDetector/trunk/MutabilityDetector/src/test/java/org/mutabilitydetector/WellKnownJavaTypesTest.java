@@ -28,6 +28,11 @@ import org.junit.Test;
 
 public class WellKnownJavaTypesTest {
 	
+	@Ignore("Not final")
+	@Test public void Object() throws Exception {
+		assertInstancesOf(Object.class, areImmutable());
+	}
+	
 	@Ignore("Not final " +
 			"Reassigned field " +
 			"Mutable type to field (BigInteger, String)")
