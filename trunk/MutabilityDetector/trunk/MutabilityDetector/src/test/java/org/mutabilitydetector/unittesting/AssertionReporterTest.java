@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 
@@ -63,15 +63,15 @@ public class AssertionReporterTest {
 			String expectedMessage = format(
 					"\nExpected class [%s] to be [%s] immutable," +
 					"\nbut was [%s] immutable.", 
-					"SimpleClassName", DEFINITELY, DEFINITELY_NOT);
+					"SimpleClassName", IMMUTABLE, DEFINITELY_NOT);
 			assertThat(e.getMessage(), containsString(expectedMessage));
 			assertThat(e.getMessage(), containsString("a reason the class is mutable"));
 		}
 	}
 	
 	@Test public void expectedIsImmutableStatusDoesNotThrowException() throws Exception {
-		AnalysisResult analysisResult = new AnalysisResult("g.h.i", IsImmutable.MAYBE, unusedReasons());
-		reporter.expectedIsImmutable(IsImmutable.MAYBE, analysisResult);
+		AnalysisResult analysisResult = new AnalysisResult("g.h.i", IsImmutable.EFFECTIVELY_IMMUTABLE, unusedReasons());
+		reporter.expectedIsImmutable(IsImmutable.EFFECTIVELY_IMMUTABLE, analysisResult);
 	}
 	
 	@Test public void allowedReasonDoesNotThrowException() {
@@ -80,7 +80,7 @@ public class AssertionReporterTest {
 		
 		when(allowed.matches(result)).thenReturn(true);
 		
-		reporter.expectedIsImmutable(DEFINITELY, result, allowed);
+		reporter.expectedIsImmutable(IMMUTABLE, result, allowed);
 	}
 	
 	@Ignore("In progress")

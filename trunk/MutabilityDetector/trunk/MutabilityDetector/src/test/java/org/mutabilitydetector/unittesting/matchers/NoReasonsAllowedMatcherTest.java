@@ -12,7 +12,7 @@ package org.mutabilitydetector.unittesting.matchers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class NoReasonsAllowedMatcherTest {
 	
 	@Test public void doesNotMatchWhenReasonsAreGiven() throws Exception {
 		CheckerReasonDetail reason = new CheckerReasonDetail("message", null, NULL_REASON);
-		AnalysisResult result = new AnalysisResult("a.b.c", DEFINITELY, reason );
+		AnalysisResult result = new AnalysisResult("a.b.c", IMMUTABLE, reason );
 		
 		assertThat(new NoReasonAllowedMatcher().matches(result), is(false));
 	}

@@ -36,11 +36,10 @@ public interface IAnalysisSession {
 	AnalysisDatabase analysisDatabase();
 	
 	public static enum IsImmutable {
-		COULD_NOT_ANALYSE,
-		DEFINITELY,
-		MAYBE,
-		DEFINITELY_NOT;
-		
+		IMMUTABLE,
+		EFFECTIVELY_IMMUTABLE,
+		DEFINITELY_NOT,
+		COULD_NOT_ANALYSE;
 	}
 
 	public static final class AnalysisError {

@@ -17,7 +17,7 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.IAnalysisSession;
@@ -83,7 +83,7 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 				IsImmutable isImmutable = analysisSession.resultFor(dottedClassName).isImmutable;
 				
 				boolean isConcreteType = isConcreteType(dotted(dottedClassName));
-				if (!isImmutable.equals(DEFINITELY) && isConcreteType) {
+				if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
 					addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
 							+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				}

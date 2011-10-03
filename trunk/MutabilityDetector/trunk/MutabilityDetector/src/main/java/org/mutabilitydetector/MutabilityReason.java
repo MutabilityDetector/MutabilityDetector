@@ -24,7 +24,7 @@ public enum MutabilityReason implements Reason {
 			
 	NOT_DECLARED_FINAL("Class is not declared final. While the class may still be immutable, " +
 			"it is recommended that the class be declared final if possible.",
-			IsImmutable.MAYBE),
+			IsImmutable.EFFECTIVELY_IMMUTABLE),
 			
 	ABSTRACT_TYPE_INHERENTLY_MUTABLE("Abstract types (interfaces or abstract classes) are considered to be " +
 			"\"Inherently Mutable\" in particular cases. Because the concrete implementation cannot be known" +
@@ -35,7 +35,7 @@ public enum MutabilityReason implements Reason {
 			"(by modifying what it contains) they are inherently mutable. However, since it is possible " +
 			"that a field which is an array type is never mutated after construction, it is still possible " +
 			"for the containing type to be immutable.",
-			IsImmutable.MAYBE),
+			IsImmutable.EFFECTIVELY_IMMUTABLE),
 			
 	MUTABLE_TYPE_TO_FIELD("A mutable type can be assigned to a field. Since references to the mutable field " +
 			"may be kept, the containing type can be mutated after construction.",

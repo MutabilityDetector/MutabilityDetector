@@ -17,7 +17,7 @@
  */
 package org.mutabilitydetector.cli;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 
 import java.io.Serializable;
@@ -106,7 +106,7 @@ public class SessionResultsFormatter {
 		if (reportMode.equals(ReportMode.ALL)) {
 			appendClassResult(output, result, isImmutable);
 		} else if (reportMode.equals(ReportMode.IMMUTABLE)) {
-			if (result.isImmutable.equals(DEFINITELY)) {
+			if (result.isImmutable.equals(IMMUTABLE)) {
 				appendClassResult(output, result, isImmutable);
 			}
 		} else if (reportMode.equals(ReportMode.MUTABLE)) {
@@ -119,7 +119,7 @@ public class SessionResultsFormatter {
 
 	private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
 		output.append(String.format("%s is %s immutable.%n", result.dottedClassName, isImmutable.name()));
-		if (!result.isImmutable.equals(DEFINITELY)) {
+		if (!result.isImmutable.equals(IMMUTABLE)) {
 			addReasons(result, output);
 		}
 	}

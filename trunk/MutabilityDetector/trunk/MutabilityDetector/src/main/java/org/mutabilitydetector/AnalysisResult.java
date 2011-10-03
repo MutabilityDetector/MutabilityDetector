@@ -11,7 +11,7 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ public final class AnalysisResult {
 	}
 	
 	private void check(IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
-		if(isImmutable != DEFINITELY && reasons.isEmpty()) {
+		if(isImmutable != IMMUTABLE && reasons.isEmpty()) {
 			throw new IllegalArgumentException("Reasons must be given when a class is not DEFINITELY immutable.");
 		}
 	}
@@ -43,6 +43,6 @@ public final class AnalysisResult {
 	}
 	
 	public static AnalysisResult definitelyImmutable(String dottedClassName) {
-		return new AnalysisResult(dottedClassName, IsImmutable.DEFINITELY);
+		return new AnalysisResult(dottedClassName, IsImmutable.IMMUTABLE);
 	}
 }

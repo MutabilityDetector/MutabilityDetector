@@ -13,7 +13,7 @@ package org.mutabilitydetector.unittesting;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
@@ -49,20 +49,20 @@ public class MutabilityAssertTest {
 			fail("Assertion should have failed.");
 		} catch (final AssertionError ae) {
 			assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
-			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}
 	
 	@Test public void assertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
-		assertImmutableStatusIs(IsImmutable.DEFINITELY, immutableClass);
+		assertImmutableStatusIs(IsImmutable.IMMUTABLE, immutableClass);
 	}
 
 	@Test public void assertImmutableStatusIsFailsWhenUnequal() throws Exception {
 		try {
 			assertImmutableStatusIs(DEFINITELY_NOT, immutableClass);
 		} catch (final AssertionError ae) {
-			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}
@@ -81,7 +81,7 @@ public class MutabilityAssertTest {
 		try {
 			assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
 		} catch (AssertionError ae) {
-			assertThat(ae.getMessage(), containsString(DEFINITELY.name()));
+			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
 			assertThat(ae.getMessage(), containsString(DEFINITELY_NOT.name()));
 		}
 	}

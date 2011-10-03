@@ -18,9 +18,9 @@
 package org.mutabilitydetector.checkers;
 
 import static java.lang.Integer.valueOf;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.MAYBE;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
 
 import java.util.Map;
 
@@ -30,18 +30,18 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 public final class ResultCalculator {
 	public IsImmutable calculateImmutableStatus(Map<IsImmutable, Integer> results) {
 		IsImmutable isImmutable;
-		int numDefinitely = getNumOfResult(results, DEFINITELY);
-		int numMaybe = getNumOfResult(results, MAYBE);
+		int numDefinitely = getNumOfResult(results, IMMUTABLE);
+		int numMaybe = getNumOfResult(results, EFFECTIVELY_IMMUTABLE);
 		int numDefinitelyNot = getNumOfResult(results, DEFINITELY_NOT);
 		
 		if(numDefinitelyNot > 0) {
 			isImmutable = DEFINITELY_NOT; 
 		} else if(numMaybe > 0) {
-			isImmutable = MAYBE;
+			isImmutable = EFFECTIVELY_IMMUTABLE;
 		} else if(numDefinitely > 0) {
-			isImmutable = DEFINITELY;
+			isImmutable = IMMUTABLE;
 		} else {
-			isImmutable = MAYBE;
+			isImmutable = EFFECTIVELY_IMMUTABLE;
 		}
 		
 		return isImmutable;

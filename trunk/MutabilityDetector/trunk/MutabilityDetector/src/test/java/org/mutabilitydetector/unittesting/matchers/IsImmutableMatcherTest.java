@@ -13,7 +13,7 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetails;
@@ -30,19 +30,19 @@ import org.mutabilitydetector.CheckerReasonDetail;
 public class IsImmutableMatcherTest {
 
 	@Test public void matchesForSameIsImmutableResult() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(DEFINITELY);
+		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
 		AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
 		assertThat(matcher.matches(result), is(true));
 	}
 	
 	@Test public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(DEFINITELY);
+		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
 		AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", DEFINITELY_NOT, unusedCheckerReasonDetails());
 		assertThat(matcher.matches(nonMatchingResult), is(false));
 	}
 	
 	@Test public void hasDescriptiveErrorMessageForMismatch() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(DEFINITELY);
+		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
 		Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
 		reasons.add(new CheckerReasonDetail("mutable coz i sez so", 
 							fromInternalName("c/d/e"), ABSTRACT_TYPE_INHERENTLY_MUTABLE));
@@ -52,7 +52,7 @@ public class IsImmutableMatcherTest {
 		matcher.describeMismatch(nonMatchingResult, description);
 
 		assertThat(description.toString(), containsString("mutable coz i sez so"));
-		assertThat(description.toString(), containsString(DEFINITELY.name()));
+		assertThat(description.toString(), containsString(IMMUTABLE.name()));
 		assertThat(description.toString(), containsString(DEFINITELY_NOT.name()));
 	}
 	

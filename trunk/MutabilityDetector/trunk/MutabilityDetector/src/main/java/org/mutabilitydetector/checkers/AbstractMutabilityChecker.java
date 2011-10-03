@@ -38,7 +38,7 @@ import org.objectweb.asm.Type;
 public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
 	protected Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-	private IsImmutable result = IsImmutable.DEFINITELY;
+	private IsImmutable result = IsImmutable.IMMUTABLE;
 	protected String ownerClass;
 	
 	@Override

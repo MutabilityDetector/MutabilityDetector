@@ -19,9 +19,9 @@ package org.mutabilitydetector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.MAYBE;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
@@ -30,11 +30,11 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 public class ImmutableAssert {
 
 	public static void assertImmutable(AnalysisResult result) {
-		doAssertEquals(result.dottedClassName, DEFINITELY, result);
+		doAssertEquals(result.dottedClassName, IMMUTABLE, result);
 	}
 	
 	public static void assertImmutable(Class<?> toAnalyse) {
-		doAssertEquals(toAnalyse.getName(), DEFINITELY, getResultAndPrintErrors(toAnalyse));
+		doAssertEquals(toAnalyse.getName(), IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
@@ -50,11 +50,11 @@ public class ImmutableAssert {
 	}
 
 	public static void assertMaybeImmutable(Class<?> toAnalyse) {
-		doAssertEquals(toAnalyse.getName(), MAYBE, getResultAndPrintErrors(toAnalyse));
+		doAssertEquals(toAnalyse.getName(), EFFECTIVELY_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 	
 	public static void assertMaybeImmutable(AnalysisResult result) {
-		doAssertEquals(result.dottedClassName, MAYBE, result);
+		doAssertEquals(result.dottedClassName, EFFECTIVELY_IMMUTABLE, result);
 	}
 	
 	public static void assertNotImmutable(AnalysisResult result) {

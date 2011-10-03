@@ -11,7 +11,7 @@
 package org.mutabilitydetector.unittesting;
 
 import static java.lang.String.format;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.noWarningsAllowed;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
 public class AssertionReporter {
 
 	public void expectedImmutable(AnalysisResult analysisResult) {
-		expectedIsImmutable(DEFINITELY, analysisResult, noWarningsAllowed());
+		expectedIsImmutable(IMMUTABLE, analysisResult, noWarningsAllowed());
 	}
 
 	public String formatReasons(Collection<CheckerReasonDetail> reasons) {
