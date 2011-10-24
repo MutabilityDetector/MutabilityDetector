@@ -18,7 +18,7 @@
 package org.mutabilitydetector.cli;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,9 +41,9 @@ public class SessionResultsFormatter {
 	private final ReportMode reportMode;
 	private Collection<String> classesToReport;
 	private final ClassListReaderFactory readerFactory;
-	private final CommandLineOptions options;
+	private final BatchAnalysisOptions options;
 
-	public SessionResultsFormatter(CommandLineOptions options, ClassListReaderFactory readerFactory) {
+	public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
 		this.options = options;
 		this.readerFactory = readerFactory;
 		this.verbose = options.verbose();
@@ -110,7 +110,7 @@ public class SessionResultsFormatter {
 				appendClassResult(output, result, isImmutable);
 			}
 		} else if (reportMode.equals(ReportMode.MUTABLE)) {
-			if (result.isImmutable.equals(DEFINITELY_NOT)) {
+			if (result.isImmutable.equals(NOT_IMMUTABLE)) {
 				appendClassResult(output, result, isImmutable);
 			}
 		}
@@ -118,7 +118,7 @@ public class SessionResultsFormatter {
 	}
 
 	private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-		output.append(String.format("%s is %s immutable.%n", result.dottedClassName, isImmutable.name()));
+		output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
 		if (!result.isImmutable.equals(IMMUTABLE)) {
 			addReasons(result, output);
 		}

@@ -10,6 +10,7 @@
 
 package org.mutabilitydetector;
 
+import org.mutabilitydetector.cli.BatchAnalysisOptions;
 import org.mutabilitydetector.cli.CommandLineOptions;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
 
@@ -26,7 +27,7 @@ public class CheckSomeClass {
 	private static void checkClass(Class<?> toAnalyse) {
 		ClassPath cp = new ClassPathFactory().createFromJVM();
 		String match = toAnalyse.getName().replace("$", "\\$");
-		CommandLineOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
+		BatchAnalysisOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
 		new RunMutabilityDetector(cp, options).run();
 	}
 

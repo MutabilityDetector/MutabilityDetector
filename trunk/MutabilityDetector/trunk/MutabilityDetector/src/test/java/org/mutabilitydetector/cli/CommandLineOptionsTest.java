@@ -34,7 +34,7 @@ import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 public class CommandLineOptionsTest {
 
-	private CommandLineOptions options;
+	private BatchAnalysisOptions options;
 	private File classListFile;
 	
 	private final PrintStream errorStream = new PrintStream(new OutputStream() {
@@ -45,7 +45,7 @@ public class CommandLineOptionsTest {
 	
 	@Test public void canParseClasspathOption() throws Exception {
 		String[] args = makeArgs("-classpath", "fakeClasspath");
-		CommandLineOptions options = createOptions(args);
+		BatchAnalysisOptions options = createOptions(args);
 		assertEquals("fakeClasspath", options.classpath());
 	}
 	
@@ -116,7 +116,7 @@ public class CommandLineOptionsTest {
 		removeTestFile();
 	}
 
-	private CommandLineOptions createOptions(String... args) {
+	private BatchAnalysisOptions createOptions(String... args) {
 		return new CommandLineOptions(errorStream, args);
 	}
 	

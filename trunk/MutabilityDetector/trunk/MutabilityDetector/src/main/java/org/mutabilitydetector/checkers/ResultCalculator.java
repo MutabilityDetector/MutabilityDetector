@@ -19,7 +19,7 @@ package org.mutabilitydetector.checkers;
 
 import static java.lang.Integer.valueOf;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
 
 import java.util.Map;
@@ -32,10 +32,10 @@ public final class ResultCalculator {
 		IsImmutable isImmutable;
 		int numDefinitely = getNumOfResult(results, IMMUTABLE);
 		int numMaybe = getNumOfResult(results, EFFECTIVELY_IMMUTABLE);
-		int numDefinitelyNot = getNumOfResult(results, DEFINITELY_NOT);
+		int numDefinitelyNot = getNumOfResult(results, NOT_IMMUTABLE);
 		
 		if(numDefinitelyNot > 0) {
-			isImmutable = DEFINITELY_NOT; 
+			isImmutable = NOT_IMMUTABLE; 
 		} else if(numMaybe > 0) {
 			isImmutable = EFFECTIVELY_IMMUTABLE;
 		} else if(numDefinitely > 0) {

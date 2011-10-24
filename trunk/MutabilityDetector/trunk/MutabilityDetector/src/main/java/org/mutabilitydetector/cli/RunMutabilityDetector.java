@@ -48,9 +48,9 @@ import com.google.classpath.RegExpResourceFilter;
 public class RunMutabilityDetector implements Runnable, Callable<String> {
 
 	private final ClassPath classpath;
-	private final CommandLineOptions options;
+	private final BatchAnalysisOptions options;
 
-	public RunMutabilityDetector(ClassPath classpath, CommandLineOptions options) {
+	public RunMutabilityDetector(ClassPath classpath, BatchAnalysisOptions options) {
 		this.classpath = classpath;
 		this.options = options;
 	}
@@ -89,7 +89,7 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
 	}
 	
 	
-	private void setCustomClassLoader(CommandLineOptions options) {
+	private void setCustomClassLoader(BatchAnalysisOptions options) {
 		String[] classPathUrls = options.classpath().split(":");
 
 		List<URL> urlList = new ArrayList<URL>();
@@ -106,7 +106,7 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
 		Thread.currentThread().setContextClassLoader(classLoader);
 	}
 	
-	private List<String> getNamesOfClassesToAnalyse(CommandLineOptions options, String[] findResources) {
+	private List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {
 		List<String> filtered = new ArrayList<String>();
 		List<String> classNames = new ArrayList<String>();
 		classNames.addAll(Arrays.asList(findResources));
@@ -123,16 +123,16 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
 
 
 	public static void main(String[] args) {
-		CommandLineOptions options = createOptionsFromArgs(args);
+		BatchAnalysisOptions options = createOptionsFromArgs(args);
 		ClassPath classpath = new ClassPathFactory().createFromPath(options.classpath());
 		
 		new RunMutabilityDetector(classpath, options).run();
 	}
 
 
-	private static CommandLineOptions createOptionsFromArgs(String[] args) {
+	private static BatchAnalysisOptions createOptionsFromArgs(String[] args) {
 		try {
-			CommandLineOptions options = new CommandLineOptions(System.err, args);
+			BatchAnalysisOptions options = new CommandLineOptions(System.err, args);
 			return options;
 		} catch (Throwable e) {
 			System.out.println("Exiting...");

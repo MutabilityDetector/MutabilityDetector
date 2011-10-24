@@ -14,7 +14,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetail;
@@ -33,7 +33,7 @@ public class AllowedReasonsTest {
 
 	@Test public void providedClassIsAlsoImmutableAllowsAssigningAbstractType() throws Exception {
 		CheckerReasonDetail reason = new CheckerReasonDetail("assigning abstract type [a.b.c]", fromInternalName("a/b/c"), ABSTRACT_TYPE_TO_FIELD);
-		AnalysisResult result = new AnalysisResult("c.d.e", DEFINITELY_NOT, asList(reason));
+		AnalysisResult result = new AnalysisResult("c.d.e", NOT_IMMUTABLE, asList(reason));
 		
 		AnalysisResultMatcher allowed = provided("a.b.c").isAlsoImmutable();
 		assertThat(allowed.matches(result), is(true));
@@ -48,7 +48,7 @@ public class AllowedReasonsTest {
 
 	@Test public void doesNotMatchWhenReasonIsNotAllowed() throws Exception {
 		CheckerReasonDetail reason = new CheckerReasonDetail("has setter method", fromInternalName("a/b/c"), FIELD_CAN_BE_REASSIGNED);
-		AnalysisResult result = new AnalysisResult("c.d.e", DEFINITELY_NOT, reason);
+		AnalysisResult result = new AnalysisResult("c.d.e", NOT_IMMUTABLE, reason);
 		
 		AnalysisResultMatcher allowed = AllowedReason.provided("a.b.c").isAlsoImmutable();
 		assertThat(allowed.matches(result), is(false));
@@ -57,14 +57,14 @@ public class AllowedReasonsTest {
 	@Test public void providedMethodCanBeCalledWithClassObject() throws Exception {
 		String message = format("assigning abstract type [%s] to field.", InterfaceType.class.getName());
 		CheckerReasonDetail reason = new CheckerReasonDetail(message, fromInternalName("a/b/c"), ABSTRACT_TYPE_TO_FIELD);
-		AnalysisResult result = new AnalysisResult(message, DEFINITELY_NOT, reason);
+		AnalysisResult result = new AnalysisResult(message, NOT_IMMUTABLE, reason);
 		AnalysisResultMatcher allowed = AllowedReason.provided(InterfaceType.class).isAlsoImmutable();
 		
 		assertThat(allowed.matches(result), is(true));
 	}
 	
 	@Test public void noneAllowedMatcherReturnsFalseForAnyReason() throws Exception {
-		AnalysisResult result = new AnalysisResult("any", DEFINITELY_NOT, unusedCheckerReasonDetail());
+		AnalysisResult result = new AnalysisResult("any", NOT_IMMUTABLE, unusedCheckerReasonDetail());
 		AnalysisResultMatcher nonAllowed = noneAllowed();
 		
 		assertThat(nonAllowed.matches(result), is(false));

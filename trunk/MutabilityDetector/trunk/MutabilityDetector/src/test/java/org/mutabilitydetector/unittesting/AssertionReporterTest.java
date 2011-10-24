@@ -18,7 +18,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public class AssertionReporterTest {
 
 	@Test(expected = MutabilityAssertionError.class) 
 	public void reporterThrowsExceptionForMutableResult() {
-		AnalysisResult analysisResult = new AnalysisResult("a.b.c", DEFINITELY_NOT, unusedReasons());
+		AnalysisResult analysisResult = new AnalysisResult("a.b.c", NOT_IMMUTABLE, unusedReasons());
 		reporter.expectedImmutable(analysisResult);
 	}
 
@@ -55,7 +55,7 @@ public class AssertionReporterTest {
 		CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable", null,
 				PUBLISHED_NON_FINAL_FIELD);
 
-		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", DEFINITELY_NOT, asList(reason));
+		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
 		try {
 			reporter.expectedImmutable(analysisResult);
 			fail("expected exception");
@@ -63,7 +63,7 @@ public class AssertionReporterTest {
 			String expectedMessage = format(
 					"\nExpected class [%s] to be [%s] immutable," +
 					"\nbut was [%s] immutable.", 
-					"SimpleClassName", IMMUTABLE, DEFINITELY_NOT);
+					"SimpleClassName", IMMUTABLE, NOT_IMMUTABLE);
 			assertThat(e.getMessage(), containsString(expectedMessage));
 			assertThat(e.getMessage(), containsString("a reason the class is mutable"));
 		}
@@ -76,7 +76,7 @@ public class AssertionReporterTest {
 	
 	@Test public void allowedReasonDoesNotThrowException() {
 		AnalysisResultMatcher allowed = mock(AnalysisResultMatcher.class);
-		AnalysisResult result = new AnalysisResult("j.k.l", DEFINITELY_NOT, unusedReasons());
+		AnalysisResult result = new AnalysisResult("j.k.l", NOT_IMMUTABLE, unusedReasons());
 		
 		when(allowed.matches(result)).thenReturn(true);
 		
@@ -88,7 +88,7 @@ public class AssertionReporterTest {
 		CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable", null,
 															 PUBLISHED_NON_FINAL_FIELD);
 
-		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", DEFINITELY_NOT, asList(reason));
+		AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
 		try {
 			reporter.expectedImmutable(analysisResult);
 			fail("expected exception");

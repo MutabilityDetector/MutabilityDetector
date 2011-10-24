@@ -25,6 +25,6 @@ public class MutabilityMatchers {
 	}
 	
 	public static IsImmutableMatcher areNotImmutable() {
-		return new IsImmutableMatcher(IsImmutable.DEFINITELY_NOT);
+		return new IsImmutableMatcher(IsImmutable.NOT_IMMUTABLE);
 	}
 }

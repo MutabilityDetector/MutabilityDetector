@@ -21,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
@@ -45,7 +45,7 @@ public class MutableTypeToFieldCheckerTest {
 	private IAnalysisSession mockSession;
 	private MutableTypeToFieldChecker checker;
 	private AnalysisResult result;
-	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", DEFINITELY_NOT);
+	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
 
 	@Before public void setUp() {
 		mockSession = mock(IAnalysisSession.class);

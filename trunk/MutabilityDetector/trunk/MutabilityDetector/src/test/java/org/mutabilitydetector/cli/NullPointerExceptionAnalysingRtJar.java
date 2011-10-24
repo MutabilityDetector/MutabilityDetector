@@ -31,7 +31,7 @@ public class NullPointerExceptionAnalysingRtJar {
 	@Ignore @Test public void
 	checkNullPointerExceptionIsNotThrown() {
 		String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
-		CommandLineOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
+		BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
 		new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
 	}
 	

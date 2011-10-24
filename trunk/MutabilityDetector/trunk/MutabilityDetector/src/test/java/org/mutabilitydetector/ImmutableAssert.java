@@ -20,7 +20,7 @@ package org.mutabilitydetector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.DEFINITELY_NOT;
+import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 
@@ -38,15 +38,15 @@ public class ImmutableAssert {
 	}
 
 	public static void assertDefinitelyNotImmutable(IsImmutable result) {
-		assertEquals("Expected Not Immutable result.", DEFINITELY_NOT, result);
+		assertEquals("Expected Not Immutable result.", NOT_IMMUTABLE, result);
 	}
 
 	public static void assertDefinitelyNotImmutable(AnalysisResult result) {
-		doAssertEquals(result.dottedClassName, DEFINITELY_NOT, result);
+		doAssertEquals(result.dottedClassName, NOT_IMMUTABLE, result);
 	}
 	
 	public static void assertDefinitelyNotImmutable(Class<?> toAnalyse) {
-		doAssertEquals(toAnalyse.getName(), DEFINITELY_NOT, getResultAndPrintErrors(toAnalyse));
+		doAssertEquals(toAnalyse.getName(), NOT_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 
 	public static void assertMaybeImmutable(Class<?> toAnalyse) {
@@ -58,11 +58,11 @@ public class ImmutableAssert {
 	}
 	
 	public static void assertNotImmutable(AnalysisResult result) {
-		doAssertNotEquals(result.dottedClassName, DEFINITELY_NOT, result);
+		doAssertNotEquals(result.dottedClassName, NOT_IMMUTABLE, result);
 	}
 
 	public static void assertNotImmutable(Class<?> toAnalyse) {
-		doAssertNotEquals(toAnalyse.getName(), DEFINITELY_NOT, getResultAndPrintErrors(toAnalyse));
+		doAssertNotEquals(toAnalyse.getName(), NOT_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 	
 

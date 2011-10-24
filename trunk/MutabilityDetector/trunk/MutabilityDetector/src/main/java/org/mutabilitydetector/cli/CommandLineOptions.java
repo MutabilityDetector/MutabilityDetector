@@ -28,7 +28,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
-public class CommandLineOptions {
+public class CommandLineOptions implements BatchAnalysisOptions {
 
 	private String classpath;
 	private Options options;
@@ -211,31 +211,38 @@ public class CommandLineOptions {
 	}
 	
 
+	@Override
 	public String classpath() {
 		return classpath;
 	}
 
 
+	@Override
 	public String match() {
 		return match;
 	}
 
+	@Override
 	public boolean verbose() {
 		return verbose;
 	}
 
+	@Override
 	public ReportMode reportMode() {
 		return reportMode;
 	}
 
+	@Override
 	public File classListFile() {
 		return classListFile;
 	}
 
+	@Override
 	public boolean isUsingClassList() {
 		return isUsingClassList;
 	}
 
+	@Override
 	public boolean reportErrors() {
 		return reportErrors;
 	}

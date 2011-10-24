@@ -20,7 +20,7 @@ public enum MutabilityReason implements Reason {
 	ABSTRACT_TYPE_TO_FIELD("For an object to be immutable, its fields must also be immutable. "
 			+ "By assigning an abstract type to a field, "
 			+ "it is not known if the concrete fields supplied will be immutable or not.",
-			IsImmutable.DEFINITELY_NOT),
+			IsImmutable.NOT_IMMUTABLE),
 			
 	NOT_DECLARED_FINAL("Class is not declared final. While the class may still be immutable, " +
 			"it is recommended that the class be declared final if possible.",
@@ -29,7 +29,7 @@ public enum MutabilityReason implements Reason {
 	ABSTRACT_TYPE_INHERENTLY_MUTABLE("Abstract types (interfaces or abstract classes) are considered to be " +
 			"\"Inherently Mutable\" in particular cases. Because the concrete implementation cannot be known" +
 			"until compile-time, instances of abstract types could be either mutable or immutable.",
-			IsImmutable.DEFINITELY_NOT),
+			IsImmutable.NOT_IMMUTABLE),
 	
 	ARRAY_TYPE_INHERENTLY_MUTABLE("Since a primitive array can be mutated after construction " +
 			"(by modifying what it contains) they are inherently mutable. However, since it is possible " +
@@ -39,15 +39,15 @@ public enum MutabilityReason implements Reason {
 			
 	MUTABLE_TYPE_TO_FIELD("A mutable type can be assigned to a field. Since references to the mutable field " +
 			"may be kept, the containing type can be mutated after construction.",
-			IsImmutable.DEFINITELY_NOT),
+			IsImmutable.NOT_IMMUTABLE),
 			
 	PUBLISHED_NON_FINAL_FIELD("Class has a published, non-final field. Fields of an immutable class may not be " +
 			"reassigned after an instance is constructed. If an accessible field is not made final, it can be reassigned."
-			, IsImmutable.DEFINITELY_NOT),
+			, IsImmutable.NOT_IMMUTABLE),
 			
 	FIELD_CAN_BE_REASSIGNED("For a class to be immutable, fields cannot be reassigned once an instance is " +
 			"constructed.",
-			IsImmutable.DEFINITELY_NOT),
+			IsImmutable.NOT_IMMUTABLE),
 			
 	NULL_REASON("Placeholder reason for a null checker.", IsImmutable.COULD_NOT_ANALYSE);
 

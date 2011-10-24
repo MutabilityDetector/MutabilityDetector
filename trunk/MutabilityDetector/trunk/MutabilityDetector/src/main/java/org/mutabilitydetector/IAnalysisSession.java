@@ -38,7 +38,7 @@ public interface IAnalysisSession {
 	public static enum IsImmutable {
 		IMMUTABLE,
 		EFFECTIVELY_IMMUTABLE,
-		DEFINITELY_NOT,
+		NOT_IMMUTABLE,
 		COULD_NOT_ANALYSE;
 	}
 
