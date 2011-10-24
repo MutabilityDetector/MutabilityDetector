@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-immutable_slashed=`find . -name "*.java" -exec grep "immutable" -H {} \; | awk '{print $1}' | sed -e 's/.java://' | sed -e 's/.\///' | uniq | sort`
+immutable_slashed=`find . -name "*.java" -exec grep "is thread-safe and immutable" -H {} \; | awk '{print $1}' | sed -e 's/.java://' | sed -e 's/.\///' | uniq | sort`
 
 for i in $immutable_slashed 
 do
