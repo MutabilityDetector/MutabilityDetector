@@ -51,9 +51,9 @@ public enum MutabilityReason implements Reason {
 			
 	NULL_REASON("Placeholder reason for a null checker.", IsImmutable.COULD_NOT_ANALYSE);
 
-	final String description;
+	private final String description;
 	private final String code;
-	final IsImmutable createsResult;
+	private final IsImmutable createsResult;
 
 	MutabilityReason(String description, IsImmutable createsResult) {
 		this.description = description;
