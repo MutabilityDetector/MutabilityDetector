@@ -17,14 +17,15 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
+
 import org.mutabilitydetector.MutabilityReason;
-import org.objectweb.asm.Opcodes;
 
 public class FinalClassChecker extends AbstractMutabilityChecker {
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		if((access & Opcodes.ACC_FINAL) == 0) {
+		if(type(access).isNotFinal()) {
 			addResult("Is not declared final, and thus may be mutable.", null, MutabilityReason.NOT_DECLARED_FINAL);
 		} 
 	}
