@@ -36,20 +36,24 @@ public class TestJodaTime {
 	    assertImmutable(org.joda.time.chrono.BaseChronology.class);
 	}
 	
-	@PendingImplementation
-	@Test public void testorg_joda_time_chrono_BasicChronology() {
-	    assertImmutable(org.joda.time.chrono.BasicChronology.class);
-	}
+// Class is not visible
+//	@PendingImplementation
+//	@Test public void testorg_joda_time_chrono_BasicChronology() {
+//	    assertImmutable(org.joda.time.chrono.BasicChronology.class);
+//	}
 	
-	@PendingImplementation
-	@Test public void testorg_joda_time_chrono_BasicFixedMonthChronology() {
-	    assertImmutable(org.joda.time.chrono.BasicFixedMonthChronology.class);
-	}
+	// Class is not visible
+//	@PendingImplementation
+//	@Test public void testorg_joda_time_chrono_BasicFixedMonthChronology() {
+//	    assertImmutable(org.joda.time.chrono.BasicFixedMonthChronology.class);
+//	}
 	
-	@PendingImplementation
-	@Test public void testorg_joda_time_chrono_BasicGJChronology() {
-	    assertImmutable(org.joda.time.chrono.BasicGJChronology.class);
-	}
+	
+//	Class is not visible
+//	@PendingImplementation
+//	@Test public void testorg_joda_time_chrono_BasicGJChronology() {
+//	    assertImmutable(org.joda.time.chrono.BasicGJChronology.class);
+//	}
 
 	@PendingImplementation
 	@Test public void testorg_joda_time_chrono_BuddhistChronology() {
@@ -103,11 +107,12 @@ public class TestJodaTime {
 	@Test public void testorg_joda_time_chrono_StrictChronology() {
 	    assertImmutable(org.joda.time.chrono.StrictChronology.class);
 	}
-	
-	@PendingImplementation
-	@Test public void testorg_joda_time_chrono_ZonedChronology() {
-	    assertImmutable(org.joda.time.chrono.ZonedChronology.class);
-	}
+
+//	Class is not visible
+//	@PendingImplementation
+//	@Test public void testorg_joda_time_chrono_ZonedChronology() {
+//	    assertImmutable(org.joda.time.chrono.ZonedChronology.class);
+//	}
 	
 	@PendingImplementation
 	@Test public void testorg_joda_time_convert_ConverterSet() {
