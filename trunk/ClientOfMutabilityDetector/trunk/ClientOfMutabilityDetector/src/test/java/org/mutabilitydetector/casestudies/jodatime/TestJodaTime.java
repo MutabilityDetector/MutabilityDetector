@@ -108,16 +108,17 @@ public class TestJodaTime {
 	    assertImmutable(org.joda.time.chrono.StrictChronology.class);
 	}
 
+	@PendingImplementation
+	@Test public void testorg_joda_time_chrono_ZonedChronology() {
+	    assertImmutable(org.joda.time.chrono.ZonedChronology.class);
+	}
+	
 //	Class is not visible
 //	@PendingImplementation
-//	@Test public void testorg_joda_time_chrono_ZonedChronology() {
-//	    assertImmutable(org.joda.time.chrono.ZonedChronology.class);
+//	@Test public void testorg_joda_time_convert_ConverterSet() {
+//	    assertImmutable(org.joda.time.convert.ConverterSet.class);
 //	}
 	
-	@PendingImplementation
-	@Test public void testorg_joda_time_convert_ConverterSet() {
-	    assertImmutable(org.joda.time.convert.ConverterSet.class);
-	}
 	@Test public void testorg_joda_time_DateMidnight() {
 	    assertImmutable(org.joda.time.DateMidnight.class);
 	}
