@@ -21,7 +21,7 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.locations.ClassNameConvertor;
+import org.mutabilitydetector.locations.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
 
@@ -44,8 +44,8 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		if (type(access).isAbstract() || type(access).isInterface()) {
-			String dottedName = new ClassNameConvertor().dotted(name);
-			addResult(dottedName + " is inherently mutable, as declared as an abstract type.", null,
+			addResult("Is inherently mutable, as declared as an abstract type.", 
+					ClassLocation.fromInternalName(name),
 					MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
 		}
 	}
