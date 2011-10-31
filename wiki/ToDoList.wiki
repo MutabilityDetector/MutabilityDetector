@@ -9,6 +9,8 @@
  * Create a new `CodeLocation` for fields.
  * Add code location information to the verbose output, keep reason string constant.
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
+ * Admit defeat and hardcode java.lang.String as immutable. Probably BigDecimal as well.
+
 
  * ~~Remove `assertThat` method from MutabilityAssert.~~
  * ~~Add 0.03 release jar to google code download page, deprecate 0.02~~ (Now has maven support)
