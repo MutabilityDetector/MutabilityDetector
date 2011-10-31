@@ -18,8 +18,9 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
@@ -28,6 +29,7 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.FinalClassChecker;
+import org.mutabilitydetector.locations.ClassLocation;
 
 public class FinalClassCheckerTest {
 
@@ -40,7 +42,7 @@ public class FinalClassCheckerTest {
 	@Test public void aClassWhichIsNotFinalIsMaybeImmutable() throws Exception {
 		AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
 		assertThat(checker, hasReasons());
-		assertMaybeImmutable(result);
+		assertEffectivelyImmutable(result);
 	}
 
 	
@@ -50,6 +52,13 @@ public class FinalClassCheckerTest {
 	
 	@Test public void enumTypeIsImmutable() throws Exception {
 		assertImmutable(runChecker(checker, EnumType.class));
+	}
+	
+	@Test
+	public void hasCodeLocationWithCorrectTypeName() throws Exception {
+		runChecker(checker, MutableByNotBeingFinalClass.class);
+		ClassLocation location = (ClassLocation) checker.reasons().iterator().next().sourceLocation();
+		assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
 	}
 	
 }

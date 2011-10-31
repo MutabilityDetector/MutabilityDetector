@@ -18,10 +18,10 @@ import org.mutabilitydetector.locations.CodeLocation;
 public class CheckerReasonDetail {
 
 	private final String message;
-	private final CodeLocation location;
+	private final CodeLocation<?> location;
 	private final Reason reason;
 	
-	public CheckerReasonDetail(String message, CodeLocation location, Reason reason) {
+	public CheckerReasonDetail(String message, CodeLocation<?> location, Reason reason) {
 		this.message = message;
 		this.location = location;
 		this.reason = reason;
@@ -30,7 +30,7 @@ public class CheckerReasonDetail {
 
 	public Reason reason() { return reason;}
 	
-	public CodeLocation sourceLocation() { return location; }
+	public CodeLocation<?> sourceLocation() { return location; }
 	
 	public String message() { return message; }
 	

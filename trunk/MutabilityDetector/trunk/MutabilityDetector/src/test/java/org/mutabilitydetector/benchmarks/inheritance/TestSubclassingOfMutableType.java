@@ -18,7 +18,7 @@
 package org.mutabilitydetector.benchmarks.inheritance;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 
 import org.junit.Ignore;
@@ -30,8 +30,8 @@ import org.mutabilitydetector.benchmarks.types.AbstractType.ImmutableSubtypeOfAb
 public class TestSubclassingOfMutableType {
 
 
-	@Test public void testSupertypeIsMaybeImmutable() throws Exception {
-		assertMaybeImmutable(ImmutableSupertype.class);
+	@Test public void testSupertypeIsEffectivelyImmutable() throws Exception {
+		assertEffectivelyImmutable(ImmutableSupertype.class);
 	}
 	
 	@Test public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {

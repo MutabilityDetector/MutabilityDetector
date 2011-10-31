@@ -19,11 +19,13 @@ package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -84,13 +86,15 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 				
 				boolean isConcreteType = isConcreteType(dotted(dottedClassName));
 				if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
-					addResult("Field [" + name + "] can have a mutable type (" + dottedClassName + ") "
-							+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+					addResult("Field can have a mutable type (" + dottedClassName + ") " + "assigned to it.",
+							fieldLocation(name, ClassLocation.fromInternalName(ownerClass)), 
+							MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				}
 				break;
 			case Type.ARRAY:
-				addResult("Field [" + name + "] can have a mutable type (a primitive array) "
-						+ "assigned to it.", null, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+				addResult("Field can have a mutable type (a primitive array) assigned to it.",
+						fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+						MutabilityReason.MUTABLE_TYPE_TO_FIELD);
 				break;
 			default:
 				return;

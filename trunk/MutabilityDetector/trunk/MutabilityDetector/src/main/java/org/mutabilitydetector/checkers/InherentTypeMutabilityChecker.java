@@ -19,6 +19,7 @@ package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -43,6 +44,8 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+		super.visit(version, access, name, signature, superName, interfaces);
+		
 		if (type(access).isAbstract() || type(access).isInterface()) {
 			addResult("Is inherently mutable, as declared as an abstract type.", 
 					ClassLocation.fromInternalName(name),
@@ -63,13 +66,18 @@ public class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
 			 * mutable for having a mutable field which it doesn't mutate is a
 			 * bit rubbish.
 			 */
-			if (isPrimitiveArray(desc) && !("ENUM$VALUES".equals(name))) {
-				addResult("Field [" + name + "] is a primitive array.", null,
+			if (isPrimitiveArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
+				addResult("Field is a primitive array.", 
+						fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
 						MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
 			}
 		}
 
 		return super.visitField(access, name, desc, signature, value);
+	}
+
+	private boolean isTheInternalImmutableArrayFieldInAnEnum(String name) {
+		return "ENUM$VALUES".equals(name);
 	}
 
 	private boolean isPrimitiveArray(String desc) {

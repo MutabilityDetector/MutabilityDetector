@@ -17,9 +17,9 @@
  */
 package org.mutabilitydetector.benchmarks.settermethod;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
@@ -172,5 +172,5 @@ public class SetterMethodCheckerTest {
 		AnalysisResult result = runChecker(checker, mutableSettingField);
 		assertDefinitelyNotImmutable(result);
 	}
-
+	
 }

@@ -56,9 +56,18 @@ public final class ClassLocation implements CodeLocation<ClassLocation> {
 		return new ClassLocation(dottedClassName);
 	}
 
-	public static ClassLocation fromSlashed(Slashed slashed) {
+	public static CodeLocation<ClassLocation> fromSlashed(Slashed slashed) {
 		String dottedClassName = ClassIdentifier.forClass(slashed).asDotted().asString();
 		return new ClassLocation(dottedClassName);
+	}
+	
+	public static CodeLocation<ClassLocation> fromDotted(Dotted dotted) {
+		return new ClassLocation(dotted.asString());
+	}
+
+	@Override
+	public String prettyPrint() {
+		return String.format("[Class: %s]", typeName());
 	}
 
 

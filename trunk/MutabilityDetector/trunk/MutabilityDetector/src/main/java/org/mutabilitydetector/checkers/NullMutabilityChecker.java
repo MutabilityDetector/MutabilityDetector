@@ -17,12 +17,17 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.locations.ClassLocation.fromDotted;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
+
 import org.mutabilitydetector.MutabilityReason;
 
 public class NullMutabilityChecker extends AbstractMutabilityChecker {
 
 	public NullMutabilityChecker() {
-		addResult("This checker is a placeholder for a proper checker.", null, MutabilityReason.CANNOT_ANALYSE);
+		addResult("This checker is a placeholder for a proper checker.",
+				  fromDotted(fromClass(NullMutabilityChecker.class)), 
+				  MutabilityReason.CANNOT_ANALYSE);
 	}
 	
 }

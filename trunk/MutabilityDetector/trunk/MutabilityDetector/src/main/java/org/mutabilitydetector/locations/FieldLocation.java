@@ -29,4 +29,8 @@ public class FieldLocation implements CodeLocation<FieldLocation> {
 		return comparingOwner == 0 ? comparingFieldName : comparingOwner;
 	}
 
+	public String prettyPrint() {
+		return String.format("[Field: %s, Class: %s]", fieldName(), typeName());
+	}
+
 }

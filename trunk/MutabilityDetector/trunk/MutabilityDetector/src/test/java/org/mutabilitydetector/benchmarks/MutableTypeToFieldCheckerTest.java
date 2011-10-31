@@ -18,6 +18,7 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.mutabilitydetector.benchmarks.abstracttofield.AbstractStringContainer
 import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.FieldLocation;
 
 public class MutableTypeToFieldCheckerTest {
 
@@ -93,6 +95,25 @@ public class MutableTypeToFieldCheckerTest {
 		
 		assertThat(checker, hasNoReasons());
 		assertImmutable(result);
+	}
+	
+	@Test
+	public void codeLocationIsFieldLocation() throws Exception {
+		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		
+		assertThat(codeLocation.typeName(), is(MutableByHavingMutableFieldAssigned.class.getName()));
+		assertThat(codeLocation.fieldName(), is("mutableField"));
+	}
+	
+	@Test
+	public void codeLocationIsFieldLocationForArrayField() throws Exception {
+		runChecker(checker, MutableByHavingArrayTypeAsField.class);
+		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		
+		assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
+		assertThat(codeLocation.fieldName(), is("names"));
 	}
 	
 }

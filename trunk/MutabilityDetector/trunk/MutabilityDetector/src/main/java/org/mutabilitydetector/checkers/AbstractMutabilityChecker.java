@@ -109,11 +109,11 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 		return dottedClassName;
 	}
 	
-	protected CheckerReasonDetail createResult(String message, CodeLocation location, Reason reason) {
+	protected CheckerReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
 		return new CheckerReasonDetail(message, location, reason);
 	}
 	
-	protected void addResult(String message, CodeLocation location, Reason reason) {
+	protected void addResult(String message, CodeLocation<?> location, Reason reason) {
 		reasons.add(createResult(message, location, reason));
 		result = reason.createsResult();
 	}

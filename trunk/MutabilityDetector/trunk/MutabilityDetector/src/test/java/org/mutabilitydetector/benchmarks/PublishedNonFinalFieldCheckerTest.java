@@ -18,6 +18,7 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
@@ -28,6 +29,7 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
+import org.mutabilitydetector.locations.FieldLocation;
 
 public class PublishedNonFinalFieldCheckerTest {
 
@@ -65,5 +67,13 @@ public class PublishedNonFinalFieldCheckerTest {
 		result = runChecker(checker, ImmutableWithPublicFinalField.class);
 		assertThat(checker, hasNoReasons());
 		assertImmutable(result);
+	}
+	
+	@Test
+	public void addsFieldLocation() throws Exception {
+		result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
+		FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().sourceLocation();
+		assertThat(fieldLocation.typeName(), is(MutableByHavingDefaultVisibleNonFinalField.class.getName()));
+		assertThat(fieldLocation.fieldName(), is("name"));
 	}
 }

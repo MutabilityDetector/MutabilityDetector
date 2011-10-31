@@ -21,11 +21,11 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation;
 
 public class AllowedIfOtherClassIsImmutableTest {
 
-	private static ClassLocation unusedClassLocation = null;
+	private static CodeLocation<?> unusedClassLocation = null;
 	private AllowedIfOtherClassIsImmutable matcher;
 	
 	@Test public void matchesIfResultIsDefinitelyImmutableAlready() throws Exception {

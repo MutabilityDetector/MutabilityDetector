@@ -18,8 +18,8 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
@@ -38,6 +38,7 @@ import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.FieldLocation;
 
 
 
@@ -88,6 +89,16 @@ public class AbstractTypeToFieldCheckerTest {
 		
 		CheckerReasonDetail reasonDetail = result.reasons.iterator().next();
 		assertThat(reasonDetail.message(), containsString(abstractTypeAssigned.getName()));
+	}
+	
+	@Test
+	public void reasonHasCodeLocationPointingAtFieldWhichIsOfAnAbstractType() throws Exception {
+		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
+		
+		FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().sourceLocation();
+		
+		assertThat(fieldLocation.typeName(), is(MutableByAssigningAbstractTypeToField.class.getName()));
+		assertThat(fieldLocation.fieldName(), is("nameContainer"));
 	}
 
 }

@@ -18,9 +18,10 @@
 package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
@@ -33,6 +34,8 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
+import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.FieldLocation;
 
 
 
@@ -83,13 +86,30 @@ public class InherentTypeMutabilityCheckerTest {
 		result = runChecker(checker, ClassWithAllPrimitives.Array.class);
 		
 		assertThat(checker, hasReasons());
-		assertMaybeImmutable(result);
+		assertEffectivelyImmutable(result);
 	}
 	
 	@Test public void arrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
 		result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
 		
 		assertImmutable(result);
+	}
+	
+	@Test
+	public void arrayFieldCodeLocationIsFieldLocationWithNameOfField() throws Exception {
+		runChecker(checker,  ClassWithAllPrimitives.Array.class);
+		FieldLocation sourceLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		
+		assertThat(sourceLocation.typeName(), is(ClassWithAllPrimitives.Array.class.getName()));
+		assertThat(sourceLocation.fieldName(), is("anArray"));
+	}
+	
+	@Test
+	public void codeLocationOfAbstractTypeIsClassLocationWithNameOfClass() throws Exception {
+		runChecker(checker, AbstractType.class);
+		ClassLocation codeLocation = (ClassLocation) checker.reasons().iterator().next().sourceLocation();
+		
+		assertThat(codeLocation.typeName(), is(AbstractType.class.getName()));
 	}
 
 	private void assertImmutableClass(Class<?> toCheck) {

@@ -49,11 +49,11 @@ public class ImmutableAssert {
 		doAssertEquals(toAnalyse.getName(), NOT_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 
-	public static void assertMaybeImmutable(Class<?> toAnalyse) {
+	public static void assertEffectivelyImmutable(Class<?> toAnalyse) {
 		doAssertEquals(toAnalyse.getName(), EFFECTIVELY_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
 	}
 	
-	public static void assertMaybeImmutable(AnalysisResult result) {
+	public static void assertEffectivelyImmutable(AnalysisResult result) {
 		doAssertEquals(result.dottedClassName, EFFECTIVELY_IMMUTABLE, result);
 	}
 	

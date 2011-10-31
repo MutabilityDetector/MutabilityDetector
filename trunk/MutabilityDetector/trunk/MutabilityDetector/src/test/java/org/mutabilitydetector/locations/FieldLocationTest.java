@@ -30,4 +30,10 @@ public class FieldLocationTest {
 		assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClass"))), is(equalTo(0)));
 		assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClast"))), is(lessThan(0)));
 	}
+	
+	@Test
+	public void prettyPrintIncludesFieldAndClassName() throws Exception {
+		FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName", ClassLocation.fromInternalName("a/b/MyClass"));
+		assertThat(fieldLocation.prettyPrint(), is("[Field: myFieldName, Class: a.b.MyClass]"));
+	}
 }

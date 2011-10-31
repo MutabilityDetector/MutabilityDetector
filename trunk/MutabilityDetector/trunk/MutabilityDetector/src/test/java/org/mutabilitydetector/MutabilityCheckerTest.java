@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertMaybeImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 
@@ -70,7 +70,7 @@ public class MutabilityCheckerTest {
 	}
 
 	@Test public void mutableByNotBeingFinalClass() throws Exception {
-		assertMaybeImmutable(MutableByNotBeingFinalClass.class);
+		assertEffectivelyImmutable(MutableByNotBeingFinalClass.class);
 	}
 
 	@Test public void enumTypesAreImmutable() throws Exception {
