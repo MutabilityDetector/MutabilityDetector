@@ -21,21 +21,21 @@ import org.junit.Test;
 public class ClassLocationTest {
 
 	@Test public void testConstructedFromInternalTypeName() throws Exception {
-		CodeLocation location = ClassLocation.fromInternalName("some/package/Class");
+		ClassLocation location = ClassLocation.fromInternalName("some/package/Class");
 		assertEquals("some.package.Class", location.typeName());
 	}
 	
 	@Test public void canConstructFromSlashed() {
-		 CodeLocation location = ClassLocation.fromSlashed(slashed("some/package/Class"));
+		ClassLocation location = ClassLocation.fromSlashed(slashed("some/package/Class"));
 		 assertEquals("some.package.Class", location.typeName());
 	}
 	
 	@Test public void compareTo() throws Exception {
-		CodeLocation location = fromInternalName("some/package/Class");
-		CodeLocation same = fromInternalName("some/package/Class");
+		ClassLocation location = fromInternalName("some/package/Class");
+		ClassLocation same = fromInternalName("some/package/Class");
 		assertEquals(0, location.compareTo(same));
 		
-		CodeLocation different = fromInternalName("some/different/Class");
+		ClassLocation different = fromInternalName("some/different/Class");
 		assertFalse(location.compareTo(different) == 0);
 	}
 	

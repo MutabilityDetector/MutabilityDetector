@@ -11,7 +11,7 @@
 package org.mutabilitydetector.locations;
 
 
-public class ClassLocation implements CodeLocation {
+public final class ClassLocation implements CodeLocation<ClassLocation> {
 
 	private final String dottedClassName;
 
@@ -25,16 +25,14 @@ public class ClassLocation implements CodeLocation {
 	}
 
 	@Override
-	public int compareTo(CodeLocation other) {
+	public int compareTo(ClassLocation other) {
 		return typeName().compareTo(other.typeName());
 	}
-	
-	
 
 	@Override public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((dottedClassName == null) ? 0 : dottedClassName.hashCode());
+		result = prime * result + dottedClassName.hashCode();
 		return result;
 	}
 
@@ -49,22 +47,16 @@ public class ClassLocation implements CodeLocation {
 			return false;
 		}
 		ClassLocation other = (ClassLocation) obj;
-		if (dottedClassName == null) {
-			if (other.dottedClassName != null) {
-				return false;
-			}
-		} else if (!dottedClassName.equals(other.dottedClassName)) {
-			return false;
-		}
-		return true;
+		
+		return dottedClassName.equals(other.dottedClassName);
 	}
 
-	public static CodeLocation fromInternalName(String internalClassName) {
+	public static ClassLocation fromInternalName(String internalClassName) {
 		String dottedClassName = new ClassNameConvertor().dotted(internalClassName);
 		return new ClassLocation(dottedClassName);
 	}
 
-	public static CodeLocation fromSlashed(Slashed slashed) {
+	public static ClassLocation fromSlashed(Slashed slashed) {
 		String dottedClassName = ClassIdentifier.forClass(slashed).asDotted().asString();
 		return new ClassLocation(dottedClassName);
 	}
