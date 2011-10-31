@@ -22,8 +22,10 @@ public enum MutabilityReason implements Reason {
 			+ "it is not known if the concrete fields supplied will be immutable or not.",
 			IsImmutable.NOT_IMMUTABLE),
 			
-	NOT_DECLARED_FINAL("Class is not declared final. While the class may still be immutable, " +
-			"it is recommended that the class be declared final if possible.",
+	NOT_DECLARED_FINAL("Class is not declared final. While this specific class may still be immutable, " +
+			"it is recommended that the class be declared final if possible. This will allow clients to " +
+			"be confident that parameters declared to be this type will indeed be of this type at runtime, " +
+			"not an instance of a mutable subclass.",
 			IsImmutable.EFFECTIVELY_IMMUTABLE),
 			
 	ABSTRACT_TYPE_INHERENTLY_MUTABLE("Abstract types (interfaces or abstract classes) are considered to be " +
