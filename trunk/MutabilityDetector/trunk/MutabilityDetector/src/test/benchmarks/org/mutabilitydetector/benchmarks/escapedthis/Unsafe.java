@@ -72,11 +72,17 @@ public class Unsafe {
     }
 
     public static class PassInnerClassWithImplicitReferenceToThis {
+        private String maySeeMeIncomplete;
+        
         public PassInnerClassWithImplicitReferenceToThis(GiveMeYourThisReference passTo) {
             passTo.passReference(new InnerClass());
+            maySeeMeIncomplete = "You might see the field with this string in it, you might not!";
         }
 
         private class InnerClass {
+            InnerClass() {
+                System.out.println(PassInnerClassWithImplicitReferenceToThis.this.maySeeMeIncomplete);
+            }
         }
     }
 
