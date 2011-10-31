@@ -72,7 +72,7 @@ public class PublishedNonFinalFieldCheckerTest {
 	@Test
 	public void addsFieldLocation() throws Exception {
 		result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-		FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().sourceLocation();
+		FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().codeLocation();
 		assertThat(fieldLocation.typeName(), is(MutableByHavingDefaultVisibleNonFinalField.class.getName()));
 		assertThat(fieldLocation.fieldName(), is("name"));
 	}

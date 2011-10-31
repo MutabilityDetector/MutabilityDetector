@@ -57,7 +57,7 @@ public class FinalClassCheckerTest {
 	@Test
 	public void hasCodeLocationWithCorrectTypeName() throws Exception {
 		runChecker(checker, MutableByNotBeingFinalClass.class);
-		ClassLocation location = (ClassLocation) checker.reasons().iterator().next().sourceLocation();
+		ClassLocation location = (ClassLocation) checker.reasons().iterator().next().codeLocation();
 		assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
 	}
 	

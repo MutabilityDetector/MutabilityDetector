@@ -98,7 +98,7 @@ public class InherentTypeMutabilityCheckerTest {
 	@Test
 	public void arrayFieldCodeLocationIsFieldLocationWithNameOfField() throws Exception {
 		runChecker(checker,  ClassWithAllPrimitives.Array.class);
-		FieldLocation sourceLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		FieldLocation sourceLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
 		
 		assertThat(sourceLocation.typeName(), is(ClassWithAllPrimitives.Array.class.getName()));
 		assertThat(sourceLocation.fieldName(), is("anArray"));
@@ -107,7 +107,7 @@ public class InherentTypeMutabilityCheckerTest {
 	@Test
 	public void codeLocationOfAbstractTypeIsClassLocationWithNameOfClass() throws Exception {
 		runChecker(checker, AbstractType.class);
-		ClassLocation codeLocation = (ClassLocation) checker.reasons().iterator().next().sourceLocation();
+		ClassLocation codeLocation = (ClassLocation) checker.reasons().iterator().next().codeLocation();
 		
 		assertThat(codeLocation.typeName(), is(AbstractType.class.getName()));
 	}

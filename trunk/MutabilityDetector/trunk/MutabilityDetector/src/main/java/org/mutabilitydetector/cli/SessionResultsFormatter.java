@@ -129,7 +129,7 @@ public class SessionResultsFormatter {
 			return;
 
 		for (CheckerReasonDetail resultDetail : result.reasons) {
-			output.append(String.format("\t%10s%n", resultDetail.message()));
+			output.append(String.format("\t%10s %s%n", resultDetail.message(), resultDetail.codeLocation().prettyPrint()));
 		}
 	}
 

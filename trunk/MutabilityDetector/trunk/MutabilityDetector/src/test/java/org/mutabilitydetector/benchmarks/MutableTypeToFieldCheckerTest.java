@@ -101,7 +101,7 @@ public class MutableTypeToFieldCheckerTest {
 	public void codeLocationIsFieldLocation() throws Exception {
 		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
 		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
 		
 		assertThat(codeLocation.typeName(), is(MutableByHavingMutableFieldAssigned.class.getName()));
 		assertThat(codeLocation.fieldName(), is("mutableField"));
@@ -110,7 +110,7 @@ public class MutableTypeToFieldCheckerTest {
 	@Test
 	public void codeLocationIsFieldLocationForArrayField() throws Exception {
 		runChecker(checker, MutableByHavingArrayTypeAsField.class);
-		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().sourceLocation();
+		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
 		
 		assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
 		assertThat(codeLocation.fieldName(), is("names"));

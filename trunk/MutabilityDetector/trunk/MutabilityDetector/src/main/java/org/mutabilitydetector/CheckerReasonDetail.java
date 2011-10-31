@@ -30,7 +30,7 @@ public class CheckerReasonDetail {
 
 	public Reason reason() { return reason;}
 	
-	public CodeLocation<?> sourceLocation() { return location; }
+	public CodeLocation<?> codeLocation() { return location; }
 	
 	public String message() { return message; }
 	
