@@ -14,9 +14,8 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 /**
  * 
- * Provides an abstraction for the reason a class can be mutable. It is expected
- * that checkers will provide a single public instance of this class to act as a
- * 'key' for the mutability reason. Other checkers can then use the reasons
+ * Provides an abstraction for the reason a class can be mutable. It is expected that checkers will provide a single
+ * public instance of this class to act as a 'key' for the mutability reason. Other checkers can then use the reasons
  * already associated with a class to help their decision.
  * 
  * @author Graham Allan (grundlefleck@gmail.com)
@@ -25,10 +24,10 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
  */
 public interface Reason {
 
-	String description();
+    String description();
 
-	String code();
+    String code();
 
-	IsImmutable createsResult();
+    IsImmutable createsResult();
 
 }

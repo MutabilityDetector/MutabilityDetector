@@ -12,20 +12,20 @@ package org.mutabilitydetector.benchmarks.settermethod;
 
 public class ImmutableWithMutatingStaticFactoryMethod {
 
-	private int foo;
+    private int foo;
 
-	public ImmutableWithMutatingStaticFactoryMethod(int foo) {
-		this.foo = foo;
-	}
+    public ImmutableWithMutatingStaticFactoryMethod(int foo) {
+        this.foo = foo;
+    }
 
-	public int foo() {
-		return this.foo;
-	}
+    public int foo() {
+        return this.foo;
+    }
 
-	public static ImmutableWithMutatingStaticFactoryMethod newAndMutatedInstance() {
-		ImmutableWithMutatingStaticFactoryMethod toReturn = new ImmutableWithMutatingStaticFactoryMethod(0);
-		toReturn.foo = 42; // mutating an instance after construction
-		return toReturn;
-	}
-	
+    public static ImmutableWithMutatingStaticFactoryMethod newAndMutatedInstance() {
+        ImmutableWithMutatingStaticFactoryMethod toReturn = new ImmutableWithMutatingStaticFactoryMethod(0);
+        toReturn.foo = 42; // mutating an instance after construction
+        return toReturn;
+    }
+
 }

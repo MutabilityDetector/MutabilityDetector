@@ -11,16 +11,16 @@
 package org.mutabilitydetector.locations;
 
 public class Slashed extends ClassName {
-	
-	private Slashed(String slashedClassName) {
-		super(slashedClassName);
-	}
-	
-	public Dotted toDotted() {
-		return Dotted.fromSlashed(this);
-	}
-	
-	public static Slashed slashed(String slashedClassName) {
-		return new Slashed(slashedClassName);
-	}
+
+    private Slashed(String slashedClassName) {
+        super(slashedClassName);
+    }
+
+    public Dotted toDotted() {
+        return Dotted.fromSlashed(this);
+    }
+
+    public static Slashed slashed(String slashedClassName) {
+        return new Slashed(slashedClassName);
+    }
 }

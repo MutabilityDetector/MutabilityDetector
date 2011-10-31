@@ -17,8 +17,8 @@ package org.mutabilitydetector.benchmarks;
  */
 public class MutableByExtendingMutableType extends MutableByHavingPublicNonFinalField {
 
-	public MutableByExtendingMutableType(String name) {
-		super(name);
-	}
+    public MutableByExtendingMutableType(String name) {
+        super(name);
+    }
 
 }

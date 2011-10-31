@@ -29,30 +29,34 @@ import org.mutabilitydetector.CheckerReasonDetail;
 
 public class IsImmutableMatcherTest {
 
-	@Test public void matchesForSameIsImmutableResult() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
-		AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
-		assertThat(matcher.matches(result), is(true));
-	}
-	
-	@Test public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
-		AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
-		assertThat(matcher.matches(nonMatchingResult), is(false));
-	}
-	
-	@Test public void hasDescriptiveErrorMessageForMismatch() throws Exception {
-		IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
-		Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-		reasons.add(new CheckerReasonDetail("mutable coz i sez so", 
-							fromInternalName("c/d/e"), ABSTRACT_TYPE_INHERENTLY_MUTABLE));
-		AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, reasons);
-		
-		StringDescription description = new StringDescription();
-		matcher.describeMismatch(nonMatchingResult, description);
+    @Test
+    public void matchesForSameIsImmutableResult() throws Exception {
+        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
+        AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
+        assertThat(matcher.matches(result), is(true));
+    }
 
-		assertThat(description.toString(), containsString("mutable coz i sez so"));
-		assertThat(description.toString(), containsString(NOT_IMMUTABLE.name()));
-	}
-	
+    @Test
+    public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
+        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
+        AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+        assertThat(matcher.matches(nonMatchingResult), is(false));
+    }
+
+    @Test
+    public void hasDescriptiveErrorMessageForMismatch() throws Exception {
+        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
+        Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
+        reasons.add(new CheckerReasonDetail("mutable coz i sez so",
+                fromInternalName("c/d/e"),
+                ABSTRACT_TYPE_INHERENTLY_MUTABLE));
+        AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, reasons);
+
+        StringDescription description = new StringDescription();
+        matcher.describeMismatch(nonMatchingResult, description);
+
+        assertThat(description.toString(), containsString("mutable coz i sez so"));
+        assertThat(description.toString(), containsString(NOT_IMMUTABLE.name()));
+    }
+
 }

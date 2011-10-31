@@ -12,25 +12,26 @@ package org.mutabilitydetector.locations;
 
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-
 public class ClassIdentifier {
 
-	private Dotted dotted;
-	
-	private ClassIdentifier(Dotted className) {
-		this.dotted = className;
-	}
-	
-	public Dotted asDotted() { return dotted; }
-	
-	public static ClassIdentifier forClass(Dotted className) {
-		return new ClassIdentifier(className);
-	}
-	
-	public static ClassIdentifier forClass(Slashed className) {
-		String slashed = className.asString();
-		String dottedString = new ClassNameConvertor().dotted(slashed);
-		
-		return forClass(dotted(dottedString));
-	}
+    private Dotted dotted;
+
+    private ClassIdentifier(Dotted className) {
+        this.dotted = className;
+    }
+
+    public Dotted asDotted() {
+        return dotted;
+    }
+
+    public static ClassIdentifier forClass(Dotted className) {
+        return new ClassIdentifier(className);
+    }
+
+    public static ClassIdentifier forClass(Slashed className) {
+        String slashed = className.asString();
+        String dottedString = new ClassNameConvertor().dotted(slashed);
+
+        return forClass(dotted(dottedString));
+    }
 }

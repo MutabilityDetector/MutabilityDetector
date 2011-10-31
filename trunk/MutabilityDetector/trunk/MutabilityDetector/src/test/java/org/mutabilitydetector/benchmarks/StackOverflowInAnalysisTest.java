@@ -25,28 +25,32 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
 
 public class StackOverflowInAnalysisTest {
 
-	private IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
+    private IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
 
-	@Test public void innerClassDoesNotCauseStackOverflowError() throws Exception {
-		session.resultFor(ImmutableExample.class.getName());
+    @Test
+    public void innerClassDoesNotCauseStackOverflowError() throws Exception {
+        session.resultFor(ImmutableExample.class.getName());
 
-		session.resultFor(AbstractStringContainer.class.getName());
-		session.resultFor(MutableByAssigningAbstractTypeToField.class.getName());
-		session.resultFor(AbstractStringContainer.class.getName());
-	}
+        session.resultFor(AbstractStringContainer.class.getName());
+        session.resultFor(MutableByAssigningAbstractTypeToField.class.getName());
+        session.resultFor(AbstractStringContainer.class.getName());
+    }
 
-	@Test public void visitingEnumTypeDoesNotCauseStackOverflowError() throws Exception {
-		session.resultFor(EnumType.class.getName());
-	}
+    @Test
+    public void visitingEnumTypeDoesNotCauseStackOverflowError() throws Exception {
+        session.resultFor(EnumType.class.getName());
+    }
 
-	@Test public void analysingThisTestDoesNotCauseStackOverflowError() throws Exception {
-		session.resultFor(this.getClass().getName());
-	}
+    @Test
+    public void analysingThisTestDoesNotCauseStackOverflowError() throws Exception {
+        session.resultFor(this.getClass().getName());
+    }
 
-	@Test public void analysingConstructorClassDoesNotCauseStackOverflow() throws Exception {
-		// Constructor has a field of type 'Class'
-		// Class has a field of type 'Constructor'
-		session.resultFor(Constructor.class.getName());
-	}
+    @Test
+    public void analysingConstructorClassDoesNotCauseStackOverflow() throws Exception {
+        // Constructor has a field of type 'Class'
+        // Class has a field of type 'Constructor'
+        session.resultFor(Constructor.class.getName());
+    }
 
 }

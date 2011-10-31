@@ -31,64 +31,69 @@ import org.objectweb.asm.tree.analysis.Frame;
 
 public abstract class FieldAssignmentVisitor extends MethodNode {
 
-	protected List<FieldInsnNode> fieldAssignments = new ArrayList<FieldInsnNode>();
-	protected final String owner;
+    protected List<FieldInsnNode> fieldAssignments = new ArrayList<FieldInsnNode>();
+    protected final String owner;
 
-	public FieldAssignmentVisitor(String owner, int access, String name, String desc, String signature, String[] exceptions) {
-		super(access, name, desc, signature, exceptions);
-		this.owner = owner;
-	}
+    public FieldAssignmentVisitor(String owner,
+            int access,
+            String name,
+            String desc,
+            String signature,
+            String[] exceptions) {
+        super(access, name, desc, signature, exceptions);
+        this.owner = owner;
+    }
 
-	@Override
-	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-		super.visitFieldInsn(opcode, owner, name, desc);
-		if (opcode == Opcodes.PUTFIELD) {
-			fieldAssignments.add((FieldInsnNode) instructions.getLast());
-		}
-	
-	}
+    @Override
+    public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+        super.visitFieldInsn(opcode, owner, name, desc);
+        if (opcode == Opcodes.PUTFIELD) {
+            fieldAssignments.add((FieldInsnNode) instructions.getLast());
+        }
 
-	@Override
-	public void visitEnd() {
-		super.visitEnd();
-		
-		if(fieldAssignments.isEmpty()) { return; }
-		
-		Analyzer a = new Analyzer(new CustomClassLoadingSimpleVerifier());
-		Frame[] frames;
-		try {
-			frames = a.analyze(owner, this);
-	
-			for (FieldInsnNode fieldInsnNode : fieldAssignments) {
-				Frame assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
-				int stackSlot = assignmentFrame.getStackSize() - 1;
-				BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
-				visitFieldAssignmentFrame(assignmentFrame, fieldInsnNode, stackValue);
-			}
-		} catch (AnalyzerException forwarded) {
-			throw new RuntimeException(forwarded);
-		}
-	}
-	
-	/**
-	 * 
-	 * At the end of a method, the frames are analysed to be able to inspect
-	 * the state of the stack when the field is assigned. This method is
-	 * called, giving the frame at the time of the assignment, as well as
-	 * the instruction node.
-	 * 
-	 * @param assignmentFrame
-	 * @param fieldInsnNode
-	 */
-	abstract protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue);
+    }
 
-	protected boolean isInvalidStackValue(BasicValue stackValue) {
-		return stackValue == null || "Lnull;".equals(stackValue.getType().toString());
-	}
+    @Override
+    public void visitEnd() {
+        super.visitEnd();
 
-	protected BasicValue getStackValue(Frame assignmentFrame) {
-		int stackSlot = assignmentFrame.getStackSize() - 1;
-		BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
-		return stackValue;
-	}
+        if (fieldAssignments.isEmpty()) { return; }
+
+        Analyzer a = new Analyzer(new CustomClassLoadingSimpleVerifier());
+        Frame[] frames;
+        try {
+            frames = a.analyze(owner, this);
+
+            for (FieldInsnNode fieldInsnNode : fieldAssignments) {
+                Frame assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
+                int stackSlot = assignmentFrame.getStackSize() - 1;
+                BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
+                visitFieldAssignmentFrame(assignmentFrame, fieldInsnNode, stackValue);
+            }
+        } catch (AnalyzerException forwarded) {
+            throw new RuntimeException(forwarded);
+        }
+    }
+
+    /**
+     * 
+     * At the end of a method, the frames are analysed to be able to inspect the state of the stack when the field is
+     * assigned. This method is called, giving the frame at the time of the assignment, as well as the instruction node.
+     * 
+     * @param assignmentFrame
+     * @param fieldInsnNode
+     */
+    abstract protected void visitFieldAssignmentFrame(Frame assignmentFrame,
+            FieldInsnNode fieldInsnNode,
+            BasicValue stackValue);
+
+    protected boolean isInvalidStackValue(BasicValue stackValue) {
+        return stackValue == null || "Lnull;".equals(stackValue.getType().toString());
+    }
+
+    protected BasicValue getStackValue(Frame assignmentFrame) {
+        int stackSlot = assignmentFrame.getStackSize() - 1;
+        BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
+        return stackValue;
+    }
 }

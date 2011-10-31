@@ -27,65 +27,69 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class WellKnownJavaTypesTest {
-	
-	@Ignore("Not final")
-	@Test public void Object() throws Exception {
-		assertInstancesOf(Object.class, areImmutable());
-	}
-	
-	@Ignore("Not final " +
-			"Reassigned field " +
-			"Mutable type to field (BigInteger, String)")
-	@Test public void BigDecimal() {
-		assertInstancesOf(BigDecimal.class, areImmutable());
-	}
-	
-	@Ignore("Not final" +
-			"Published fields can be reassigned" +
-			"Reassigning field" +
-			"Mutable type to field (primitive array)" +
-			"Field which is a mutable type")
-	@Test public void BigInteger() {
-		assertInstancesOf(BigInteger.class, areImmutable());
-	}
-	
-	@Ignore("Mutable type to field (primitive array)" +
-			"Field which is a mutable type")
-	@Test public void String() {
-		assertInstancesOf(String.class, areImmutable());
-	}
-	
-	@Test public void Integer() {
-		assertInstancesOf(Integer.class, areImmutable());
-	}
-	
-	@Test public void Array() {
-		assertInstancesOf(Array.class, areImmutable());
-	}
-	
-	@Test public void Date() {
-		assertInstancesOf(Date.class, areNotImmutable());
-	}
-	
-	@Ignore("Not final" +
-			"Mutable type to field (java.lang.Object)")
-	@Test public void AbstractMap$SimpleImmutableEntry() {
-		assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable());
-	}
-	
-	@Ignore("Not final" +
-			"Field hashCode reassigned" +
-			"Field of mutable type (primitive array)")
-	@Test public void ImmutableDescriptor() {
-		assertInstancesOf(ImmutableDescriptor.class, areImmutable());
-	}
-	
-	@Test public void Class() {
-		assertInstancesOf(Class.class, areNotImmutable());
-	}
-	
-	@Test public void ArrayList() {
-		 assertInstancesOf(ArrayList.class, areNotImmutable());
-	}
-	
+
+    @Ignore("Not final")
+    @Test
+    public void Object() throws Exception {
+        assertInstancesOf(Object.class, areImmutable());
+    }
+
+    @Ignore("Not final " + "Reassigned field " + "Mutable type to field (BigInteger, String)")
+    @Test
+    public void BigDecimal() {
+        assertInstancesOf(BigDecimal.class, areImmutable());
+    }
+
+    @Ignore("Not final" + "Published fields can be reassigned"
+            + "Reassigning field"
+            + "Mutable type to field (primitive array)"
+            + "Field which is a mutable type")
+    @Test
+    public void BigInteger() {
+        assertInstancesOf(BigInteger.class, areImmutable());
+    }
+
+    @Ignore("Mutable type to field (primitive array)" + "Field which is a mutable type")
+    @Test
+    public void String() {
+        assertInstancesOf(String.class, areImmutable());
+    }
+
+    @Test
+    public void Integer() {
+        assertInstancesOf(Integer.class, areImmutable());
+    }
+
+    @Test
+    public void Array() {
+        assertInstancesOf(Array.class, areImmutable());
+    }
+
+    @Test
+    public void Date() {
+        assertInstancesOf(Date.class, areNotImmutable());
+    }
+
+    @Ignore("Not final" + "Mutable type to field (java.lang.Object)")
+    @Test
+    public void AbstractMap$SimpleImmutableEntry() {
+        assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable());
+    }
+
+    @Ignore("Not final" + "Field hashCode reassigned" + "Field of mutable type (primitive array)")
+    @Test
+    public void ImmutableDescriptor() {
+        assertInstancesOf(ImmutableDescriptor.class, areImmutable());
+    }
+
+    @Test
+    public void Class() {
+        assertInstancesOf(Class.class, areNotImmutable());
+    }
+
+    @Test
+    public void ArrayList() {
+        assertInstancesOf(ArrayList.class, areNotImmutable());
+    }
+
 }

@@ -10,27 +10,28 @@
 
 package org.mutabilitydetector.benchmarks.escapedthis;
 
-@SuppressWarnings("unused") 
+@SuppressWarnings("unused")
 public class Safe {
 
-	public static class SaveThisReferenceToPrivateInstanceField {
-		private SaveThisReferenceToPrivateInstanceField thisReference;
-		public SaveThisReferenceToPrivateInstanceField() {
-			thisReference = this;
-		}
-	}
+    public static class SaveThisReferenceToPrivateInstanceField {
+        private SaveThisReferenceToPrivateInstanceField thisReference;
 
-	public static class PassThisReferenceToClassWhichDoesNotPublishIt {
-		public PassThisReferenceToClassWhichDoesNotPublishIt() {
-			new JustAssignTheReference(this);
-		}
-	}
-	
-	private static class JustAssignTheReference {
-		private final Object reference;
+        public SaveThisReferenceToPrivateInstanceField() {
+            thisReference = this;
+        }
+    }
 
-		public JustAssignTheReference(Object reference) {
-			this.reference = reference;
-		}
-	}
+    public static class PassThisReferenceToClassWhichDoesNotPublishIt {
+        public PassThisReferenceToClassWhichDoesNotPublishIt() {
+            new JustAssignTheReference(this);
+        }
+    }
+
+    private static class JustAssignTheReference {
+        private final Object reference;
+
+        public JustAssignTheReference(Object reference) {
+            this.reference = reference;
+        }
+    }
 }

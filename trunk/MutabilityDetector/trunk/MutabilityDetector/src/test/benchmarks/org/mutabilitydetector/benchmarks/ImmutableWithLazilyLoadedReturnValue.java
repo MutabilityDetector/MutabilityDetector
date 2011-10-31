@@ -11,26 +11,26 @@
 package org.mutabilitydetector.benchmarks;
 
 /**
- * This is similar to the pattern adopted by {@link java.lang.String#hashCode()},
- * where the value of the hash is lazily computed and cached.
+ * This is similar to the pattern adopted by {@link java.lang.String#hashCode()}, where the value of the hash is lazily
+ * computed and cached.
  */
 public final class ImmutableWithLazilyLoadedReturnValue {
 
-	public final int number;
-	private int lazilyComputed = getAnInt();
-	
-	public ImmutableWithLazilyLoadedReturnValue(int number) {
-		this.number = number;
-	}
-	
-	public int getLazilyLoadedReturnValue() {
-		if(lazilyComputed == 0) {
-			lazilyComputed = 42;
-		}
-		return lazilyComputed;
-	}
-	
-	static int getAnInt() {
-		return -1;
-	}
+    public final int number;
+    private int lazilyComputed = getAnInt();
+
+    public ImmutableWithLazilyLoadedReturnValue(int number) {
+        this.number = number;
+    }
+
+    public int getLazilyLoadedReturnValue() {
+        if (lazilyComputed == 0) {
+            lazilyComputed = 42;
+        }
+        return lazilyComputed;
+    }
+
+    static int getAnInt() {
+        return -1;
+    }
 }

@@ -19,20 +19,21 @@ import org.junit.Test;
 
 import com.google.classpath.ClassPathFactory;
 
-
 public class NullPointerExceptionAnalysingRtJar {
 
-	private final PrintStream errorStream = new PrintStream(new OutputStream() {
-		@Override public void write(int b) throws IOException {
-			// suppress output in tests
-		}
-	});
-	
-	@Ignore @Test public void
-	checkNullPointerExceptionIsNotThrown() {
-		String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
-		BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
-		new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
-	}
-	
+    private final PrintStream errorStream = new PrintStream(new OutputStream() {
+        @Override
+        public void write(int b) throws IOException {
+            // suppress output in tests
+        }
+    });
+
+    @Ignore
+    @Test
+    public void checkNullPointerExceptionIsNotThrown() {
+        String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
+        BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
+    }
+
 }

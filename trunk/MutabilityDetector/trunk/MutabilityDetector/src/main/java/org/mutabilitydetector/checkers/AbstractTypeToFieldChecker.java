@@ -17,7 +17,6 @@
  */
 package org.mutabilitydetector.checkers;
 
-
 import static java.lang.String.format;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
@@ -31,57 +30,58 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-
-
 public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
-	private final TypeStructureInformation typeStructureInformation;
-	
-	public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation) {
-		this.typeStructureInformation = typeStructureInformation;
-	}
+    private final TypeStructureInformation typeStructureInformation;
 
-	public static AbstractTypeToFieldChecker newAbstractTypeToFieldChecker(TypeStructureInformation requestInformation) {
-		return new AbstractTypeToFieldChecker(requestInformation);
-	}
-	
-	@Override
-	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		super.visit(version, access, name, signature, superName, interfaces);
-	}
+    public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation) {
+        this.typeStructureInformation = typeStructureInformation;
+    }
 
-	@Override
-	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions);
-	}
-	
-	private class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
-		
-		public AssignAbstractTypeVisitor(String owner, int access, String name, String desc, String signature, String[] exceptions) {
-			super(owner, access, name, desc, signature, exceptions);
-		}
+    public static AbstractTypeToFieldChecker newAbstractTypeToFieldChecker(TypeStructureInformation requestInformation) {
+        return new AbstractTypeToFieldChecker(requestInformation);
+    }
 
-		@Override
-		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-			if (isInvalidStackValue(stackValue)) {
-				return;
-			}
-			checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
-		}
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
 
-		void checkIfClassIsAbstract(String name, Type objectType) {
-			int sort = objectType.getSort();
-			if(sort != Type.OBJECT) {
-				return;
-			}
-			String dottedClassName = dottedClassName(objectType);
-			boolean isAbstract = typeStructureInformation.isTypeAbstract(dotted(dottedClassName));
-			
-			if(isAbstract) {
-				addResult(format("Field can have an abstract type (%s) assigned to it.", dottedClassName), 
-						fieldLocation(name, ClassLocation.fromInternalName(ownerClass)), 
-						MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
-			}
-		}
-	}
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions);
+    }
+
+    private class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
+
+        public AssignAbstractTypeVisitor(String owner,
+                int access,
+                String name,
+                String desc,
+                String signature,
+                String[] exceptions) {
+            super(owner, access, name, desc, signature, exceptions);
+        }
+
+        @Override
+        protected void visitFieldAssignmentFrame(Frame assignmentFrame,
+                FieldInsnNode fieldInsnNode,
+                BasicValue stackValue) {
+            if (isInvalidStackValue(stackValue)) { return; }
+            checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
+        }
+
+        void checkIfClassIsAbstract(String name, Type objectType) {
+            int sort = objectType.getSort();
+            if (sort != Type.OBJECT) { return; }
+            String dottedClassName = dottedClassName(objectType);
+            boolean isAbstract = typeStructureInformation.isTypeAbstract(dotted(dottedClassName));
+
+            if (isAbstract) {
+                addResult(format("Field can have an abstract type (%s) assigned to it.", dottedClassName),
+                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+            }
+        }
+    }
 }

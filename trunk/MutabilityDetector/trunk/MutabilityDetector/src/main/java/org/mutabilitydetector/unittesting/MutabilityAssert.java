@@ -25,33 +25,35 @@ import org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatcher;
 
 public class MutabilityAssert {
 
-	private final static AssertionReporter reporter = new AssertionReporter();
-	
-	public static void assertImmutable(Class<?> expectedImmutableClass) {
-		reporter.expectedImmutable(getResultFor(expectedImmutableClass));
-	}
+    private final static AssertionReporter reporter = new AssertionReporter();
 
-	private static AnalysisResult getResultFor(Class<?> clazz) {
-		return analysisResultFor(clazz);
-	}
+    public static void assertImmutable(Class<?> expectedImmutableClass) {
+        reporter.expectedImmutable(getResultFor(expectedImmutableClass));
+    }
 
-	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
-		return reporter.formatReasons(reasons);
-	}
+    private static AnalysisResult getResultFor(Class<?> clazz) {
+        return analysisResultFor(clazz);
+    }
 
-	public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
-		AnalysisResult analysisResult = getResultFor(forClass);
-		reporter.expectedIsImmutable(expected, analysisResult);
-	}
-	
-	public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable) {
-		MatcherAssert.assertThat(getResultFor(clazz), areImmutable);
-	}
+    public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
+        return reporter.formatReasons(reasons);
+    }
 
-	public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable, Matcher<AnalysisResult> allowing) {
-		WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable, allowing);
-		MatcherAssert.assertThat(getResultFor(clazz), areImmutable_withReasons);
-		
-	}
+    public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
+        AnalysisResult analysisResult = getResultFor(forClass);
+        reporter.expectedIsImmutable(expected, analysisResult);
+    }
+
+    public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable) {
+        MatcherAssert.assertThat(getResultFor(clazz), areImmutable);
+    }
+
+    public static void assertInstancesOf(Class<?> clazz,
+            IsImmutableMatcher areImmutable,
+            Matcher<AnalysisResult> allowing) {
+        WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable, allowing);
+        MatcherAssert.assertThat(getResultFor(clazz), areImmutable_withReasons);
+
+    }
 
 }

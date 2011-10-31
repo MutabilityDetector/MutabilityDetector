@@ -34,77 +34,77 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-
 public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
-	private final IAnalysisSession analysisSession;
-	private final TypeStructureInformation typeStructureInformation;
+    private final IAnalysisSession analysisSession;
+    private final TypeStructureInformation typeStructureInformation;
 
-	public MutableTypeToFieldChecker(IAnalysisSession analysisSession, TypeStructureInformation typeStructureInformation) {
-		this.analysisSession = analysisSession;
-		this.typeStructureInformation = typeStructureInformation;
-	}
+    public MutableTypeToFieldChecker(IAnalysisSession analysisSession, TypeStructureInformation typeStructureInformation) {
+        this.analysisSession = analysisSession;
+        this.typeStructureInformation = typeStructureInformation;
+    }
 
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
 
-	@Override
-	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-		super.visit(version, access, name, signature, superName, interfaces);
-	}
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        return super.visitField(access, name, desc, signature, value);
+    }
 
-	@Override
-	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		return super.visitField(access, name, desc, signature, value);
-	}
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions);
+    }
 
-	@Override
-	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions);
-	}
+    class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
 
-	class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
+        public AssignMutableTypeToFieldChecker(String owner,
+                int access,
+                String name,
+                String desc,
+                String signature,
+                String[] exceptions) {
+            super(owner, access, name, desc, signature, exceptions);
+        }
 
+        @Override
+        protected void visitFieldAssignmentFrame(Frame assignmentFrame,
+                FieldInsnNode fieldInsnNode,
+                BasicValue stackValue) {
+            if (isInvalidStackValue(stackValue)) { return; }
+            checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
+        }
 
-		public AssignMutableTypeToFieldChecker(String owner, int access, String name, String desc, String signature,
-				String[] exceptions) {
-			super(owner, access, name, desc, signature, exceptions);
-		}
+        private void checkIfClassIsMutable(String name, Type type) {
+            int sort = type.getSort();
+            switch (sort) {
+            case Type.OBJECT:
+                String dottedClassName = dottedClassName(type);
+                IsImmutable isImmutable = analysisSession.resultFor(dottedClassName).isImmutable;
 
-		@Override
-		protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-			if (isInvalidStackValue(stackValue)) {
-				return;
-			}
-			checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
-		}
+                boolean isConcreteType = isConcreteType(dotted(dottedClassName));
+                if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
+                    addResult("Field can have a mutable type (" + dottedClassName + ") " + "assigned to it.",
+                            fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                            MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+                }
+                break;
+            case Type.ARRAY:
+                addResult("Field can have a mutable type (a primitive array) assigned to it.",
+                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+                break;
+            default:
+                return;
+            }
+        }
 
-		private void checkIfClassIsMutable(String name, Type type) {
-			int sort = type.getSort();
-			switch(sort) {
-			case Type.OBJECT:
-				String dottedClassName = dottedClassName(type);
-				IsImmutable isImmutable = analysisSession.resultFor(dottedClassName).isImmutable;
-				
-				boolean isConcreteType = isConcreteType(dotted(dottedClassName));
-				if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
-					addResult("Field can have a mutable type (" + dottedClassName + ") " + "assigned to it.",
-							fieldLocation(name, ClassLocation.fromInternalName(ownerClass)), 
-							MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-				}
-				break;
-			case Type.ARRAY:
-				addResult("Field can have a mutable type (a primitive array) assigned to it.",
-						fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
-						MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-				break;
-			default:
-				return;
-			}
-		}
+        private boolean isConcreteType(Dotted className) {
+            return !(typeStructureInformation.isTypeAbstract(className) || typeStructureInformation.isTypeInterface(className));
+        }
 
-		private boolean isConcreteType(Dotted className) {
-			return !(typeStructureInformation.isTypeAbstract(className)
-					|| typeStructureInformation.isTypeInterface(className));
-		}
-
-	}
+    }
 }

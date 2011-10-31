@@ -29,43 +29,62 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
  * 
  */
 public class AccessModifierQuery {
-	private int access;
+    private int access;
 
-	private AccessModifierQuery(int access) {
-		this.access = access;
-	}
+    private AccessModifierQuery(int access) {
+        this.access = access;
+    }
 
-	private boolean includesAccess(int access) {
-		return (this.access & access) != 0;
-	}
-	
-	public static AccessModifierQuery method(int access) {
-		return new AccessModifierQuery(access);
-	}
+    private boolean includesAccess(int access) {
+        return (this.access & access) != 0;
+    }
 
-	public static AccessModifierQuery type(int access) {
-		return new AccessModifierQuery(access);
-	}
-	
-	public static AccessModifierQuery field(int access) {
-		return new AccessModifierQuery(access);
-	}
+    public static AccessModifierQuery method(int access) {
+        return new AccessModifierQuery(access);
+    }
 
-	private boolean is(int flag) {
-		return includesAccess(flag);
-	}
+    public static AccessModifierQuery type(int access) {
+        return new AccessModifierQuery(access);
+    }
 
-	public boolean isPrivate() { return is(ACC_PRIVATE); }
-	public boolean isNotPrivate() { return !is(ACC_PRIVATE); }
+    public static AccessModifierQuery field(int access) {
+        return new AccessModifierQuery(access);
+    }
 
-	public boolean isFinal() { return is(ACC_FINAL); }
-	public boolean isNotFinal() { return !is(ACC_FINAL); }
+    private boolean is(int flag) {
+        return includesAccess(flag);
+    }
 
-	public boolean isAbstract() { return is(ACC_ABSTRACT); }
+    public boolean isPrivate() {
+        return is(ACC_PRIVATE);
+    }
 
-	public boolean isInterface() { return is(ACC_INTERFACE); }
+    public boolean isNotPrivate() {
+        return !is(ACC_PRIVATE);
+    }
 
-	public boolean isStatic() { return is(ACC_STATIC); }
-	public boolean isNotStatic() { return !is(ACC_STATIC); }
+    public boolean isFinal() {
+        return is(ACC_FINAL);
+    }
+
+    public boolean isNotFinal() {
+        return !is(ACC_FINAL);
+    }
+
+    public boolean isAbstract() {
+        return is(ACC_ABSTRACT);
+    }
+
+    public boolean isInterface() {
+        return is(ACC_INTERFACE);
+    }
+
+    public boolean isStatic() {
+        return is(ACC_STATIC);
+    }
+
+    public boolean isNotStatic() {
+        return !is(ACC_STATIC);
+    }
 
 }

@@ -23,40 +23,35 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
 public interface IAnalysisSession {
 
-	AnalysisResult resultFor(String className);
-	
-	void addAnalysisResult(AnalysisResult result);
-	void addAnalysisError(AnalysisError error);
-	
-	void runAnalysis(Collection<String> classNames);
-	
-	Collection<AnalysisResult> getResults();
-	Collection<AnalysisError> getErrors();
-	
-	AnalysisDatabase analysisDatabase();
-	
-	public static enum IsImmutable {
-		IMMUTABLE,
-		EFFECTIVELY_IMMUTABLE,
-		NOT_IMMUTABLE,
-		COULD_NOT_ANALYSE;
-	}
+    AnalysisResult resultFor(String className);
 
-	public static final class AnalysisError {
-		public final String checkerName;
-		public final String description;
-		public final String onClass;
-		public AnalysisError(String onClass, String checkerName, String errorDescription) {
-			this.onClass = onClass;
-			this.checkerName = checkerName;
-			this.description = errorDescription;
-			
-		}
-	}
+    void addAnalysisResult(AnalysisResult result);
 
+    void addAnalysisError(AnalysisError error);
 
+    void runAnalysis(Collection<String> classNames);
 
-	
+    Collection<AnalysisResult> getResults();
+
+    Collection<AnalysisError> getErrors();
+
+    AnalysisDatabase analysisDatabase();
+
+    public static enum IsImmutable {
+        IMMUTABLE, EFFECTIVELY_IMMUTABLE, NOT_IMMUTABLE, COULD_NOT_ANALYSE;
+    }
+
+    public static final class AnalysisError {
+        public final String checkerName;
+        public final String description;
+        public final String onClass;
+
+        public AnalysisError(String onClass, String checkerName, String errorDescription) {
+            this.onClass = onClass;
+            this.checkerName = checkerName;
+            this.description = errorDescription;
+
+        }
+    }
+
 }
-
-

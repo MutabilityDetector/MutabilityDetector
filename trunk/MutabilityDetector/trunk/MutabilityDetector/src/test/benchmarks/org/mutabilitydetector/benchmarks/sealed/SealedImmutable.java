@@ -12,11 +12,13 @@ package org.mutabilitydetector.benchmarks.sealed;
 
 public class SealedImmutable {
 
-	private final String field;
-	
-	/*default*/ SealedImmutable(String field) {
-		this.field = field;
-	}
-	
-	public String field() { return field; }
+    private final String field;
+
+    /* default */SealedImmutable(String field) {
+        this.field = field;
+    }
+
+    public String field() {
+        return field;
+    }
 }

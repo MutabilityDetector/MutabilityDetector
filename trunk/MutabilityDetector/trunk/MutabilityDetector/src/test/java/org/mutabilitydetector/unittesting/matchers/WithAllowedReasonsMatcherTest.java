@@ -24,22 +24,24 @@ import org.mutabilitydetector.AnalysisResult;
 
 public class WithAllowedReasonsMatcherTest {
 
-	@Test public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
-		IsImmutableMatcher isImmutable = new IsImmutableMatcher(IMMUTABLE);
-		AnalysisResult analysisResult = new AnalysisResult("some class", NOT_IMMUTABLE, unusedCheckerReasonDetails());
-		
-		WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
-		
-		assertThat(withReasonsMatcher.matches(analysisResult), is(false));
-	}
-	
-	@Test public void passesWhenPrimaryResultPasses() throws Exception {
-		IsImmutableMatcher isImmutable = new IsImmutableMatcher(IMMUTABLE);
-		AnalysisResult analysisResult = definitelyImmutable("some.class");
-		
-		WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
-		
-		assertThat(withReasonsMatcher.matches(analysisResult), is(true));
-	}
-	
+    @Test
+    public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
+        IsImmutableMatcher isImmutable = new IsImmutableMatcher(IMMUTABLE);
+        AnalysisResult analysisResult = new AnalysisResult("some class", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
+
+        assertThat(withReasonsMatcher.matches(analysisResult), is(false));
+    }
+
+    @Test
+    public void passesWhenPrimaryResultPasses() throws Exception {
+        IsImmutableMatcher isImmutable = new IsImmutableMatcher(IMMUTABLE);
+        AnalysisResult analysisResult = definitelyImmutable("some.class");
+
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
+
+        assertThat(withReasonsMatcher.matches(analysisResult), is(true));
+    }
+
 }

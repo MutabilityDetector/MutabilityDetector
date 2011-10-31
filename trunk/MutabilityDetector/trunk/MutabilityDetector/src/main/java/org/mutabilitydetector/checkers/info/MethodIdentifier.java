@@ -16,73 +16,60 @@ import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.Slashed;
 
 public class MethodIdentifier {
-	
-	private final Dotted dottedClassName;
-	private final String methodDescriptor;
 
-	public MethodIdentifier(Dotted className, String methodDescriptor) {
-		this.dottedClassName = className;
-		this.methodDescriptor = methodDescriptor;
+    private final Dotted dottedClassName;
+    private final String methodDescriptor;
 
-	}
-	
-	@Override public String toString() {
-		return dottedClassName + "." + methodDescriptor;
-	}
-	
-	
+    public MethodIdentifier(Dotted className, String methodDescriptor) {
+        this.dottedClassName = className;
+        this.methodDescriptor = methodDescriptor;
 
-	@Override public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dottedClassName == null) ? 0 : dottedClassName.hashCode());
-		result = prime * result + ((methodDescriptor == null) ? 0 : methodDescriptor.hashCode());
-		return result;
-	}
+    }
 
-	@Override public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		MethodIdentifier other = (MethodIdentifier) obj;
-		if (dottedClassName == null) {
-			if (other.dottedClassName != null) {
-				return false;
-			}
-		} else if (!dottedClassName.equals(other.dottedClassName)) {
-			return false;
-		}
-		if (methodDescriptor == null) {
-			if (other.methodDescriptor != null) {
-				return false;
-			}
-		} else if (!methodDescriptor.equals(other.methodDescriptor)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public String toString() {
+        return dottedClassName + "." + methodDescriptor;
+    }
 
-	public static MethodIdentifier forMethod(Dotted className, String methodDescriptor) {
-		return new MethodIdentifier(className, methodDescriptor);
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dottedClassName == null) ? 0 : dottedClassName.hashCode());
+        result = prime * result + ((methodDescriptor == null) ? 0 : methodDescriptor.hashCode());
+        return result;
+    }
 
-	public static MethodIdentifier forMethod(Slashed className, String methodDescriptor) {
-		Dotted dotted = fromSlashed(className);
-		return new MethodIdentifier(dotted, methodDescriptor);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { return true; }
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        MethodIdentifier other = (MethodIdentifier) obj;
+        if (dottedClassName == null) {
+            if (other.dottedClassName != null) { return false; }
+        } else if (!dottedClassName.equals(other.dottedClassName)) { return false; }
+        if (methodDescriptor == null) {
+            if (other.methodDescriptor != null) { return false; }
+        } else if (!methodDescriptor.equals(other.methodDescriptor)) { return false; }
+        return true;
+    }
 
-	public Dotted dottedClassName() {
-		return dottedClassName;
-	}
+    public static MethodIdentifier forMethod(Dotted className, String methodDescriptor) {
+        return new MethodIdentifier(className, methodDescriptor);
+    }
 
-	public String methodDescriptor() {
-		return methodDescriptor;
-	}
+    public static MethodIdentifier forMethod(Slashed className, String methodDescriptor) {
+        Dotted dotted = fromSlashed(className);
+        return new MethodIdentifier(dotted, methodDescriptor);
+    }
+
+    public Dotted dottedClassName() {
+        return dottedClassName;
+    }
+
+    public String methodDescriptor() {
+        return methodDescriptor;
+    }
 
 }

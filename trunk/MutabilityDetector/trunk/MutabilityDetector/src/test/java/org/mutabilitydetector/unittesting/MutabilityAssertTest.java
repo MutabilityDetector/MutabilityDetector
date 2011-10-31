@@ -31,83 +31,90 @@ import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMetho
 
 public class MutabilityAssertTest {
 
-	private Class<?> immutableClass = ImmutableExample.class;
-	private Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
+    private Class<?> immutableClass = ImmutableExample.class;
+    private Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
 
-	@Test public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {
-		assertImmutable(immutableClass);
-	}
+    @Test
+    public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {
+        assertImmutable(immutableClass);
+    }
 
-	@Test(expected = MutabilityAssertionError.class)
-	public void assertImmutableWithMutableClassThrowsAssertionError() throws Exception {
-		assertImmutable(mutableClass);
-	}
+    @Test(expected = MutabilityAssertionError.class)
+    public void assertImmutableWithMutableClassThrowsAssertionError() throws Exception {
+        assertImmutable(mutableClass);
+    }
 
-	@Test public void reasonsArePrintedWithAssertionFailure() throws Exception {
-		try {
-			assertImmutable(mutableClass);
-			fail("Assertion should have failed.");
-		} catch (final AssertionError ae) {
-			assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
-			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-			assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
-		}
-	}
-	
-	@Test public void assertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
-		assertImmutableStatusIs(IsImmutable.IMMUTABLE, immutableClass);
-	}
+    @Test
+    public void reasonsArePrintedWithAssertionFailure() throws Exception {
+        try {
+            assertImmutable(mutableClass);
+            fail("Assertion should have failed.");
+        } catch (final AssertionError ae) {
+            assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
+            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
+            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
+        }
+    }
 
-	@Test public void assertImmutableStatusIsFailsWhenUnequal() throws Exception {
-		try {
-			assertImmutableStatusIs(NOT_IMMUTABLE, immutableClass);
-		} catch (final AssertionError ae) {
-			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-			assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
-		}
-	}
-	
-	
-	@Test public void assertInstancesOfClassAreImmutableDoesNotFailForImmutableClass() throws Exception {
-		assertInstancesOf(ImmutableExample.class, areImmutable());
-	}
-	
-	@Test(expected=AssertionError.class)
-	public void assertThatIsImmutableFailsForMutableClass() throws Exception {
-		assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
-	}
-	
-	@Test public void failedMatchMessageFromAssertThatIsDescriptive() throws Exception {
-		try {
-			assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
-		} catch (AssertionError ae) {
-			assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-			assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
-		}
-	}
-	
-	@Test public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {
-		assertInstancesOf(ImmutableProvidedOtherClassIsImmutable.class, areImmutable(), 
-				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
-		
-	}
-	
-	@Test(expected=AssertionError.class)
-	public void failsWhenAllowingReasonWhichIsNotTheCauseOfMutability() {
-		assertInstancesOf(MutableByHavingSetterMethod.class, areImmutable(), 
-				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
-	}
-	
-	@Test
-	public void providesUsefulFailureMessageWhenAssertionFails() {
-		try {
-		assertInstancesOf(MutableByHavingSetterMethod.class, areImmutable(), 
-				provided(ThisHasToBeImmutable.class).isAlsoImmutable());
-		} catch (AssertionError e) {
-			assertThat(e.getMessage(), containsString("can be reassigned"));
-		}
-	}
+    @Test
+    public void assertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
+        assertImmutableStatusIs(IsImmutable.IMMUTABLE, immutableClass);
+    }
 
+    @Test
+    public void assertImmutableStatusIsFailsWhenUnequal() throws Exception {
+        try {
+            assertImmutableStatusIs(NOT_IMMUTABLE, immutableClass);
+        } catch (final AssertionError ae) {
+            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
+            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
+        }
+    }
 
+    @Test
+    public void assertInstancesOfClassAreImmutableDoesNotFailForImmutableClass() throws Exception {
+        assertInstancesOf(ImmutableExample.class, areImmutable());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void assertThatIsImmutableFailsForMutableClass() throws Exception {
+        assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
+    }
+
+    @Test
+    public void failedMatchMessageFromAssertThatIsDescriptive() throws Exception {
+        try {
+            assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
+        } catch (AssertionError ae) {
+            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
+            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
+        }
+    }
+
+    @Test
+    public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {
+        assertInstancesOf(ImmutableProvidedOtherClassIsImmutable.class,
+                areImmutable(),
+                provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+
+    }
+
+    @Test(expected = AssertionError.class)
+    public void failsWhenAllowingReasonWhichIsNotTheCauseOfMutability() {
+        assertInstancesOf(MutableByHavingSetterMethod.class,
+                areImmutable(),
+                provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+    }
+
+    @Test
+    public void providesUsefulFailureMessageWhenAssertionFails() {
+        try {
+            assertInstancesOf(MutableByHavingSetterMethod.class,
+                    areImmutable(),
+                    provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+        } catch (AssertionError e) {
+            assertThat(e.getMessage(), containsString("can be reassigned"));
+        }
+    }
 
 }

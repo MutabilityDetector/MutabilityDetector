@@ -13,11 +13,11 @@ package org.mutabilitydetector.benchmarks.settermethod;
 import java.math.BigDecimal;
 
 public class StillMutableSubclass extends MutableBySettingFieldOfField {
-	
-	public static void doSomething() {
-		MutableBySettingFieldOfField.staticField = null;
-		BigDecimal negate = new BigDecimal(0).negate();
-		System.out.println(negate);
-	}
-	
+
+    public static void doSomething() {
+        MutableBySettingFieldOfField.staticField = null;
+        BigDecimal negate = new BigDecimal(0).negate();
+        System.out.println(negate);
+    }
+
 }

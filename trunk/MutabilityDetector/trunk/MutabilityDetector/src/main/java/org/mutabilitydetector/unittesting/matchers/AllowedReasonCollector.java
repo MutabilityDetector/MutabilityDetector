@@ -15,8 +15,7 @@ import java.util.Collection;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 
-
 public abstract class AllowedReasonCollector {
-	
-	abstract public Collection<CheckerReasonDetail> allowedReasons(AnalysisResult analysisResult);
+
+    abstract public Collection<CheckerReasonDetail> allowedReasons(AnalysisResult analysisResult);
 }

@@ -11,11 +11,11 @@
 package org.mutabilitydetector.checkers.info;
 
 final class InfoKeyException extends RuntimeException {
-	public InfoKeyException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public InfoKeyException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public InfoKeyException(String message) {
-		super(message);
-	}
+    public InfoKeyException(String message) {
+        super(message);
+    }
 }

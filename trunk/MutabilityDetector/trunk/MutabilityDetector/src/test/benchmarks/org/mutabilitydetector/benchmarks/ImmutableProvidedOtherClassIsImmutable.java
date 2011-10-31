@@ -11,12 +11,13 @@
 package org.mutabilitydetector.benchmarks;
 
 public final class ImmutableProvidedOtherClassIsImmutable {
-	
-	public final ThisHasToBeImmutable assigned;
 
-	public ImmutableProvidedOtherClassIsImmutable(ThisHasToBeImmutable assigned) {
-		this.assigned = assigned;
-	}
-	
-	public static interface ThisHasToBeImmutable { }
+    public final ThisHasToBeImmutable assigned;
+
+    public ImmutableProvidedOtherClassIsImmutable(ThisHasToBeImmutable assigned) {
+        this.assigned = assigned;
+    }
+
+    public static interface ThisHasToBeImmutable {
+    }
 }

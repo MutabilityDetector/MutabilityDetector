@@ -26,33 +26,32 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 /**
- * Interacts with the Apache CLI to parse the options from the command line
- * arguments. Delegates to a {@link ParsingAction} to allow extracting the
- * options.
+ * Interacts with the Apache CLI to parse the options from the command line arguments. Delegates to a
+ * {@link ParsingAction} to allow extracting the options.
  */
 public class OptionParserHelper {
 
-	private Options options;
-	private String[] args;
+    private Options options;
+    private String[] args;
 
-	public OptionParserHelper(Options options, String[] args) {
-		this.options = options;
-		this.args = copyOf(args, args.length);
-	}
+    public OptionParserHelper(Options options, String[] args) {
+        this.options = options;
+        this.args = copyOf(args, args.length);
+    }
 
-	public void parseOptions(ParsingAction action) {
-		try {
-			CommandLineParser parser = new GnuParser();
-			CommandLine line = parser.parse(options, args);
-			action.doParsingAction(line);
-		} catch (ParseException e) {
-			System.out.println("Parsing command line options failed.%nReason: " + e.getMessage());
-			throw new CommandLineOptionsException(e);
-		}
+    public void parseOptions(ParsingAction action) {
+        try {
+            CommandLineParser parser = new GnuParser();
+            CommandLine line = parser.parse(options, args);
+            action.doParsingAction(line);
+        } catch (ParseException e) {
+            System.out.println("Parsing command line options failed.%nReason: " + e.getMessage());
+            throw new CommandLineOptionsException(e);
+        }
 
-	}
+    }
 }
 
 interface ParsingAction {
-	void doParsingAction(CommandLine line);
+    void doParsingAction(CommandLine line);
 }

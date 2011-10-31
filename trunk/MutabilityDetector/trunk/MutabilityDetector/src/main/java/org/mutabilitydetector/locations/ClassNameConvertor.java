@@ -17,8 +17,8 @@ package org.mutabilitydetector.locations;
  */
 public class ClassNameConvertor {
 
-	public String dotted(String slashed) {
-		return slashed.replace(".class", "").replace("/", ".");
-	}
+    public String dotted(String slashed) {
+        return slashed.replace(".class", "").replace("/", ".");
+    }
 
 }

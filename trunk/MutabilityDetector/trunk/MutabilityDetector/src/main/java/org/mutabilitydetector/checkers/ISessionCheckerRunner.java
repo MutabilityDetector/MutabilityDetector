@@ -14,6 +14,6 @@ import org.mutabilitydetector.locations.ClassIdentifier;
 
 public interface ISessionCheckerRunner {
 
-	public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier);
-	
+    public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier);
+
 }

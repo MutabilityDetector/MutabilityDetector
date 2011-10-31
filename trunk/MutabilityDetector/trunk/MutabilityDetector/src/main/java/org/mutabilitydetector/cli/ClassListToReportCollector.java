@@ -14,11 +14,11 @@ import java.util.Collection;
 
 public interface ClassListToReportCollector {
 
-	/**
-	 * 
-	 * @return collection of class names
-	 * @throws ClassListException
-	 */
-	Collection<String> classListToReport();
+    /**
+     * 
+     * @return collection of class names
+     * @throws ClassListException
+     */
+    Collection<String> classListToReport();
 
 }

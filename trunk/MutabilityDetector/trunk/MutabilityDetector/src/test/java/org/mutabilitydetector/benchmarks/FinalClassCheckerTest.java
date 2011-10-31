@@ -33,32 +33,35 @@ import org.mutabilitydetector.locations.ClassLocation;
 
 public class FinalClassCheckerTest {
 
-	private FinalClassChecker checker;
+    private FinalClassChecker checker;
 
-	@Before public void createChecker() {
-		checker = new FinalClassChecker();
-	}
+    @Before
+    public void createChecker() {
+        checker = new FinalClassChecker();
+    }
 
-	@Test public void aClassWhichIsNotFinalIsMaybeImmutable() throws Exception {
-		AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
-		assertThat(checker, hasReasons());
-		assertEffectivelyImmutable(result);
-	}
+    @Test
+    public void aClassWhichIsNotFinalIsMaybeImmutable() throws Exception {
+        AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
+        assertThat(checker, hasReasons());
+        assertEffectivelyImmutable(result);
+    }
 
-	
-	@Test public void immutableExampleIsReportedAsImmutable() throws Exception {
-		assertImmutable(runChecker(checker, ImmutableExample.class));
-	}
-	
-	@Test public void enumTypeIsImmutable() throws Exception {
-		assertImmutable(runChecker(checker, EnumType.class));
-	}
-	
-	@Test
-	public void hasCodeLocationWithCorrectTypeName() throws Exception {
-		runChecker(checker, MutableByNotBeingFinalClass.class);
-		ClassLocation location = (ClassLocation) checker.reasons().iterator().next().codeLocation();
-		assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
-	}
-	
+    @Test
+    public void immutableExampleIsReportedAsImmutable() throws Exception {
+        assertImmutable(runChecker(checker, ImmutableExample.class));
+    }
+
+    @Test
+    public void enumTypeIsImmutable() throws Exception {
+        assertImmutable(runChecker(checker, EnumType.class));
+    }
+
+    @Test
+    public void hasCodeLocationWithCorrectTypeName() throws Exception {
+        runChecker(checker, MutableByNotBeingFinalClass.class);
+        ClassLocation location = (ClassLocation) checker.reasons().iterator().next().codeLocation();
+        assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
+    }
+
 }

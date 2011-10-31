@@ -23,26 +23,25 @@ import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
-	
-	private URLFallbackClassLoader classLoader;
-	
-	public CustomClassLoadingSimpleVerifier() {
-		classLoader = new URLFallbackClassLoader();
-	}
+    private URLFallbackClassLoader classLoader;
 
-	@Override
-	protected Class<?> getClass(Type t) {
-		String className;
-		
-		try {
-			if (t.getSort() == Type.ARRAY) {
-				className = t.getDescriptor().replace('/', '.');
-			} else {
-				className = t.getClassName();
-			}
-			return classLoader.getClass(className);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public CustomClassLoadingSimpleVerifier() {
+        classLoader = new URLFallbackClassLoader();
+    }
+
+    @Override
+    protected Class<?> getClass(Type t) {
+        String className;
+
+        try {
+            if (t.getSort() == Type.ARRAY) {
+                className = t.getDescriptor().replace('/', '.');
+            } else {
+                className = t.getClassName();
+            }
+            return classLoader.getClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

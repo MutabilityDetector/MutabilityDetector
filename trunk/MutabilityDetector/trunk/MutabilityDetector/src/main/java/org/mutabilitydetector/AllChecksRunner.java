@@ -27,44 +27,42 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.locations.Dotted;
 
-
 public class AllChecksRunner {
 
-	private final Dotted toAnalyse;
-	private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-	private IMutabilityCheckerFactory factory;
-	private final ICheckerRunnerFactory checkerRunnerFactory;
+    private final Dotted toAnalyse;
+    private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
+    private IMutabilityCheckerFactory factory;
+    private final ICheckerRunnerFactory checkerRunnerFactory;
 
-	public AllChecksRunner(IMutabilityCheckerFactory checkerFactory, 
-						   ICheckerRunnerFactory checkerRunnerFactory,
-						   Dotted toAnalyse) 
-	{
-		factory = checkerFactory;
-		this.checkerRunnerFactory = checkerRunnerFactory;
-		this.toAnalyse = toAnalyse;
-		
-	}
+    public AllChecksRunner(IMutabilityCheckerFactory checkerFactory,
+            ICheckerRunnerFactory checkerRunnerFactory,
+            Dotted toAnalyse) {
+        factory = checkerFactory;
+        this.checkerRunnerFactory = checkerRunnerFactory;
+        this.toAnalyse = toAnalyse;
 
-	public AnalysisResult runCheckers(IAnalysisSession analysisSession) {
-		Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
-		
-		Collection<IMutabilityChecker> checkers = factory.createInstances(analysisSession);
-		for (IMutabilityChecker checker : checkers) {
-			checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);
-			IsImmutable result = checker.result();
-			results.put(result, getNewCount(results, result));
-			reasons.addAll(checker.reasons());
-		}
-		
-		IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
-			
-		return new AnalysisResult(toAnalyse.asString(), isImmutable, reasons);
-	}
+    }
 
-	private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {
-		Integer oldCount = results.get(result);
-		if(oldCount == null) oldCount = 0;
-		return (oldCount + 1);
-	}
+    public AnalysisResult runCheckers(IAnalysisSession analysisSession) {
+        Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
+
+        Collection<IMutabilityChecker> checkers = factory.createInstances(analysisSession);
+        for (IMutabilityChecker checker : checkers) {
+            checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);
+            IsImmutable result = checker.result();
+            results.put(result, getNewCount(results, result));
+            reasons.addAll(checker.reasons());
+        }
+
+        IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
+
+        return new AnalysisResult(toAnalyse.asString(), isImmutable, reasons);
+    }
+
+    private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {
+        Integer oldCount = results.get(result);
+        if (oldCount == null) oldCount = 0;
+        return (oldCount + 1);
+    }
 
 }

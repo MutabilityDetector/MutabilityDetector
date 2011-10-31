@@ -19,27 +19,28 @@ import org.junit.Test;
 
 public class ClassListReaderFactoryTest {
 
-	private File classListFile;
+    private File classListFile;
 
-	@Test
-	public void defaultReturnedReaderIsPlainTextClassListReader() throws Exception {
-		classListFile = File.createTempFile("somePlainTextClassListFile", "noFileExtension");
+    @Test
+    public void defaultReturnedReaderIsPlainTextClassListReader() throws Exception {
+        classListFile = File.createTempFile("somePlainTextClassListFile", "noFileExtension");
 
-		ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
-		
-		assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);
-	}
-	
-	@Test
-	public void returnsAPlainTextReaderWhenFileExtensionIsDotTxt() throws Exception {
-		classListFile = File.createTempFile("somePlainTextClassListFile", ".txt");
+        ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
 
-		ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
-		
-		assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);		
-	}
-	
-	@After public void cleanUpFileOnExit() {
-		if(classListFile != null) classListFile.deleteOnExit();
-	}
+        assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);
+    }
+
+    @Test
+    public void returnsAPlainTextReaderWhenFileExtensionIsDotTxt() throws Exception {
+        classListFile = File.createTempFile("somePlainTextClassListFile", ".txt");
+
+        ClassListToReportCollector collector = new ClassListReaderFactory(classListFile).createReader();
+
+        assertTrue("Should be a plain text reader.", collector instanceof PlainTextClassListToReportReader);
+    }
+
+    @After
+    public void cleanUpFileOnExit() {
+        if (classListFile != null) classListFile.deleteOnExit();
+    }
 }

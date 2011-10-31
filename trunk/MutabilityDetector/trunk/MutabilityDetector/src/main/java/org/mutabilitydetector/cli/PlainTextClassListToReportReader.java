@@ -17,27 +17,25 @@ import java.util.HashSet;
 
 public class PlainTextClassListToReportReader implements ClassListToReportCollector {
 
-	private final BufferedReader reader;
+    private final BufferedReader reader;
 
-	public PlainTextClassListToReportReader(BufferedReader reader) {
-		this.reader = reader;
+    public PlainTextClassListToReportReader(BufferedReader reader) {
+        this.reader = reader;
 
-	}
-	
-	public Collection<String> classListToReport() {
-		String line = null;
-		Collection<String> classes = new HashSet<String>();
-		try {
-			while((line = reader.readLine()) != null) {
-				classes.add(line);
-			}
-		} catch (IOException e) {
-			throw new ClassListException("I/O exception while reading class list.", e);
-		}
-		
-		
-		
-		return classes;
-	}
+    }
+
+    public Collection<String> classListToReport() {
+        String line = null;
+        Collection<String> classes = new HashSet<String>();
+        try {
+            while ((line = reader.readLine()) != null) {
+                classes.add(line);
+            }
+        } catch (IOException e) {
+            throw new ClassListException("I/O exception while reading class list.", e);
+        }
+
+        return classes;
+    }
 
 }

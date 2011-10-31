@@ -12,8 +12,8 @@ package org.mutabilitydetector.locations;
 
 public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
 
-	String typeName();
+    String typeName();
 
-	public abstract String prettyPrint();
-	
+    public abstract String prettyPrint();
+
 }

@@ -20,8 +20,8 @@ package org.mutabilitydetector;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 
@@ -39,56 +39,63 @@ import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMetho
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
 /**
- * This test acts as an overall progress checker as well as a general acceptance
- * of the tool so far. There are several classes used as micro benchmarks to
- * tell if the tool is correct. Once the checker can correctly assess these
- * classes the tool is correct for our definition.
+ * This test acts as an overall progress checker as well as a general acceptance of the tool so far. There are several
+ * classes used as micro benchmarks to tell if the tool is correct. Once the checker can correctly assess these classes
+ * the tool is correct for our definition.
  * 
  * @author Graham Allan (grundlefleck@gmail.com)
  * 
  */
 public class MutabilityCheckerTest {
 
-	@Test public void immutableExample() throws Exception {
-		assertImmutable(ImmutableExample.class);
-	}
+    @Test
+    public void immutableExample() throws Exception {
+        assertImmutable(ImmutableExample.class);
+    }
 
-	@Test public void mutableByAssigningAbstractTypeToField() throws Exception {
-		assertDefinitelyNotImmutable(MutableByAssigningInterfaceToField.class);
-	}
+    @Test
+    public void mutableByAssigningAbstractTypeToField() throws Exception {
+        assertDefinitelyNotImmutable(MutableByAssigningInterfaceToField.class);
+    }
 
-	@Test public void mutableByHavingMutableFieldAssigned() throws Exception {
-		assertDefinitelyNotImmutable(MutableByHavingMutableFieldAssigned.class);
-	}
+    @Test
+    public void mutableByHavingMutableFieldAssigned() throws Exception {
+        assertDefinitelyNotImmutable(MutableByHavingMutableFieldAssigned.class);
+    }
 
-	@Test public void mutableByHavingSetterMethod() throws Exception {
-		assertDefinitelyNotImmutable(MutableByHavingSetterMethod.class);
-	}
+    @Test
+    public void mutableByHavingSetterMethod() throws Exception {
+        assertDefinitelyNotImmutable(MutableByHavingSetterMethod.class);
+    }
 
-	@Test public void mutableByNoCopyOfIndirectlyConstructedField() throws Exception {
-		assertDefinitelyNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
-	}
+    @Test
+    public void mutableByNoCopyOfIndirectlyConstructedField() throws Exception {
+        assertDefinitelyNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
+    }
 
-	@Test public void mutableByNotBeingFinalClass() throws Exception {
-		assertEffectivelyImmutable(MutableByNotBeingFinalClass.class);
-	}
+    @Test
+    public void mutableByNotBeingFinalClass() throws Exception {
+        assertEffectivelyImmutable(MutableByNotBeingFinalClass.class);
+    }
 
-	@Test public void enumTypesAreImmutable() throws Exception {
-		assertImmutable(EnumType.class);
-	}
+    @Test
+    public void enumTypesAreImmutable() throws Exception {
+        assertImmutable(EnumType.class);
+    }
 
-	@Test public void javaLangIntegerIsImmutable() throws Exception {
-		assertImmutable(Integer.class);
-	}
+    @Test
+    public void javaLangIntegerIsImmutable() throws Exception {
+        assertImmutable(Integer.class);
+    }
 
-	@Test public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {
-		AnalysisResult analysisResult = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
-		Collection<CheckerReasonDetail> reasons = analysisResult.reasons;
-		assertThat(formatReasons(reasons), reasons.size(), is(1));
-		
-		Reason reason = reasons.iterator().next().reason();
-		assertThat(reason, CoreMatchers.<Reason>is(MutabilityReason.ABSTRACT_TYPE_TO_FIELD));
-	}
-	
-	
+    @Test
+    public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {
+        AnalysisResult analysisResult = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
+        Collection<CheckerReasonDetail> reasons = analysisResult.reasons;
+        assertThat(formatReasons(reasons), reasons.size(), is(1));
+
+        Reason reason = reasons.iterator().next().reason();
+        assertThat(reason, CoreMatchers.<Reason> is(MutabilityReason.ABSTRACT_TYPE_TO_FIELD));
+    }
+
 }

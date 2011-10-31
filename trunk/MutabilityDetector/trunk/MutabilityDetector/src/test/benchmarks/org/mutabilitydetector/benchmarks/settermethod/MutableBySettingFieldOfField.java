@@ -11,24 +11,24 @@
 package org.mutabilitydetector.benchmarks.settermethod;
 
 public class MutableBySettingFieldOfField {
-	
-	public static FieldObject staticField = new FieldObject();
 
-	FieldObject directField = new FieldObject();
-	
-	public void setIndirectField() {
-		IndirectField otherObject = new IndirectField();
-		otherObject.field = 10;
-		
-		directField.intermediateField.field = 20;
-	}
-	
+    public static FieldObject staticField = new FieldObject();
+
+    FieldObject directField = new FieldObject();
+
+    public void setIndirectField() {
+        IndirectField otherObject = new IndirectField();
+        otherObject.field = 10;
+
+        directField.intermediateField.field = 20;
+    }
+
 }
 
 class FieldObject {
-	public IndirectField intermediateField = new IndirectField();
+    public IndirectField intermediateField = new IndirectField();
 }
 
 class IndirectField {
-	public int field;
+    public int field;
 }

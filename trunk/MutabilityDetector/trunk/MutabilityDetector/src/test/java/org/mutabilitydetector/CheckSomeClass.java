@@ -19,50 +19,50 @@ import com.google.classpath.ClassPathFactory;
 
 public class CheckSomeClass {
 
-	public static void main(String[] args) {
-		checkClass(IAmImmutable.class);
-		checkClass(ComposedOfImmutables.class);
-	}
+    public static void main(String[] args) {
+        checkClass(IAmImmutable.class);
+        checkClass(ComposedOfImmutables.class);
+    }
 
-	private static void checkClass(Class<?> toAnalyse) {
-		ClassPath cp = new ClassPathFactory().createFromJVM();
-		String match = toAnalyse.getName().replace("$", "\\$");
-		BatchAnalysisOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
-		new RunMutabilityDetector(cp, options).run();
-	}
+    private static void checkClass(Class<?> toAnalyse) {
+        ClassPath cp = new ClassPathFactory().createFromJVM();
+        String match = toAnalyse.getName().replace("$", "\\$");
+        BatchAnalysisOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
+        new RunMutabilityDetector(cp, options).run();
+    }
 
-	public class IAmImmutable {
-		private String label;
+    public class IAmImmutable {
+        private String label;
 
-		public IAmImmutable(String label) {
-			this.label = label;
-		}
+        public IAmImmutable(String label) {
+            this.label = label;
+        }
 
-		public String getLabel() {
-			return this.label;
-		}
-	}
+        public String getLabel() {
+            return this.label;
+        }
+    }
 
-	public static class SecondImmutable {
-		private String label;
+    public static class SecondImmutable {
+        private String label;
 
-		public SecondImmutable(String label) {
-			this.label = label;
-		}
+        public SecondImmutable(String label) {
+            this.label = label;
+        }
 
-		public String getLabel() {
-			return this.label;
-		}
-	}
+        public String getLabel() {
+            return this.label;
+        }
+    }
 
-	public class ComposedOfImmutables {
-		public final IAmImmutable firstField;
-		public final SecondImmutable secondField;
+    public class ComposedOfImmutables {
+        public final IAmImmutable firstField;
+        public final SecondImmutable secondField;
 
-		public ComposedOfImmutables(IAmImmutable first, SecondImmutable second) {
-			firstField = first;
-			secondField = second;
-		}
-	}
+        public ComposedOfImmutables(IAmImmutable first, SecondImmutable second) {
+            firstField = first;
+            secondField = second;
+        }
+    }
 
 }

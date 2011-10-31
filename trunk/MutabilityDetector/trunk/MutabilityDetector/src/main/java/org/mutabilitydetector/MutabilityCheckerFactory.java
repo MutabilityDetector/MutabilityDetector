@@ -33,23 +33,22 @@ import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
-
 public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 
-	@Override
-	public Collection<IMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
-		AnalysisDatabase database = analysisSession.analysisDatabase();
+    @Override
+    public Collection<IMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
+        AnalysisDatabase database = analysisSession.analysisDatabase();
 
-		Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
-		checkers.add(new FinalClassChecker());
-		checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
-		checkers.add(new PublishedNonFinalFieldChecker());
-		checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
-		checkers.add(new MutableTypeToFieldChecker(analysisSession, database.requestInformation(TYPE_STRUCTURE)));
-		checkers.add(new InherentTypeMutabilityChecker());
-//		checkers.add(new InheritedMutabilityChecker(analysisSession));
-//		checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
-		return Collections.unmodifiableCollection(checkers);
-	}
+        Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
+        checkers.add(new FinalClassChecker());
+        checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
+        checkers.add(new PublishedNonFinalFieldChecker());
+        checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
+        checkers.add(new MutableTypeToFieldChecker(analysisSession, database.requestInformation(TYPE_STRUCTURE)));
+        checkers.add(new InherentTypeMutabilityChecker());
+        // checkers.add(new InheritedMutabilityChecker(analysisSession));
+        // checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
+        return Collections.unmodifiableCollection(checkers);
+    }
 
 }

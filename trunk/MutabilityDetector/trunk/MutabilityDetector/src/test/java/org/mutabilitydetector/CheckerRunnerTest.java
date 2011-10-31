@@ -10,21 +10,25 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 
-
 public class CheckerRunnerTest {
 
-    @Test public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
+    @Test
+    public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
         IMutabilityChecker checker = Mockito.mock(IMutabilityChecker.class);
-        
+
         Throwable toBeThrown = new NoSuchMethodError();
-        doThrow(toBeThrown).when(checker).visit(anyInt(), anyInt(), anyString(), 
-                                                anyString(), anyString(), new String[] { anyString() });
-        
+        doThrow(toBeThrown).when(checker).visit(anyInt(),
+                anyInt(),
+                anyString(),
+                anyString(),
+                anyString(),
+                new String[] { anyString() });
+
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
-        
+
         checkerRunner.run(new AnalysisSession(), checker, fromClass(CheckerRunner.class));
-        
+
         verify(checker).visitAnalysisException(toBeThrown);
     }
-    
+
 }

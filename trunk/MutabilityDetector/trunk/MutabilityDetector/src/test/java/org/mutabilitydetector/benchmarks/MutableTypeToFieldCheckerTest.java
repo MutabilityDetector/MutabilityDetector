@@ -44,76 +44,83 @@ import org.mutabilitydetector.locations.FieldLocation;
 
 public class MutableTypeToFieldCheckerTest {
 
-	private IAnalysisSession mockSession;
-	private MutableTypeToFieldChecker checker;
-	private AnalysisResult result;
-	private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
+    private IAnalysisSession mockSession;
+    private MutableTypeToFieldChecker checker;
+    private AnalysisResult result;
+    private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
 
-	@Before public void setUp() {
-		mockSession = mock(IAnalysisSession.class);
-		TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-		checker = new MutableTypeToFieldChecker(mockSession, info);
-	}
-	
-	@Test public void requestsMutableStatusOfPublishedField() throws Exception {
-		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
-		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-		
-		verify(mockSession).resultFor(MutableExample.class.getCanonicalName());
-	}
-	
-	@Test public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
-		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
-		result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-		
-		assertThat(checker, hasReasons());
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
-		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+    @Before
+    public void setUp() {
+        mockSession = mock(IAnalysisSession.class);
+        TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+        checker = new MutableTypeToFieldChecker(mockSession, info);
+    }
 
-		result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-		
-		assertThat(checker, hasReasons());
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
-		result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void staticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
-		result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
-		assertImmutable(result);
-	}
-	
-	@Test public void doesNotRaiseErrorForAbstractTypeSinceThisIsRaisedByAbstractTypeToFieldChecker() throws Exception {
-		when(mockSession.resultFor(AbstractStringContainer.class.getName())).thenReturn(unusedAnalysisResult);
-		result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
-		
-		assertThat(checker, hasNoReasons());
-		assertImmutable(result);
-	}
-	
-	@Test
-	public void codeLocationIsFieldLocation() throws Exception {
-		when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
-		runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
-		
-		assertThat(codeLocation.typeName(), is(MutableByHavingMutableFieldAssigned.class.getName()));
-		assertThat(codeLocation.fieldName(), is("mutableField"));
-	}
-	
-	@Test
-	public void codeLocationIsFieldLocationForArrayField() throws Exception {
-		runChecker(checker, MutableByHavingArrayTypeAsField.class);
-		FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
-		
-		assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
-		assertThat(codeLocation.fieldName(), is("names"));
-	}
-	
+    @Test
+    public void requestsMutableStatusOfPublishedField() throws Exception {
+        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+
+        verify(mockSession).resultFor(MutableExample.class.getCanonicalName());
+    }
+
+    @Test
+    public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
+        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+
+        assertThat(checker, hasReasons());
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
+        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+
+        result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+
+        assertThat(checker, hasReasons());
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
+        result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void staticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
+        result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
+        assertImmutable(result);
+    }
+
+    @Test
+    public void doesNotRaiseErrorForAbstractTypeSinceThisIsRaisedByAbstractTypeToFieldChecker() throws Exception {
+        when(mockSession.resultFor(AbstractStringContainer.class.getName())).thenReturn(unusedAnalysisResult);
+        result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
+
+        assertThat(checker, hasNoReasons());
+        assertImmutable(result);
+    }
+
+    @Test
+    public void codeLocationIsFieldLocation() throws Exception {
+        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+        FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
+
+        assertThat(codeLocation.typeName(), is(MutableByHavingMutableFieldAssigned.class.getName()));
+        assertThat(codeLocation.fieldName(), is("mutableField"));
+    }
+
+    @Test
+    public void codeLocationIsFieldLocationForArrayField() throws Exception {
+        runChecker(checker, MutableByHavingArrayTypeAsField.class);
+        FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
+
+        assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
+        assertThat(codeLocation.fieldName(), is("names"));
+    }
+
 }

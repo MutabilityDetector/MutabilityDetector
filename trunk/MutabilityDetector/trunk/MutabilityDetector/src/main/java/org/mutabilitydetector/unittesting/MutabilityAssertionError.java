@@ -12,9 +12,8 @@ package org.mutabilitydetector.unittesting;
 
 public class MutabilityAssertionError extends AssertionError {
 
-	public MutabilityAssertionError(String message) {
-		super(message);
-	}
-	
+    public MutabilityAssertionError(String message) {
+        super(message);
+    }
 
 }

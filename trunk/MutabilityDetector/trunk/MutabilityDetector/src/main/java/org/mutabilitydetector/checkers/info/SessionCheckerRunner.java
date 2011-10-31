@@ -18,16 +18,17 @@ import org.mutabilitydetector.locations.ClassIdentifier;
 
 public class SessionCheckerRunner implements ISessionCheckerRunner {
 
-	private final CheckerRunner checkerRunner;
-	private final IAnalysisSession analysisSession;
-	
-	public SessionCheckerRunner(IAnalysisSession analysisSession, CheckerRunner checkerRunner) {
-		this.analysisSession = analysisSession;
-		this.checkerRunner = checkerRunner;
-	}
+    private final CheckerRunner checkerRunner;
+    private final IAnalysisSession analysisSession;
 
-	@Override public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier) {
-		checkerRunner.run(analysisSession, checker, classIdentifier.asDotted());
-	}
+    public SessionCheckerRunner(IAnalysisSession analysisSession, CheckerRunner checkerRunner) {
+        this.analysisSession = analysisSession;
+        this.checkerRunner = checkerRunner;
+    }
+
+    @Override
+    public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier) {
+        checkerRunner.run(analysisSession, checker, classIdentifier.asDotted());
+    }
 
 }

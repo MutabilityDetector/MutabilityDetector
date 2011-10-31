@@ -22,39 +22,42 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 @Ignore
 public class TestMatchers {
 
-	
-	public static Matcher<? super IMutabilityChecker> hasReasons() {
-		return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
+    public static Matcher<? super IMutabilityChecker> hasReasons() {
+        return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
 
-			@Override protected boolean matchesSafely(IMutabilityChecker item, Description mismatchDescription) {
-				
-				mismatchDescription.appendText(" got a checker (" + item.toString() + ") containing zero reasons ");
-				return !(item.reasons().isEmpty());
-			}
+            @Override
+            protected boolean matchesSafely(IMutabilityChecker item, Description mismatchDescription) {
 
-			@Override public void describeTo(Description description) {
-				description.appendText(" a checker reporting at least one reason ");
-			}
+                mismatchDescription.appendText(" got a checker (" + item.toString() + ") containing zero reasons ");
+                return !(item.reasons().isEmpty());
+            }
 
-		};
-	}
-	
-	public static Matcher<? super IMutabilityChecker> hasNoReasons() {
-		return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" a checker reporting at least one reason ");
+            }
 
-			@Override protected boolean matchesSafely(IMutabilityChecker checker, Description mismatchDescription) {
-				String mismatch = format(" got a checker containing %d reasons, %n%s", 
-						checker.reasons().size(), formatReasons(checker.reasons()));
-				mismatchDescription.appendText(mismatch);
-				return (checker.reasons().isEmpty());
-			}
+        };
+    }
 
-			@Override public void describeTo(Description description) {
-				description.appendText(" a checker reporting zero reasons ");
-			}
+    public static Matcher<? super IMutabilityChecker> hasNoReasons() {
+        return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
 
-		};
-	}
-		
-	
+            @Override
+            protected boolean matchesSafely(IMutabilityChecker checker, Description mismatchDescription) {
+                String mismatch = format(" got a checker containing %d reasons, %n%s",
+                        checker.reasons().size(),
+                        formatReasons(checker.reasons()));
+                mismatchDescription.appendText(mismatch);
+                return (checker.reasons().isEmpty());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" a checker reporting zero reasons ");
+            }
+
+        };
+    }
+
 }

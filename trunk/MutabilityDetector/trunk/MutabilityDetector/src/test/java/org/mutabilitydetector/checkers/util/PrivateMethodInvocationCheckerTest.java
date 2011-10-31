@@ -16,40 +16,46 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.mutabilitydetector.TestUtil;
 
-
 public class PrivateMethodInvocationCheckerTest {
 
-	@Test public void testCanQueryIfAMethodIsOnlyCalledFromTheConstructor() throws Exception {
-		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
-		TestUtil.runChecker(checker, PrivateMethodsCalledOnlyInConstructor.class);
-		
-		String methodDescriptor = "privateMethod:()V";
-		boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);
-		assertTrue("Should report private method is only called from constructor.", result);
-	}
-	
-	@Test public void isPrivateMethodCalledOnlyFromConstructorReturnsFalseWhenPrivateMethodIsInvokedInPublicMethod() throws Exception {
-		PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
-		TestUtil.runChecker(checker, PrivateMethodsCalledOutsideConstructor.class);
-		
-		String methodDescriptor = "privateMethod:()V";
-		boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);
-		assertFalse("Should report private method is only called from constructor.", result);
-	}
-	
-	
-	private static class PrivateMethodsCalledOnlyInConstructor {
-		@SuppressWarnings("unused") public PrivateMethodsCalledOnlyInConstructor() {
-			privateMethod();
-		}
+    @Test
+    public void testCanQueryIfAMethodIsOnlyCalledFromTheConstructor() throws Exception {
+        PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
+        TestUtil.runChecker(checker, PrivateMethodsCalledOnlyInConstructor.class);
 
-		private void privateMethod() {}
-	}
-	
-	@SuppressWarnings("unused") private static class PrivateMethodsCalledOutsideConstructor {
-		private void privateMethod() {}
-		public void callsThePrivateMethod() {
-			privateMethod();
-		}
-	}
+        String methodDescriptor = "privateMethod:()V";
+        boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);
+        assertTrue("Should report private method is only called from constructor.", result);
+    }
+
+    @Test
+    public void isPrivateMethodCalledOnlyFromConstructorReturnsFalseWhenPrivateMethodIsInvokedInPublicMethod()
+            throws Exception {
+        PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
+        TestUtil.runChecker(checker, PrivateMethodsCalledOutsideConstructor.class);
+
+        String methodDescriptor = "privateMethod:()V";
+        boolean result = checker.isPrivateMethodCalledOnlyFromConstructor(methodDescriptor);
+        assertFalse("Should report private method is only called from constructor.", result);
+    }
+
+    private static class PrivateMethodsCalledOnlyInConstructor {
+        @SuppressWarnings("unused")
+        public PrivateMethodsCalledOnlyInConstructor() {
+            privateMethod();
+        }
+
+        private void privateMethod() {
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class PrivateMethodsCalledOutsideConstructor {
+        private void privateMethod() {
+        }
+
+        public void callsThePrivateMethod() {
+            privateMethod();
+        }
+    }
 }

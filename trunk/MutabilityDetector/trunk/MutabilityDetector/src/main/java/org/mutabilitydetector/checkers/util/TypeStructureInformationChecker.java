@@ -20,52 +20,52 @@ import org.mutabilitydetector.locations.Dotted;
 
 public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
 
-	private final Dotted className;
-	private Boolean isAbstract;
-	private boolean isInterface;
-	
-	private TypeStructureInformationChecker(Dotted className) {
-		this.className = className;
-	}
-	
-	public static TypeStructureInformationChecker newChecker(Dotted className) {
-		return new TypeStructureInformationChecker(className);
-	}
+    private final Dotted className;
+    private Boolean isAbstract;
+    private boolean isInterface;
 
-	public boolean isAbstract() {
-		return isAbstract;
-	}
-	
-	public boolean isInterface() {
-		return isInterface;
-	}
-	
-	@Override public void visit(int version, int access, String name, String signature, String superName,
-			String[] interfaces) {
-		super.visit(version, access, name, signature, superName, interfaces);
-		
-		checkIsVisitingCorrectClass();
-		
-		storeIsAbstract(access);
-		storeIsInterface(access);
-	}
+    private TypeStructureInformationChecker(Dotted className) {
+        this.className = className;
+    }
 
-	private void checkIsVisitingCorrectClass() {
-		Dotted expectToVisit = fromSlashedString(ownerClass);
-		if(!expectToVisit.equals(className)) {
-			String message = format("Programming error: Expected to visit [%s], but am visiting [%s].", 
-					className, expectToVisit);
-			throw new MutabilityAnalysisException(message);
-		}
-	}
+    public static TypeStructureInformationChecker newChecker(Dotted className) {
+        return new TypeStructureInformationChecker(className);
+    }
 
-	private void storeIsAbstract(int access) {
-		isAbstract = type(access).isAbstract();
-	}
+    public boolean isAbstract() {
+        return isAbstract;
+    }
 
-	private void storeIsInterface(int access) {
-		isInterface = type(access).isInterface();
-	}
+    public boolean isInterface() {
+        return isInterface;
+    }
 
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+
+        checkIsVisitingCorrectClass();
+
+        storeIsAbstract(access);
+        storeIsInterface(access);
+    }
+
+    private void checkIsVisitingCorrectClass() {
+        Dotted expectToVisit = fromSlashedString(ownerClass);
+        if (!expectToVisit.equals(className)) {
+            String message = format("Programming error: Expected to visit [%s], but am visiting [%s].",
+                    className,
+                    expectToVisit);
+            throw new MutabilityAnalysisException(message);
+        }
+    }
+
+    private void storeIsAbstract(int access) {
+        isAbstract = type(access).isAbstract();
+    }
+
+    private void storeIsInterface(int access) {
+        isInterface = type(access).isInterface();
+    }
 
 }

@@ -18,17 +18,19 @@ import org.hamcrest.core.IsAnything;
 import org.mutabilitydetector.AnalysisResult;
 
 public class NoWarningsAllowedMatcher extends BaseAnalysisResultMatcher {
-	private Matcher<AnalysisResult> isAnything = not(IsAnything.<AnalysisResult>anything());
-	
-	public static NoWarningsAllowedMatcher noWarningsAllowed() {
-		return new NoWarningsAllowedMatcher();
-	}
-	
-	@Override public void describeTo(Description description) {
-		isAnything.describeTo(description);
-	}
-	
-	@Override protected boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
-		return isAnything.matches(item);
-	}
+    private Matcher<AnalysisResult> isAnything = not(IsAnything.<AnalysisResult> anything());
+
+    public static NoWarningsAllowedMatcher noWarningsAllowed() {
+        return new NoWarningsAllowedMatcher();
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        isAnything.describeTo(description);
+    }
+
+    @Override
+    protected boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
+        return isAnything.matches(item);
+    }
 }

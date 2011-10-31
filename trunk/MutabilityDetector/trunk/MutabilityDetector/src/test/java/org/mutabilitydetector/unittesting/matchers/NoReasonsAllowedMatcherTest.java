@@ -21,16 +21,18 @@ import org.mutabilitydetector.CheckerReasonDetail;
 
 public class NoReasonsAllowedMatcherTest {
 
-	@Test public void matchesWhenNoReasonsArePresent() throws Exception {
-		AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
-		assertThat(new NoReasonAllowedMatcher().matches(result), is(true));
-	}
-	
-	@Test public void doesNotMatchWhenReasonsAreGiven() throws Exception {
-		CheckerReasonDetail reason = new CheckerReasonDetail("message", null, NULL_REASON);
-		AnalysisResult result = new AnalysisResult("a.b.c", IMMUTABLE, reason );
-		
-		assertThat(new NoReasonAllowedMatcher().matches(result), is(false));
-	}
-	
+    @Test
+    public void matchesWhenNoReasonsArePresent() throws Exception {
+        AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
+        assertThat(new NoReasonAllowedMatcher().matches(result), is(true));
+    }
+
+    @Test
+    public void doesNotMatchWhenReasonsAreGiven() throws Exception {
+        CheckerReasonDetail reason = new CheckerReasonDetail("message", null, NULL_REASON);
+        AnalysisResult result = new AnalysisResult("a.b.c", IMMUTABLE, reason);
+
+        assertThat(new NoReasonAllowedMatcher().matches(result), is(false));
+    }
+
 }

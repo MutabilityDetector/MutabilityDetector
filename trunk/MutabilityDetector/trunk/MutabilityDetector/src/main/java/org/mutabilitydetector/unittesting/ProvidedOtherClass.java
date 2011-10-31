@@ -24,34 +24,34 @@ import org.mutabilitydetector.unittesting.matchers.BaseAnalysisResultMatcher;
 
 public class ProvidedOtherClass extends BaseAnalysisResultMatcher {
 
-	private final Dotted dottedClassName;
-	private final Set<AllowedReasonCollector> allowedReasonCollectors = new HashSet<AllowedReasonCollector>();
+    private final Dotted dottedClassName;
+    private final Set<AllowedReasonCollector> allowedReasonCollectors = new HashSet<AllowedReasonCollector>();
 
-	public ProvidedOtherClass(Dotted dottedClassName) {
-		this.dottedClassName = dottedClassName;
-	}
+    public ProvidedOtherClass(Dotted dottedClassName) {
+        this.dottedClassName = dottedClassName;
+    }
 
+    public ProvidedOtherClass isAlsoImmutable() {
+        AllowedIfOtherClassIsImmutable allowed = new AllowedIfOtherClassIsImmutable(dottedClassName);
+        allowedReasonCollectors.add(allowed);
+        return this;
+    }
 
-	public ProvidedOtherClass isAlsoImmutable() {
-		AllowedIfOtherClassIsImmutable allowed = new AllowedIfOtherClassIsImmutable(dottedClassName);
-		allowedReasonCollectors.add(allowed);
-		return this;
-	}
+    @Override
+    protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
+        Collection<CheckerReasonDetail> allowedReasons = new HashSet<CheckerReasonDetail>();
+        for (AllowedReasonCollector collector : allowedReasonCollectors) {
+            allowedReasons.addAll(collector.allowedReasons(analysisResult));
+        }
 
+        Collection<CheckerReasonDetail> actualReasons = new HashSet<CheckerReasonDetail>(analysisResult.reasons);
 
-	@Override protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
-		Collection<CheckerReasonDetail> allowedReasons = new HashSet<CheckerReasonDetail>();
-		for(AllowedReasonCollector collector: allowedReasonCollectors) {
-			allowedReasons.addAll(collector.allowedReasons(analysisResult));
-		}
-		
-		Collection<CheckerReasonDetail> actualReasons = new HashSet<CheckerReasonDetail>(analysisResult.reasons);
-		
-		actualReasons.removeAll(allowedReasons);
-		return  (actualReasons.size() == 0);
-	}
+        actualReasons.removeAll(allowedReasons);
+        return (actualReasons.size() == 0);
+    }
 
-	@Override public void describeTo(Description description) {
-		throw new UnsupportedOperationException("Not yet implemented.");
-	}
+    @Override
+    public void describeTo(Description description) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 }

@@ -24,10 +24,10 @@ import org.mutabilitydetector.MutabilityReason;
 
 public class NullMutabilityChecker extends AbstractMutabilityChecker {
 
-	public NullMutabilityChecker() {
-		addResult("This checker is a placeholder for a proper checker.",
-				  fromDotted(fromClass(NullMutabilityChecker.class)), 
-				  MutabilityReason.CANNOT_ANALYSE);
-	}
-	
+    public NullMutabilityChecker() {
+        addResult("This checker is a placeholder for a proper checker.",
+                fromDotted(fromClass(NullMutabilityChecker.class)),
+                MutabilityReason.CANNOT_ANALYSE);
+    }
+
 }

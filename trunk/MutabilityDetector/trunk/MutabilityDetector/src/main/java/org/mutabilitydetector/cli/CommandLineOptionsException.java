@@ -13,27 +13,26 @@ package org.mutabilitydetector.cli;
 /**
  * Used when creating the options for running MutabilityDetector.
  * 
- * May be used to indicate an error in the arguments, or to correctly terminate
- * execution.
+ * May be used to indicate an error in the arguments, or to correctly terminate execution.
  */
 public class CommandLineOptionsException extends RuntimeException {
 
-	private static final long serialVersionUID = -6822667773302851896L;
+    private static final long serialVersionUID = -6822667773302851896L;
 
-	public CommandLineOptionsException() {
-		super();
-	}
+    public CommandLineOptionsException() {
+        super();
+    }
 
-	public CommandLineOptionsException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public CommandLineOptionsException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public CommandLineOptionsException(String message) {
-		super(message);
-	}
+    public CommandLineOptionsException(String message) {
+        super(message);
+    }
 
-	public CommandLineOptionsException(Throwable cause) {
-		super(cause);
-	}
+    public CommandLineOptionsException(Throwable cause) {
+        super(cause);
+    }
 
 }

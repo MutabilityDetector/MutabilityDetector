@@ -22,23 +22,27 @@ import org.mutabilitydetector.benchmarks.types.InterfaceType;
 
 public class TypeStructureInformationTest {
 
-	@Test public void isAbstractReturnsTrueForAbstractType() throws Exception {
-		TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
-		assertTrue(info.isTypeAbstract(dotted(AbstractType.class.getName())));
-	}
-	
-	@Test public void isAbstractReturnsFalseForConcreteType() throws Exception {
-		TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
-		assertFalse(info.isTypeAbstract(dotted(ConcreteType.class.getName())));
-	}
-	
-	@Test public void isInterfaceReturnsTrueForInterfaceType() throws Exception {
-		TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
-		assertTrue(info.isTypeInterface(dotted(InterfaceType.class.getName())));
-	}
-	
-	@Test public void isInterfaceReturnsFalseForConcreteType() throws Exception {
-		TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
-		assertFalse(info.isTypeInterface(dotted(ConcreteType.class.getName())));
-	}
+    @Test
+    public void isAbstractReturnsTrueForAbstractType() throws Exception {
+        TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
+        assertTrue(info.isTypeAbstract(dotted(AbstractType.class.getName())));
+    }
+
+    @Test
+    public void isAbstractReturnsFalseForConcreteType() throws Exception {
+        TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
+        assertFalse(info.isTypeAbstract(dotted(ConcreteType.class.getName())));
+    }
+
+    @Test
+    public void isInterfaceReturnsTrueForInterfaceType() throws Exception {
+        TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
+        assertTrue(info.isTypeInterface(dotted(InterfaceType.class.getName())));
+    }
+
+    @Test
+    public void isInterfaceReturnsFalseForConcreteType() throws Exception {
+        TypeStructureInformation info = new TypeStructureInformation(sessionCheckerRunner());
+        assertFalse(info.isTypeInterface(dotted(ConcreteType.class.getName())));
+    }
 }

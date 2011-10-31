@@ -12,13 +12,13 @@ package org.mutabilitydetector.benchmarks.settermethod;
 
 public class MutableByAssigningFieldToNewedUpObject {
 
-	private String changeMe = "Begin like this";
-	
-	public void reassignMyField() {
-		changeMe = new String("Haha!");
-	}
-	
-	public String getChangeMe() {
-		return changeMe;
-	}
+    private String changeMe = "Begin like this";
+
+    public void reassignMyField() {
+        changeMe = new String("Haha!");
+    }
+
+    public String getChangeMe() {
+        return changeMe;
+    }
 }

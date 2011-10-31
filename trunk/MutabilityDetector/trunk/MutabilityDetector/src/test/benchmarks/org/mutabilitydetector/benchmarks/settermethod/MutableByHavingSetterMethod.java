@@ -20,19 +20,19 @@ package org.mutabilitydetector.benchmarks.settermethod;
 @SuppressWarnings("unused")
 public final class MutableByHavingSetterMethod {
 
-	private String name;
-	private int primitiveField;
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setPrimitiveField(int foo) {
-		this.primitiveField = foo;
-	}
-	
-	public void setNameIndirectly(String name) {
-		this.setName(name);
-	}
-	
+    private String name;
+    private int primitiveField;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrimitiveField(int foo) {
+        this.primitiveField = foo;
+    }
+
+    public void setNameIndirectly(String name) {
+        this.setName(name);
+    }
+
 }

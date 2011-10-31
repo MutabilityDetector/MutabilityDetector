@@ -19,15 +19,14 @@ package org.mutabilitydetector.benchmarks.abstracttofield;
 
 public class MutableByAssigningInterfaceToField {
 
-	private CharSequence name;
+    private CharSequence name;
 
-	public MutableByAssigningInterfaceToField(CharSequence name) {
-		this.name = name;
-	}
-	
-	public CharSequence getName() {
-		return name;
-	}
-	
+    public MutableByAssigningInterfaceToField(CharSequence name) {
+        this.name = name;
+    }
+
+    public CharSequence getName() {
+        return name;
+    }
 
 }

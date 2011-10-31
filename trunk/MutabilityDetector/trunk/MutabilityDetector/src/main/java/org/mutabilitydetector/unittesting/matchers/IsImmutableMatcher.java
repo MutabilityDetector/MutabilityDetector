@@ -17,20 +17,24 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
-	private final IsImmutable isImmutable;
-	private AnalysisResult item;
-	public IsImmutableMatcher(IsImmutable isImmutable) {
-		this.isImmutable = isImmutable;
-	}
-	@Override public boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
-		this.item = item;
-		mismatchDescription.appendText(item.dottedClassName + " is " + item.isImmutable + " immutable");
-		mismatchDescription.appendText(formatReasons(item.reasons));
-		return this.isImmutable == item.isImmutable;
-	}
-	@Override public void describeTo(Description description) {
-		description.appendText(item.dottedClassName + " which is " + isImmutable + " immutable");
-	}
-	
-	
+    private final IsImmutable isImmutable;
+    private AnalysisResult item;
+
+    public IsImmutableMatcher(IsImmutable isImmutable) {
+        this.isImmutable = isImmutable;
+    }
+
+    @Override
+    public boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
+        this.item = item;
+        mismatchDescription.appendText(item.dottedClassName + " is " + item.isImmutable + " immutable");
+        mismatchDescription.appendText(formatReasons(item.reasons));
+        return this.isImmutable == item.isImmutable;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        description.appendText(item.dottedClassName + " which is " + isImmutable + " immutable");
+    }
+
 }

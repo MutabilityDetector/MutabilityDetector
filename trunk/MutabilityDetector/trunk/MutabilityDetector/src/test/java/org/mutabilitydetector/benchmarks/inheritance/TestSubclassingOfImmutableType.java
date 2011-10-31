@@ -17,7 +17,6 @@
  */
 package org.mutabilitydetector.benchmarks.inheritance;
 
-
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
@@ -27,23 +26,26 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
-
 public class TestSubclassingOfImmutableType {
 
-	@Test public void testSupertypeIsDefinitelyNotImmutable() throws Exception {
-		assertDefinitelyNotImmutable(getAnalysisResult(MutableSupertype.class));
-	}
-	
-	@Ignore("InheritedMutabilityChecker doesn't work properly yet.")
-	@Test public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
-		assertDefinitelyNotImmutable(getIsImmutableResult(ImmutableSubtypeOfMutableSupertype.class));
-	}
-	
-	@Test public void testMutableSubtype() throws Exception {
-		assertDefinitelyNotImmutable(getIsImmutableResult(MutableSubtypeOfMutableSupertype.class));
-	}
-	
-	@Test public void testEnumTypeIsDefinitelyImmutable() throws Exception {
-		assertImmutable(getAnalysisResult(EnumType.class));
-	}
+    @Test
+    public void testSupertypeIsDefinitelyNotImmutable() throws Exception {
+        assertDefinitelyNotImmutable(getAnalysisResult(MutableSupertype.class));
+    }
+
+    @Ignore("InheritedMutabilityChecker doesn't work properly yet.")
+    @Test
+    public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
+        assertDefinitelyNotImmutable(getIsImmutableResult(ImmutableSubtypeOfMutableSupertype.class));
+    }
+
+    @Test
+    public void testMutableSubtype() throws Exception {
+        assertDefinitelyNotImmutable(getIsImmutableResult(MutableSubtypeOfMutableSupertype.class));
+    }
+
+    @Test
+    public void testEnumTypeIsDefinitelyImmutable() throws Exception {
+        assertImmutable(getAnalysisResult(EnumType.class));
+    }
 }

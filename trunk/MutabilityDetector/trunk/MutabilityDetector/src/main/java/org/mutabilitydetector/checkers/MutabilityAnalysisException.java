@@ -12,20 +12,20 @@ package org.mutabilitydetector.checkers;
 
 public class MutabilityAnalysisException extends RuntimeException {
 
-	public MutabilityAnalysisException() {
-		super();
-	}
+    public MutabilityAnalysisException() {
+        super();
+    }
 
-	public MutabilityAnalysisException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public MutabilityAnalysisException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public MutabilityAnalysisException(String message) {
-		super(message);
-	}
+    public MutabilityAnalysisException(String message) {
+        super(message);
+    }
 
-	public MutabilityAnalysisException(Throwable cause) {
-		super(cause);
-	}
+    public MutabilityAnalysisException(Throwable cause) {
+        super(cause);
+    }
 
 }

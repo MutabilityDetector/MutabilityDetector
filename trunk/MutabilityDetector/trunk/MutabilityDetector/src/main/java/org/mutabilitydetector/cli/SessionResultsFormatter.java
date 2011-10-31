@@ -34,113 +34,111 @@ import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
-
 public class SessionResultsFormatter {
 
-	private final boolean verbose;
-	private final ReportMode reportMode;
-	private Collection<String> classesToReport;
-	private final ClassListReaderFactory readerFactory;
-	private final BatchAnalysisOptions options;
+    private final boolean verbose;
+    private final ReportMode reportMode;
+    private Collection<String> classesToReport;
+    private final ClassListReaderFactory readerFactory;
+    private final BatchAnalysisOptions options;
 
-	public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
-		this.options = options;
-		this.readerFactory = readerFactory;
-		this.verbose = options.verbose();
-		this.reportMode = options.reportMode();
-	}
+    public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
+        this.options = options;
+        this.readerFactory = readerFactory;
+        this.verbose = options.verbose();
+        this.reportMode = options.reportMode();
+    }
 
-	public StringBuilder format(IAnalysisSession completedSession) {
-		StringBuilder output = new StringBuilder();
-		
-		classesToReport = getClassesToReport();
+    public StringBuilder format(IAnalysisSession completedSession) {
+        StringBuilder output = new StringBuilder();
 
-		appendErrors(completedSession, output);
-		appendAnalysisResults(completedSession, output);
+        classesToReport = getClassesToReport();
 
-		return output;
-	}
+        appendErrors(completedSession, output);
+        appendAnalysisResults(completedSession, output);
 
-	private Collection<String> getClassesToReport() {
-		return options.isUsingClassList() ? 
-				readerFactory.createReader().classListToReport() :
-				Collections.<String>emptySet();
-	}
+        return output;
+    }
 
-	private void appendErrors(IAnalysisSession completedSession, StringBuilder output) {
+    private Collection<String> getClassesToReport() {
+        return options.isUsingClassList()
+                ? readerFactory.createReader().classListToReport()
+                : Collections.<String> emptySet();
+    }
 
-		if(!options.reportErrors()) return;
-		
-		for (AnalysisError error : completedSession.getErrors()) {
+    private void appendErrors(IAnalysisSession completedSession, StringBuilder output) {
 
-			String message = String.format("Error while running %s on class %s.%n", 
-					error.checkerName, error.onClass);
-			output.append(message);
-			if (verbose) {
-				String description = String.format("\t%s%n", error.description);
-				output.append(description);
-			}
-		}
+        if (!options.reportErrors()) return;
 
-	}
+        for (AnalysisError error : completedSession.getErrors()) {
 
-	private void appendAnalysisResults(IAnalysisSession completedSession, StringBuilder output) {
-		List<AnalysisResult> sortedList = sortByClassname(completedSession.getResults());
+            String message = String.format("Error while running %s on class %s.%n", error.checkerName, error.onClass);
+            output.append(message);
+            if (verbose) {
+                String description = String.format("\t%s%n", error.description);
+                output.append(description);
+            }
+        }
 
-		for (AnalysisResult result : sortedList) {
-			IsImmutable isImmutable = result.isImmutable;
-			addResultForClass(output, result, isImmutable);
-		}
-	}
+    }
 
-	private List<AnalysisResult> sortByClassname(Collection<AnalysisResult> sessionResults) {
-		List<AnalysisResult> sortedList = new ArrayList<AnalysisResult>(sessionResults);
-		Collections.sort(sortedList, new ClassnameComparator());
-		return sortedList;
-	}
+    private void appendAnalysisResults(IAnalysisSession completedSession, StringBuilder output) {
+        List<AnalysisResult> sortedList = sortByClassname(completedSession.getResults());
 
-	private void addResultForClass(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-		
-		if(options.isUsingClassList() && !classesToReport.contains(result.dottedClassName)) return;
-		
-		if (reportMode.equals(ReportMode.ALL)) {
-			appendClassResult(output, result, isImmutable);
-		} else if (reportMode.equals(ReportMode.IMMUTABLE)) {
-			if (result.isImmutable.equals(IMMUTABLE)) {
-				appendClassResult(output, result, isImmutable);
-			}
-		} else if (reportMode.equals(ReportMode.MUTABLE)) {
-			if (result.isImmutable.equals(NOT_IMMUTABLE)) {
-				appendClassResult(output, result, isImmutable);
-			}
-		}
+        for (AnalysisResult result : sortedList) {
+            IsImmutable isImmutable = result.isImmutable;
+            addResultForClass(output, result, isImmutable);
+        }
+    }
 
-	}
+    private List<AnalysisResult> sortByClassname(Collection<AnalysisResult> sessionResults) {
+        List<AnalysisResult> sortedList = new ArrayList<AnalysisResult>(sessionResults);
+        Collections.sort(sortedList, new ClassnameComparator());
+        return sortedList;
+    }
 
-	private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-		output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
-		if (!result.isImmutable.equals(IMMUTABLE)) {
-			addReasons(result, output);
-		}
-	}
+    private void addResultForClass(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
 
-	private void addReasons(AnalysisResult result, StringBuilder output) {
-		if (!verbose)
-			return;
+        if (options.isUsingClassList() && !classesToReport.contains(result.dottedClassName)) return;
 
-		for (CheckerReasonDetail resultDetail : result.reasons) {
-			output.append(String.format("\t%10s %s%n", resultDetail.message(), resultDetail.codeLocation().prettyPrint()));
-		}
-	}
+        if (reportMode.equals(ReportMode.ALL)) {
+            appendClassResult(output, result, isImmutable);
+        } else if (reportMode.equals(ReportMode.IMMUTABLE)) {
+            if (result.isImmutable.equals(IMMUTABLE)) {
+                appendClassResult(output, result, isImmutable);
+            }
+        } else if (reportMode.equals(ReportMode.MUTABLE)) {
+            if (result.isImmutable.equals(NOT_IMMUTABLE)) {
+                appendClassResult(output, result, isImmutable);
+            }
+        }
 
-	private static final class ClassnameComparator implements Comparator<AnalysisResult>, Serializable {
-		private static final long serialVersionUID = 1865374158214841422L;
+    }
 
-		@Override
-		public int compare(AnalysisResult first, AnalysisResult second) {
-			return first.dottedClassName.compareToIgnoreCase(second.dottedClassName);
-		}
+    private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
+        output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
+        if (!result.isImmutable.equals(IMMUTABLE)) {
+            addReasons(result, output);
+        }
+    }
 
-	}
+    private void addReasons(AnalysisResult result, StringBuilder output) {
+        if (!verbose) return;
+
+        for (CheckerReasonDetail resultDetail : result.reasons) {
+            output.append(String.format("\t%10s %s%n", resultDetail.message(), resultDetail.codeLocation()
+                    .prettyPrint()));
+        }
+    }
+
+    private static final class ClassnameComparator implements Comparator<AnalysisResult>, Serializable {
+        private static final long serialVersionUID = 1865374158214841422L;
+
+        @Override
+        public int compare(AnalysisResult first, AnalysisResult second) {
+            return first.dottedClassName.compareToIgnoreCase(second.dottedClassName);
+        }
+
+    }
 
 }

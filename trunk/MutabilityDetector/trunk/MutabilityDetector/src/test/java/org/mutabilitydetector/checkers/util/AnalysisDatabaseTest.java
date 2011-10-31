@@ -28,38 +28,43 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 public class AnalysisDatabaseTest {
 
-	private AnalysisDatabase db;
-	
-	@Before public void setUp() {
-		ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
-		db = newAnalysisDatabase(sessionRunner);
-	}
+    private AnalysisDatabase db;
 
-	private void assertCachedCorrectly(InfoKey<? extends AnalysisInformation> infoKey) {
-		assertSame("Should be the same instance from each invocation.", 
-				db.requestInformation(infoKey), 
-				db.requestInformation(infoKey));
-	}
-	
-	private void assertNotNull(InfoKey<? extends AnalysisInformation> infoKey) {
-		Assert.assertNotNull("Should return an instance of requested information.", db.requestInformation(infoKey));
-	}
-	
+    @Before
+    public void setUp() {
+        ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(),
+                createWithCurrentClasspath());
+        db = newAnalysisDatabase(sessionRunner);
+    }
 
-	@Test public void canRequestPrivateMethodInvocationInformation() throws Exception {
-		assertNotNull(PRIVATE_METHOD_INVOCATION);
-	}
-	
-	@Test public void sameInstanceOfPrivateMethodInvocationInformationIsUsed() throws Exception {
-		assertCachedCorrectly(PRIVATE_METHOD_INVOCATION);
-	}
+    private void assertCachedCorrectly(InfoKey<? extends AnalysisInformation> infoKey) {
+        assertSame("Should be the same instance from each invocation.",
+                db.requestInformation(infoKey),
+                db.requestInformation(infoKey));
+    }
 
-	@Test public void canRequestInformationOnTypeStructureInformation() throws Exception {
-		assertNotNull(TYPE_STRUCTURE);
-	}
-	
-	@Test public void sameInstanceOfTypeStructureInformationIsUsed() throws Exception {
-		assertCachedCorrectly(TYPE_STRUCTURE);
-	}
-	
+    private void assertNotNull(InfoKey<? extends AnalysisInformation> infoKey) {
+        Assert.assertNotNull("Should return an instance of requested information.", db.requestInformation(infoKey));
+    }
+
+    @Test
+    public void canRequestPrivateMethodInvocationInformation() throws Exception {
+        assertNotNull(PRIVATE_METHOD_INVOCATION);
+    }
+
+    @Test
+    public void sameInstanceOfPrivateMethodInvocationInformationIsUsed() throws Exception {
+        assertCachedCorrectly(PRIVATE_METHOD_INVOCATION);
+    }
+
+    @Test
+    public void canRequestInformationOnTypeStructureInformation() throws Exception {
+        assertNotNull(TYPE_STRUCTURE);
+    }
+
+    @Test
+    public void sameInstanceOfTypeStructureInformationIsUsed() throws Exception {
+        assertCachedCorrectly(TYPE_STRUCTURE);
+    }
+
 }

@@ -19,18 +19,19 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class AnalysisResultTest {
 
-	@Test(expected = IllegalArgumentException.class) 
-	public void throwsExceptionWhenNotImmutableAndNoReasonsGiven_varargs() throws Exception {
-		new AnalysisResult("someclass", IsImmutable.NOT_IMMUTABLE);
-	}
-	
-	@Test(expected = IllegalArgumentException.class) 
-	public void throwsExceptionWhenNotImmutableAndNoReasonsGiven_collection() throws Exception {
-		new AnalysisResult("someclass", IsImmutable.NOT_IMMUTABLE, new ArrayList<CheckerReasonDetail>());
-	}
-	
-	@Test public void doesntThrowExceptionWhenImmutableAndNoReasonGiven() throws Exception {
-		new AnalysisResult("someclass", IMMUTABLE);
-	}
-	
+    @Test(expected = IllegalArgumentException.class)
+    public void throwsExceptionWhenNotImmutableAndNoReasonsGiven_varargs() throws Exception {
+        new AnalysisResult("someclass", IsImmutable.NOT_IMMUTABLE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwsExceptionWhenNotImmutableAndNoReasonsGiven_collection() throws Exception {
+        new AnalysisResult("someclass", IsImmutable.NOT_IMMUTABLE, new ArrayList<CheckerReasonDetail>());
+    }
+
+    @Test
+    public void doesntThrowExceptionWhenImmutableAndNoReasonGiven() throws Exception {
+        new AnalysisResult("someclass", IMMUTABLE);
+    }
+
 }

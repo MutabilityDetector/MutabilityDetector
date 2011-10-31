@@ -15,22 +15,22 @@ package org.mutabilitydetector.cli;
  */
 public class ClassListException extends RuntimeException {
 
-	private static final long serialVersionUID = -2085270386267385221L;
+    private static final long serialVersionUID = -2085270386267385221L;
 
-	public ClassListException() {
-		super();
-	}
+    public ClassListException() {
+        super();
+    }
 
-	public ClassListException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public ClassListException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public ClassListException(String message) {
-		super(message);
-	}
+    public ClassListException(String message) {
+        super(message);
+    }
 
-	public ClassListException(Throwable cause) {
-		super(cause);
-	}
+    public ClassListException(Throwable cause) {
+        super(cause);
+    }
 
 }

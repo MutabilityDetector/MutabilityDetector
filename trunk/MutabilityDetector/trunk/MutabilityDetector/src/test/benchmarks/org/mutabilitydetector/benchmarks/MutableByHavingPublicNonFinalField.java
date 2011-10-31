@@ -18,21 +18,21 @@
 package org.mutabilitydetector.benchmarks;
 
 public class MutableByHavingPublicNonFinalField {
-	public String name;
-	
-	public MutableByHavingPublicNonFinalField(String name) {
-		this.name = name;
-	}
+    public String name;
+
+    public MutableByHavingPublicNonFinalField(String name) {
+        this.name = name;
+    }
 }
 
 final class MutableByHavingProtectedNonFinalField {
-	protected String name;
+    protected String name;
 }
 
 final class MutableByHavingDefaultVisibleNonFinalField {
-	String name;
+    String name;
 }
 
 final class ImmutableWithPublicFinalField {
-	public final String name = "";
+    public final String name = "";
 }

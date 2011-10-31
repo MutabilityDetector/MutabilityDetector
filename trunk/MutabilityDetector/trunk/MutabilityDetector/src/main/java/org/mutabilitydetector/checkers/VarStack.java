@@ -18,42 +18,41 @@ import java.util.List;
 
 public class VarStack {
 
-	private List<Integer> indices = new ArrayList<Integer>();
-	private List<VarStackSnapshot> snapshots = new ArrayList<VarStackSnapshot>();
-	private Iterator<VarStackSnapshot> snapshotsIterator = snapshots.iterator();
-	
+    private List<Integer> indices = new ArrayList<Integer>();
+    private List<VarStackSnapshot> snapshots = new ArrayList<VarStackSnapshot>();
+    private Iterator<VarStackSnapshot> snapshotsIterator = snapshots.iterator();
 
-	public void visitVarInsn(int opcode, int var) {
-		indices.add(var);
-	}
+    public void visitVarInsn(int opcode, int var) {
+        indices.add(var);
+    }
 
-	public void takeSnapshotOfVarsAtPutfield() {
-		snapshots.add(new VarStackSnapshot(indices));
-		snapshotsIterator = snapshots.iterator();
-	}
-	
-	public VarStackSnapshot next() {
-		return snapshotsIterator.next();
-	}
+    public void takeSnapshotOfVarsAtPutfield() {
+        snapshots.add(new VarStackSnapshot(indices));
+        snapshotsIterator = snapshots.iterator();
+    }
 
-	public static class VarStackSnapshot {
-		
-		private final List<Integer> indices;
+    public VarStackSnapshot next() {
+        return snapshotsIterator.next();
+    }
 
-		public VarStackSnapshot(List<Integer> indices) {
-			this.indices = unmodifiableList(new ArrayList<Integer>(indices));
-		}
-		
-		public boolean thisObjectWasAddedToStack() {
-			// the "this" reference is at position 0 of the local variable table
-			return indices.contains(0);
-		}
-		
-		public int indexOfOwningObject() {
-			int stackSpaceToLookBack = 1;
-			return indices.get((indices.size() -1) - stackSpaceToLookBack);
-		}
+    public static class VarStackSnapshot {
 
-	}
+        private final List<Integer> indices;
+
+        public VarStackSnapshot(List<Integer> indices) {
+            this.indices = unmodifiableList(new ArrayList<Integer>(indices));
+        }
+
+        public boolean thisObjectWasAddedToStack() {
+            // the "this" reference is at position 0 of the local variable table
+            return indices.contains(0);
+        }
+
+        public int indexOfOwningObject() {
+            int stackSpaceToLookBack = 1;
+            return indices.get((indices.size() - 1) - stackSpaceToLookBack);
+        }
+
+    }
 
 }

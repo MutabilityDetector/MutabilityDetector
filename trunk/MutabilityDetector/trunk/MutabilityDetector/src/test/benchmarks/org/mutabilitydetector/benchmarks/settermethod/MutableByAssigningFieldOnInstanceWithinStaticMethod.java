@@ -12,18 +12,18 @@ package org.mutabilitydetector.benchmarks.settermethod;
 
 public class MutableByAssigningFieldOnInstanceWithinStaticMethod {
 
-	private int foo;
-	
-	public MutableByAssigningFieldOnInstanceWithinStaticMethod(int foo) {
-		this.foo = foo;
-	}
-	
-	public int getFoo() {
-		return foo;
-	}
-	
-	public static void doSomething(MutableByAssigningFieldOnInstanceWithinStaticMethod bar) {
-		bar.foo = 42;
-	}
-	
+    private int foo;
+
+    public MutableByAssigningFieldOnInstanceWithinStaticMethod(int foo) {
+        this.foo = foo;
+    }
+
+    public int getFoo() {
+        return foo;
+    }
+
+    public static void doSomething(MutableByAssigningFieldOnInstanceWithinStaticMethod bar) {
+        bar.foo = 42;
+    }
+
 }

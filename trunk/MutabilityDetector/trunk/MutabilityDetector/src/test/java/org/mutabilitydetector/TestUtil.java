@@ -35,41 +35,41 @@ import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @Ignore
 public class TestUtil {
-	public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-		IsImmutable result = new AnalysisSession().resultFor(toAnalyse.getName()).isImmutable;
-		return result;
-	}
-	
-	public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-		return new AnalysisSession().resultFor(toAnalyse.getName());
-	}
-	
-	public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
-		return MutabilityAssert.formatReasons(reasons);
-	}
+    public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
+        IsImmutable result = new AnalysisSession().resultFor(toAnalyse.getName()).isImmutable;
+        return result;
+    }
 
-	public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
-		return asList(unusedCheckerReasonDetail());
-	}
-	
-	public static CheckerReasonDetail unusedCheckerReasonDetail() {
-		return new CheckerReasonDetail("this reason is not meant to be involved", null, NULL_REASON);
-	}
-	
-	public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
-		CheckerRunner.createWithCurrentClasspath().run(new AnalysisSession(), checker, fromClass(toAnalyse));
-		return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
-	}
+    public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
+        return new AnalysisSession().resultFor(toAnalyse.getName());
+    }
 
-	public static SessionCheckerRunner sessionCheckerRunner() {
-		return new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
-	}
-	
-	public static AnalysisDatabase analysisDatabase() {
-		return newAnalysisDatabase(sessionCheckerRunner());
-	}
+    public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
+        return MutabilityAssert.formatReasons(reasons);
+    }
 
-	public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
-		return new AnalysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
-	}
+    public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
+        return asList(unusedCheckerReasonDetail());
+    }
+
+    public static CheckerReasonDetail unusedCheckerReasonDetail() {
+        return new CheckerReasonDetail("this reason is not meant to be involved", null, NULL_REASON);
+    }
+
+    public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
+        CheckerRunner.createWithCurrentClasspath().run(new AnalysisSession(), checker, fromClass(toAnalyse));
+        return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+    }
+
+    public static SessionCheckerRunner sessionCheckerRunner() {
+        return new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
+    }
+
+    public static AnalysisDatabase analysisDatabase() {
+        return newAnalysisDatabase(sessionCheckerRunner());
+    }
+
+    public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
+        return new AnalysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
+    }
 }

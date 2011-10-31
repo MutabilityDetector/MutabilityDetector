@@ -56,121 +56,123 @@ import org.mutabilitydetector.checkers.SetterMethodChecker;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
-
 @RunWith(Theories.class)
 public class SetterMethodCheckerTest {
 
-	private SetterMethodChecker checker;
-	private CheckerRunner checkerRunner;
-	private IAnalysisSession analysisSession;
-	private PrivateMethodInvocationInformation info;
-	
-	@Before public void setUp() {
-		checkerRunner = CheckerRunner.createWithCurrentClasspath();
-		analysisSession = createWithCurrentClassPath();
-		info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
-		checker = newSetterMethodChecker(info);
-	}
-	
-	private AnalysisResult doCheck(Class<?> toCheck) {
-		return TestUtil.runChecker(checker, toCheck);
-	}
-	
-	@Test public void immutableExamplePassesCheck() throws Exception {
-		assertImmutable(doCheck(ImmutableExample.class));
-	}
-	
-	@Test public void mutableByHavingSetterMethodFailsCheck() throws Exception {
-		assertDefinitelyNotImmutable(doCheck(MutableByHavingSetterMethod.class));
-	}
-	
-	@Test public void integerClassPassesCheck() throws Exception {
-		assertImmutable(doCheck(Integer.class));
-	}
-	
-	@Test public void enumTypePassesCheck() throws Exception {
-		assertImmutable(doCheck(EnumType.class));
-	}
-	
-	@Ignore("Field [myField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]" + 
-			"Field [primitiveField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]")
-	@Test public void settingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
-		assertImmutable(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class));
-	}
-	
-	@Test public void settingFieldOfOtherInstanceAndThisInstanceRendersClassMutable() throws Exception {
-		assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
-	}
-	
-	@Test public void fieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
-		assertImmutable(doCheck(ImmutableUsingPrivateFieldSettingMethod.class));
-	}
+    private SetterMethodChecker checker;
+    private CheckerRunner checkerRunner;
+    private IAnalysisSession analysisSession;
+    private PrivateMethodInvocationInformation info;
 
-	@Ignore("Field [reassignable] can be reassigned within method [setFieldOnParameter]")
-	@Test public void settingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
-		assertImmutable(doCheck(ImmutableButSetsFieldOfOtherClass.class));
-	}
-	
-	@Ignore("Was <DEFINITELY> immutable")
-	@Test public void settingFieldOfMutableFieldRendersClassMutable() throws Exception {
-		assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOfField.class));
-	}
+    @Before
+    public void setUp() {
+        checkerRunner = CheckerRunner.createWithCurrentClasspath();
+        analysisSession = createWithCurrentClassPath();
+        info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
+        checker = newSetterMethodChecker(info);
+    }
 
-	@Ignore("Does not create any reasons.")
-	@Test public void subclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
-		AnalysisResult result = doCheck(StillMutableSubclass.class);
-		
-		assertThat(checker.reasons().size(), is(not(0)));
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Ignore("Field [precision] can be reassigned within method [precision]" + 
-			"Field [stringCache] can be reassigned within method [toString]" + 
-			"Field [intVal] can be reassigned within method [inflate]")
-	@Test public void bigDecimalDoesNotFailCheck() throws Exception {
-		assertImmutable(doCheck(BigDecimal.class));
-	}
-	
-	@Ignore("Field [hash] can be reassigned within method [hashCode]")
-	@Test public void stringDoesNotFailCheck() throws Exception {
-		assertImmutable(doCheck(String.class));
-	}
+    private AnalysisResult doCheck(Class<?> toCheck) {
+        return TestUtil.runChecker(checker, toCheck);
+    }
 
-	@Test public void fieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
-		AnalysisResult result = doCheck(MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
-		assertDefinitelyNotImmutable(result);
-	}
+    @Test
+    public void immutableExamplePassesCheck() throws Exception {
+        assertImmutable(doCheck(ImmutableExample.class));
+    }
 
-	@Ignore("Field can be reassigned.")
-	@Test public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
-		assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
-	}
-	
-	@Ignore("Could not analyse - issue 14")
-	@Test public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
-		assertDefinitelyNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
-	}
-	
-	@DataPoints public static Class<?>[] classes = new Class[] {
-			SetsBoolean.class,
-			SetsByte.class,
-			SetsChar.class,
-			SetsDouble.class,
-			SetsFloat.class,
-			SetsInt.class,
-			SetsLong.class,
-			SetsObjectArray.class,
-			SetsObjectArrayArray.class,
-			SetsReference.class,
-			SetsShort.class
-	};
-	
-	
-	
-	@Theory public void 
-	settingFieldsOfAnyTypeShouldBeMutable(Class<?> mutableSettingField) throws Exception {
-		AnalysisResult result = runChecker(checker, mutableSettingField);
-		assertDefinitelyNotImmutable(result);
-	}
-	
+    @Test
+    public void mutableByHavingSetterMethodFailsCheck() throws Exception {
+        assertDefinitelyNotImmutable(doCheck(MutableByHavingSetterMethod.class));
+    }
+
+    @Test
+    public void integerClassPassesCheck() throws Exception {
+        assertImmutable(doCheck(Integer.class));
+    }
+
+    @Test
+    public void enumTypePassesCheck() throws Exception {
+        assertImmutable(doCheck(EnumType.class));
+    }
+
+    @Ignore("Field [myField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]" + "Field [primitiveField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]")
+    @Test
+    public void settingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
+        assertImmutable(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class));
+    }
+
+    @Test
+    public void settingFieldOfOtherInstanceAndThisInstanceRendersClassMutable() throws Exception {
+        assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
+    }
+
+    @Test
+    public void fieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
+        assertImmutable(doCheck(ImmutableUsingPrivateFieldSettingMethod.class));
+    }
+
+    @Ignore("Field [reassignable] can be reassigned within method [setFieldOnParameter]")
+    @Test
+    public void settingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
+        assertImmutable(doCheck(ImmutableButSetsFieldOfOtherClass.class));
+    }
+
+    @Ignore("Was <DEFINITELY> immutable")
+    @Test
+    public void settingFieldOfMutableFieldRendersClassMutable() throws Exception {
+        assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOfField.class));
+    }
+
+    @Ignore("Does not create any reasons.")
+    @Test
+    public void subclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
+        AnalysisResult result = doCheck(StillMutableSubclass.class);
+
+        assertThat(checker.reasons().size(), is(not(0)));
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Ignore("Field [precision] can be reassigned within method [precision]" + "Field [stringCache] can be reassigned within method [toString]"
+            + "Field [intVal] can be reassigned within method [inflate]")
+    @Test
+    public void bigDecimalDoesNotFailCheck() throws Exception {
+        assertImmutable(doCheck(BigDecimal.class));
+    }
+
+    @Ignore("Field [hash] can be reassigned within method [hashCode]")
+    @Test
+    public void stringDoesNotFailCheck() throws Exception {
+        assertImmutable(doCheck(String.class));
+    }
+
+    @Test
+    public void fieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
+        AnalysisResult result = doCheck(MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Ignore("Field can be reassigned.")
+    @Test
+    public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
+        assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
+    }
+
+    @Ignore("Could not analyse - issue 14")
+    @Test
+    public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
+        assertDefinitelyNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
+    }
+
+    @DataPoints
+    public static Class<?>[] classes = new Class[] { SetsBoolean.class, SetsByte.class, SetsChar.class,
+            SetsDouble.class, SetsFloat.class, SetsInt.class, SetsLong.class, SetsObjectArray.class,
+            SetsObjectArrayArray.class, SetsReference.class, SetsShort.class };
+
+    @Theory
+    public void settingFieldsOfAnyTypeShouldBeMutable(Class<?> mutableSettingField) throws Exception {
+        AnalysisResult result = runChecker(checker, mutableSettingField);
+        assertDefinitelyNotImmutable(result);
+    }
+
 }

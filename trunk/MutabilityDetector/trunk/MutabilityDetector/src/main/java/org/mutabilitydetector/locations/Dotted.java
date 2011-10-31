@@ -10,29 +10,28 @@
 
 package org.mutabilitydetector.locations;
 
-
 public class Dotted extends ClassName {
-	
-	private Dotted(String className) {
-		super(className);
-	}
-	
-	public static Dotted dotted(String dottedClassName) {
-		return new Dotted(dottedClassName);
-	}
-	
-	public static Dotted fromSlashed(Slashed slashedClassName) {
-		String converted = new ClassNameConvertor().dotted(slashedClassName.asString());
-		return dotted(converted);
-	}
 
-	public static Dotted fromSlashedString(String slashedClassNameString) {
-		String dottedClassNameString = new ClassNameConvertor().dotted(slashedClassNameString);
-		return dotted(dottedClassNameString);
-	}
+    private Dotted(String className) {
+        super(className);
+    }
 
-	public static Dotted fromClass(Class<?> clazz) {
-		return dotted(clazz.getName());
-	}
+    public static Dotted dotted(String dottedClassName) {
+        return new Dotted(dottedClassName);
+    }
+
+    public static Dotted fromSlashed(Slashed slashedClassName) {
+        String converted = new ClassNameConvertor().dotted(slashedClassName.asString());
+        return dotted(converted);
+    }
+
+    public static Dotted fromSlashedString(String slashedClassNameString) {
+        String dottedClassNameString = new ClassNameConvertor().dotted(slashedClassNameString);
+        return dotted(dottedClassNameString);
+    }
+
+    public static Dotted fromClass(Class<?> clazz) {
+        return dotted(clazz.getName());
+    }
 
 }

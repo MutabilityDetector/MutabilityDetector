@@ -16,9 +16,9 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 
 public class AnalysisSessionHolder {
-	private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
+    private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 
-	public static AnalysisResult analysisResultFor(Class<?> from) {
-		return assertionAnalysisSession.resultFor(from.getName());
-	}
+    public static AnalysisResult analysisResultFor(Class<?> from) {
+        return assertionAnalysisSession.resultFor(from.getName());
+    }
 }

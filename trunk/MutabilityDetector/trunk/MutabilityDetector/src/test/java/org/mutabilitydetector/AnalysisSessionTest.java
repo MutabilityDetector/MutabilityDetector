@@ -24,32 +24,33 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 
-
-
 public class AnalysisSessionTest {
 
-	private Class<ImmutableExample> immutableClass;
-	
-	@Before public void setUp() {
-		immutableClass = ImmutableExample.class;
-	}
+    private Class<ImmutableExample> immutableClass;
 
-	@Test public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
-		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-		IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
-		ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
-		AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, fromClass(immutableClass));
+    @Before
+    public void setUp() {
+        immutableClass = ImmutableExample.class;
+    }
 
-		checker.runCheckers(analysisSession);
-		
-		AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
-		assertImmutable(result);
-	}
-	
-	@Test public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-		AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
-		assertImmutable(result);
-	}
-	
+    @Test
+    public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
+        IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
+        IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
+        ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
+        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, fromClass(immutableClass));
+
+        checker.runCheckers(analysisSession);
+
+        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
+        assertImmutable(result);
+    }
+
+    @Test
+    public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
+        IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
+        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
+        assertImmutable(result);
+    }
+
 }

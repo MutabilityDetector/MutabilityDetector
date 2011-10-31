@@ -15,12 +15,14 @@ import org.mutabilitydetector.AnalysisResult;
 
 public class NoReasonAllowedMatcher extends BaseAnalysisResultMatcher {
 
-	@Override protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
-		return (analysisResult.reasons.size() == 0);
-	}
+    @Override
+    protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
+        return (analysisResult.reasons.size() == 0);
+    }
 
-	@Override public void describeTo(Description description) {
-		throw new UnsupportedOperationException("Not yet implemented.");
-	}
+    @Override
+    public void describeTo(Description description) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 
 }

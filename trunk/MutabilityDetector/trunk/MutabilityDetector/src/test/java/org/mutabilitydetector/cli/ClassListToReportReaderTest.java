@@ -22,38 +22,39 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class ClassListToReportReaderTest {
 
-	private BufferedReader reader;
-	private ClassListToReportCollector classListReader;
-	
-	@Before public void setUp() {
-		reader = mock(BufferedReader.class);
-	}
+    private BufferedReader reader;
+    private ClassListToReportCollector classListReader;
 
-	@Test public void readsClassesFromPlainTextFile() throws Exception {
-		when(reader.readLine()).thenReturn("java.lang.String", "java.io.FileReader", "org.junit.Test", null);
-		classListReader = new PlainTextClassListToReportReader(reader);
-		Collection<String> classListToReport = classListReader.classListToReport();
-		
-		assertEquals("Should contain three classes.", 3, classListToReport.size());
-		assertContainsClassName(classListToReport, "java.lang.String");
-		assertContainsClassName(classListToReport, "java.io.FileReader");
-		assertContainsClassName(classListToReport, "org.junit.Test");
-	}
+    @Before
+    public void setUp() {
+        reader = mock(BufferedReader.class);
+    }
 
-	private void assertContainsClassName(Collection<String> classListToReport, String className) {
-		assertTrue("Should contain the class [" + className + "].", classListToReport.contains(className));
-	}
-	
-	@Test(expected=ClassListException.class)
-	public void classListExceptionIsThrownWhenReaderThrowsIOException() throws Exception {
-		when(reader.readLine()).thenReturn("java.lang.String");
-		when(reader.readLine()).thenThrow(new IOException());
-		classListReader = new PlainTextClassListToReportReader(reader);
-		
-		classListReader.classListToReport();
-	}
-	
+    @Test
+    public void readsClassesFromPlainTextFile() throws Exception {
+        when(reader.readLine()).thenReturn("java.lang.String", "java.io.FileReader", "org.junit.Test", null);
+        classListReader = new PlainTextClassListToReportReader(reader);
+        Collection<String> classListToReport = classListReader.classListToReport();
+
+        assertEquals("Should contain three classes.", 3, classListToReport.size());
+        assertContainsClassName(classListToReport, "java.lang.String");
+        assertContainsClassName(classListToReport, "java.io.FileReader");
+        assertContainsClassName(classListToReport, "org.junit.Test");
+    }
+
+    private void assertContainsClassName(Collection<String> classListToReport, String className) {
+        assertTrue("Should contain the class [" + className + "].", classListToReport.contains(className));
+    }
+
+    @Test(expected = ClassListException.class)
+    public void classListExceptionIsThrownWhenReaderThrowsIOException() throws Exception {
+        when(reader.readLine()).thenReturn("java.lang.String");
+        when(reader.readLine()).thenThrow(new IOException());
+        classListReader = new PlainTextClassListToReportReader(reader);
+
+        classListReader.classListToReport();
+    }
+
 }

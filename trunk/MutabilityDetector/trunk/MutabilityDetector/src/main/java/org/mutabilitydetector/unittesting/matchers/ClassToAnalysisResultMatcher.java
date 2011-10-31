@@ -15,17 +15,19 @@ import org.mutabilitydetector.AnalysisResult;
 
 public class ClassToAnalysisResultMatcher extends ConvertingTypeSafeMatcher<Class<?>, AnalysisResult> {
 
-	@Override public AnalysisResult convertTo(Class<?> from) {
-		throw new UnsupportedOperationException("Not yet implemented.");
-	}
+    @Override
+    public AnalysisResult convertTo(Class<?> from) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 
-	@Override public boolean matchesConverted(AnalysisResult item, Description mismatchDescription) {
-		throw new UnsupportedOperationException("Not yet implemented.");
-	}
+    @Override
+    public boolean matchesConverted(AnalysisResult item, Description mismatchDescription) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 
-	@Override public void describeTo(Description description) {
-		throw new UnsupportedOperationException("Not yet implemented.");
-	}
-
+    @Override
+    public void describeTo(Description description) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 
 }

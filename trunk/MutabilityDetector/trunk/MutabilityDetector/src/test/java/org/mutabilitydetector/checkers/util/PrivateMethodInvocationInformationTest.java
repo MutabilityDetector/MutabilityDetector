@@ -23,30 +23,31 @@ import org.mutabilitydetector.checkers.ISessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
-
 public class PrivateMethodInvocationInformationTest {
 
-	private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
-	private PrivateMethodInvocationInformation createInfo() {
-		ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(), checkerRunner);
-		return new PrivateMethodInvocationInformation(sessionRunner);
-	}
-	
-	@Test public void returnsTrueForPrivateMethodCalledOnlyFromConstructor() throws Exception {
-		String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
-		String methodDescriptor = "setFields:()V";
-		PrivateMethodInvocationInformation info = createInfo();
-		boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
-		assertTrue("Result should be true for private method called only from constructor.", result);
-	}
+    private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
 
-	
-	@Test public void returnsFalseForPublicMethod() throws Exception {
-		String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
-		String methodDescriptor = "getField1:()I";
-		PrivateMethodInvocationInformation info = createInfo();
-		boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
-		assertFalse("Cannot guarantee a public method is called only from constructor.", result);
-	}
-	
+    private PrivateMethodInvocationInformation createInfo() {
+        ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(), checkerRunner);
+        return new PrivateMethodInvocationInformation(sessionRunner);
+    }
+
+    @Test
+    public void returnsTrueForPrivateMethodCalledOnlyFromConstructor() throws Exception {
+        String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
+        String methodDescriptor = "setFields:()V";
+        PrivateMethodInvocationInformation info = createInfo();
+        boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
+        assertTrue("Result should be true for private method called only from constructor.", result);
+    }
+
+    @Test
+    public void returnsFalseForPublicMethod() throws Exception {
+        String className = ImmutableUsingPrivateFieldSettingMethod.class.getName();
+        String methodDescriptor = "getField1:()I";
+        PrivateMethodInvocationInformation info = createInfo();
+        boolean result = info.isOnlyCalledFromConstructor(forMethod(dotted(className), methodDescriptor));
+        assertFalse("Cannot guarantee a public method is called only from constructor.", result);
+    }
+
 }

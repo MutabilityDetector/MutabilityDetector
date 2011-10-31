@@ -19,23 +19,23 @@ import org.mutabilitydetector.unittesting.matchers.NoReasonAllowedMatcher;
 
 public class AllowedReason {
 
-	public AllowedReason() { }
-	
-	public static ProvidedOtherClass provided(String dottedClassName) {
-		return allowedIfOtherClassIsImmutable(dotted(dottedClassName));
-	}
-	
-	public static ProvidedOtherClass provided(Class<?> clazz) {
-		return allowedIfOtherClassIsImmutable(fromClass(clazz));
-	}
-	
-	private static ProvidedOtherClass allowedIfOtherClassIsImmutable(Dotted dottedClassName) {
-		return new ProvidedOtherClass(dottedClassName);
-	}
-	
+    public AllowedReason() {
+    }
 
-	public static AnalysisResultMatcher noneAllowed() {
-		return new NoReasonAllowedMatcher();
-	}
+    public static ProvidedOtherClass provided(String dottedClassName) {
+        return allowedIfOtherClassIsImmutable(dotted(dottedClassName));
+    }
+
+    public static ProvidedOtherClass provided(Class<?> clazz) {
+        return allowedIfOtherClassIsImmutable(fromClass(clazz));
+    }
+
+    private static ProvidedOtherClass allowedIfOtherClassIsImmutable(Dotted dottedClassName) {
+        return new ProvidedOtherClass(dottedClassName);
+    }
+
+    public static AnalysisResultMatcher noneAllowed() {
+        return new NoReasonAllowedMatcher();
+    }
 
 }

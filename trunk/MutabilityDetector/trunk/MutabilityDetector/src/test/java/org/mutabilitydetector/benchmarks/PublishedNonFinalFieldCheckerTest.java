@@ -33,47 +33,52 @@ import org.mutabilitydetector.locations.FieldLocation;
 
 public class PublishedNonFinalFieldCheckerTest {
 
-	private IMutabilityChecker checker;
-	private AnalysisResult result;
-	
-	@Before public void setUp() {
-		checker = new PublishedNonFinalFieldChecker();
-	}
-	
-	@Test public void immutableExamplePassesCheck() throws Exception {
-		result = runChecker(checker, ImmutableExample.class);
+    private IMutabilityChecker checker;
+    private AnalysisResult result;
 
-		assertThat(checker, hasNoReasons());
-		assertImmutable(result);
-	}
-	
-	
-	@Test public void classWithPublicNonFinalFieldFailsCheck() throws Exception {
-		result = runChecker(checker, MutableByHavingPublicNonFinalField.class);
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void classWithProtectedNonFinalFieldFailsCheck() throws Exception {
-		result = runChecker(checker, MutableByHavingProtectedNonFinalField.class);
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void classWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
-		result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-		assertDefinitelyNotImmutable(result);
-	}
-	
-	@Test public void classWithPublicFinalFieldPassesCheck() throws Exception {
-		result = runChecker(checker, ImmutableWithPublicFinalField.class);
-		assertThat(checker, hasNoReasons());
-		assertImmutable(result);
-	}
-	
-	@Test
-	public void addsFieldLocation() throws Exception {
-		result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-		FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().codeLocation();
-		assertThat(fieldLocation.typeName(), is(MutableByHavingDefaultVisibleNonFinalField.class.getName()));
-		assertThat(fieldLocation.fieldName(), is("name"));
-	}
+    @Before
+    public void setUp() {
+        checker = new PublishedNonFinalFieldChecker();
+    }
+
+    @Test
+    public void immutableExamplePassesCheck() throws Exception {
+        result = runChecker(checker, ImmutableExample.class);
+
+        assertThat(checker, hasNoReasons());
+        assertImmutable(result);
+    }
+
+    @Test
+    public void classWithPublicNonFinalFieldFailsCheck() throws Exception {
+        result = runChecker(checker, MutableByHavingPublicNonFinalField.class);
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void classWithProtectedNonFinalFieldFailsCheck() throws Exception {
+        result = runChecker(checker, MutableByHavingProtectedNonFinalField.class);
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void classWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
+        result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
+        assertDefinitelyNotImmutable(result);
+    }
+
+    @Test
+    public void classWithPublicFinalFieldPassesCheck() throws Exception {
+        result = runChecker(checker, ImmutableWithPublicFinalField.class);
+        assertThat(checker, hasNoReasons());
+        assertImmutable(result);
+    }
+
+    @Test
+    public void addsFieldLocation() throws Exception {
+        result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
+        FieldLocation fieldLocation = (FieldLocation) result.reasons.iterator().next().codeLocation();
+        assertThat(fieldLocation.typeName(), is(MutableByHavingDefaultVisibleNonFinalField.class.getName()));
+        assertThat(fieldLocation.fieldName(), is("name"));
+    }
 }

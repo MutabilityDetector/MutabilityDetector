@@ -14,9 +14,10 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 
-public abstract class BaseAnalysisResultMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> 
-												implements AnalysisResultMatcher {
-	
-	@Override protected abstract boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription);
-	
+public abstract class BaseAnalysisResultMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> implements
+        AnalysisResultMatcher {
+
+    @Override
+    protected abstract boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription);
+
 }

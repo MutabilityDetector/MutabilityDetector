@@ -15,11 +15,12 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 public abstract class ConvertingTypeSafeMatcher<FROM, TO> extends TypeSafeDiagnosingMatcher<FROM> {
 
-	protected boolean matchesSafely(FROM item, Description mismatchDescription) {
-		return matchesConverted(convertTo(item), mismatchDescription);
-	};
-	
-	public abstract boolean matchesConverted(TO item, Description mismatchDescription);
-	public abstract TO convertTo(FROM from);
+    protected boolean matchesSafely(FROM item, Description mismatchDescription) {
+        return matchesConverted(convertTo(item), mismatchDescription);
+    };
+
+    public abstract boolean matchesConverted(TO item, Description mismatchDescription);
+
+    public abstract TO convertTo(FROM from);
 
 }

@@ -30,17 +30,18 @@ import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 
 public class CircularReferenceAnalysisOfBothImmutableTest {
 
-	@Test
-	public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-		IAnalysisSession session = createWithCurrentClassPath();
-		session.resultFor(ImmutableClassA.class.getName());
-	}
-	
-	@Test public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
-		IAnalysisSession session = createWithCurrentClassPath();
-		TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-		IMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session, information);
-		
-		runChecker(mutableFieldChecker, ImmutableClassA.class);
-	}
+    @Test
+    public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
+        IAnalysisSession session = createWithCurrentClassPath();
+        session.resultFor(ImmutableClassA.class.getName());
+    }
+
+    @Test
+    public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
+        IAnalysisSession session = createWithCurrentClassPath();
+        TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+        IMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session, information);
+
+        runChecker(mutableFieldChecker, ImmutableClassA.class);
+    }
 }

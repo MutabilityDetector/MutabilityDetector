@@ -10,21 +10,19 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
-
-
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class MutabilityMatchers {
 
-	public static AnalysisResultMatcher noWarningsAllowed() {
-		return new NoWarningsAllowedMatcher();
-	}
+    public static AnalysisResultMatcher noWarningsAllowed() {
+        return new NoWarningsAllowedMatcher();
+    }
 
-	public static IsImmutableMatcher areImmutable() {
-		return new IsImmutableMatcher(IsImmutable.IMMUTABLE);
-	}
-	
-	public static IsImmutableMatcher areNotImmutable() {
-		return new IsImmutableMatcher(IsImmutable.NOT_IMMUTABLE);
-	}
+    public static IsImmutableMatcher areImmutable() {
+        return new IsImmutableMatcher(IsImmutable.IMMUTABLE);
+    }
+
+    public static IsImmutableMatcher areNotImmutable() {
+        return new IsImmutableMatcher(IsImmutable.NOT_IMMUTABLE);
+    }
 }

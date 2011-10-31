@@ -20,22 +20,23 @@ import org.mutabilitydetector.locations.Dotted;
 
 public class AllowedIfOtherClassIsImmutable extends AllowedReasonCollector {
 
-	private final Dotted className;
+    private final Dotted className;
 
-	public AllowedIfOtherClassIsImmutable(Dotted dottedClassName) {
-		this.className = dottedClassName;
-	}
+    public AllowedIfOtherClassIsImmutable(Dotted dottedClassName) {
+        this.className = dottedClassName;
+    }
 
-	@Override public Collection<CheckerReasonDetail> allowedReasons(AnalysisResult analysisResult) {
-		Collection<CheckerReasonDetail> allowed = new HashSet<CheckerReasonDetail>();
-		
-		for (CheckerReasonDetail checkerReasonDetail : analysisResult.reasons) {
-			if(checkerReasonDetail.reason() == MutabilityReason.ABSTRACT_TYPE_TO_FIELD
-					&& checkerReasonDetail.message().contains(className.asString())) {
-				allowed.add(checkerReasonDetail);
-			}
-		}
-		
-		return allowed;
-	}
+    @Override
+    public Collection<CheckerReasonDetail> allowedReasons(AnalysisResult analysisResult) {
+        Collection<CheckerReasonDetail> allowed = new HashSet<CheckerReasonDetail>();
+
+        for (CheckerReasonDetail checkerReasonDetail : analysisResult.reasons) {
+            if (checkerReasonDetail.reason() == MutabilityReason.ABSTRACT_TYPE_TO_FIELD && checkerReasonDetail.message()
+                    .contains(className.asString())) {
+                allowed.add(checkerReasonDetail);
+            }
+        }
+
+        return allowed;
+    }
 }
