@@ -6,8 +6,10 @@
  * Add JUnit documentation to Getting Started guide
  * Create an `allowingSubclassing()` allowed reason for unit tests (mainly for classes not marked as final)
  * Create a video to show off the unit testing capability of the tool
+ * Create a new `CodeLocation` for fields.
+ * Add code location information to the verbose output, keep reason string constant.
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
- 
+
  * ~~Remove `assertThat` method from MutabilityAssert.~~
  * ~~Add 0.03 release jar to google code download page, deprecate 0.02~~ (Now has maven support)
  * ~~Get the Hudson build of ClientOfMutabilityDetector working properly~~
