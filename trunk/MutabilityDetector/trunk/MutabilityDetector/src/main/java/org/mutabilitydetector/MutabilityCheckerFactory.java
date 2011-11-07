@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.mutabilitydetector.benchmarks.finalfield.NonFinalFieldChecker;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
@@ -42,6 +43,7 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
         Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
         checkers.add(new FinalClassChecker());
         checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
+        checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
         checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
         checkers.add(new MutableTypeToFieldChecker(analysisSession, database.requestInformation(TYPE_STRUCTURE)));

@@ -31,10 +31,12 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
+import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningInterfaceToField;
+import org.mutabilitydetector.benchmarks.finalfield.HasNonFinalField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
@@ -51,6 +53,16 @@ public class MutabilityCheckerTest {
     @Test
     public void immutableExample() throws Exception {
         assertImmutable(ImmutableExample.class);
+    }
+    
+    @Test
+    public void effectivelyImmutableByHavingNonFinalField() throws Exception {
+        assertEffectivelyImmutable(HasNonFinalField.class);
+    }
+    
+    @Test
+    public void mutableByAllowingAccessToNonFinalField() throws Exception {
+        assertDefinitelyNotImmutable(MutableByHavingPublicNonFinalField.class);
     }
 
     @Test
@@ -83,10 +95,6 @@ public class MutabilityCheckerTest {
         assertImmutable(EnumType.class);
     }
 
-    @Test
-    public void javaLangIntegerIsImmutable() throws Exception {
-        assertImmutable(Integer.class);
-    }
 
     @Test
     public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {

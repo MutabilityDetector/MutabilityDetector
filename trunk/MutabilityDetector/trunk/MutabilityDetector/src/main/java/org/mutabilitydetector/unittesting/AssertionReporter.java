@@ -44,7 +44,7 @@ public class AssertionReporter {
             AnalysisResultMatcher allowed) {
         StringBuilder messageBuilder = new StringBuilder();
         String className = getSimpleClassName(analysisResult);
-        messageBuilder.append(format("\nExpected class [%s] to be [%s] immutable," + "\nbut was [%s].%n",
+        messageBuilder.append(format("\nExpected class [%s] to be [%s]," + "\nbut was [%s].%n",
                 className,
                 expected,
                 analysisResult.isImmutable));

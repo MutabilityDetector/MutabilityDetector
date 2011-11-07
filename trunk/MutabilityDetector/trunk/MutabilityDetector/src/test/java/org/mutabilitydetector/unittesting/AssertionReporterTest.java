@@ -64,7 +64,7 @@ public class AssertionReporterTest {
             reporter.expectedImmutable(analysisResult);
             fail("expected exception");
         } catch (MutabilityAssertionError e) {
-            String expectedMessage = format("\nExpected class [%s] to be [%s] immutable," + "\nbut was [%s] immutable.",
+            String expectedMessage = format("\nExpected class [%s] to be [%s]," + "\nbut was [%s].",
                     "SimpleClassName",
                     IMMUTABLE,
                     NOT_IMMUTABLE);

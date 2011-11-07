@@ -20,7 +20,7 @@ package org.mutabilitydetector.benchmarks.abstracttofield;
 public final class MutableByAssigningAbstractTypeToField {
 
     @SuppressWarnings("unused")
-    private AbstractStringContainer nameContainer;
+    private final AbstractStringContainer nameContainer;
 
     public MutableByAssigningAbstractTypeToField(AbstractStringContainer abstractNameContainer) {
         nameContainer = abstractNameContainer;
