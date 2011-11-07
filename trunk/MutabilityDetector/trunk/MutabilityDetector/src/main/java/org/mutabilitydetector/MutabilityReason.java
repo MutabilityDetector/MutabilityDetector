@@ -38,6 +38,9 @@ public enum MutabilityReason implements Reason {
     MUTABLE_TYPE_TO_FIELD("A mutable type can be assigned to a field. Since references to the mutable field " + "may be kept, the containing type can be mutated after construction.",
             IsImmutable.NOT_IMMUTABLE),
 
+    ESCAPED_THIS_REFERENCE("[Experimental] The 'this' reference escaped during construction. Whoever receives the reference may observe values of the object mutating.",
+            IsImmutable.NOT_IMMUTABLE),
+            
     NON_FINAL_FIELD("Field is not declared final. If the object is published across threads the Java Memory Model " + "does not guarantee that it will be fully initialised before it is read. "
             + "However, if the object is only used in a single thread, reads are guaranteed to see the fully initialised fields.",
             IsImmutable.EFFECTIVELY_IMMUTABLE),

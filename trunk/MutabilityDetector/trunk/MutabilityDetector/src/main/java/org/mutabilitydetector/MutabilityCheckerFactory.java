@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.checkers.FinalClassChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
@@ -48,6 +49,7 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
         checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
         checkers.add(new MutableTypeToFieldChecker(analysisSession, database.requestInformation(TYPE_STRUCTURE)));
         checkers.add(new InherentTypeMutabilityChecker());
+        checkers.add(new EscapedThisReferenceChecker());
         // checkers.add(new InheritedMutabilityChecker(analysisSession));
         // checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
         return Collections.unmodifiableCollection(checkers);

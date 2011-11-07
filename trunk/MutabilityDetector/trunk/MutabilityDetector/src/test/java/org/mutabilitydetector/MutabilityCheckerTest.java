@@ -36,6 +36,7 @@ import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedF
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningInterfaceToField;
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe;
 import org.mutabilitydetector.benchmarks.finalfield.HasNonFinalField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -88,6 +89,11 @@ public class MutabilityCheckerTest {
     @Test
     public void mutableByNotBeingFinalClass() throws Exception {
         assertEffectivelyImmutable(MutableByNotBeingFinalClass.class);
+    }
+    
+    @Test
+    public void mutableByLettingTheThisReferenceEscapeDuringConstruction() throws Exception {
+        assertDefinitelyNotImmutable(Unsafe.ThisPassedToOtherObjectAsOneOfManyParameters.class);
     }
 
     @Test

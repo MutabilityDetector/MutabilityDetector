@@ -25,6 +25,10 @@ public class GiveMeYourThisReference {
         obtainedStringField = yourThisReference.toString();
     }
 
+    public GiveMeYourThisReference(Object first, String second, int third, Object theThisReference, Object andAnother, double d) {
+        this(theThisReference);
+    }
+
     public String stringField() {
         return obtainedStringField;
     }

@@ -10,6 +10,9 @@
 
 package org.mutabilitydetector.benchmarks.escapedthis;
 
+import java.util.HashMap;
+
+
 public class Unsafe {
 
     public static final class ThisPassedToOtherObject {
@@ -17,8 +20,14 @@ public class Unsafe {
             new GiveMeYourThisReference(this);
         }
     }
+    
+    public static final class ThisPassedToOtherObjectAsOneOfManyParameters {
+        public ThisPassedToOtherObjectAsOneOfManyParameters() {
+            new GiveMeYourThisReference(null, "hi there", 1, this, new HashMap<String, String>(), 1.0d);
+        }
+    }
 
-    public static class ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference {
+    public static final class ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference {
         public ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference() {
             dontPublishThisReference(this);
         }
@@ -29,7 +38,7 @@ public class Unsafe {
         }
     }
 
-    public static class ThisPassedToPrivateStaticMethodWhichDoesPublishReference {
+    public static final class ThisPassedToPrivateStaticMethodWhichDoesPublishReference {
         public ThisPassedToPrivateStaticMethodWhichDoesPublishReference() {
             publishThisReference(this);
         }
@@ -39,13 +48,13 @@ public class Unsafe {
         }
     }
 
-    public static class SetThisReferenceAsFieldOfOtherInstance {
+    public static final class SetThisReferenceAsFieldOfOtherInstance {
         public SetThisReferenceAsFieldOfOtherInstance() {
             GiveMeYourThisReference.YOUR_THIS_REFERENCE = this;
         }
     }
 
-    public static class PassThisReferenceToStaticObject {
+    public static final class PassThisReferenceToStaticObject {
         public PassThisReferenceToStaticObject() {
             GiveMeYourThisReference.THIS_REFERENCE_MAP.add(this);
         }
