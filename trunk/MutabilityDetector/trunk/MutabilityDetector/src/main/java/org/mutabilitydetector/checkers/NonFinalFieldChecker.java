@@ -1,10 +1,9 @@
-package org.mutabilitydetector.benchmarks.finalfield;
+package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 

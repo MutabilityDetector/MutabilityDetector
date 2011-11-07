@@ -7,6 +7,7 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 
 public class NonFinalFieldsCheckerTest {
 
