@@ -21,6 +21,10 @@ public class MutabilityMatchers {
     public static IsImmutableMatcher areImmutable() {
         return new IsImmutableMatcher(IsImmutable.IMMUTABLE);
     }
+    
+    public static IsImmutableMatcher areEffectivelyImmutable() {
+        return new IsImmutableMatcher(IsImmutable.EFFECTIVELY_IMMUTABLE);
+    }
 
     public static IsImmutableMatcher areNotImmutable() {
         return new IsImmutableMatcher(IsImmutable.NOT_IMMUTABLE);
