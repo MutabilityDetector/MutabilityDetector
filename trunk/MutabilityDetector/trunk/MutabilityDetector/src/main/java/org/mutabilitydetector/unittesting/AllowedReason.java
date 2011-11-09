@@ -38,4 +38,8 @@ public class AllowedReason {
         return new NoReasonAllowedMatcher();
     }
 
+    public static AllowingForSubclassing allowingForSubclassing() {
+        return new AllowingForSubclassing();
+    }
+
 }

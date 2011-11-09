@@ -16,6 +16,8 @@ import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.noW
 
 import java.util.Collection;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -79,6 +81,14 @@ public class AssertionReporter {
 
     private boolean gotTheExpectedResult(IsImmutable expected, AnalysisResult analysisResult) {
         return expected == analysisResult.isImmutable;
+    }
+
+    public void assertThat(AnalysisResult analysisResult, Matcher<AnalysisResult> areImmutable) {
+        try {
+            MatcherAssert.assertThat(analysisResult, areImmutable);
+        } catch (AssertionError e) {
+            throw new MutabilityAssertionError(e.getMessage());
+        }
     }
 
 }

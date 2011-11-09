@@ -16,7 +16,6 @@ import static org.mutabilitydetector.unittesting.matchers.WithAllowedReasonsMatc
 import java.util.Collection;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -45,14 +44,14 @@ public class MutabilityAssert {
     }
 
     public static void assertInstancesOf(Class<?> clazz, IsImmutableMatcher areImmutable) {
-        MatcherAssert.assertThat(getResultFor(clazz), areImmutable);
+        reporter.assertThat(getResultFor(clazz), areImmutable);
     }
 
     public static void assertInstancesOf(Class<?> clazz,
             IsImmutableMatcher areImmutable,
             Matcher<AnalysisResult> allowing) {
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable, allowing);
-        MatcherAssert.assertThat(getResultFor(clazz), areImmutable_withReasons);
+        reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
 
     }
 

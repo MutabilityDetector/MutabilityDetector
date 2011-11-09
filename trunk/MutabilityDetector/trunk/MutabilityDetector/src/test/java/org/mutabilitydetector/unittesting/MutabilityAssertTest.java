@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutableStatusIs;
@@ -27,6 +28,7 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
+import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 
 public class MutabilityAssertTest {
@@ -76,7 +78,7 @@ public class MutabilityAssertTest {
         assertInstancesOf(ImmutableExample.class, areImmutable());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test(expected = MutabilityAssertionError.class)
     public void assertThatIsImmutableFailsForMutableClass() throws Exception {
         assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
     }
@@ -99,7 +101,7 @@ public class MutabilityAssertTest {
 
     }
 
-    @Test(expected = AssertionError.class)
+    @Test(expected = MutabilityAssertionError.class)
     public void failsWhenAllowingReasonWhichIsNotTheCauseOfMutability() {
         assertInstancesOf(MutableByHavingSetterMethod.class,
                 areImmutable(),
@@ -116,5 +118,20 @@ public class MutabilityAssertTest {
             assertThat(e.getMessage(), containsString("can be reassigned"));
         }
     }
+    
+    @Test
+    public void canAllowSubclassingForNonFinalClasses() throws Exception {
+        assertInstancesOf(MutableByNotBeingFinalClass.class,
+                areImmutable(),
+                allowingForSubclassing());
+    }
 
+    
+    @Test(expected = MutabilityAssertionError.class)
+    public void allowSubclassingFailsWhenReasonIsDifferent() throws Exception {
+        assertInstancesOf(MutableByHavingSetterMethod.class,
+                areImmutable(),
+                allowingForSubclassing());
+    }
+    
 }

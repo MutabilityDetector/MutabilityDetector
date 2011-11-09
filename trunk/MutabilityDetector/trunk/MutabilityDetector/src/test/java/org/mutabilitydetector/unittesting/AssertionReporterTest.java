@@ -12,14 +12,19 @@ package org.mutabilitydetector.unittesting;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
+import static org.mutabilitydetector.locations.ClassLocation.fromDotted;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
 
 import java.util.Collection;
 
@@ -31,6 +36,7 @@ import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
+import org.mutabilitydetector.unittesting.matchers.MutabilityMatchers;
 
 public class AssertionReporterTest {
 
@@ -103,6 +109,26 @@ public class AssertionReporterTest {
         } catch (MutabilityAssertionError e) {
             String expectedMessage = format("\nSuppressed reasons:" + "\n\tNo reasons have been suppressed.");
             assertThat(e.getMessage(), containsString(expectedMessage));
+        }
+    }
+    
+    @Test(expected=MutabilityAssertionError.class)
+    public void performsAssertThatButWrapsExceptionInMutabilityAssertionError() throws Exception {
+        reporter.assertThat(new AnalysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, unusedReasons()), MutabilityMatchers.areImmutable());
+    }
+
+    @Test
+    public void performsAssertThatButWrapsExceptionInMutabilityAssertionErrorWithSameMessage() throws Exception {
+        CheckerReasonDetail reasonDetail = new CheckerReasonDetail("this message should appear", 
+                                                                   fromDotted(dotted("a.b.c")), 
+                                                                   ESCAPED_THIS_REFERENCE);
+        try {
+            reporter.assertThat(new AnalysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), areImmutable());
+            fail("expected exception");
+        } catch (MutabilityAssertionError expectedError) {
+            assertThat(expectedError.getMessage(), allOf(containsString("a.b.c to be IMMUTABLE\n"),
+                                                         containsString("a.b.c is actually NOT_IMMUTABLE\n"),
+                                                         containsString("this message should appear")));
         }
     }
 
