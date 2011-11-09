@@ -91,37 +91,30 @@ public class EscapedThisReferenceChecker extends AbstractMutabilityChecker {
             }
         }
 
-        /*
-         * This is a first pass.
-         * 
-         * When a method is invoked within the constructor, it looks back over the instructions[1] that popped something
-         * onto the stack. It traces the pops back as many times as there are arguments being passed to the method. With
-         * the added complication that if a parameter is being newed up, some instructions (e.g. DUP, NEW) are
-         * 'cancelled out' as they don't correspond to another parameter. This is probably the pattern I will have to
-         * stick to, but it should definitely be extended to handle all relevant bytecode patterns.
-         * 
-         * To be quite frank, future Graham, I have no idea how this actually works, but it seems to work quite nicely.
-         * 
-         * [1] not all instructions will be handled correctly, e.g. 64 bit values.
-         */
         private void checkMethodCall(MethodInsnNode methodInsnNode) {
             AbstractInsnNode previous = methodInsnNode.getPrevious();
             Type[] argumentTypes = Type.getArgumentTypes(methodInsnNode.desc);
             int numberOfArguments = argumentTypes.length;
 
             for (int i = numberOfArguments - 1; i >= 0; i--) {
-                if (instructionPutsSomethingElseOnTheStack(previous)) {
+                if (instructionPushesSomethingElseOnTheStack(previous)) {
                     i = i + 1;
-                }
-                // This should be popping from the stack as well.
+                } 
+
                 checkForThisReferenceBeingPutOnStack(previous);
 
                 previous = previous.getPrevious();
             }
         }
 
-        private boolean instructionPutsSomethingElseOnTheStack(AbstractInsnNode previous) {
-            return previous.getOpcode() == Opcodes.DUP || previous.getOpcode() == Opcodes.NEW;
+        private boolean instructionPushesSomethingElseOnTheStack(AbstractInsnNode previous) {
+            switch(previous.getOpcode()) {
+            case Opcodes.DUP:
+            case Opcodes.NEW:
+                return true;
+            default:
+                return false;
+            }
         }
 
         private void checkForThisReferenceBeingPutOnStack(AbstractInsnNode previous) {

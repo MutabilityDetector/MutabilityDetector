@@ -5,9 +5,6 @@ import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
-import java.util.Vector;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -94,14 +91,6 @@ public class EscapedThisReferenceCheckerTest {
         assertThisDoesNotEscape(Safe.PassesInitialisedFieldToOtherMethod.class);
     }
     
-    @Ignore
-    @Test
-    public void anyOldJdkClass() throws Exception {
-//        assertImmutable(OutputStreamWriter.class);
-//        assertThisDoesNotEscape(Timer.class);
-        assertThisDoesNotEscape(Vector.class);
-    }
-
     private void assertThisDoesNotEscape(Class<?> toAnalyse) {
         AnalysisResult result = runChecker(new EscapedThisReferenceChecker(), toAnalyse);
         assertEquals(TestUtil.formatReasons(result.reasons), IMMUTABLE, result.isImmutable);
