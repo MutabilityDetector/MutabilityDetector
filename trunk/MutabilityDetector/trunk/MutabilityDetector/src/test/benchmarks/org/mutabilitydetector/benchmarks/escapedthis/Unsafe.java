@@ -10,40 +10,17 @@
 
 package org.mutabilitydetector.benchmarks.escapedthis;
 
-import java.util.HashMap;
+
 
 
 public class Unsafe {
 
-    public static final class ThisPassedToOtherObject {
-        public ThisPassedToOtherObject() {
-            new GiveMeYourThisReference(this);
-        }
-    }
-    
-    public static final class ThisPassedToOtherObjectAsOneOfManyParameters {
-        public ThisPassedToOtherObjectAsOneOfManyParameters() {
-            new GiveMeYourThisReference(null, "hi there", 1, this, new HashMap<String, String>(), 1.0d);
-        }
-    }
-
-    public static final class ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference {
-        public ThisPassedToPrivateStaticMethodWhichDoesNotPublishTheReference() {
-            dontPublishThisReference(this);
-        }
-
-        private static void dontPublishThisReference(Object thisReference) {
-            String toString = thisReference.toString();
-            System.out.println(toString);
-        }
-    }
-
-    public static final class ThisPassedToPrivateStaticMethodWhichDoesPublishReference {
-        public ThisPassedToPrivateStaticMethodWhichDoesPublishReference() {
+    public static final class ThisPassedToPrivateMethodWhichDoesPublishReference {
+        public ThisPassedToPrivateMethodWhichDoesPublishReference() {
             publishThisReference(this);
         }
 
-        private void publishThisReference(ThisPassedToPrivateStaticMethodWhichDoesPublishReference thisReference) {
+        private void publishThisReference(ThisPassedToPrivateMethodWhichDoesPublishReference thisReference) {
             new GiveMeYourThisReference(thisReference);
         }
     }
@@ -59,10 +36,12 @@ public class Unsafe {
             GiveMeYourThisReference.THIS_REFERENCE_MAP.add(this);
         }
     }
+    
+    public static final class SaveThisReferenceAsInstanceFieldOfThisClass {
+        public final SaveThisReferenceAsInstanceFieldOfThisClass instanceThis;
 
-    public static class PassThisReferenceToStaticMethod {
-        public PassThisReferenceToStaticMethod() {
-            GiveMeYourThisReference.staticMethod(this);
+        public SaveThisReferenceAsInstanceFieldOfThisClass() {
+            instanceThis = this;
         }
     }
 
@@ -84,12 +63,13 @@ public class Unsafe {
         private String maySeeMeIncomplete;
         
         public PassInnerClassWithImplicitReferenceToThis(GiveMeYourThisReference passTo) {
-            passTo.passReference(new InnerClass());
+            Object somethingElse = new Object();
+            passTo.passReference(new InnerClass(somethingElse));
             maySeeMeIncomplete = "You might see the field with this string in it, you might not!";
         }
 
         private class InnerClass {
-            InnerClass() {
+            InnerClass(Object somethingElse) {
                 System.out.println(PassInnerClassWithImplicitReferenceToThis.this.maySeeMeIncomplete);
             }
         }

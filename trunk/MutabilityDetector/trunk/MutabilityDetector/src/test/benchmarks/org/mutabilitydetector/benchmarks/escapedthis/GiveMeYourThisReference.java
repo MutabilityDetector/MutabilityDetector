@@ -25,10 +25,20 @@ public class GiveMeYourThisReference {
         obtainedStringField = yourThisReference.toString();
     }
 
-    public GiveMeYourThisReference(Object first, String second, int third, Object theThisReference, Object andAnother, double d) {
+    public GiveMeYourThisReference(Object first, String second, long third, Object theThisReference, Object andAnother, double d) {
+        this(theThisReference);
+    }
+    
+    // As first parameter
+    public GiveMeYourThisReference(Object theThisReference, Object first, String second, long third, double d, Object andAnother) {
         this(theThisReference);
     }
 
+    // As last parameter
+    public GiveMeYourThisReference(Object first, String second, long third, double d, Object andAnother, Object theThisReference) {
+        this(theThisReference);
+    }
+    
     public String stringField() {
         return obtainedStringField;
     }
