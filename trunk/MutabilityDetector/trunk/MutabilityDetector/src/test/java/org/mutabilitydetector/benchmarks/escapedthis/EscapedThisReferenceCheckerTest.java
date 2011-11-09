@@ -42,7 +42,7 @@ import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 
 @RunWith(Theories.class)
-public class EscapedReferenceToThisCheckerTest {
+public class EscapedThisReferenceCheckerTest {
 
     @Test
     public void immutableExampleIsNotRenderedMutable() throws Exception {
