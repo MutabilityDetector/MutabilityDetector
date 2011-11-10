@@ -32,8 +32,10 @@ import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassAnonymousInnerCl
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassInnerClassWithImplicitReferenceToThis;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassThisReferenceToParameter;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassThisReferenceToStaticObject;
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SaveThisReferenceAsInstanceFieldOfThisClass;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SaveThisReferenceAsStaticFieldOfThisClass;
-import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsFieldOfOtherInstance;
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsInstanceFieldOfOtherObject;
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsStaticFieldOfOtherClass;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.ThisPassedToPrivateMethodWhichDoesPublishReference;
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -92,6 +94,13 @@ public class EscapedThisReferenceCheckerTest {
     public void doesNotRenderMutableForPassingInitialisedFieldReference() throws Exception {
         assertThisDoesNotEscape(Safe.PassesInitialisedFieldToOtherMethod.class);
     }
+
+    @Ignore("False positive")
+    @Test
+    public void doesNotRenderMutableForAssigningThisToInstanceField() throws Exception {
+        assertThisDoesNotEscape(SaveThisReferenceAsInstanceFieldOfThisClass.class);
+    }
+    
     
     private void assertThisDoesNotEscape(Class<?> toAnalyse) {
         AnalysisResult result = runChecker(new EscapedThisReferenceChecker(), toAnalyse);
@@ -113,7 +122,8 @@ public class EscapedThisReferenceCheckerTest {
             PassThisReferenceToStaticObject.class,
             ThisPassedToPrivateMethodWhichDoesPublishReference.class,
             SaveThisReferenceAsStaticFieldOfThisClass.class,
-            SetThisReferenceAsFieldOfOtherInstance.class,
+            SetThisReferenceAsStaticFieldOfOtherClass.class,
+            SetThisReferenceAsInstanceFieldOfOtherObject.class,
             PassThisReferenceToParameter.class,
             PassInnerClassWithImplicitReferenceToThis.class,
             PassAnonymousInnerClassWithImplicitReferenceToThis.class 

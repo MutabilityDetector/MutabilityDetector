@@ -25,12 +25,19 @@ public class Unsafe {
         }
     }
 
-    public static final class SetThisReferenceAsFieldOfOtherInstance {
-        public SetThisReferenceAsFieldOfOtherInstance() {
+    public static final class SetThisReferenceAsStaticFieldOfOtherClass {
+        public SetThisReferenceAsStaticFieldOfOtherClass() {
             GiveMeYourThisReference.YOUR_THIS_REFERENCE = this;
         }
     }
 
+    public static final class SetThisReferenceAsInstanceFieldOfOtherObject {
+        public SetThisReferenceAsInstanceFieldOfOtherObject(GiveMeYourThisReference giveMeIt) {
+            giveMeIt.instanceOfYourThis = this;
+        }
+    }
+
+    
     public static final class PassThisReferenceToStaticObject {
         public PassThisReferenceToStaticObject() {
             GiveMeYourThisReference.THIS_REFERENCE_MAP.add(this);

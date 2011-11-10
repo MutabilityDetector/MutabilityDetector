@@ -12,9 +12,12 @@ package org.mutabilitydetector.benchmarks.escapedthis;
 
 import java.util.HashSet;
 
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsInstanceFieldOfOtherObject;
+
 public class GiveMeYourThisReference {
 
     private String obtainedStringField;
+    public SetThisReferenceAsInstanceFieldOfOtherObject instanceOfYourThis;
 
     /**
      * In a multithreaded environment, with a lack of synchronisation, if a 'this' reference is passed within a
