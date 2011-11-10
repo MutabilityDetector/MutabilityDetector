@@ -4,7 +4,7 @@
 
 MD_JAR=$1
 RT_JAR=$JAVA_HOME/jre/lib/rt.jar
-COMMAND="java -jar ${MD_JAR} -cp $RT_JAR"
+COMMAND="java -jar ${MD_JAR} --verbose -cp $RT_JAR"
 
 echo "Running command: ${COMMAND}"
 START=`date`
