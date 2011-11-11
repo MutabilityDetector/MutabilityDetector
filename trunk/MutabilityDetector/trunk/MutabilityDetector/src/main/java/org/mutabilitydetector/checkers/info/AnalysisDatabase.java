@@ -34,7 +34,7 @@ public class AnalysisDatabase {
     public static final InfoKey<TypeStructureInformation> TYPE_STRUCTURE = new InfoKey<TypeStructureInformation>(TypeStructureInformation.class);
 
     @SuppressWarnings("rawtypes")
-    private Map infoMap = new HashMap();
+    private final Map infoMap = new HashMap();
 
     private final ISessionCheckerRunner sessionCheckerRunner;
 
@@ -48,16 +48,13 @@ public class AnalysisDatabase {
 
     @SuppressWarnings("unchecked")
     public <I extends AnalysisInformation> I requestInformation(InfoKey<I> infoCategory) {
-        if (infoMap.containsKey(infoCategory)) {
-            return (I) infoMap.get(infoCategory);
-        } else {
-            return createInfoForCategory(infoCategory);
-        }
+        return (infoMap.containsKey(infoCategory)) 
+                ? (I) infoMap.get(infoCategory)
+                : createInfoForCategory(infoCategory);
     }
 
     private <I> InfoKeyException newException(InfoKey<I> infoCategory) {
-        return new InfoKeyException("Programming error in instantiating information class for " + infoCategory.classForInfo()
-                .getName());
+        return new InfoKeyException("Programming error in instantiating information class for " + infoCategory.classForInfo().getName());
     }
 
     @SuppressWarnings("unchecked")
@@ -71,9 +68,9 @@ public class AnalysisDatabase {
 
         if (info == null) {
             throw newException(infoCategory);
-        } else {
-            infoMap.put(infoCategory, info);
-            return info;
         }
+        
+        infoMap.put(infoCategory, info);
+        return info;
     }
 }
