@@ -76,6 +76,7 @@ public class AnalysisSession implements IAnalysisSession {
         if (requestedAnalysis.contains(className)) {
             // isImmutable has already been called for this class, and the
             // result not yet generated
+            
             return;
         } else {
             requestedAnalysis.add(className);

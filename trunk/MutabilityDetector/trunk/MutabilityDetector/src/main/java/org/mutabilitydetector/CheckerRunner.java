@@ -55,8 +55,7 @@ public class CheckerRunner {
             } catch (OutOfMemoryError e) {
                 e.printStackTrace();
                 throw e;
-            } catch (Throwable e) {
-                // Has to catch NoClassDefFoundError
+            } catch (NoClassDefFoundError e) {
                 analyseAsStream(checker, className.asString());
             }
         } catch (Throwable e) {

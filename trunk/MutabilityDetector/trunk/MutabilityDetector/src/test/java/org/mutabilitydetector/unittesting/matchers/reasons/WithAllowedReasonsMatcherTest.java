@@ -30,11 +30,14 @@ import org.mockito.Mockito;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 
 @SuppressWarnings("unchecked")
 public class WithAllowedReasonsMatcherTest {
 
+    CodeLocation<?> unusedCodeLocation = ClassLocation.fromInternalName("some fake class");
 
     @Test
     public void passesWhenPrimaryResultPasses() throws Exception {
@@ -71,8 +74,8 @@ public class WithAllowedReasonsMatcherTest {
     }
     
     @Test public void failsWhenResultDoesNotMatchAndOnlyOneOfManyReasonsAreAllowed() {
-        CheckerReasonDetail allowedReason = new CheckerReasonDetail("allowed", null, null);
-        CheckerReasonDetail disallowedReason = new CheckerReasonDetail("disallowed", null, null);
+        CheckerReasonDetail allowedReason = new CheckerReasonDetail("allowed", unusedCodeLocation, null);
+        CheckerReasonDetail disallowedReason = new CheckerReasonDetail("disallowed", unusedCodeLocation, null);
         
         Matcher<CheckerReasonDetail> onlyAllowOneReason = mock(Matcher.class);
         when(onlyAllowOneReason.matches(allowedReason)).thenReturn(true);

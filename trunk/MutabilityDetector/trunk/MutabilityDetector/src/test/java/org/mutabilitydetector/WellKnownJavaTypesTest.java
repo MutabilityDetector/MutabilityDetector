@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.management.ImmutableDescriptor;
 
@@ -90,6 +91,11 @@ public class WellKnownJavaTypesTest {
     @Test
     public void ArrayList() {
         assertInstancesOf(ArrayList.class, areNotImmutable());
+    }
+    
+    @Test public void
+    HashMap$EntryDoesntCauseStackOverflow() {
+        assertInstancesOf(HashMap.class, areNotImmutable()); 
     }
 
 }

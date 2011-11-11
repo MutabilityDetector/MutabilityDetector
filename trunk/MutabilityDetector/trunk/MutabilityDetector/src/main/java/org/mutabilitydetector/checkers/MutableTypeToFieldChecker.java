@@ -71,9 +71,7 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         }
 
         @Override
-        protected void visitFieldAssignmentFrame(Frame assignmentFrame,
-                FieldInsnNode fieldInsnNode,
-                BasicValue stackValue) {
+        protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
             if (isInvalidStackValue(stackValue)) { return; }
             checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
         }

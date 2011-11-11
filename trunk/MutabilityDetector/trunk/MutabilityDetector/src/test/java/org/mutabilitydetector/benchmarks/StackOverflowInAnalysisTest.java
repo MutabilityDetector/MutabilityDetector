@@ -19,13 +19,15 @@ import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.benchmarks.circular.AssignsItselfToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
 public class StackOverflowInAnalysisTest {
 
-    private IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
+    private final IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
 
     @Test
     public void innerClassDoesNotCauseStackOverflowError() throws Exception {
@@ -53,4 +55,8 @@ public class StackOverflowInAnalysisTest {
         session.resultFor(Constructor.class.getName());
     }
 
+    @Test
+    public void AClassAssigningInstanceOfItsOwnTypeDoesNotCauseError() throws Exception {
+        TestUtil.getAnalysisResult(AssignsItselfToField.class);
+    }
 }

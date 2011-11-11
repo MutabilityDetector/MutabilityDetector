@@ -31,6 +31,7 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 
 @Ignore
@@ -53,7 +54,9 @@ public class TestUtil {
     }
 
     public static CheckerReasonDetail unusedCheckerReasonDetail() {
-        return new CheckerReasonDetail("this reason is not meant to be involved", null, NULL_REASON);
+        return new CheckerReasonDetail("this reason is not meant to be involved", 
+                                       ClassLocation.fromInternalName("some made up class name"), 
+                                       NULL_REASON);
     }
 
     public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {

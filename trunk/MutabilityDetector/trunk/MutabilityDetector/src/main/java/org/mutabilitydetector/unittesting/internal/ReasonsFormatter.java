@@ -22,7 +22,7 @@ public class ReasonsFormatter {
     public static String formatReasons(Collection<CheckerReasonDetail> reasons, StringBuilder builder) {
         builder.append(format("    Reasons:%n"));
         for (CheckerReasonDetail reason : reasons) {
-            builder.append(format("        %s%n", reason.message()));
+            builder.append(format("        %s %s%n", reason.message(), reason.codeLocation().prettyPrint()));
         }
         return builder.toString();
     }

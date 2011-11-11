@@ -35,6 +35,8 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 import org.mutabilitydetector.unittesting.MutabilityMatchers;
 
@@ -61,8 +63,9 @@ public class AssertionReporterTest {
 
     @Test
     public void thrownExceptionContainsHelpfulMessage() throws Exception {
+        CodeLocation<ClassLocation> codeLocation = ClassLocation.fromDotted(dotted("d.e.SimpleClassName"));
         CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable",
-                null,
+                codeLocation,
                 PUBLISHED_NON_FINAL_FIELD);
 
         AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
@@ -73,7 +76,7 @@ public class AssertionReporterTest {
             assertThat(e.getMessage(), containsString("Expected: d.e.SimpleClassName to be " + IMMUTABLE + "\n"));
             assertThat(e.getMessage(), containsString("but: d.e.SimpleClassName is actually " + NOT_IMMUTABLE + "\n"));
             assertThat(e.getMessage(), containsString("Reasons:"));
-            assertThat(e.getMessage(), containsString("a reason the class is mutable"));
+            assertThat(e.getMessage(), containsString("a reason the class is mutable [Class: d.e.SimpleClassName]\n" ));
         }
     }
 
