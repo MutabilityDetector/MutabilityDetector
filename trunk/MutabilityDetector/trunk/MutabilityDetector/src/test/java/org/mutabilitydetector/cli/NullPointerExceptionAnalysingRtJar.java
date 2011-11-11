@@ -35,5 +35,13 @@ public class NullPointerExceptionAnalysingRtJar {
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
     }
+    
+    @Ignore
+    @Test
+    public void checkNullPointerExceptionIsNotThrownOnAbritaryCodebase() {
+        String rtJarPath = "...";
+        BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
+    }
 
 }
