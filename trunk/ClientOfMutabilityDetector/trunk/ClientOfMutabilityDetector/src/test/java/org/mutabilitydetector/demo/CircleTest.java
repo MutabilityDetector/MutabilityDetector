@@ -1,6 +1,6 @@
 package org.mutabilitydetector.demo;
 
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.demo.PointTest.Point;

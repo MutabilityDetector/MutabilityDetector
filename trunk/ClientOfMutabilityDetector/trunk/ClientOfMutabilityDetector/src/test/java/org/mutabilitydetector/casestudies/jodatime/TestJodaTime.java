@@ -3,7 +3,7 @@ package org.mutabilitydetector.casestudies.jodatime;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import net.ttsui.junit.rules.pending.PendingImplementation;
 import net.ttsui.junit.rules.pending.PendingRule;
 
