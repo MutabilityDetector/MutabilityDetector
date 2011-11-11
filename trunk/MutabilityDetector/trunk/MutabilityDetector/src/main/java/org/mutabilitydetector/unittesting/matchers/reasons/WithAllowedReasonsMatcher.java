@@ -18,22 +18,20 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 
 public class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     
-    public static WithAllowedReasonsMatcher withAllowedReasons(IsImmutableMatcher areImmutable,
+    public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
                                                                Iterable<Matcher<CheckerReasonDetail>> allowing) {
         return new WithAllowedReasonsMatcher(areImmutable, allowing);
     }
     
-    private final IsImmutableMatcher isImmutable;
+    private final Matcher<AnalysisResult> isImmutable;
     private final Iterable<Matcher<CheckerReasonDetail>> allowedReasonMatchers;
 
-    public WithAllowedReasonsMatcher(IsImmutableMatcher isImmutable, Iterable<Matcher<CheckerReasonDetail>> allowedReasons) {
+    public WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<CheckerReasonDetail>> allowedReasons) {
         this.isImmutable = isImmutable;
         this.allowedReasonMatchers = allowedReasons;
-
     }
 
     @Override
