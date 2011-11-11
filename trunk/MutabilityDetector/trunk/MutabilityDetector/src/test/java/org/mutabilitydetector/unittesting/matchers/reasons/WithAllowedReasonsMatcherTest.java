@@ -34,7 +34,6 @@ import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 
-@SuppressWarnings("unchecked")
 public class WithAllowedReasonsMatcherTest {
 
     CodeLocation<?> unusedCodeLocation = ClassLocation.fromInternalName("some fake class");

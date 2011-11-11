@@ -30,35 +30,31 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 public final class ResultCalculator {
     
     public IsImmutable calculateImmutableStatus(Map<IsImmutable, Integer> results) {
-        IsImmutable isImmutable;
+        
         int numCouldNotAnalyse = getNumOfResult(results, COULD_NOT_ANALYSE);
         int numDefinitely = getNumOfResult(results, IMMUTABLE);
         int numEffectively = getNumOfResult(results, EFFECTIVELY_IMMUTABLE);
         int numDefinitelyNot = getNumOfResult(results, NOT_IMMUTABLE);
 
         if (numDefinitelyNot > 0) {
-            isImmutable = NOT_IMMUTABLE;
+            return NOT_IMMUTABLE;
         } else if (numCouldNotAnalyse > 0) {
-            isImmutable = COULD_NOT_ANALYSE;
+            return COULD_NOT_ANALYSE;
         } else if (numEffectively > 0) {
-            isImmutable = EFFECTIVELY_IMMUTABLE;
+            return EFFECTIVELY_IMMUTABLE;
         } else if (numDefinitely > 0) {
-            isImmutable = IMMUTABLE;
+            return IMMUTABLE;
         } else {
-            isImmutable = NOT_IMMUTABLE;
+            return NOT_IMMUTABLE;
         }
-
-        return isImmutable;
     }
 
     private int getNumOfResult(Map<IsImmutable, Integer> results, IsImmutable resultType) {
         if (!results.containsKey(resultType)) { return valueOf(0); }
 
         Integer numOfResultType = valueOf(results.get(resultType));
-        if (numOfResultType != null) {
-            return numOfResultType.intValue();
-        } else {
-            return valueOf(0);
-        }
+        return (numOfResultType != null) 
+                ? numOfResultType.intValue()
+                        : valueOf(0);
     }
 }

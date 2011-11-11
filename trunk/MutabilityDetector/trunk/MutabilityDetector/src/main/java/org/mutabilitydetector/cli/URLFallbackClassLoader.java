@@ -51,10 +51,10 @@ public class URLFallbackClassLoader {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader instanceof URLClassLoader) {
             return (URLClassLoader) classLoader;
-        } else {
-            String message = format("Expected currentThread().getContextClassLoader() to return a URLClassLoader, " + "but returned %s.",
-                    classLoader);
-            throw new ClassCastException(message);
-        }
+        } 
+
+        String message = format("Expected currentThread().getContextClassLoader() to return a URLClassLoader, " + "but returned %s.",
+                                classLoader);
+        throw new ClassCastException(message);
     }
 }

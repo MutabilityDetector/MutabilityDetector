@@ -66,10 +66,10 @@ public class AnalysisSession implements IAnalysisSession {
         AnalysisResult resultForClass = analysedClasses.get(className);
         if (resultForClass != null) {
             return resultForClass;
-        } else {
-            requestAnalysis(className);
-            return resultFor(className);
         }
+        
+        requestAnalysis(className);
+        return resultFor(className);
     }
 
     private void requestAnalysis(String className) {
@@ -78,14 +78,15 @@ public class AnalysisSession implements IAnalysisSession {
             // result not yet generated
             
             return;
-        } else {
-            requestedAnalysis.add(className);
-            AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
-                    checkerRunnerFactory,
-                    dotted(className));
-            AnalysisResult result = allChecksRunner.runCheckers(this);
-            addAnalysisResult(result);
         }
+        
+        requestedAnalysis.add(className);
+        AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
+                                                              checkerRunnerFactory,
+                                                              dotted(className));
+        AnalysisResult result = allChecksRunner.runCheckers(this);
+        addAnalysisResult(result);
+
     }
 
     @Override
