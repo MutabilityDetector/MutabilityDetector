@@ -20,13 +20,5 @@ public class CircleTest {
             this.radius = radius;
             this.point = point;
         }
-
-        public static void doSomething() {
-            Point point = new Point(2, 5);
-            new Circle(5, point);
-
-            // could point be mutated?
-        }
-
     }
 }

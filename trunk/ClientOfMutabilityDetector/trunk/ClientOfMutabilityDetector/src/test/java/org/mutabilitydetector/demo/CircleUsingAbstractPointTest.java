@@ -6,9 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
-@SuppressWarnings("unused")
 public class CircleUsingAbstractPointTest {
-
     
     @Test
     @Ignore
@@ -16,15 +14,6 @@ public class CircleUsingAbstractPointTest {
         MutabilityAssert.assertInstancesOf(CircleUsingAbstractPoint.class, areImmutable());
     }
     
-    public void danger() {
-        MutablePoint mutablePoint = new MutablePoint(1, 2);
-        CircleUsingAbstractPoint circle = new CircleUsingAbstractPoint(10, mutablePoint);
-        
-        // pass circle to multiple threads/users
-        
-        mutablePoint.setX(Integer.MIN_VALUE);
-    }
-
     public static final class CircleUsingAbstractPoint {
         public final int radius;
         public final AbstractPoint point;
