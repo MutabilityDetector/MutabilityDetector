@@ -10,6 +10,8 @@
 
 package org.mutabilitydetector;
 
+import static java.util.Arrays.asList;
+
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public enum MutabilityReason implements Reason {
@@ -81,12 +83,7 @@ public enum MutabilityReason implements Reason {
 
     @Override
     public boolean isOneOf(Reason... reasons) {
-        for (Reason reason: reasons) {
-            if (reason == this) {
-                return true;
-            }
-        }
-        return false;
+        return asList(reasons).contains(this);
     }
 
 }
