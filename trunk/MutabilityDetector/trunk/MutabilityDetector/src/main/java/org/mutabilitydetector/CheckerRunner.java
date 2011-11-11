@@ -57,6 +57,8 @@ public class CheckerRunner {
                 throw e;
             } catch (NoClassDefFoundError e) {
                 analyseAsStream(checker, className.asString());
+            } catch (IOException e) {
+                analyseAsStream(checker, className.asString());
             }
         } catch (Throwable e) {
             handleException(analysisSession, checker, className.asString(), e);
@@ -74,11 +76,14 @@ public class CheckerRunner {
             IMutabilityChecker checker,
             String dottedClassPath,
             Throwable e) {
+        String errorDescription = createErrorDescription(dottedClassPath);
         checker.visitAnalysisException(e);
-        String errorDescription = format("It is likely that the class %s has dependencies outwith the given class path.",
-                dottedClassPath);
         AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
         analysisSession.addAnalysisError(error);
+    }
+
+    public String createErrorDescription(String dottedClassPath) {
+        return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
     }
 
     private String getNameOfChecker(IMutabilityChecker checker) {

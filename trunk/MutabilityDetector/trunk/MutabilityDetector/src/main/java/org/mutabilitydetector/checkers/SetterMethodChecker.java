@@ -128,15 +128,22 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
             VarStackSnapshot varStackSnapshot = varStack.next();
             if (varStackSnapshot.thisObjectWasAddedToStack()) {
-
-                int indexOfOwningObject = varStackSnapshot.indexOfOwningObject();
-                if (isThisObject(indexOfOwningObject)) {
-                    setIsImmutableResult(fieldInsnNode.name);
-                } else {
-                    // Setting field on other instance of 'this' type
-                }
+                // Throwing an NPE, assuming it's mutable for now.
+                setIsImmutableResult(fieldInsnNode.name);
+                
+//                int indexOfOwningObject = varStackSnapshot.indexOfOwningObject();
+//                if (isThisObject(indexOfOwningObject)) {
+//                    setIsImmutableResult(fieldInsnNode.name);
+//                } else {
+//                    // Setting field on other instance of 'this' type
+//                }
 
             }
+        }
+
+        @SuppressWarnings("unused")
+        private boolean isThisObject(int indexOfOwningObject) {
+            return indexOfOwningObject == 0;
         }
 
         @Override
@@ -145,10 +152,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
             if (opcode == Opcodes.PUTFIELD) {
                 varStack.takeSnapshotOfVarsAtPutfield();
             }
-        }
-
-        private boolean isThisObject(int indexOfOwningObject) {
-            return indexOfOwningObject == 0;
         }
 
         @Override

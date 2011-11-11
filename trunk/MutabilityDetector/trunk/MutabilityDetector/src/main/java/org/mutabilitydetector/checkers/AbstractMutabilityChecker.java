@@ -97,9 +97,24 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
     @Override
     public void visitAnalysisException(Throwable toBeThrown) {
-        addResult("Encountered an unhandled error in analysis.",
-                ClassLocation.fromSlashed(slashed(ownerClass)),
+        addResult(errorReasonDescription(toBeThrown),
+                getCodeLocationForException(),
                 MutabilityReason.CANNOT_ANALYSE);
+    }
+
+    public String errorReasonDescription(Throwable toBeThrown) {
+        if (toBeThrown instanceof StackOverflowError) {
+            return "It appears a circular dependency between classes is causing an error in analysing this class.";
+        }
+        return "Encountered an unhandled error in analysis.";
+    }
+    
+    
+
+    public CodeLocation<?> getCodeLocationForException() {
+        return ownerClass != null 
+                ? ClassLocation.fromSlashed(slashed(ownerClass))
+                : CodeLocation.UnknownCodeLocation.UNKNOWN;
     }
 
     protected String dottedClassName(Type objectType) {

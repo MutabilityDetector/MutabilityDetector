@@ -20,7 +20,6 @@ package org.mutabilitydetector.benchmarks;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
@@ -91,7 +90,7 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, ClassWithAllPrimitives.Array.class);
 
         assertThat(checker, hasReasons());
-        assertEffectivelyImmutable(result);
+        assertDefinitelyNotImmutable(result);
     }
 
     @Test
