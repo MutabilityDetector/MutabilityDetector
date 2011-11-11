@@ -29,5 +29,7 @@ public interface Reason {
     String code();
 
     IsImmutable createsResult();
+    
+    public boolean isOneOf(Reason... reasons);
 
 }

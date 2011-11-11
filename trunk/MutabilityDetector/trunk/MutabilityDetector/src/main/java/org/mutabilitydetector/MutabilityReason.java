@@ -79,4 +79,14 @@ public enum MutabilityReason implements Reason {
         return createsResult;
     }
 
+    @Override
+    public boolean isOneOf(Reason... reasons) {
+        for (Reason reason: reasons) {
+            if (reason == this) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
