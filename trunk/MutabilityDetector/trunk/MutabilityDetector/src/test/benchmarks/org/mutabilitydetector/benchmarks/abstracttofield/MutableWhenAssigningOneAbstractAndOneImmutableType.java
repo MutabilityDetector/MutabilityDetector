@@ -3,7 +3,7 @@ package org.mutabilitydetector.benchmarks.abstracttofield;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "hiding" })
 public class MutableWhenAssigningOneAbstractAndOneImmutableType {
     private AbstractType abstractType;
     private InterfaceType interfaceType;

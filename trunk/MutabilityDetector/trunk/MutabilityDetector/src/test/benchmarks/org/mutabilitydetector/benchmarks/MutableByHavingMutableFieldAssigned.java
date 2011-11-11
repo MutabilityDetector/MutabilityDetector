@@ -18,7 +18,7 @@
 package org.mutabilitydetector.benchmarks;
 
 public final class MutableByHavingMutableFieldAssigned {
-    private MutableExample mutableField; // Access level doesn't matter
+    private final MutableExample mutableField; // Access level doesn't matter
 
     public MutableByHavingMutableFieldAssigned(MutableExample mutableField) {
         this.mutableField = mutableField;
@@ -34,6 +34,7 @@ class MutableExample {
     public String name;
 }
 
+@SuppressWarnings("unused")
 class PublishTarget {
     public void publishMutableField(MutableExample mutableField) {
     }

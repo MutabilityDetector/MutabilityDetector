@@ -12,7 +12,7 @@ package org.mutabilitydetector.benchmarks.escapedthis;
 
 
 
-
+@SuppressWarnings("unused")
 public class Unsafe {
 
     public static final class ThisPassedToPrivateMethodWhichDoesPublishReference {
@@ -67,7 +67,7 @@ public class Unsafe {
     }
 
     public static class PassInnerClassWithImplicitReferenceToThis {
-        private String maySeeMeIncomplete;
+        private final String maySeeMeIncomplete;
         
         public PassInnerClassWithImplicitReferenceToThis(GiveMeYourThisReference passTo) {
             Object somethingElse = new Object();

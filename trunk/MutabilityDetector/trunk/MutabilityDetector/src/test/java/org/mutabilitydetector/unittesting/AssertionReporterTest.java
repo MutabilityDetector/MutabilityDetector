@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
@@ -55,7 +56,7 @@ public class AssertionReporterTest {
 
     @Test(expected = MutabilityAssertionError.class)
     public void reporterThrowsExceptionForMutableResult() {
-        AnalysisResult analysisResult = new AnalysisResult("a.b.c", NOT_IMMUTABLE, unusedReasons());
+        AnalysisResult analysisResult = analysisResult("a.b.c", NOT_IMMUTABLE, unusedReasons());
         reporter.expectedImmutable(analysisResult);
     }
 
@@ -65,7 +66,7 @@ public class AssertionReporterTest {
                 null,
                 PUBLISHED_NON_FINAL_FIELD);
 
-        AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
+        AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
         try {
             reporter.expectedImmutable(analysisResult);
             fail("expected exception");
@@ -81,14 +82,14 @@ public class AssertionReporterTest {
 
     @Test
     public void expectedIsImmutableStatusDoesNotThrowException() throws Exception {
-        AnalysisResult analysisResult = new AnalysisResult("g.h.i", IsImmutable.EFFECTIVELY_IMMUTABLE, unusedReasons());
+        AnalysisResult analysisResult = analysisResult("g.h.i", IsImmutable.EFFECTIVELY_IMMUTABLE, unusedReasons());
         reporter.expectedIsImmutable(IsImmutable.EFFECTIVELY_IMMUTABLE, analysisResult);
     }
 
     @Test
     public void allowedReasonDoesNotThrowException() {
         AnalysisResultMatcher allowed = mock(AnalysisResultMatcher.class);
-        AnalysisResult result = new AnalysisResult("j.k.l", NOT_IMMUTABLE, unusedReasons());
+        AnalysisResult result = analysisResult("j.k.l", NOT_IMMUTABLE, unusedReasons());
 
         when(allowed.matches(result)).thenReturn(true);
 
@@ -102,7 +103,7 @@ public class AssertionReporterTest {
                 null,
                 PUBLISHED_NON_FINAL_FIELD);
 
-        AnalysisResult analysisResult = new AnalysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
+        AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
         try {
             reporter.expectedImmutable(analysisResult);
             fail("expected exception");
@@ -114,7 +115,7 @@ public class AssertionReporterTest {
     
     @Test(expected=MutabilityAssertionError.class)
     public void performsAssertThatButWrapsExceptionInMutabilityAssertionError() throws Exception {
-        reporter.assertThat(new AnalysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, unusedReasons()), MutabilityMatchers.areImmutable());
+        reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, unusedReasons()), MutabilityMatchers.areImmutable());
     }
 
     @Test
@@ -123,7 +124,7 @@ public class AssertionReporterTest {
                                                                    fromDotted(dotted("a.b.c")), 
                                                                    ESCAPED_THIS_REFERENCE);
         try {
-            reporter.assertThat(new AnalysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), areImmutable());
+            reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), areImmutable());
             fail("expected exception");
         } catch (MutabilityAssertionError expectedError) {
             assertThat(expectedError.getMessage(), allOf(containsString("a.b.c to be IMMUTABLE\n"),

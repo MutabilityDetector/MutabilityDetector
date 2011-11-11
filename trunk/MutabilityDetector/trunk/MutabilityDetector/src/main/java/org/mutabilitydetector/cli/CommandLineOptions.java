@@ -31,7 +31,7 @@ import org.apache.commons.cli.Options;
 public class CommandLineOptions implements BatchAnalysisOptions {
 
     private String classpath;
-    private Options options;
+    private final Options options;
     private String match;
     private boolean verbose = false;
     private ReportMode reportMode;
@@ -41,6 +41,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private final PrintStream errorStream;
 
     private final class ParsingActionImplementation implements ParsingAction {
+        @Override
         public void doParsingAction(CommandLine line) {
             printHelpIfRequired(line);
             extractClasspath(line);
@@ -73,7 +74,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     public CommandLineOptions(PrintStream errorStream, String... args) {
         this.errorStream = errorStream;
         this.options = createOptions();
-        parseOptions(options, args);
+        parseOptions(args);
     }
 
     private Options createOptions() {
@@ -121,7 +122,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
 
     }
 
-    private void parseOptions(Options options, String[] args) {
+    private void parseOptions(String[] args) {
         OptionParserHelper parser = new OptionParserHelper(options, args);
         try {
             parser.parseOptions(new ParsingActionImplementation());

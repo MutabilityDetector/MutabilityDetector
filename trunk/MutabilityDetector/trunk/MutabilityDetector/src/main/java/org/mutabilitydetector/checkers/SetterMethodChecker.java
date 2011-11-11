@@ -43,7 +43,7 @@ import org.objectweb.asm.tree.analysis.Frame;
  */
 public class SetterMethodChecker extends AbstractMutabilityChecker {
 
-    private PrivateMethodInvocationInformation privateMethodInvocationInfo;
+    private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
 
     /**
      * @see #newSetterMethodChecker(PrivateMethodInvocationInformation)
@@ -68,35 +68,30 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
                 name,
                 desc,
                 signature,
-                exceptions,
-                privateMethodInvocationInfo);
+                exceptions);
     }
 
     class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
-        private VarStack varStack = new VarStack();
-        private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
+        private final VarStack varStack = new VarStack();
 
         public SetterAssignmentVisitor(String ownerName,
                 int access,
                 String name,
                 String desc,
                 String signature,
-                String[] exceptions,
-                PrivateMethodInvocationInformation privateMethodInvocationInfo) {
+                String[] exceptions) {
             super(ownerName, access, name, desc, signature, exceptions);
-            this.privateMethodInvocationInfo = privateMethodInvocationInfo;
         }
 
-        protected void visitFieldAssignmentFrame(Frame assignmentFrame,
-                FieldInsnNode fieldInsnNode,
-                BasicValue stackValue) {
+        @Override
+        protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
             if (isConstructor() || isInvalidStackValue(stackValue)) { return; }
 
             if (method(access).isStatic()) {
                 detectInStaticMethod(fieldInsnNode);
             } else {
-                detectInInstanceMethod(fieldInsnNode, stackValue);
+                detectInInstanceMethod(fieldInsnNode);
             }
 
         }
@@ -128,7 +123,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
             return this.owner.compareTo(ownerOfReassignedField) == 0;
         }
 
-        private void detectInInstanceMethod(FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+        private void detectInInstanceMethod(FieldInsnNode fieldInsnNode) {
             if (isOnlyCalledFromConstructor()) { return; }
 
             VarStackSnapshot varStackSnapshot = varStack.next();
@@ -145,8 +140,8 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
         }
 
         @Override
-        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            super.visitFieldInsn(opcode, owner, name, desc);
+        public void visitFieldInsn(int opcode, String fieldsOwner, String fieldName, String fieldDesc) {
+            super.visitFieldInsn(opcode, fieldsOwner, fieldName, fieldDesc);
             if (opcode == Opcodes.PUTFIELD) {
                 varStack.takeSnapshotOfVarsAtPutfield();
             }
@@ -159,7 +154,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
         @Override
         public void visitVarInsn(int opcode, int var) {
             super.visitVarInsn(opcode, var);
-            varStack.visitVarInsn(opcode, var);
+            varStack.visitVarInsn(var);
         }
 
         private boolean isConstructor() {

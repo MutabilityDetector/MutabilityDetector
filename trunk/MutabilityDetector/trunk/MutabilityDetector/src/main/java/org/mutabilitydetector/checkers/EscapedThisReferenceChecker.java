@@ -42,15 +42,15 @@ public class EscapedThisReferenceChecker extends AbstractMutabilityChecker {
         }
 
         @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            super.visitMethodInsn(opcode, owner, name, desc);
-            if (name.equals("<init>") && owner.equals("java/lang/Object")) { return; }
+        public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc) {
+            super.visitMethodInsn(opcode, owner, methodName, methodDesc);
+            if (methodName.equals("<init>") && owner.equals("java/lang/Object")) { return; }
             methodCalls.add((MethodInsnNode) instructions.getLast());
         }
 
         @Override
-        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            super.visitFieldInsn(opcode, owner, name, desc);
+        public void visitFieldInsn(int opcode, String owner, String fieldName, String fieldDesc) {
+            super.visitFieldInsn(opcode, owner, fieldName, fieldDesc);
 
             if (opcode == Opcodes.PUTSTATIC || opcode == Opcodes.PUTFIELD) {
                 fieldAssignmentsInConstructor.add((FieldInsnNode) instructions.getLast());

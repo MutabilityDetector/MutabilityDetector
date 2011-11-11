@@ -45,8 +45,8 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
     }
 
     @Override
-    public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-        super.visitFieldInsn(opcode, owner, name, desc);
+    public void visitFieldInsn(int opcode, String fieldsOwner, String fieldName, String fieldDesc) {
+        super.visitFieldInsn(opcode, fieldsOwner, fieldName, fieldDesc);
         if (opcode == Opcodes.PUTFIELD) {
             fieldAssignments.add((FieldInsnNode) instructions.getLast());
         }

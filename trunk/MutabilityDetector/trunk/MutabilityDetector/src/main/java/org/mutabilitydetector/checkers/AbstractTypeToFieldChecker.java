@@ -71,7 +71,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
         }
 
-        void checkIfClassIsAbstract(String name, Type objectType) {
+        void checkIfClassIsAbstract(String fieldName, Type objectType) {
             int sort = objectType.getSort();
             if (sort != Type.OBJECT) { return; }
             String dottedClassName = dottedClassName(objectType);
@@ -79,7 +79,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
             if (isAbstract) {
                 addResult(format("Field can have an abstract type (%s) assigned to it.", dottedClassName),
-                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
             }
         }

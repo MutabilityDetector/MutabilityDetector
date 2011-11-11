@@ -41,6 +41,9 @@ public class AssertionReporter {
         this.expectedIsImmutable(expected, analysisResult, noWarningsAllowed());
     }
 
+    /**
+     * @param allowed - will be used to provide a decent message for suppressed warnings 
+     */
     private String buildExpectedIsImmutableExceptionMessage(IsImmutable expected,
             AnalysisResult analysisResult,
             AnalysisResultMatcher allowed) {

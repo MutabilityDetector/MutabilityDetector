@@ -24,22 +24,29 @@ public final class AnalysisResult {
     public final IsImmutable isImmutable;
     public final Collection<CheckerReasonDetail> reasons;
 
-    public AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
-        check(isImmutable, reasons);
+    private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
         this.dottedClassName = dottedClassName;
         this.isImmutable = isImmutable;
         this.reasons = Collections.unmodifiableCollection(new ArrayList<CheckerReasonDetail>(reasons));
     }
 
-    private void check(IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
-        if (isImmutable != IMMUTABLE && reasons.isEmpty()) { throw new IllegalArgumentException("Reasons must be given when a class is not DEFINITELY immutable."); }
+
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, CheckerReasonDetail... reasons) {
+        return analysisResult(dottedClassName, isImmutable, asList(reasons));
+    }
+    
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
+        check(isImmutable, reasons);
+        return new AnalysisResult(dottedClassName, isImmutable, reasons);
     }
 
-    public AnalysisResult(String dottedClassName, IsImmutable isImmutable, CheckerReasonDetail... reasons) {
-        this(dottedClassName, isImmutable, asList(reasons));
+    private static void check(IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
+        if (isImmutable != IMMUTABLE && reasons.isEmpty()) { 
+            throw new IllegalArgumentException("Reasons must be given when a class is not " + IsImmutable.IMMUTABLE); 
+        }
     }
 
     public static AnalysisResult definitelyImmutable(String dottedClassName) {
-        return new AnalysisResult(dottedClassName, IsImmutable.IMMUTABLE);
+        return analysisResult(dottedClassName, IsImmutable.IMMUTABLE);
     }
 }

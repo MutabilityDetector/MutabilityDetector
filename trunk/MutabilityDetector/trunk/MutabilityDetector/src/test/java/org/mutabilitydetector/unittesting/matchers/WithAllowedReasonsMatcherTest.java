@@ -12,6 +12,7 @@ package org.mutabilitydetector.unittesting.matchers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
@@ -27,7 +28,7 @@ public class WithAllowedReasonsMatcherTest {
     @Test
     public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
         IsImmutableMatcher isImmutable = new IsImmutableMatcher(IMMUTABLE);
-        AnalysisResult analysisResult = new AnalysisResult("some class", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedCheckerReasonDetails());
 
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, noneAllowed());
 

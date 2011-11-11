@@ -18,6 +18,7 @@ public class FieldLocation implements CodeLocation<FieldLocation> {
         return fieldName;
     }
 
+    @Override
     public String typeName() {
         return ownerOfField.typeName();
     }
@@ -48,6 +49,7 @@ public class FieldLocation implements CodeLocation<FieldLocation> {
         return fieldName.equals(other.fieldName) && ownerOfField.equals(other.ownerOfField);
     }
 
+    @Override
     public String prettyPrint() {
         return String.format("[Field: %s, Class: %s]", fieldName(), typeName());
     }

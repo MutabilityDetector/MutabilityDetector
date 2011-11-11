@@ -13,6 +13,7 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
@@ -40,7 +41,7 @@ public class AllowedIfOtherClassIsImmutableTest {
         CheckerReasonDetail reason = new CheckerReasonDetail("Field can have an abstract type [some.mutable.class] assigned to it.",
                 unusedClassLocation,
                 ABSTRACT_TYPE_TO_FIELD);
-        AnalysisResult result = new AnalysisResult("possibly.immutable.class", NOT_IMMUTABLE, reason);
+        AnalysisResult result = analysisResult("possibly.immutable.class", NOT_IMMUTABLE, reason);
         matcher = new AllowedIfOtherClassIsImmutable(dotted("some.mutable.class"));
 
         assertThat(matcher.allowedReasons(result), hasItem(reason));
@@ -54,7 +55,7 @@ public class AllowedIfOtherClassIsImmutableTest {
         CheckerReasonDetail notAllowed = new CheckerReasonDetail("Field can have an abstract type [some.othermutable.class] assigned to it.",
                 unusedClassLocation,
                 ABSTRACT_TYPE_TO_FIELD);
-        AnalysisResult result = new AnalysisResult("possibly.immutable.class", NOT_IMMUTABLE, allowed, notAllowed);
+        AnalysisResult result = analysisResult("possibly.immutable.class", NOT_IMMUTABLE, allowed, notAllowed);
         matcher = new AllowedIfOtherClassIsImmutable(dotted("some.mutable.class"));
 
         assertThat(matcher.allowedReasons(result), hasItem(allowed));

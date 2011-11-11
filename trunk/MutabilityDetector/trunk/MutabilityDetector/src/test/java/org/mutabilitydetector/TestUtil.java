@@ -58,7 +58,7 @@ public class TestUtil {
 
     public static AnalysisResult runChecker(IMutabilityChecker checker, Class<?> toAnalyse) {
         CheckerRunner.createWithCurrentClasspath().run(new AnalysisSession(), checker, fromClass(toAnalyse));
-        return new AnalysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 
     public static SessionCheckerRunner sessionCheckerRunner() {
@@ -70,6 +70,6 @@ public class TestUtil {
     }
 
     public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
-        return new AnalysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
+        return AnalysisResult.analysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
     }
 }

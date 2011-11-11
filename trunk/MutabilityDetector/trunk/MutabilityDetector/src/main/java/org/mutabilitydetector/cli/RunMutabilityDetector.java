@@ -103,7 +103,7 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
         Thread.currentThread().setContextClassLoader(classLoader);
     }
 
-    private List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {
+    private static List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {
         List<String> filtered = new ArrayList<String>();
         List<String> classNames = new ArrayList<String>();
         classNames.addAll(Arrays.asList(findResources));

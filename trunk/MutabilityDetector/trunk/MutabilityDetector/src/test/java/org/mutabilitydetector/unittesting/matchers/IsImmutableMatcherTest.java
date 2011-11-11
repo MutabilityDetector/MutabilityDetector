@@ -13,6 +13,7 @@ package org.mutabilitydetector.unittesting.matchers;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
@@ -39,7 +40,7 @@ public class IsImmutableMatcherTest {
     @Test
     public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
         IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
-        AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+        AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
         assertThat(matcher.matches(nonMatchingResult), is(false));
     }
 
@@ -50,7 +51,7 @@ public class IsImmutableMatcherTest {
         reasons.add(new CheckerReasonDetail("mutable coz i sez so",
                 fromInternalName("c/d/e"),
                 ABSTRACT_TYPE_INHERENTLY_MUTABLE));
-        AnalysisResult nonMatchingResult = new AnalysisResult("c.d.e", NOT_IMMUTABLE, reasons);
+        AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, reasons);
 
         StringDescription description = new StringDescription();
         matcher.describeMismatch(nonMatchingResult, description);

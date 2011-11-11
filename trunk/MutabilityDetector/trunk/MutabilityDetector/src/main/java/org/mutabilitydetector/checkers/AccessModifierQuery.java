@@ -35,8 +35,8 @@ public class AccessModifierQuery {
         this.access = access;
     }
 
-    private boolean includesAccess(int access) {
-        return (this.access & access) != 0;
+    private boolean includesAccess(int accessFlag) {
+        return (this.access & accessFlag) != 0;
     }
 
     public static AccessModifierQuery method(int access) {

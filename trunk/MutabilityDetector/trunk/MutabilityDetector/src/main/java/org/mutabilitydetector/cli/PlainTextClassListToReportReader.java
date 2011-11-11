@@ -24,6 +24,7 @@ public class PlainTextClassListToReportReader implements ClassListToReportCollec
 
     }
 
+    @Override
     public Collection<String> classListToReport() {
         String line = null;
         Collection<String> classes = new HashSet<String>();

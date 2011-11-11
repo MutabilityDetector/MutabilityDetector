@@ -3,6 +3,7 @@ package org.mutabilitydetector.benchmarks.escapedthis;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class PassesThisReferenceToMethodCall {
 
     public static final class AsSingleParameter {
@@ -41,7 +42,7 @@ public class PassesThisReferenceToMethodCall {
         public AsOneOfSeveralParametersWithOtherWeirdCode(boolean param) {
             new GiveMeYourThisReference(staticField, 
                     param ? "hi there" : "bye there", 
-                    getLong(), this, newMap(), (double)1.0d);
+                    getLong(), this, newMap(), 1.0d);
         }
         
         private long getLong() {
@@ -59,7 +60,7 @@ public class PassesThisReferenceToMethodCall {
         public InOneConstructorButNotTheOther(boolean param) {
             new GiveMeYourThisReference(staticField, 
                     param ? "hi there" : "bye there", 
-                    Long.valueOf("42"), this, newMap(), (double)1.0d);
+                    Long.valueOf("42"), this, newMap(), 1.0d);
         }
         
         public InOneConstructorButNotTheOther() {

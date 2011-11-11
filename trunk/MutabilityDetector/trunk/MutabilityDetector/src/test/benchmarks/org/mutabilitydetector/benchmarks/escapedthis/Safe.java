@@ -99,6 +99,7 @@ public class Safe {
         }
     }
     
+    @SuppressWarnings("cast")
     public static final class NoThisPassedToOtherObjectAsOneOfManyParametersAndDoesWeirdStuffInNewCall {
         public static final Object staticField = null;
         

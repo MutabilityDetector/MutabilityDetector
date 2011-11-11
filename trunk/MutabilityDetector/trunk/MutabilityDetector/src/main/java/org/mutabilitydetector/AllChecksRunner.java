@@ -31,7 +31,7 @@ public class AllChecksRunner {
 
     private final Dotted toAnalyse;
     private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-    private IMutabilityCheckerFactory factory;
+    private final IMutabilityCheckerFactory factory;
     private final ICheckerRunnerFactory checkerRunnerFactory;
 
     public AllChecksRunner(IMutabilityCheckerFactory checkerFactory,
@@ -56,7 +56,7 @@ public class AllChecksRunner {
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
-        return new AnalysisResult(toAnalyse.asString(), isImmutable, reasons);
+        return AnalysisResult.analysisResult(toAnalyse.asString(), isImmutable, reasons);
     }
 
     private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {

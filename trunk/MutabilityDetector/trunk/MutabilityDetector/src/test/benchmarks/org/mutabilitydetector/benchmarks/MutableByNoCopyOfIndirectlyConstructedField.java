@@ -20,7 +20,7 @@ package org.mutabilitydetector.benchmarks;
 public class MutableByNoCopyOfIndirectlyConstructedField {
 
     @SuppressWarnings("unused")
-    private CharSequence name;
+    private final CharSequence name;
 
     public MutableByNoCopyOfIndirectlyConstructedField(IFieldFactory fieldFactory) {
         this.name = fieldFactory.getName();
@@ -33,6 +33,7 @@ interface IFieldFactory {
 }
 
 final class FieldFactory implements IFieldFactory {
+    @Override
     public CharSequence getName() {
         return "name";
     }

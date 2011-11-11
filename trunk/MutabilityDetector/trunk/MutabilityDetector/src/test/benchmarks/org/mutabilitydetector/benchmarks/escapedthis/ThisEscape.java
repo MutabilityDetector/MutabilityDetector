@@ -19,6 +19,7 @@ public class ThisEscape {
     }
 }
 
+@SuppressWarnings("unused")
 class EventSource {
     public void registerListener(EventListener listener) {
         // do something

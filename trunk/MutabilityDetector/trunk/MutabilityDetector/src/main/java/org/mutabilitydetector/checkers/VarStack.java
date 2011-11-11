@@ -22,7 +22,7 @@ public class VarStack {
     private List<VarStackSnapshot> snapshots = new ArrayList<VarStackSnapshot>();
     private Iterator<VarStackSnapshot> snapshotsIterator = snapshots.iterator();
 
-    public void visitVarInsn(int opcode, int var) {
+    public void visitVarInsn(int var) {
         indices.add(var);
     }
 

@@ -45,8 +45,7 @@ public class CommandLineOptionsTest {
     @Test
     public void canParseClasspathOption() throws Exception {
         String[] args = makeArgs("-classpath", "fakeClasspath");
-        BatchAnalysisOptions options = createOptions(args);
-        assertEquals("fakeClasspath", options.classpath());
+        assertEquals("fakeClasspath", createOptions(args).classpath());
     }
 
     @Test

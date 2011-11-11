@@ -14,9 +14,10 @@ import java.util.HashSet;
 
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsInstanceFieldOfOtherObject;
 
+@SuppressWarnings("unused")
 public class GiveMeYourThisReference {
 
-    private String obtainedStringField;
+    private final String obtainedStringField;
     public SetThisReferenceAsInstanceFieldOfOtherObject instanceOfYourThis;
 
     /**

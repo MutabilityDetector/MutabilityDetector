@@ -78,7 +78,7 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
         }
 
-        private void checkIfClassIsMutable(String name, Type type) {
+        private void checkIfClassIsMutable(String fieldName, Type type) {
             int sort = type.getSort();
             switch (sort) {
             case Type.OBJECT:
@@ -88,13 +88,13 @@ public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 boolean isConcreteType = isConcreteType(dotted(dottedClassName));
                 if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
                     addResult("Field can have a mutable type (" + dottedClassName + ") " + "assigned to it.",
-                            fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                            fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 }
                 break;
             case Type.ARRAY:
                 addResult("Field can have a mutable type (a primitive array) assigned to it.",
-                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 break;
             default:

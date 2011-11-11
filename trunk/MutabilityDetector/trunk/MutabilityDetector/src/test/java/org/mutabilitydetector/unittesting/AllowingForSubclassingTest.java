@@ -3,6 +3,7 @@ package org.mutabilitydetector.unittesting;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
@@ -13,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.locations.CodeLocation;
 
@@ -26,9 +26,7 @@ public class AllowingForSubclassingTest {
     public void matchesAnalysisResultWithOnlyReasonBeingNonFinalClass() throws Exception {
         AllowingForSubclassing matcher = new AllowingForSubclassing();
         CheckerReasonDetail reason = new CheckerReasonDetail(unusedClassName, unusedCodeLocation, NOT_DECLARED_FINAL);
-        AnalysisResult result = new AnalysisResult("org.some.NonFinalClass", NOT_IMMUTABLE, Arrays.asList(reason));
-
-        assertTrue(matcher.matches(result));
+        assertTrue(matcher.matches(analysisResult("org.some.NonFinalClass", NOT_IMMUTABLE, Arrays.asList(reason))));
     }
 
     @Test
@@ -37,9 +35,7 @@ public class AllowingForSubclassingTest {
         CheckerReasonDetail reason = new CheckerReasonDetail(unusedClassName,
                 unusedCodeLocation,
                 FIELD_CAN_BE_REASSIGNED);
-        AnalysisResult result = new AnalysisResult(unusedClassName, NOT_IMMUTABLE, Arrays.asList(reason));
-
-        assertFalse(matcher.matches(result));
+        assertFalse(matcher.matches(analysisResult(unusedClassName, NOT_IMMUTABLE, Arrays.asList(reason))));
     }
 
     @Test
@@ -50,9 +46,7 @@ public class AllowingForSubclassingTest {
                 new CheckerReasonDetail(unusedClassName, unusedCodeLocation, NOT_DECLARED_FINAL), 
                 new CheckerReasonDetail(unusedClassName, unusedCodeLocation, ARRAY_TYPE_INHERENTLY_MUTABLE));
 
-        AnalysisResult result = new AnalysisResult(unusedClassName, NOT_IMMUTABLE, reasons);
-
-        assertTrue(matcher.matches(result));
+        assertTrue(matcher.matches(analysisResult(unusedClassName, NOT_IMMUTABLE, reasons)));
     }
     
     @Test
@@ -63,9 +57,7 @@ public class AllowingForSubclassingTest {
                 new CheckerReasonDetail(unusedClassName, unusedCodeLocation, ESCAPED_THIS_REFERENCE), 
                 new CheckerReasonDetail(unusedClassName, unusedCodeLocation, ARRAY_TYPE_INHERENTLY_MUTABLE));
 
-        AnalysisResult result = new AnalysisResult(unusedClassName, NOT_IMMUTABLE, reasons);
-
-        assertFalse(matcher.matches(result));
+        assertFalse(matcher.matches(analysisResult(unusedClassName, NOT_IMMUTABLE, reasons)));
     }
 
 }

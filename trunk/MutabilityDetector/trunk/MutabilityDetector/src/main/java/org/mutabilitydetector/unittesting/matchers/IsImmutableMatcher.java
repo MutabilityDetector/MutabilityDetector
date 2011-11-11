@@ -18,7 +18,7 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
     private final IsImmutable isImmutable;
-    private AnalysisResult item;
+    private AnalysisResult result;
 
     public IsImmutableMatcher(IsImmutable isImmutable) {
         this.isImmutable = isImmutable;
@@ -26,7 +26,7 @@ public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
 
     @Override
     public boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
-        this.item = item;
+        this.result = item;
         mismatchDescription.appendText(item.dottedClassName + " is actually " + item.isImmutable);
         mismatchDescription.appendText("\n");
         mismatchDescription.appendText(formatReasons(item.reasons));
@@ -35,7 +35,7 @@ public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText(item.dottedClassName + " to be " + isImmutable);
+        description.appendText(result.dottedClassName + " to be " + isImmutable);
     }
 
 }
