@@ -56,7 +56,7 @@ public class StackOverflowInAnalysisTest {
     }
 
     @Test
-    public void AClassAssigningInstanceOfItsOwnTypeDoesNotCauseError() throws Exception {
+    public void aClassAssigningInstanceOfItsOwnTypeDoesNotCauseError() throws Exception {
         TestUtil.getAnalysisResult(AssignsItselfToField.class);
     }
 }
