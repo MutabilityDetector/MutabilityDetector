@@ -15,6 +15,7 @@
 package org.mutabilitydetector.benchmarks;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
@@ -58,5 +59,10 @@ public class StackOverflowInAnalysisTest {
     @Test
     public void aClassAssigningInstanceOfItsOwnTypeDoesNotCauseError() throws Exception {
         TestUtil.getAnalysisResult(AssignsItselfToField.class);
+    }
+    
+    @Test public void
+    HashMap$EntryDoesntCauseStackOverflow() {
+        session.resultFor(HashMap.class.getName()); 
     }
 }

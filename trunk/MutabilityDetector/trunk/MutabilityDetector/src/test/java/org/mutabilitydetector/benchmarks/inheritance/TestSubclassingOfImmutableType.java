@@ -17,10 +17,9 @@
  */
 package org.mutabilitydetector.benchmarks.inheritance;
 
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
-import static org.mutabilitydetector.TestUtil.getIsImmutableResult;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,18 +29,18 @@ public class TestSubclassingOfImmutableType {
 
     @Test
     public void testSupertypeIsDefinitelyNotImmutable() throws Exception {
-        assertDefinitelyNotImmutable(getAnalysisResult(MutableSupertype.class));
+        assertNotImmutable(getAnalysisResult(MutableSupertype.class));
     }
 
     @Ignore("InheritedMutabilityChecker doesn't work properly yet.")
     @Test
     public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
-        assertDefinitelyNotImmutable(getIsImmutableResult(ImmutableSubtypeOfMutableSupertype.class));
+        assertNotImmutable(ImmutableSubtypeOfMutableSupertype.class);
     }
 
     @Test
     public void testMutableSubtype() throws Exception {
-        assertDefinitelyNotImmutable(getIsImmutableResult(MutableSubtypeOfMutableSupertype.class));
+        assertNotImmutable(MutableSubtypeOfMutableSupertype.class);
     }
 
     @Test

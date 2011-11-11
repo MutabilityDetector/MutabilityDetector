@@ -10,6 +10,8 @@
 
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
@@ -20,7 +22,6 @@ import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import javax.management.ImmutableDescriptor;
 
@@ -29,16 +30,18 @@ import org.junit.Test;
 
 public class WellKnownJavaTypesTest {
 
-    @Ignore("Not final")
     @Test
     public void Object() throws Exception {
-        assertInstancesOf(Object.class, areImmutable());
+        assertInstancesOf(Object.class, areImmutable(), allowingForSubclassing());
     }
 
     @Ignore("Not final " + "Reassigned field " + "Mutable type to field (BigInteger, String)")
     @Test
     public void BigDecimal() {
-        assertInstancesOf(BigDecimal.class, areImmutable());
+        assertInstancesOf(BigDecimal.class, areImmutable(), 
+                          provided(BigInteger.class).isAlsoImmutable(),
+                          provided(String.class).isAlsoImmutable(),
+                          allowingForSubclassing());
     }
 
     @Ignore("Not final" + "Published fields can be reassigned"
@@ -71,10 +74,11 @@ public class WellKnownJavaTypesTest {
         assertInstancesOf(Date.class, areNotImmutable());
     }
 
-    @Ignore("Not final" + "Mutable type to field (java.lang.Object)")
     @Test
     public void AbstractMap$SimpleImmutableEntry() {
-        assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable());
+        assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable(),
+                          allowingForSubclassing(),
+                          provided(Object.class).isAlsoImmutable());
     }
 
     @Ignore("Not final" + "Field hashCode reassigned" + "Field of mutable type (primitive array)")
@@ -93,9 +97,5 @@ public class WellKnownJavaTypesTest {
         assertInstancesOf(ArrayList.class, areNotImmutable());
     }
     
-    @Test public void
-    HashMap$EntryDoesntCauseStackOverflow() {
-        assertInstancesOf(HashMap.class, areNotImmutable()); 
-    }
 
 }

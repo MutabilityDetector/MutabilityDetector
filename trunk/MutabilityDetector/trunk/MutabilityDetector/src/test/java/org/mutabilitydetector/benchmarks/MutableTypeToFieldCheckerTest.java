@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -37,7 +37,9 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.mutabletofield.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
+import org.mutabilitydetector.benchmarks.mutabletofield.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.FieldLocation;
@@ -70,7 +72,7 @@ public class MutableTypeToFieldCheckerTest {
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
@@ -80,13 +82,13 @@ public class MutableTypeToFieldCheckerTest {
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test

@@ -2,7 +2,7 @@ package org.mutabilitydetector.benchmarks.escapedthis;
 
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Ignore;
@@ -132,7 +132,7 @@ public class EscapedThisReferenceCheckerTest {
     @Theory
     public void thisReferenceEscapingRendersClassMutable(Class<?> passesThisReference) throws Exception {
         AnalysisResult result = runChecker(new EscapedThisReferenceChecker(), passesThisReference);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
         assertEquals(reasonDetailFor(passesThisReference), result.reasons.iterator().next());
     }
 

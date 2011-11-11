@@ -18,7 +18,6 @@
 package org.mutabilitydetector;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
@@ -45,7 +44,7 @@ public class ImmutableAssert {
         doAssertEquals(result.dottedClassName, NOT_IMMUTABLE, result);
     }
 
-    public static void assertDefinitelyNotImmutable(Class<?> toAnalyse) {
+    public static void assertNotImmutable(Class<?> toAnalyse) {
         doAssertEquals(toAnalyse.getName(), NOT_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
     }
 
@@ -58,11 +57,7 @@ public class ImmutableAssert {
     }
 
     public static void assertNotImmutable(AnalysisResult result) {
-        doAssertNotEquals(result.dottedClassName, NOT_IMMUTABLE, result);
-    }
-
-    public static void assertNotImmutable(Class<?> toAnalyse) {
-        doAssertNotEquals(toAnalyse.getName(), NOT_IMMUTABLE, getResultAndPrintErrors(toAnalyse));
+        doAssertEquals(result.dottedClassName, NOT_IMMUTABLE, result);
     }
 
     private static AnalysisResult getResultAndPrintErrors(Class<?> toAnalyse) {
@@ -84,12 +79,6 @@ public class ImmutableAssert {
         String failure = "Class " + className + " is expected to be " + expected + " immutable.";
         failure += "\n" + formatReasons(actual.reasons);
         assertEquals(failure, expected, actual.isImmutable);
-    }
-
-    private static void doAssertNotEquals(String className, IsImmutable expected, AnalysisResult actual) {
-        String failure = "Class " + className + " is expected NOT to be " + expected + " immutable.";
-        failure += "\n" + formatReasons(actual.reasons);
-        assertFalse(failure, expected.equals(actual.isImmutable));
     }
 
 }

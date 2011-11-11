@@ -19,7 +19,7 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
@@ -52,19 +52,19 @@ public class PublishedNonFinalFieldCheckerTest {
     @Test
     public void classWithPublicNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingPublicNonFinalField.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
     public void classWithProtectedNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingProtectedNonFinalField.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
     public void classWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test

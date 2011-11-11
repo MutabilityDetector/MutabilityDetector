@@ -19,8 +19,8 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
@@ -41,10 +41,10 @@ public class FinalClassCheckerTest {
     }
 
     @Test
-    public void aClassWhichIsNotFinalIsMaybeImmutable() throws Exception {
+    public void aClassWhichIsNotFinalIsNotImmutable() throws Exception {
         AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
         assertThat(checker, hasReasons());
-        assertEffectivelyImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test

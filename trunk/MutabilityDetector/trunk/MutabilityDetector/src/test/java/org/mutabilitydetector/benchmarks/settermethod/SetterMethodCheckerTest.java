@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
@@ -83,7 +83,7 @@ public class SetterMethodCheckerTest {
 
     @Test
     public void mutableByHavingSetterMethodFailsCheck() throws Exception {
-        assertDefinitelyNotImmutable(doCheck(MutableByHavingSetterMethod.class));
+        assertNotImmutable(doCheck(MutableByHavingSetterMethod.class));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class SetterMethodCheckerTest {
 
     @Test
     public void settingFieldOfOtherInstanceAndThisInstanceRendersClassMutable() throws Exception {
-        assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
+        assertNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class SetterMethodCheckerTest {
     @Ignore("Was <DEFINITELY> immutable")
     @Test
     public void settingFieldOfMutableFieldRendersClassMutable() throws Exception {
-        assertDefinitelyNotImmutable(doCheck(MutableBySettingFieldOfField.class));
+        assertNotImmutable(doCheck(MutableBySettingFieldOfField.class));
     }
 
     @Ignore("Does not create any reasons.")
@@ -130,7 +130,7 @@ public class SetterMethodCheckerTest {
         AnalysisResult result = doCheck(StillMutableSubclass.class);
 
         assertThat(checker.reasons().size(), is(not(0)));
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Ignore("Field [precision] can be reassigned within method [precision]" + "Field [stringCache] can be reassigned within method [toString]"
@@ -149,7 +149,7 @@ public class SetterMethodCheckerTest {
     @Test
     public void fieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
         AnalysisResult result = doCheck(MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Ignore("Field can be reassigned.")
@@ -158,10 +158,9 @@ public class SetterMethodCheckerTest {
         assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
     }
 
-    @Ignore("Could not analyse - issue 14")
     @Test
     public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
-        assertDefinitelyNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
+        assertNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
     }
 
     @DataPoints
@@ -172,7 +171,7 @@ public class SetterMethodCheckerTest {
     @Theory
     public void settingFieldsOfAnyTypeShouldBeMutable(Class<?> mutableSettingField) throws Exception {
         AnalysisResult result = runChecker(checker, mutableSettingField);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
 }

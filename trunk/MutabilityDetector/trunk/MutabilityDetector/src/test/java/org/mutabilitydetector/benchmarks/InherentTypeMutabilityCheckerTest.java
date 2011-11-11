@@ -19,7 +19,7 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
@@ -27,6 +27,7 @@ import static org.mutabilitydetector.TestUtil.runChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.benchmarks.mutabletofield.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -51,7 +52,7 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, AbstractType.class);
 
         assertThat(checker, hasReasons());
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
@@ -66,7 +67,7 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, InterfaceType.class);
 
         assertThat(checker, hasReasons());
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
@@ -90,7 +91,7 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, ClassWithAllPrimitives.Array.class);
 
         assertThat(checker, hasReasons());
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test

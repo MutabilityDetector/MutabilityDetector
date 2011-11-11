@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.ImmutableAssert.assertDefinitelyNotImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
@@ -64,13 +64,13 @@ public class AbstractTypeToFieldCheckerTest {
     public void testMutableByAssigningInterfaceTypeToFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByAssigningInterfaceToField.class);
 
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test
     public void testMutableByAssigningAbstractClassToFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
-        assertDefinitelyNotImmutable(result);
+        assertNotImmutable(result);
     }
 
     @Test

@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.mutabletofield;
 
 import java.util.Arrays;
 
@@ -28,17 +28,5 @@ public class MutableByHavingArrayTypeAsField {
 
     public void mutateArray() {
         names[0] = "Haha I've mutated this instance!";
-    }
-}
-
-class ImmutableWhenArrayFieldIsStatic {
-    static final String names[] = new String[] { "Rick", "Levon", "Richard", "Garth", "Robbie" };
-
-    static {
-        names[4] = "Bob";
-    }
-
-    static void mutateStaticField() {
-        names[4] = "Bobby";
     }
 }

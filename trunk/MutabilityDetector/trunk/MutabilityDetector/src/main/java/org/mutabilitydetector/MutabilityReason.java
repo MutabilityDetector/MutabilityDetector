@@ -26,7 +26,7 @@ public enum MutabilityReason implements Reason {
     NOT_DECLARED_FINAL("Class is not declared final. While this specific class may still be immutable, " + "it is recommended that the class be declared final if possible. This will allow clients to "
             + "be confident that parameters declared to be this type will indeed be of this type at runtime, "
             + "not an instance of a mutable subclass. Note that applying the final keyword to a class does not have any effect on the Java Memory Model.",
-            IsImmutable.EFFECTIVELY_IMMUTABLE),
+            IsImmutable.NOT_IMMUTABLE),
 
     ABSTRACT_TYPE_INHERENTLY_MUTABLE("Abstract types (interfaces or abstract classes) are considered to be " + "\"Inherently Mutable\" in particular cases. Because the concrete implementation cannot be known"
             + "until compile-time, instances of abstract types could be either mutable or immutable.",
