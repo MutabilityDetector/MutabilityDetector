@@ -15,5 +15,28 @@ public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
     String typeName();
 
     public abstract String prettyPrint();
+    
+    public static class UnknownCodeLocation implements CodeLocation<UnknownCodeLocation> {
+
+        public static final UnknownCodeLocation UNKNOWN = new UnknownCodeLocation();
+        
+        private UnknownCodeLocation() { }
+        
+        @Override
+        public int compareTo(UnknownCodeLocation o) {
+            return 0; // There can be only one.
+        }
+
+        @Override
+        public String typeName() {
+            return "unknown code location";
+        }
+
+        @Override
+        public String prettyPrint() {
+            return "[Unknown code location]";
+        }
+        
+    }
 
 }
