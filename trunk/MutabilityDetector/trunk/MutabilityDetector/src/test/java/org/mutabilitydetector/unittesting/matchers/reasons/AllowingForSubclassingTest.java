@@ -9,7 +9,6 @@ import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import org.junit.Test;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.locations.CodeLocation;
-import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 
 public class AllowingForSubclassingTest {
 

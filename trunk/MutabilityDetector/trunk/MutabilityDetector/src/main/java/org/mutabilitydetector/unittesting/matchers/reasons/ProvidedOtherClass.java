@@ -10,11 +10,13 @@
 
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -49,7 +51,7 @@ public class ProvidedOtherClass {
 
         @Override
         protected boolean matchesSafely(CheckerReasonDetail reasonDetail, Description mismatchDescription) {
-            return reasonDetail.reason() == MutabilityReason.ABSTRACT_TYPE_TO_FIELD
+            return reasonDetail.reason().isOneOf(ABSTRACT_TYPE_TO_FIELD, MUTABLE_TYPE_TO_FIELD)
                     && reasonDetail.message().contains(classNameAsItAppearsInDescription());
         }
         

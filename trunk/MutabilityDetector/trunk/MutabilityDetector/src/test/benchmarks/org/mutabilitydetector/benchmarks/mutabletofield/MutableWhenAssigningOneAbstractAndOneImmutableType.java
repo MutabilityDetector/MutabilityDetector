@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.abstracttofield;
+package org.mutabilitydetector.benchmarks.mutabletofield;
 
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
