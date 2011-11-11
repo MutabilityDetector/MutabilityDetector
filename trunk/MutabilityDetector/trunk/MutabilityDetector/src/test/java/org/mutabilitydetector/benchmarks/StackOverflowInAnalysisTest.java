@@ -19,8 +19,8 @@ import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.benchmarks.abstracttofield.AbstractStringContainer;
-import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
+import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
 public class StackOverflowInAnalysisTest {

@@ -34,10 +34,10 @@ import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
-import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningAbstractTypeToField;
-import org.mutabilitydetector.benchmarks.abstracttofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethodCall;
 import org.mutabilitydetector.benchmarks.finalfield.HasNonFinalField;
+import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
+import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 
