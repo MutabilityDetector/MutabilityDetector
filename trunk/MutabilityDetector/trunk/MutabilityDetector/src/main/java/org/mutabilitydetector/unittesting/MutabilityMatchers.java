@@ -11,6 +11,7 @@
 package org.mutabilitydetector.unittesting;
 
 import org.hamcrest.Matcher;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
@@ -22,15 +23,15 @@ public class MutabilityMatchers {
         return new NoReasonsAllowedMatcher();
     }
 
-    public static IsImmutableMatcher areImmutable() {
+    public static Matcher<AnalysisResult> areImmutable() {
         return IsImmutableMatcher.hasIsImmutableStatusOf(IsImmutable.IMMUTABLE);
     }
     
-    public static IsImmutableMatcher areEffectivelyImmutable() {
+    public static Matcher<AnalysisResult> areEffectivelyImmutable() {
         return IsImmutableMatcher.hasIsImmutableStatusOf(IsImmutable.EFFECTIVELY_IMMUTABLE);
     }
 
-    public static IsImmutableMatcher areNotImmutable() {
+    public static Matcher<AnalysisResult> areNotImmutable() {
         return IsImmutableMatcher.hasIsImmutableStatusOf(IsImmutable.NOT_IMMUTABLE);
     }
 }
