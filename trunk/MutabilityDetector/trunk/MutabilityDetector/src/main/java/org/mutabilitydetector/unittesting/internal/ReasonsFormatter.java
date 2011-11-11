@@ -8,7 +8,7 @@
  * license/LICENSE.txt
  */
 
-package org.mutabilitydetector.unittesting;
+package org.mutabilitydetector.unittesting.internal;
 
 import static java.lang.String.format;
 
@@ -17,6 +17,8 @@ import java.util.Collection;
 import org.mutabilitydetector.CheckerReasonDetail;
 
 public class ReasonsFormatter {
+    private ReasonsFormatter() { }
+    
     public static String formatReasons(Collection<CheckerReasonDetail> reasons, StringBuilder builder) {
         builder.append(format("    Reasons:%n"));
         for (CheckerReasonDetail reason : reasons) {

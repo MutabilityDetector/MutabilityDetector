@@ -11,8 +11,8 @@
 package org.mutabilitydetector;
 
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areNotImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;

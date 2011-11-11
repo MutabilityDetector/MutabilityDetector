@@ -13,33 +13,30 @@ package org.mutabilitydetector.unittesting;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
-import org.mutabilitydetector.locations.Dotted;
-import org.mutabilitydetector.unittesting.matchers.AnalysisResultMatcher;
-import org.mutabilitydetector.unittesting.matchers.NoReasonAllowedMatcher;
+import org.hamcrest.Matcher;
+import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
+import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher;
+import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
 
 public class AllowedReason {
 
-    public AllowedReason() {
-    }
+    private AllowedReason() { }
 
     public static ProvidedOtherClass provided(String dottedClassName) {
-        return allowedIfOtherClassIsImmutable(dotted(dottedClassName));
+        return ProvidedOtherClass.provided(dotted(dottedClassName));
     }
 
     public static ProvidedOtherClass provided(Class<?> clazz) {
-        return allowedIfOtherClassIsImmutable(fromClass(clazz));
-    }
-
-    private static ProvidedOtherClass allowedIfOtherClassIsImmutable(Dotted dottedClassName) {
-        return new ProvidedOtherClass(dottedClassName);
-    }
-
-    public static AnalysisResultMatcher noneAllowed() {
-        return new NoReasonAllowedMatcher();
+        return ProvidedOtherClass.provided(fromClass(clazz));
     }
 
     public static AllowingForSubclassing allowingForSubclassing() {
         return new AllowingForSubclassing();
+    }
+
+    public static Matcher<CheckerReasonDetail> noReasonsAllowed() {
+        return NoReasonsAllowedMatcher.noWarningsAllowed();
     }
 
 }

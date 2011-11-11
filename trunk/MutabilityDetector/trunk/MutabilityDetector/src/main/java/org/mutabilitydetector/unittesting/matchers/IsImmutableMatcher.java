@@ -10,18 +10,23 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
-import static org.mutabilitydetector.unittesting.ReasonsFormatter.formatReasons;
+import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.formatReasons;
 
 import org.hamcrest.Description;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
-public class IsImmutableMatcher extends BaseAnalysisResultMatcher {
+public class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     private final IsImmutable isImmutable;
     private AnalysisResult result;
 
-    public IsImmutableMatcher(IsImmutable isImmutable) {
+    private IsImmutableMatcher(IsImmutable isImmutable) {
         this.isImmutable = isImmutable;
+    }
+    
+    public static IsImmutableMatcher hasIsImmutableStatusOf(IsImmutable isImmutable) {
+        return new IsImmutableMatcher(isImmutable);
     }
 
     @Override

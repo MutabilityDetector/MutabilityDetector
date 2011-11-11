@@ -20,7 +20,7 @@ import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutableStatusIs;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.matchers.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession.IsImmutable;
@@ -29,12 +29,13 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
+import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 
 public class MutabilityAssertTest {
 
-    private Class<?> immutableClass = ImmutableExample.class;
-    private Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
+    private final Class<?> immutableClass = ImmutableExample.class;
+    private final Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
 
     @Test
     public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {
@@ -92,6 +93,26 @@ public class MutabilityAssertTest {
             assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
         }
     }
+    
+    @Test public void canSpecifyMultipleAllowedReasons() {
+         assertInstancesOf(IsSubclassableAndDependsOnParameterBeingImmutable.class,
+                           areImmutable(),
+                           allowingForSubclassing(),
+                           provided(ThisHasToBeImmutable.class).isAlsoImmutable());
+                           
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test public void varArgsArgumentsCompilesAndExecutes() {
+        assertInstancesOf(IsSubclassableAndDependsOnParameterBeingImmutable.class,
+                          areImmutable(),
+                          allowingForSubclassing(),
+                          provided(ThisHasToBeImmutable.class).isAlsoImmutable(),
+                          allowingForSubclassing(),
+                          allowingForSubclassing(), 
+                          allowingForSubclassing());
+                          
+   }
 
     @Test
     public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {

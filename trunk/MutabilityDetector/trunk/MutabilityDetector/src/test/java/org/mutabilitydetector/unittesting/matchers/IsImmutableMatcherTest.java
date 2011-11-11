@@ -30,23 +30,23 @@ import org.mutabilitydetector.CheckerReasonDetail;
 
 public class IsImmutableMatcherTest {
 
+    IsImmutableMatcher matcher = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
+    
+    
     @Test
     public void matchesForSameIsImmutableResult() throws Exception {
-        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
         AnalysisResult result = AnalysisResult.definitelyImmutable("a.b.c");
         assertThat(matcher.matches(result), is(true));
     }
 
     @Test
     public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
-        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
         AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
         assertThat(matcher.matches(nonMatchingResult), is(false));
     }
 
     @Test
     public void hasDescriptiveErrorMessageForMismatch() throws Exception {
-        IsImmutableMatcher matcher = new IsImmutableMatcher(IMMUTABLE);
         Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
         reasons.add(new CheckerReasonDetail("mutable coz i sez so",
                 fromInternalName("c/d/e"),

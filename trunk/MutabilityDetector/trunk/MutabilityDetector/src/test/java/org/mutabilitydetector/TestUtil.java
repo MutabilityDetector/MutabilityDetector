@@ -31,7 +31,7 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
+import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 
 @Ignore
 public class TestUtil {
@@ -45,7 +45,7 @@ public class TestUtil {
     }
 
     public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
-        return MutabilityAssert.formatReasons(reasons);
+        return ReasonsFormatter.formatReasons(reasons);
     }
 
     public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
