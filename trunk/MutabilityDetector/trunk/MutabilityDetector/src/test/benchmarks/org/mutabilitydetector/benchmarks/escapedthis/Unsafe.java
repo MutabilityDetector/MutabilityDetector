@@ -36,6 +36,13 @@ public class Unsafe {
             giveMeIt.instanceOfYourThis = this;
         }
     }
+    
+    public static final class AliasesThisReferenceBeforeLettingItEscape {
+        public AliasesThisReferenceBeforeLettingItEscape() {
+            Object alias = this;
+            new GiveMeYourThisReference(alias);
+        }
+    }
 
     
     public static final class PassThisReferenceToStaticObject {

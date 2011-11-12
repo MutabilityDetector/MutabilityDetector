@@ -28,6 +28,7 @@ import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethod
 import org.mutabilitydetector.benchmarks.escapedthis.Safe.IsMutableForReassigningFieldNotForThisEscaping;
 import org.mutabilitydetector.benchmarks.escapedthis.Safe.NoThisPassedToOtherObjectAsOneOfManyParametersAndDoesWeirdStuffInNewCall;
 import org.mutabilitydetector.benchmarks.escapedthis.Safe.PassesThisReferenceAfterConstruction;
+import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.AliasesThisReferenceBeforeLettingItEscape;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassAnonymousInnerClassWithImplicitReferenceToThis;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassInnerClassWithImplicitReferenceToThis;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.PassThisReferenceToParameter;
@@ -99,6 +100,12 @@ public class EscapedThisReferenceCheckerTest {
     @Test
     public void doesNotRenderMutableForAssigningThisToInstanceField() throws Exception {
         assertThisDoesNotEscape(SaveThisReferenceAsInstanceFieldOfThisClass.class);
+    }
+    
+    @Ignore("Can't detect this situation.")
+    @Test
+    public void thisReferenceAliasedToSomethingElseWhichEscapesIsReported() throws Exception {
+       thisReferenceEscapingRendersClassMutable(AliasesThisReferenceBeforeLettingItEscape.class);
     }
     
     
