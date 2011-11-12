@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class PointTest {
+    
     @Test
     public void pointIsImmutable() throws Exception {
         MutabilityAssert.assertInstancesOf(Point.class, areImmutable());
