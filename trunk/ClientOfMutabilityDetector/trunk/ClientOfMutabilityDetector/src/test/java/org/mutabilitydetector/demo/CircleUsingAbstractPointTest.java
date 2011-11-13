@@ -1,42 +1,41 @@
 package org.mutabilitydetector.demo;
 
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class CircleUsingAbstractPointTest {
     
     @Test
     @Ignore
     public void circleIsImmutable() throws Exception {
-        MutabilityAssert.assertInstancesOf(CircleUsingAbstractPoint.class, areImmutable());
+        assertInstancesOf(CircleUsingAbstractPoint.class, areImmutable());
     }
     
     public static final class CircleUsingAbstractPoint {
         public final int radius;
-        public final AbstractPoint point;
+        public final Point centre;
 
-        public CircleUsingAbstractPoint(int radius, AbstractPoint point) {
+        public CircleUsingAbstractPoint(int radius, Point centre) {
             this.radius = radius;
-            this.point = point;
+            this.centre = centre;
         }
 
     }
 
-    static abstract class AbstractPoint {
-        public abstract int getX();
-
-        public abstract int getY();
+    static interface Point {
+        int getX();
+        int getY();
     }
 
-    static final class ConcretePoint extends AbstractPoint {
+    static final class ImmutablePoint implements Point {
 
         private final int y;
         private final int x;
 
-        public ConcretePoint(int x, int y) {
+        public ImmutablePoint(int x, int y) {
             this.x = x;
             this.y = y;
         }
@@ -52,7 +51,7 @@ public class CircleUsingAbstractPointTest {
         }
     }
 
-    static final class MutablePoint extends AbstractPoint {
+    static final class MutablePoint implements Point {
 
         private int y;
         private int x;
