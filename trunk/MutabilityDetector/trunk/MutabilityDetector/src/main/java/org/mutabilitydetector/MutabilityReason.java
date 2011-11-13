@@ -12,7 +12,6 @@ package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
 
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public enum MutabilityReason implements Reason {
 

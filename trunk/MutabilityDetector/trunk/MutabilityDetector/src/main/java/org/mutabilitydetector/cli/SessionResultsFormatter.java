@@ -17,8 +17,8 @@
  */
 package org.mutabilitydetector.cli;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 public class SessionResultsFormatter {

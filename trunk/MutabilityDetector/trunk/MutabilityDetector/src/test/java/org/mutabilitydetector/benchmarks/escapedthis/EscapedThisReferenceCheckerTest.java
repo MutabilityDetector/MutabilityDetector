@@ -1,8 +1,8 @@
 package org.mutabilitydetector.benchmarks.escapedthis;
 
 import static org.junit.Assert.assertEquals;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Ignore;

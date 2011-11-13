@@ -18,13 +18,12 @@
 package org.mutabilitydetector;
 
 import static org.junit.Assert.assertEquals;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class ImmutableAssert {
 

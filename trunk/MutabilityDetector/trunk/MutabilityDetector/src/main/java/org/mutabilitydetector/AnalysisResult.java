@@ -11,13 +11,12 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public final class AnalysisResult {
     public final String dottedClassName;

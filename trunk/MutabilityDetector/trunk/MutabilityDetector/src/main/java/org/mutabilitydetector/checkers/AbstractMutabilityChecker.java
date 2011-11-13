@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.locations.ClassLocation;

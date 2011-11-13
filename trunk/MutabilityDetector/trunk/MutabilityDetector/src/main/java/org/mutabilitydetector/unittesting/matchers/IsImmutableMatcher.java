@@ -15,7 +15,7 @@ import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.forma
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 
 public class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     private final IsImmutable isImmutable;

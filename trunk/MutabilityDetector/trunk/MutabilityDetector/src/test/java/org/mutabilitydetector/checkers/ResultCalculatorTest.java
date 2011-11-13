@@ -1,12 +1,12 @@
 package org.mutabilitydetector.checkers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 
 public class ResultCalculatorTest {
 

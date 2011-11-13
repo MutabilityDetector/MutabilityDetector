@@ -18,14 +18,14 @@
 package org.mutabilitydetector.checkers;
 
 import static java.lang.Integer.valueOf;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.COULD_NOT_ANALYSE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.EFFECTIVELY_IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.COULD_NOT_ANALYSE;
+import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 import java.util.Map;
 
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 
 public final class ResultCalculator {
     

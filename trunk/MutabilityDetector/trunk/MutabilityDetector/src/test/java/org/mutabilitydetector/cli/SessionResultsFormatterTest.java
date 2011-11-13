@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 import org.mutabilitydetector.locations.FieldLocation;
 

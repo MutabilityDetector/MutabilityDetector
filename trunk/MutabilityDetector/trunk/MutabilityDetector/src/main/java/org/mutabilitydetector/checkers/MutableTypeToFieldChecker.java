@@ -17,12 +17,12 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;

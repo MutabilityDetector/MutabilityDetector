@@ -20,7 +20,7 @@ package org.mutabilitydetector.checkers;
 import java.util.Collection;
 
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.objectweb.asm.ClassVisitor;
 
 public interface IMutabilityChecker extends ClassVisitor {

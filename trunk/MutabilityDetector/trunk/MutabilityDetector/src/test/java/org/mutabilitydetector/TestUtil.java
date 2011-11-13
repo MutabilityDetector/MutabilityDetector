@@ -27,7 +27,6 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 import java.util.Collection;
 
 import org.junit.Ignore;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;

@@ -13,17 +13,15 @@ package org.mutabilitydetector.unittesting;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutableStatusIs;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
@@ -54,21 +52,6 @@ public class MutabilityAssertTest {
             fail("Assertion should have failed.");
         } catch (final AssertionError ae) {
             assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
-            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
-        }
-    }
-
-    @Test
-    public void assertImmutableStatusIsPassesWhenBothAreEqual() throws Exception {
-        assertImmutableStatusIs(IsImmutable.IMMUTABLE, immutableClass);
-    }
-
-    @Test
-    public void assertImmutableStatusIsFailsWhenUnequal() throws Exception {
-        try {
-            assertImmutableStatusIs(NOT_IMMUTABLE, immutableClass);
-        } catch (final AssertionError ae) {
             assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
             assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
         }

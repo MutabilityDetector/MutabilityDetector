@@ -3,7 +3,7 @@ package org.mutabilitydetector.benchmarks.finalfield;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.IMutabilityChecker;

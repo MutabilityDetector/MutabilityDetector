@@ -10,7 +10,6 @@
 
 package org.mutabilitydetector;
 
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 /**
  * 

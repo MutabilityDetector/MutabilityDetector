@@ -12,7 +12,6 @@ package org.mutabilitydetector.unittesting;
 
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.List;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerReasonDetail;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.unittesting.internal.AnalysisSessionHolder;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
@@ -192,11 +191,6 @@ public final class MutabilityAssert {
     }
 
     
-    // TODO: remove this method
-    public static void assertImmutableStatusIs(IsImmutable expected, Class<?> forClass) {
-        reporter.assertThat(getResultFor(forClass), hasIsImmutableStatusOf(expected));
-    }
-
     public static void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> areImmutable) {
         reporter.assertThat(getResultFor(clazz), areImmutable);
     }

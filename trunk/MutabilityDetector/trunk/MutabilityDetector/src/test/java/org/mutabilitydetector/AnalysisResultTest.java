@@ -10,12 +10,9 @@
 
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.IAnalysisSession.IsImmutable.IMMUTABLE;
-
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession.IsImmutable;
 
 public class AnalysisResultTest {
 
@@ -31,7 +28,7 @@ public class AnalysisResultTest {
 
     @Test
     public void doesntThrowExceptionWhenImmutableAndNoReasonGiven() throws Exception {
-        AnalysisResult.analysisResult("someclass", IMMUTABLE);
+        AnalysisResult.analysisResult("someclass", IsImmutable.IMMUTABLE);
     }
 
 }
