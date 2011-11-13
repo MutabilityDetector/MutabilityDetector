@@ -29,7 +29,7 @@ public class ClassLocationTest {
 
     @Test
     public void canConstructFromSlashed() {
-        CodeLocation<ClassLocation> location = ClassLocation.fromSlashed(slashed("some/package/Class"));
+        CodeLocation<ClassLocation> location = ClassLocation.from(slashed("some/package/Class"));
         assertEquals("some.package.Class", location.typeName());
     }
 

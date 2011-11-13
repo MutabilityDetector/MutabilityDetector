@@ -11,7 +11,7 @@ import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
-import static org.mutabilitydetector.locations.ClassLocation.fromSlashed;
+import static org.mutabilitydetector.locations.ClassLocation.from;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public class SessionResultsFormatterTest {
     @Test
     public void verboseOutputIncludesDetailedReasonAndPrettyPrintedCodeLocation() throws Exception {
         Collection<MutableReasonDetail> reasons = Arrays.asList(newMutableReasonDetail("1st checker reason message",
-                                                                                        fromSlashed(slashed("path/to/MyClass")),
+                                                                                        from(slashed("path/to/MyClass")),
                                                                                         NOT_DECLARED_FINAL),
                                                                 newMutableReasonDetail("2nd checker reason message",
                                                                                         FieldLocation.fieldLocation("myField",

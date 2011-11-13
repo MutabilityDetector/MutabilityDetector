@@ -22,7 +22,7 @@ import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.ClassLocation.fromDotted;
+import static org.mutabilitydetector.locations.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
@@ -64,7 +64,7 @@ public class AssertionReporterTest {
 
     @Test
     public void thrownExceptionContainsHelpfulMessage() throws Exception {
-        CodeLocation<ClassLocation> codeLocation = ClassLocation.fromDotted(dotted("d.e.SimpleClassName"));
+        CodeLocation<ClassLocation> codeLocation = ClassLocation.from(dotted("d.e.SimpleClassName"));
         MutableReasonDetail reason = newMutableReasonDetail("a reason the class is mutable",
                 codeLocation,
                 PUBLISHED_NON_FINAL_FIELD);
@@ -91,7 +91,7 @@ public class AssertionReporterTest {
     @Test
     public void thrownExceptionContainsMessageAboutWarningsWhichAreSuppressed() throws Exception {
         MutableReasonDetail reason = newMutableReasonDetail("a reason the class is mutable",
-                ClassLocation.fromDotted(dotted("d.e.SimpleClassName")),
+                ClassLocation.from(dotted("d.e.SimpleClassName")),
                 PUBLISHED_NON_FINAL_FIELD);
 
         AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
@@ -112,7 +112,7 @@ public class AssertionReporterTest {
     @Test
     public void performsAssertThatButWrapsExceptionInMutabilityAssertionErrorWithSameMessage() throws Exception {
         MutableReasonDetail reasonDetail = newMutableReasonDetail("this message should appear", 
-                                                                   fromDotted(dotted("a.b.c")), 
+                                                                   from(dotted("a.b.c")), 
                                                                    ESCAPED_THIS_REFERENCE);
         try {
             reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), areImmutable());

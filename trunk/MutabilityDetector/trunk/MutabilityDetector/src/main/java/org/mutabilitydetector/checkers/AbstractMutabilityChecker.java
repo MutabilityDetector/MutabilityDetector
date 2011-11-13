@@ -111,7 +111,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
     public CodeLocation<?> getCodeLocationForException() {
         return ownerClass != null 
-                ? ClassLocation.fromSlashed(slashed(ownerClass))
+                ? ClassLocation.from(slashed(ownerClass))
                 : CodeLocation.UnknownCodeLocation.UNKNOWN;
     }
 

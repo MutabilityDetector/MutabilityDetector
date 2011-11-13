@@ -51,13 +51,12 @@ public final class ClassLocation implements CodeLocation<ClassLocation> {
         return new ClassLocation(dottedClassName);
     }
 
-    // TODO: rename fromX to just from, makes call sites more readable
-    public static CodeLocation<ClassLocation> fromSlashed(Slashed slashed) {
+    public static CodeLocation<ClassLocation> from(Slashed slashed) {
         String dottedClassName = ClassIdentifier.forClass(slashed).asDotted().asString();
         return new ClassLocation(dottedClassName);
     }
 
-    public static CodeLocation<ClassLocation> fromDotted(Dotted dotted) {
+    public static CodeLocation<ClassLocation> from(Dotted dotted) {
         return new ClassLocation(dotted.asString());
     }
 

@@ -146,7 +146,7 @@ public class EscapedThisReferenceCheckerTest {
 
     private MutableReasonDetail reasonDetailFor(Class<?> clazz) {
         return newMutableReasonDetail("The 'this' reference is passed outwith the constructor.",
-                ClassLocation.fromDotted(Dotted.fromClass(clazz)),
+                ClassLocation.from(Dotted.fromClass(clazz)),
                 MutabilityReason.ESCAPED_THIS_REFERENCE);
     }
 
