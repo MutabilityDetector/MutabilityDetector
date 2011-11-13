@@ -14,20 +14,20 @@ import static java.lang.String.format;
 
 import java.util.Collection;
 
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
 public class ReasonsFormatter {
     private ReasonsFormatter() { }
     
-    public static String formatReasons(Collection<CheckerReasonDetail> reasons, StringBuilder builder) {
+    public static String formatReasons(Collection<MutableReasonDetail> reasons, StringBuilder builder) {
         builder.append(format("    Reasons:%n"));
-        for (CheckerReasonDetail reason : reasons) {
+        for (MutableReasonDetail reason : reasons) {
             builder.append(format("        %s %s%n", reason.message(), reason.codeLocation().prettyPrint()));
         }
         return builder.toString();
     }
 
-    public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
+    public static String formatReasons(Collection<MutableReasonDetail> reasons) {
         return formatReasons(reasons, new StringBuilder());
     }
 }

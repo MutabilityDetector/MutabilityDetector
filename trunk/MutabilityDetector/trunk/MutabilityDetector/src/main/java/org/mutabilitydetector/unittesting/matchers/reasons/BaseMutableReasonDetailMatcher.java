@@ -11,6 +11,6 @@
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
 import org.hamcrest.TypeSafeDiagnosingMatcher;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
-/*default*/ abstract class BaseCheckerReasonDetailMatcher extends TypeSafeDiagnosingMatcher<CheckerReasonDetail>  { }
+/*default*/ abstract class BaseMutableReasonDetailMatcher extends TypeSafeDiagnosingMatcher<MutableReasonDetail>  { }

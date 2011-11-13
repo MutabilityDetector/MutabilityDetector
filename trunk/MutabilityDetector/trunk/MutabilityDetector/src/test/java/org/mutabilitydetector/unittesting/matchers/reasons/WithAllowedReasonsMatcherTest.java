@@ -20,7 +20,7 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetails;
+import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noWarningsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
@@ -28,7 +28,7 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -51,7 +51,7 @@ public class WithAllowedReasonsMatcherTest {
     @Test
     public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
-        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedMutableReasonDetails());
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noWarningsAllowed()));
         
@@ -59,9 +59,9 @@ public class WithAllowedReasonsMatcherTest {
     }
     
     @Test public void passesWhenResultDoesNotMatchButTheOffendingReasonsAreAllowed() {
-        CheckerReasonDetail anyReason = TestUtil.unusedCheckerReasonDetail(); 
+        MutableReasonDetail anyReason = TestUtil.unusedMutableReasonDetail(); 
         
-        Matcher<CheckerReasonDetail> allowWhateverReason = Mockito.mock(Matcher.class);
+        Matcher<MutableReasonDetail> allowWhateverReason = Mockito.mock(Matcher.class);
         when(allowWhateverReason.matches(anyReason)).thenReturn(true);
         
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
@@ -73,10 +73,10 @@ public class WithAllowedReasonsMatcherTest {
     }
     
     @Test public void failsWhenResultDoesNotMatchAndOnlyOneOfManyReasonsAreAllowed() {
-        CheckerReasonDetail allowedReason = new CheckerReasonDetail("allowed", unusedCodeLocation, null);
-        CheckerReasonDetail disallowedReason = new CheckerReasonDetail("disallowed", unusedCodeLocation, null);
+        MutableReasonDetail allowedReason = new MutableReasonDetail("allowed", unusedCodeLocation, null);
+        MutableReasonDetail disallowedReason = new MutableReasonDetail("disallowed", unusedCodeLocation, null);
         
-        Matcher<CheckerReasonDetail> onlyAllowOneReason = mock(Matcher.class);
+        Matcher<MutableReasonDetail> onlyAllowOneReason = mock(Matcher.class);
         when(onlyAllowOneReason.matches(allowedReason)).thenReturn(true);
         when(onlyAllowOneReason.matches(disallowedReason)).thenReturn(false);
         

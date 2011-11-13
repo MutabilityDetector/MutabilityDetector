@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.unittesting.internal.AnalysisSessionHolder;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
@@ -163,12 +163,12 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * 
  * <p>
  * Similar to the <code>Matcher&ltAnalysisResult&gt;</code> parameter, the allowed reason parameter of
- * {@link #assertInstancesOf(Class, Matcher, Matcher)} is a <code>Matcher&lt;CheckerReasonDetail&gt;</code>. Mutability
+ * {@link #assertInstancesOf(Class, Matcher, Matcher)} is a <code>Matcher&lt;{@link MutableReasonDetail}&gt;</code>. Mutability
  * Detector will provide only a few out-of-the-box implementations for this, which are unlikely to cover each scenario
  * where you want to permit a certain aspect of mutability.
  * </p>
  * <p>
- * For a mutable class to pass the test, each {@link CheckerReasonDetail} must be matched by at least one allowed reason.
+ * For a mutable class to pass the test, each {@link MutableReasonDetail} must be matched by at least one allowed reason.
  * </p>
  * 
  * @author Grundlefleck at gmail dot com
@@ -176,7 +176,7 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * @see MutabilityMatchers
  * @see AllowedReason
  * @see AnalysisResult
- * @see CheckerReasonDetail
+ * @see MutableReasonDetail
  * @see IsImmutable
  * 
  */
@@ -198,7 +198,7 @@ public final class MutabilityAssert {
     @SuppressWarnings("unchecked")
     public static void assertInstancesOf(Class<?> clazz,
             Matcher<AnalysisResult> areImmutable,
-            Matcher<CheckerReasonDetail> allowing) {
+            Matcher<MutableReasonDetail> allowing) {
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable, asList((allowing)));
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
@@ -206,8 +206,8 @@ public final class MutabilityAssert {
     @SuppressWarnings("unchecked")
     public static void assertInstancesOf(Class<?> clazz,
             Matcher<AnalysisResult> areImmutable,
-            Matcher<CheckerReasonDetail> allowingFirst,
-            Matcher<CheckerReasonDetail> allowingSecond) {
+            Matcher<MutableReasonDetail> allowingFirst,
+            Matcher<MutableReasonDetail> allowingSecond) {
 
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable,
                                                                                 asList(allowingFirst, allowingSecond));
@@ -217,9 +217,9 @@ public final class MutabilityAssert {
     @SuppressWarnings("unchecked")
     public static void assertInstancesOf(Class<?> clazz,
             Matcher<AnalysisResult> areImmutable,
-            Matcher<CheckerReasonDetail> allowingFirst,
-            Matcher<CheckerReasonDetail> allowingSecond,
-            Matcher<CheckerReasonDetail> allowingThird) {
+            Matcher<MutableReasonDetail> allowingFirst,
+            Matcher<MutableReasonDetail> allowingSecond,
+            Matcher<MutableReasonDetail> allowingThird) {
 
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(areImmutable,
                                                                                 asList(allowingFirst,
@@ -231,12 +231,12 @@ public final class MutabilityAssert {
 
     public static void assertInstancesOf(Class<?> clazz,
             Matcher<AnalysisResult> areImmutable,
-            Matcher<CheckerReasonDetail> allowingFirst,
-            Matcher<CheckerReasonDetail> allowingSecond,
-            Matcher<CheckerReasonDetail> allowingThird,
-            Matcher<CheckerReasonDetail>... allowingRest) {
+            Matcher<MutableReasonDetail> allowingFirst,
+            Matcher<MutableReasonDetail> allowingSecond,
+            Matcher<MutableReasonDetail> allowingThird,
+            Matcher<MutableReasonDetail>... allowingRest) {
 
-        List<Matcher<CheckerReasonDetail>> allowedReasonMatchers = new ArrayList<Matcher<CheckerReasonDetail>>();
+        List<Matcher<MutableReasonDetail>> allowedReasonMatchers = new ArrayList<Matcher<MutableReasonDetail>>();
         allowedReasonMatchers.add(allowingFirst);
         allowedReasonMatchers.add(allowingSecond);
         allowedReasonMatchers.add(allowingThird);

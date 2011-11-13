@@ -19,13 +19,13 @@ package org.mutabilitydetector.checkers;
 
 import java.util.Collection;
 
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.objectweb.asm.ClassVisitor;
 
 public interface IMutabilityChecker extends ClassVisitor {
 
-    public Collection<CheckerReasonDetail> reasons();
+    public Collection<MutableReasonDetail> reasons();
 
     public IsImmutable result();
 

@@ -16,7 +16,7 @@ import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -32,11 +32,11 @@ public class ProvidedOtherClass {
         return new ProvidedOtherClass(className);
     }
 
-    public Matcher<CheckerReasonDetail> isAlsoImmutable() {
+    public Matcher<MutableReasonDetail> isAlsoImmutable() {
         return new AllowedIfOtherClassIsImmutable(dottedClassName);
     }
 
-    private static class AllowedIfOtherClassIsImmutable extends TypeSafeDiagnosingMatcher<CheckerReasonDetail> {
+    private static class AllowedIfOtherClassIsImmutable extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
 
         private final Dotted className;
 
@@ -50,7 +50,7 @@ public class ProvidedOtherClass {
         }
 
         @Override
-        protected boolean matchesSafely(CheckerReasonDetail reasonDetail, Description mismatchDescription) {
+        protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
             return reasonDetail.reason().isOneOf(ABSTRACT_TYPE_TO_FIELD, MUTABLE_TYPE_TO_FIELD)
                     && reasonDetail.message().contains(classNameAsItAppearsInDescription());
         }

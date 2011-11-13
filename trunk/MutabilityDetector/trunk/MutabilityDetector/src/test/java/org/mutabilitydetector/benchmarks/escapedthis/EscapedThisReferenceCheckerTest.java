@@ -12,7 +12,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -143,8 +143,8 @@ public class EscapedThisReferenceCheckerTest {
         assertEquals(reasonDetailFor(passesThisReference), result.reasons.iterator().next());
     }
 
-    private CheckerReasonDetail reasonDetailFor(Class<?> clazz) {
-        return new CheckerReasonDetail("The 'this' reference is passed outwith the constructor.",
+    private MutableReasonDetail reasonDetailFor(Class<?> clazz) {
+        return new MutableReasonDetail("The 'this' reference is passed outwith the constructor.",
                 ClassLocation.fromDotted(Dotted.fromClass(clazz)),
                 MutabilityReason.ESCAPED_THIS_REFERENCE);
     }

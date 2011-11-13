@@ -22,7 +22,7 @@ import static org.mutabilitydetector.locations.Slashed.slashed;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.Reason;
@@ -36,7 +36,7 @@ import org.objectweb.asm.Type;
 
 public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
-    protected Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
+    protected Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
     private IsImmutable result = IsImmutable.IMMUTABLE;
     protected String ownerClass;
 
@@ -46,7 +46,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
     }
 
     @Override
-    public Collection<CheckerReasonDetail> reasons() {
+    public Collection<MutableReasonDetail> reasons() {
         return reasons;
     }
 
@@ -123,8 +123,8 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
         return dottedClassName;
     }
 
-    protected CheckerReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
-        return new CheckerReasonDetail(message, location, reason);
+    protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
+        return new MutableReasonDetail(message, location, reason);
     }
 
     protected void addResult(String message, CodeLocation<?> location, Reason reason) {

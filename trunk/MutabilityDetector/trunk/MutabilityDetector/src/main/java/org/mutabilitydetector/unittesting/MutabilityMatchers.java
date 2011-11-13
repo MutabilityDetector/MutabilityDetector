@@ -12,14 +12,14 @@ package org.mutabilitydetector.unittesting;
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher;
 
 public class MutabilityMatchers {
 
-    public static Matcher<CheckerReasonDetail> noWarningsAllowed() {
+    public static Matcher<MutableReasonDetail> noReasonsAllowed() {
         return new NoReasonsAllowedMatcher();
     }
 

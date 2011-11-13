@@ -44,16 +44,16 @@ public class TestUtil {
         return new AnalysisSession().resultFor(toAnalyse.getName());
     }
 
-    public static String formatReasons(Collection<CheckerReasonDetail> reasons) {
+    public static String formatReasons(Collection<MutableReasonDetail> reasons) {
         return ReasonsFormatter.formatReasons(reasons);
     }
 
-    public static Collection<CheckerReasonDetail> unusedCheckerReasonDetails() {
-        return asList(unusedCheckerReasonDetail());
+    public static Collection<MutableReasonDetail> unusedMutableReasonDetails() {
+        return asList(unusedMutableReasonDetail());
     }
 
-    public static CheckerReasonDetail unusedCheckerReasonDetail() {
-        return new CheckerReasonDetail("this reason is not meant to be involved", 
+    public static MutableReasonDetail unusedMutableReasonDetail() {
+        return new MutableReasonDetail("this reason is not meant to be involved", 
                                        ClassLocation.fromInternalName("some made up class name"), 
                                        NULL_REASON);
     }
@@ -72,6 +72,6 @@ public class TestUtil {
     }
 
     public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
-        return AnalysisResult.analysisResult(dottedClassName, isImmutable, unusedCheckerReasonDetails());
+        return AnalysisResult.analysisResult(dottedClassName, isImmutable, unusedMutableReasonDetails());
     }
 }

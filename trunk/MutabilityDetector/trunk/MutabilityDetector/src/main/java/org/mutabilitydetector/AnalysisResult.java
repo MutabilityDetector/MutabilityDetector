@@ -21,25 +21,25 @@ import java.util.Collections;
 public final class AnalysisResult {
     public final String dottedClassName;
     public final IsImmutable isImmutable;
-    public final Collection<CheckerReasonDetail> reasons;
+    public final Collection<MutableReasonDetail> reasons;
 
-    private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
+    private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         this.dottedClassName = dottedClassName;
         this.isImmutable = isImmutable;
-        this.reasons = Collections.unmodifiableCollection(new ArrayList<CheckerReasonDetail>(reasons));
+        this.reasons = Collections.unmodifiableCollection(new ArrayList<MutableReasonDetail>(reasons));
     }
 
 
-    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, CheckerReasonDetail... reasons) {
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, MutableReasonDetail... reasons) {
         return analysisResult(dottedClassName, isImmutable, asList(reasons));
     }
     
-    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         check(isImmutable, reasons);
         return new AnalysisResult(dottedClassName, isImmutable, reasons);
     }
 
-    private static void check(IsImmutable isImmutable, Collection<CheckerReasonDetail> reasons) {
+    private static void check(IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         if (isImmutable != IMMUTABLE && reasons.isEmpty()) { 
             throw new IllegalArgumentException("Reasons must be given when a class is not " + IsImmutable.IMMUTABLE); 
         }

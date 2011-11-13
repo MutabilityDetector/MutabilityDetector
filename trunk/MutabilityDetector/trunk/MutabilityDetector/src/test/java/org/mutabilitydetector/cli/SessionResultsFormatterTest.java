@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
-import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetails;
+import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.ClassLocation.fromSlashed;
 import static org.mutabilitydetector.locations.Slashed.slashed;
@@ -18,7 +18,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
@@ -37,13 +37,13 @@ public class SessionResultsFormatterTest {
         IAnalysisSession analysisSession = mock(IAnalysisSession.class);
         Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c",
                                                                                   IsImmutable.IMMUTABLE,
-                                                                                  unusedCheckerReasonDetails()),
+                                                                                  unusedMutableReasonDetails()),
                                                                    analysisResult("d.e.f",
                                                                                   IsImmutable.EFFECTIVELY_IMMUTABLE,
-                                                                                  unusedCheckerReasonDetails()),
+                                                                                  unusedMutableReasonDetails()),
                                                                    analysisResult("g.h.i",
                                                                                   IsImmutable.NOT_IMMUTABLE,
-                                                                                  unusedCheckerReasonDetails()));
+                                                                                  unusedMutableReasonDetails()));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
@@ -58,10 +58,10 @@ public class SessionResultsFormatterTest {
 
     @Test
     public void verboseOutputIncludesDetailedReasonAndPrettyPrintedCodeLocation() throws Exception {
-        Collection<CheckerReasonDetail> reasons = Arrays.asList(new CheckerReasonDetail("1st checker reason message",
+        Collection<MutableReasonDetail> reasons = Arrays.asList(new MutableReasonDetail("1st checker reason message",
                                                                                         fromSlashed(slashed("path/to/MyClass")),
                                                                                         NOT_DECLARED_FINAL),
-                                                                new CheckerReasonDetail("2nd checker reason message",
+                                                                new MutableReasonDetail("2nd checker reason message",
                                                                                         FieldLocation.fieldLocation("myField",
                                                                                                                     fromInternalName("path/to/OtherClass")),
                                                                                         MUTABLE_TYPE_TO_FIELD));

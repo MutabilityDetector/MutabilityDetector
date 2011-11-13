@@ -28,7 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
@@ -125,8 +125,8 @@ public class SessionResultsFormatter {
     private void addReasons(AnalysisResult result, StringBuilder output) {
         if (!verbose) return;
 
-        for (CheckerReasonDetail resultDetail : result.reasons) {
-            output.append(String.format("\t%10s %s%n", resultDetail.message(), resultDetail.codeLocation()
+        for (MutableReasonDetail reasonDetail : result.reasons) {
+            output.append(String.format("\t%10s %s%n", reasonDetail.message(), reasonDetail.codeLocation()
                     .prettyPrint()));
         }
     }

@@ -4,9 +4,9 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_M
 import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 
 import org.hamcrest.Description;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
-public class AllowingForSubclassing extends BaseCheckerReasonDetailMatcher {
+public class AllowingForSubclassing extends BaseMutableReasonDetailMatcher {
 
     @Override
     public void describeTo(Description description) {
@@ -14,7 +14,7 @@ public class AllowingForSubclassing extends BaseCheckerReasonDetailMatcher {
     }
 
     @Override
-    protected boolean matchesSafely(CheckerReasonDetail checkerReasonDetail, Description mismatchDescription) {
+    protected boolean matchesSafely(MutableReasonDetail checkerReasonDetail, Description mismatchDescription) {
         return checkerReasonDetail.reason().isOneOf(NOT_DECLARED_FINAL, ABSTRACT_TYPE_INHERENTLY_MUTABLE);
     }
 

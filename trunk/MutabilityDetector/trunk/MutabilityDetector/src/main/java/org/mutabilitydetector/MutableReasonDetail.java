@@ -15,14 +15,13 @@ import static java.lang.String.format;
 
 import org.mutabilitydetector.locations.CodeLocation;
 
-// TODO: rename to MutableReasonDetail(?)
-public class CheckerReasonDetail {
+public final class MutableReasonDetail {
 
     private final String message;
     private final CodeLocation<?> location;
     private final Reason reason;
 
-    public CheckerReasonDetail(String message, CodeLocation<?> location, Reason reason) {
+    public MutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
         this.message = message;
         this.location = location;
         this.reason = reason;
@@ -61,7 +60,7 @@ public class CheckerReasonDetail {
         if (this == obj) { return true; }
         if (obj == null) { return false; }
         if (getClass() != obj.getClass()) { return false; }
-        CheckerReasonDetail other = (CheckerReasonDetail) obj;
+        MutableReasonDetail other = (MutableReasonDetail) obj;
         if (location == null) {
             if (other.location != null) { return false; }
         } else if (!location.equals(other.location)) { return false; }

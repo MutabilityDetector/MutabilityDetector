@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -64,7 +64,7 @@ public class AssertionReporterTest {
     @Test
     public void thrownExceptionContainsHelpfulMessage() throws Exception {
         CodeLocation<ClassLocation> codeLocation = ClassLocation.fromDotted(dotted("d.e.SimpleClassName"));
-        CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable",
+        MutableReasonDetail reason = new MutableReasonDetail("a reason the class is mutable",
                 codeLocation,
                 PUBLISHED_NON_FINAL_FIELD);
 
@@ -89,7 +89,7 @@ public class AssertionReporterTest {
     @Ignore("In progress")
     @Test
     public void thrownExceptionContainsMessageAboutWarningsWhichAreSuppressed() throws Exception {
-        CheckerReasonDetail reason = new CheckerReasonDetail("a reason the class is mutable",
+        MutableReasonDetail reason = new MutableReasonDetail("a reason the class is mutable",
                 null,
                 PUBLISHED_NON_FINAL_FIELD);
 
@@ -110,7 +110,7 @@ public class AssertionReporterTest {
 
     @Test
     public void performsAssertThatButWrapsExceptionInMutabilityAssertionErrorWithSameMessage() throws Exception {
-        CheckerReasonDetail reasonDetail = new CheckerReasonDetail("this message should appear", 
+        MutableReasonDetail reasonDetail = new MutableReasonDetail("this message should appear", 
                                                                    fromDotted(dotted("a.b.c")), 
                                                                    ESCAPED_THIS_REFERENCE);
         try {
@@ -123,7 +123,7 @@ public class AssertionReporterTest {
         }
     }
 
-    private static Collection<CheckerReasonDetail> unusedReasons() {
-        return TestUtil.unusedCheckerReasonDetails();
+    private static Collection<MutableReasonDetail> unusedReasons() {
+        return TestUtil.unusedMutableReasonDetails();
     }
 }

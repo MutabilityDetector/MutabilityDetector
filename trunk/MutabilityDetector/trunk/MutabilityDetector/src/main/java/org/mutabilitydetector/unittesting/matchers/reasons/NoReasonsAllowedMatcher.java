@@ -15,12 +15,12 @@ import static org.hamcrest.core.IsNot.not;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsAnything;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
-public class NoReasonsAllowedMatcher extends BaseCheckerReasonDetailMatcher {
-    private final Matcher<CheckerReasonDetail> nothingEver = not(IsAnything.<CheckerReasonDetail> anything());
+public class NoReasonsAllowedMatcher extends BaseMutableReasonDetailMatcher {
+    private final Matcher<MutableReasonDetail> nothingEver = not(IsAnything.<MutableReasonDetail> anything());
 
-    public static Matcher<CheckerReasonDetail> noWarningsAllowed() {
+    public static Matcher<MutableReasonDetail> noWarningsAllowed() {
         return new NoReasonsAllowedMatcher();
     }
 
@@ -30,7 +30,7 @@ public class NoReasonsAllowedMatcher extends BaseCheckerReasonDetailMatcher {
     }
 
     @Override
-    protected boolean matchesSafely(CheckerReasonDetail item, Description mismatchDescription) {
+    protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
         return nothingEver.matches(item);
     }
 }

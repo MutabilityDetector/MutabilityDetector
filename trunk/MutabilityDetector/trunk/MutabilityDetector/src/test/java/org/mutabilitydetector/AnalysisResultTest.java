@@ -23,7 +23,7 @@ public class AnalysisResultTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void throwsExceptionWhenNotImmutableAndNoReasonsGiven_collection() throws Exception {
-        AnalysisResult.analysisResult("someclass", IsImmutable.NOT_IMMUTABLE, new ArrayList<CheckerReasonDetail>());
+        AnalysisResult.analysisResult("someclass", IsImmutable.NOT_IMMUTABLE, new ArrayList<MutableReasonDetail>());
     }
 
     @Test

@@ -119,7 +119,7 @@ public class MutabilityCheckerTest {
     @Test
     public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {
         AnalysisResult analysisResult = getAnalysisResult(MutableByAssigningAbstractTypeToField.class);
-        Collection<CheckerReasonDetail> reasons = analysisResult.reasons;
+        Collection<MutableReasonDetail> reasons = analysisResult.reasons;
         assertThat(formatReasons(reasons), reasons.size(), is(1));
 
         Reason reason = reasons.iterator().next().reason();

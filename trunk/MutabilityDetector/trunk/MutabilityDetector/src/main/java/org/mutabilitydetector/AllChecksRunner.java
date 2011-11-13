@@ -29,7 +29,7 @@ import org.mutabilitydetector.locations.Dotted;
 public class AllChecksRunner {
 
     private final Dotted toAnalyse;
-    private final Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
+    private final Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
     private final IMutabilityCheckerFactory factory;
     private final ICheckerRunnerFactory checkerRunnerFactory;
 

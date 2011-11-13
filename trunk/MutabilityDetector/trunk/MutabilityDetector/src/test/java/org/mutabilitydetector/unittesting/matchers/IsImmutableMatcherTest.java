@@ -17,7 +17,7 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
-import static org.mutabilitydetector.TestUtil.unusedCheckerReasonDetails;
+import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
 public class IsImmutableMatcherTest {
 
@@ -41,14 +41,14 @@ public class IsImmutableMatcherTest {
 
     @Test
     public void doesNotMatchForDifferentIsImmutableResult() throws Exception {
-        AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, unusedCheckerReasonDetails());
+        AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, unusedMutableReasonDetails());
         assertThat(matcher.matches(nonMatchingResult), is(false));
     }
 
     @Test
     public void hasDescriptiveErrorMessageForMismatch() throws Exception {
-        Collection<CheckerReasonDetail> reasons = new ArrayList<CheckerReasonDetail>();
-        reasons.add(new CheckerReasonDetail("mutable coz i sez so",
+        Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
+        reasons.add(new MutableReasonDetail("mutable coz i sez so",
                 fromInternalName("c/d/e"),
                 ABSTRACT_TYPE_INHERENTLY_MUTABLE));
         AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, reasons);

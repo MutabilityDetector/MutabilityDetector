@@ -14,7 +14,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.hamcrest.Matcher;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher;
 import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
@@ -35,7 +35,7 @@ public class AllowedReason {
         return new AllowingForSubclassing();
     }
 
-    public static Matcher<CheckerReasonDetail> noReasonsAllowed() {
+    public static Matcher<MutableReasonDetail> noReasonsAllowed() {
         return NoReasonsAllowedMatcher.noWarningsAllowed();
     }
 

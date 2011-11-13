@@ -17,19 +17,19 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 
 public class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     
     public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
-                                                               Iterable<Matcher<CheckerReasonDetail>> allowing) {
+                                                               Iterable<Matcher<MutableReasonDetail>> allowing) {
         return new WithAllowedReasonsMatcher(areImmutable, allowing);
     }
     
     private final Matcher<AnalysisResult> isImmutable;
-    private final Iterable<Matcher<CheckerReasonDetail>> allowedReasonMatchers;
+    private final Iterable<Matcher<MutableReasonDetail>> allowedReasonMatchers;
 
-    public WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<CheckerReasonDetail>> allowedReasons) {
+    public WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<MutableReasonDetail>> allowedReasons) {
         this.isImmutable = isImmutable;
         this.allowedReasonMatchers = allowedReasons;
     }
@@ -46,12 +46,12 @@ public class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<Analysi
         }
     }
     
-    private boolean mutabilityReasonsHaveBeenSuppressed(Collection<CheckerReasonDetail> reasons) {
-        Collection<CheckerReasonDetail> allowedReasons = new ArrayList<CheckerReasonDetail>();
-        Collection<CheckerReasonDetail> actualReasons = new ArrayList<CheckerReasonDetail>(reasons);
+    private boolean mutabilityReasonsHaveBeenSuppressed(Collection<MutableReasonDetail> reasons) {
+        Collection<MutableReasonDetail> allowedReasons = new ArrayList<MutableReasonDetail>();
+        Collection<MutableReasonDetail> actualReasons = new ArrayList<MutableReasonDetail>(reasons);
         
-        for (CheckerReasonDetail reasonDetail: reasons) {
-            for (Matcher<CheckerReasonDetail> allowedReasonMatcher: allowedReasonMatchers) {
+        for (MutableReasonDetail reasonDetail: reasons) {
+            for (Matcher<MutableReasonDetail> allowedReasonMatcher: allowedReasonMatchers) {
                 if (allowedReasonMatcher.matches(reasonDetail)) {
                     allowedReasons.add(reasonDetail);
                 }

@@ -30,7 +30,7 @@ import static org.mutabilitydetector.TestUtil.runChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerReasonDetail;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
@@ -79,7 +79,7 @@ public class AbstractTypeToFieldCheckerTest {
 
         assertThat(result.reasons.size(), is(1));
 
-        CheckerReasonDetail reasonDetail = result.reasons.iterator().next();
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
         String typeName = reasonDetail.codeLocation().typeName();
         assertThat(typeName, is(MutableByAssigningAbstractTypeToField.class.getName()));
     }
@@ -91,7 +91,7 @@ public class AbstractTypeToFieldCheckerTest {
 
         assertThat(result.reasons.size(), is(1));
 
-        CheckerReasonDetail reasonDetail = result.reasons.iterator().next();
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
         assertThat(reasonDetail.message(), containsString(abstractTypeAssigned.getName()));
     }
 
