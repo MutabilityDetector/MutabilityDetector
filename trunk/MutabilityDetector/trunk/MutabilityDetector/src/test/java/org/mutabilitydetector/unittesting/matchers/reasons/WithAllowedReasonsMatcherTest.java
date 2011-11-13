@@ -20,7 +20,9 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
+import static org.mutabilitydetector.TestUtil.unusedReason;
 import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noWarningsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
@@ -30,13 +32,12 @@ import org.mockito.Mockito;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 
 public class WithAllowedReasonsMatcherTest {
 
-    CodeLocation<?> unusedCodeLocation = ClassLocation.fromInternalName("some fake class");
+    CodeLocation<?> unusedCodeLocation = TestUtil.unusedCodeLocation();
 
     @Test
     public void passesWhenPrimaryResultPasses() throws Exception {
@@ -73,8 +74,8 @@ public class WithAllowedReasonsMatcherTest {
     }
     
     @Test public void failsWhenResultDoesNotMatchAndOnlyOneOfManyReasonsAreAllowed() {
-        MutableReasonDetail allowedReason = new MutableReasonDetail("allowed", unusedCodeLocation, null);
-        MutableReasonDetail disallowedReason = new MutableReasonDetail("disallowed", unusedCodeLocation, null);
+        MutableReasonDetail allowedReason = newMutableReasonDetail("allowed", unusedCodeLocation, unusedReason());
+        MutableReasonDetail disallowedReason = newMutableReasonDetail("disallowed", unusedCodeLocation, unusedReason());
         
         Matcher<MutableReasonDetail> onlyAllowOneReason = mock(Matcher.class);
         when(onlyAllowOneReason.matches(allowedReason)).thenReturn(true);

@@ -21,11 +21,21 @@ public final class MutableReasonDetail {
     private final CodeLocation<?> location;
     private final Reason reason;
 
-    public MutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
+    private MutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
         this.message = message;
         this.location = location;
         this.reason = reason;
+    }
+    
+    public static MutableReasonDetail newMutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
+        checkNotNull(message, location, reason);
+        return new MutableReasonDetail(message, location, reason);
+    }
 
+    private static void checkNotNull(String message, CodeLocation<?> location, Reason reason) {
+        if (message == null) throw new NullPointerException("message cannot be null");
+        if (location == null) throw new NullPointerException("location cannot be null");
+        if (reason == null) throw new NullPointerException("reason cannot be null");
     }
 
     public Reason reason() {
@@ -42,16 +52,16 @@ public final class MutableReasonDetail {
 
     @Override
     public String toString() {
-        return format("CheckerReasonDetail@%s[%s, %s, %s]", toHexString(hashCode()), message, reason, location);
+        return format("%s@%s[%s, %s, %s]", getClass().getSimpleName(), toHexString(hashCode()), message, reason, location);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((reason == null) ? 0 : reason.hashCode());
+        result = prime * result + location.hashCode();
+        result = prime * result + message.hashCode();
+        result = prime * result + reason.hashCode();
         return result;
     }
 
@@ -61,16 +71,12 @@ public final class MutableReasonDetail {
         if (obj == null) { return false; }
         if (getClass() != obj.getClass()) { return false; }
         MutableReasonDetail other = (MutableReasonDetail) obj;
-        if (location == null) {
-            if (other.location != null) { return false; }
-        } else if (!location.equals(other.location)) { return false; }
-        if (message == null) {
-            if (other.message != null) { return false; }
-        } else if (!message.equals(other.message)) { return false; }
-        if (reason == null) {
-            if (other.reason != null) { return false; }
-        } else if (!reason.equals(other.reason)) { return false; }
+        if (!location.equals(other.location)) { return false; }
+        if (!message.equals(other.message)) { return false; }
+        if (!reason.equals(other.reason)) { return false; }
+        
         return true;
     }
+
 
 }

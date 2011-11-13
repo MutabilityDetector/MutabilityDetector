@@ -22,9 +22,9 @@ import static org.mutabilitydetector.locations.Slashed.slashed;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -97,9 +97,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
 
     @Override
     public void visitAnalysisException(Throwable toBeThrown) {
-        addResult(errorReasonDescription(toBeThrown),
-                getCodeLocationForException(),
-                MutabilityReason.CANNOT_ANALYSE);
+        addResult(errorReasonDescription(toBeThrown), getCodeLocationForException(), MutabilityReason.CANNOT_ANALYSE);
     }
 
     public String errorReasonDescription(Throwable toBeThrown) {
@@ -124,7 +122,7 @@ public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
     }
 
     protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
-        return new MutableReasonDetail(message, location, reason);
+        return MutableReasonDetail.newMutableReasonDetail(message, location, reason);
     }
 
     protected void addResult(String message, CodeLocation<?> location, Reason reason) {

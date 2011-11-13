@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.ClassLocation.fromSlashed;
@@ -58,10 +59,10 @@ public class SessionResultsFormatterTest {
 
     @Test
     public void verboseOutputIncludesDetailedReasonAndPrettyPrintedCodeLocation() throws Exception {
-        Collection<MutableReasonDetail> reasons = Arrays.asList(new MutableReasonDetail("1st checker reason message",
+        Collection<MutableReasonDetail> reasons = Arrays.asList(newMutableReasonDetail("1st checker reason message",
                                                                                         fromSlashed(slashed("path/to/MyClass")),
                                                                                         NOT_DECLARED_FINAL),
-                                                                new MutableReasonDetail("2nd checker reason message",
+                                                                newMutableReasonDetail("2nd checker reason message",
                                                                                         FieldLocation.fieldLocation("myField",
                                                                                                                     fromInternalName("path/to/OtherClass")),
                                                                                         MUTABLE_TYPE_TO_FIELD));

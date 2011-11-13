@@ -16,7 +16,7 @@ public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
 
     public abstract String prettyPrint();
     
-    public static class UnknownCodeLocation implements CodeLocation<UnknownCodeLocation> {
+    public final static class UnknownCodeLocation implements CodeLocation<UnknownCodeLocation> {
 
         public static final UnknownCodeLocation UNKNOWN = new UnknownCodeLocation();
         

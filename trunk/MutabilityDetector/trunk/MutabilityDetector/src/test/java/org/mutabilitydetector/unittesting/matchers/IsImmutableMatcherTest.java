@@ -17,6 +17,7 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
@@ -48,7 +49,7 @@ public class IsImmutableMatcherTest {
     @Test
     public void hasDescriptiveErrorMessageForMismatch() throws Exception {
         Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
-        reasons.add(new MutableReasonDetail("mutable coz i sez so",
+        reasons.add(newMutableReasonDetail("mutable coz i sez so",
                 fromInternalName("c/d/e"),
                 ABSTRACT_TYPE_INHERENTLY_MUTABLE));
         AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, reasons);

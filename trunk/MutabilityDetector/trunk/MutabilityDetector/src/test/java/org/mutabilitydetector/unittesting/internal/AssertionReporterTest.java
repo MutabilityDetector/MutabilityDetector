@@ -21,6 +21,7 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.fromDotted;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -32,8 +33,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -64,7 +65,7 @@ public class AssertionReporterTest {
     @Test
     public void thrownExceptionContainsHelpfulMessage() throws Exception {
         CodeLocation<ClassLocation> codeLocation = ClassLocation.fromDotted(dotted("d.e.SimpleClassName"));
-        MutableReasonDetail reason = new MutableReasonDetail("a reason the class is mutable",
+        MutableReasonDetail reason = newMutableReasonDetail("a reason the class is mutable",
                 codeLocation,
                 PUBLISHED_NON_FINAL_FIELD);
 
@@ -89,8 +90,8 @@ public class AssertionReporterTest {
     @Ignore("In progress")
     @Test
     public void thrownExceptionContainsMessageAboutWarningsWhichAreSuppressed() throws Exception {
-        MutableReasonDetail reason = new MutableReasonDetail("a reason the class is mutable",
-                null,
+        MutableReasonDetail reason = newMutableReasonDetail("a reason the class is mutable",
+                ClassLocation.fromDotted(dotted("d.e.SimpleClassName")),
                 PUBLISHED_NON_FINAL_FIELD);
 
         AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
@@ -110,7 +111,7 @@ public class AssertionReporterTest {
 
     @Test
     public void performsAssertThatButWrapsExceptionInMutabilityAssertionErrorWithSameMessage() throws Exception {
-        MutableReasonDetail reasonDetail = new MutableReasonDetail("this message should appear", 
+        MutableReasonDetail reasonDetail = newMutableReasonDetail("this message should appear", 
                                                                    fromDotted(dotted("a.b.c")), 
                                                                    ESCAPED_THIS_REFERENCE);
         try {

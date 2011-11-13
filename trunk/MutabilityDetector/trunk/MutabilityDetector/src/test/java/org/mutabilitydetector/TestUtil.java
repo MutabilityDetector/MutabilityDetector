@@ -21,6 +21,7 @@ import static java.util.Arrays.asList;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -31,6 +32,7 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 
 @Ignore
@@ -53,7 +55,7 @@ public class TestUtil {
     }
 
     public static MutableReasonDetail unusedMutableReasonDetail() {
-        return new MutableReasonDetail("this reason is not meant to be involved", 
+        return newMutableReasonDetail("this reason is not meant to be involved", 
                                        ClassLocation.fromInternalName("some made up class name"), 
                                        NULL_REASON);
     }
@@ -73,5 +75,13 @@ public class TestUtil {
 
     public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
         return AnalysisResult.analysisResult(dottedClassName, isImmutable, unusedMutableReasonDetails());
+    }
+
+    public static CodeLocation<?> unusedCodeLocation() {
+        return ClassLocation.fromInternalName("this is an unused code location");
+    }
+
+    public static Reason unusedReason() {
+        return MutabilityReason.NULL_REASON;
     }
 }
