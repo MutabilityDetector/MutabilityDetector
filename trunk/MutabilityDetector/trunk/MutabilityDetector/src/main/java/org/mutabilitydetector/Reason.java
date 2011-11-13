@@ -19,7 +19,6 @@ import org.mutabilitydetector.IAnalysisSession.IsImmutable;
  * already associated with a class to help their decision.
  * 
  * @author Graham Allan (grundlefleck@gmail.com)
- * @date 19 Apr 2010
  * 
  */
 public interface Reason {

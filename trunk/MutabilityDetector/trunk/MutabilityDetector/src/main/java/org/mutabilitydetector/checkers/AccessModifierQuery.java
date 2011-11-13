@@ -23,8 +23,8 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC;
  * 
  * <code>
  * 
- * {@link #method(access)}.isPrivate();
- * {@link #field(access)}.isStatic();
+ * {@link #method(int)}.isPrivate();
+ * {@link #field(int)}.isStatic();
  * </code>
  * 
  */

@@ -34,10 +34,6 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * </p>
  * <h1>Help Guide</h2>
  * <h2>Contents</h2>
- * <br>
- * 
- * 
- * 
  * <ol>
  * <li>Preamble
  * <ul>
@@ -67,48 +63,51 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * TestNG. If Mutability Detector is incompatible with your favourite testing library, please get in touch, and we'll
  * see what we can do about that.
  * 
- * <h3 id="FirstTestCase">Your first test case.</h4>
+ * <h3 id="FirstTestCase">Your first test case.</h3>
  * 
- * The most simple assertion you can make will look something like this: <code><pre>
- * import static {@link org.mutabilitydetector.unittesting.MutabilityAssert#assertImmutable};
+ * The most simple assertion you can make will look something like this: 
+ * <pre><code>
+ * import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
  *     assertImmutable(MyClass.class); 
  * }
- * </pre></code>
+ * </code></pre>
  * <p>
  * This assertion will trigger an analysis of
- * <code>MyClass<code>, passing if found to be immutable, failing if found to be mutable.
+ * <code>MyClass</code>, passing if found to be immutable, failing if found to be mutable.
  * </p>
+ * 
+ * 
+ * <h3 id="ConfiguringTheAssertion">Configuring the assertion</h3> 
  * <p>
- * 
- * 
- * <h3 id="ConfiguringTheAssertion">Configuring the assertion</h4> The method used above is a shortcut for more
+ * The method used above is a shortcut for more
  * expressive forms of the assertion, and does not allow any further configuration. An equivalent assertion is:
  * </p>
  * 
- * <code><pre>
- * import static {@link org.mutabilitydetector.unittesting.MutabilityAssert#assertInstancesOf};
- * import static {@link org.mutabilitydetector.unittesting.MutabilityMatchers#areImmutable};
+ * <pre><code>
+ * import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+ * import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
  *     assertInstancesOf(MyClass.class, areImmutable()); 
- * }</pre></code> This is the form that can be used for extra configuration of the assertion. Let's take a look at an
+ * }</code></pre> 
+ * 
+ * 
+ * This is the form that can be used for extra configuration of the assertion. Let's take a look at an
  * assertion that is configured differently. Consider a class which is immutable, except for fields not being declared
  * <code>final</code>. According to <a href="http://jcip.net/">Java Concurrency In Practice</a>, instances of classes
  * like this, as long as they are <i>safely publised</i> are still considered <i>effectively immutable</i>. Please note
  * however, Mutability Detector does not check that objects are safely published. <br />
  * To represent this in a unit test, the assertion would like this:
  * 
- * <pre>
- * <code>
- * import static {@link org.mutabilitydetector.unittesting.MutabilityAssert#assertInstancesOf};
- * import static {@link org.mutabilitydetector.unittesting.MutabilityMatchers#areEffectivelyImmutable};
+ * <pre><code>
+ * import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+ * import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
  *     assertInstancesOf(MyClassWhereTheFieldsAreNotFinal.class, areImmutable());
- * }</code>
- * </pre>
+ * }</code></pre>
  * 
  * See also:
  * <ul>
@@ -129,15 +128,13 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * There can also be cases where your class is found to be mutable, but you know for your scenario that it's an
  * acceptable reason. Consider the following class:
  * 
- * <pre>
- * <code>public abstract class AbstractIntHolder {
+ * <pre><code>public abstract class AbstractIntHolder {
  *   private final int intField;
  *   
  *   public AbstractIntHolder(int intToStore) {
  *     this.intField = intToStore;
  *   }
- * }</code>
- * </pre>
+ * }</code></pre>
  * 
  * <p>
  * In this case, if you assert <code>AbstractIntHolder</code> is immutable, the test will fail. This is because
@@ -152,16 +149,15 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * <code>AbstractIntHolder</code> could look like this:
  * </p>
  * 
- * <pre>
- * <code>
- * import static {@link org.mutabilitydetector.unittesting.MutabilityAssert#assertInstancesOf};
- * import static {@link org.mutabilitydetector.unittesting.MutabilityMatchers#areEffectivelyImmutable};
- * import static {@link org.mutabilitydetector.unittesting.AllowedReason#allowingForSubclassing};
+ * <pre><code>
+ * import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+ * import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+ * import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
  *     assertInstancesOf(AbstractIntHolder.class, areImmutable(), allowingForSubclassing());
- * }</code>
- * </pre>
+ * }
+ * </code></pre>
  * 
  * This will allow your test to pass, but fail for any other reasons that are introduced, e.g. if someone adds a setter
  * method.
@@ -185,7 +181,9 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * @see IsImmutable
  * 
  */
-public class MutabilityAssert {
+public final class MutabilityAssert {
+    
+    private MutabilityAssert() { }
 
     private final static AssertionReporter reporter = new AssertionReporter();
 

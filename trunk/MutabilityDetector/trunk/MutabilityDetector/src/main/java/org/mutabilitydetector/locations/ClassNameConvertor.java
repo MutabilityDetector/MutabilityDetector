@@ -12,7 +12,6 @@ package org.mutabilitydetector.locations;
 
 /**
  * @author Graham Allan (grundlefleck@gmail.com)
- * @date 8 Apr 2010
  * 
  */
 public class ClassNameConvertor {
