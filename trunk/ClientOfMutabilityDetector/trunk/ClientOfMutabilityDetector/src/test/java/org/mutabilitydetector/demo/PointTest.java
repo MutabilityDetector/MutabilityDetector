@@ -4,6 +4,8 @@ import org.junit.Test;
 
 public class PointTest {
     
+    // all the other unit tests you undoubtedly have
+    
     @Test
     public void pointIsImmutable() throws Exception {
         // how to check?
