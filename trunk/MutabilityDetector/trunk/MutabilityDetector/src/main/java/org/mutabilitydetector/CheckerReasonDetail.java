@@ -15,6 +15,7 @@ import static java.lang.String.format;
 
 import org.mutabilitydetector.locations.CodeLocation;
 
+// TODO: rename to MutableReasonDetail(?)
 public class CheckerReasonDetail {
 
     private final String message;

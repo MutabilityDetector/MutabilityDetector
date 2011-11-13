@@ -37,6 +37,7 @@ public interface IAnalysisSession {
 
     AnalysisDatabase analysisDatabase();
 
+    // TODO: extract into top level class, and write javadoc
     public static enum IsImmutable {
         IMMUTABLE, EFFECTIVELY_IMMUTABLE, NOT_IMMUTABLE, COULD_NOT_ANALYSE;
     }
