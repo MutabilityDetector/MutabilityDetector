@@ -33,6 +33,16 @@ public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
         public int compareTo(UnknownCodeLocation o) {
             return 0; // There can be only one.
         }
+        
+        @Override
+        public boolean equals(Object obj) {
+            return obj == UNKNOWN;
+        }
+        
+        @Override
+        public int hashCode() {
+            return 0;
+        }
 
         @Override
         public String typeName() {
