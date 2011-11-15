@@ -32,10 +32,12 @@ import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.mutabletofield.ImmutableButHasUnmodifiedArrayAsField;
 import org.mutabilitydetector.benchmarks.mutabletofield.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByHavingArrayTypeAsField;
@@ -88,6 +90,13 @@ public class MutableTypeToFieldCheckerTest {
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
         assertNotImmutable(result);
+    }
+
+    @Ignore
+    @Test
+    public void instanceFieldWhichHasAFinalUnmodifiedArrayIsImmutable() throws Exception {
+        result = runChecker(checker, ImmutableButHasUnmodifiedArrayAsField.class);
+        assertImmutable(result);
     }
 
     @Test
