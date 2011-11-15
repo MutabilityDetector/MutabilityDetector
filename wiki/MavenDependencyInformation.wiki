@@ -13,7 +13,7 @@ The dependency snippet for Mutability Detector is:
 <dependency>
   <groupId>org.mutabilitydetector</groupId>
   <artifactId>MutabilityDetector</artifactId>
-  <version>0.6</version>
+  <version>0.7</version>
   <scope>test</scope>
 </dependency>
 }}}
