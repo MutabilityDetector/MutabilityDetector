@@ -112,7 +112,7 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
- *     assertInstancesOf(MyClassWhereTheFieldsAreNotFinal.class, areImmutable());
+ *     assertInstancesOf(MyClassWhereTheFieldsAreNotFinal.class, areEffectivelyImmutable());
  * }</code></pre>
  * 
  * See also:
