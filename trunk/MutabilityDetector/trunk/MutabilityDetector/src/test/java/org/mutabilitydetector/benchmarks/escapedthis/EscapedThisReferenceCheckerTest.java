@@ -23,14 +23,16 @@ import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.runChecker;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethodCall.AsFirstOfSeveralParameters;
@@ -56,12 +58,16 @@ import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsIn
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsStaticFieldOfOtherClass;
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.ThisPassedToPrivateMethodWhichDoesPublishReference;
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 
 @RunWith(Theories.class)
 public class EscapedThisReferenceCheckerTest {
 
+    @Rule public MethodRule rule = new IncorrectAnalysisRule();
+    
     @Test
     public void immutableExampleIsNotRenderedMutable() throws Exception {
         assertThisDoesNotEscape(ImmutableExample.class);
@@ -113,14 +119,14 @@ public class EscapedThisReferenceCheckerTest {
         assertThisDoesNotEscape(Safe.PassesInitialisedFieldToOtherMethod.class);
     }
 
-    @Ignore("False positive")
     @Test
+    @FalsePositive("Is only assigning this reference to field of same instance")
     public void doesNotRenderMutableForAssigningThisToInstanceField() throws Exception {
         assertThisDoesNotEscape(SaveThisReferenceAsInstanceFieldOfThisClass.class);
     }
     
-    @Ignore("Can't detect this situation.")
     @Test
+    @FalsePositive("Can't detect this situation.")
     public void thisReferenceAliasedToSomethingElseWhichEscapesIsReported() throws Exception {
        thisReferenceEscapingRendersClassMutable(AliasesThisReferenceBeforeLettingItEscape.class);
     }

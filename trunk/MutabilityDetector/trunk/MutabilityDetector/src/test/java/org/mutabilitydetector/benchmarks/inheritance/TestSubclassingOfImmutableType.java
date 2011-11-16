@@ -20,30 +20,35 @@ import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.junit.FalseNegative;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 public class TestSubclassingOfImmutableType {
 
+    @Rule public MethodRule rule = new IncorrectAnalysisRule();
+    
     @Test
-    public void testSupertypeIsDefinitelyNotImmutable() throws Exception {
+    public void supertypeIsDefinitelyNotImmutable() throws Exception {
         assertNotImmutable(getAnalysisResult(MutableSupertype.class));
     }
 
-    @Ignore("InheritedMutabilityChecker doesn't work properly yet.")
+    @FalseNegative("InheritedMutabilityChecker doesn't work properly yet.")
     @Test
-    public void testImmutableSubtypeIsReportedAsImmutable() throws Exception {
-        assertNotImmutable(ImmutableSubtypeOfMutableSupertype.class);
+    public void immutableSubtypeIsReportedAsMutable() throws Exception {
+        assertImmutable(ImmutableSubtypeOfMutableSupertype.class);
     }
 
     @Test
-    public void testMutableSubtype() throws Exception {
+    public void mutableSubtype() throws Exception {
         assertNotImmutable(MutableSubtypeOfMutableSupertype.class);
     }
 
     @Test
-    public void testEnumTypeIsDefinitelyImmutable() throws Exception {
+    public void enumTypeIsDefinitelyImmutable() throws Exception {
         assertImmutable(getAnalysisResult(EnumType.class));
     }
 }

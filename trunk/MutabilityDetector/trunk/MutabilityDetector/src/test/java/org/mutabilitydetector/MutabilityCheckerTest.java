@@ -27,7 +27,7 @@ import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 import java.util.Collection;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
@@ -38,12 +38,15 @@ import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethod
 import org.mutabilitydetector.benchmarks.finalfield.HasNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
-import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 public class MutabilityCheckerTest {
 
+    @Rule public IncorrectAnalysisRule rule = new IncorrectAnalysisRule();
+    
     @Test
     public void immutableExample() throws Exception {
         assertImmutable(ImmutableExample.class);
@@ -57,11 +60,6 @@ public class MutabilityCheckerTest {
     @Test
     public void mutableByAllowingAccessToNonFinalField() throws Exception {
         assertNotImmutable(MutableByHavingPublicNonFinalField.class);
-    }
-
-    @Test
-    public void mutableByAssigningAbstractTypeToField() throws Exception {
-        assertNotImmutable(MutableByAssigningInterfaceToField.class);
     }
 
     @Test
@@ -79,14 +77,14 @@ public class MutabilityCheckerTest {
         assertNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
     }
 
-    @Ignore
     @Test
+    @FalsePositive("Safely copies list into unmodifiable list.")
     public void immutableByCopyingMutableListIntoNewArrayListAndUnmodifiableList() throws Exception {
         assertImmutable(CopyListIntoNewArrayListAndUnmodifiableListIdiom.class);
     }
 
-    @Ignore
     @Test
+    @FalsePositive("Safely copies list into unmodifiable list.")
     public void immutableByCopyingMutableListIntoNewArrayListAndUnmodifiableListInStaticMethod() throws Exception {
         assertImmutable(CopyListIntoNewArrayListAndUnmodifiableListIdiom.StaticMethodDoesTheCopying.class);
     }

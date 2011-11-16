@@ -28,11 +28,12 @@ import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMetho
 import java.math.BigDecimal;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerRunner;
@@ -54,9 +55,13 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.SetterMethodChecker;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 @RunWith(Theories.class)
 public class SetterMethodCheckerTest {
+    
+    @Rule public MethodRule rule = new IncorrectAnalysisRule();
 
     private SetterMethodChecker checker;
     private CheckerRunner checkerRunner;
@@ -95,7 +100,7 @@ public class SetterMethodCheckerTest {
         assertImmutable(doCheck(EnumType.class));
     }
 
-    @Ignore("Field [myField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]" + "Field [primitiveField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]")
+    @FalsePositive("Field [myField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]" + "Field [primitiveField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]")
     @Test
     public void settingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
         assertImmutable(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class));
@@ -111,19 +116,18 @@ public class SetterMethodCheckerTest {
         assertImmutable(doCheck(ImmutableUsingPrivateFieldSettingMethod.class));
     }
 
-    @Ignore("Field [reassignable] can be reassigned within method [setFieldOnParameter]")
+    @FalsePositive("Field [reassignable] can be reassigned within method [setFieldOnParameter]")
     @Test
     public void settingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
         assertImmutable(doCheck(ImmutableButSetsFieldOfOtherClass.class));
     }
 
-    @Ignore("Was <DEFINITELY> immutable")
     @Test
     public void settingFieldOfMutableFieldRendersClassMutable() throws Exception {
         assertNotImmutable(doCheck(MutableBySettingFieldOfField.class));
     }
 
-    @Ignore("Does not create any reasons.")
+    @FalsePositive("Does not create any reasons.")
     @Test
     public void subclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
         AnalysisResult result = doCheck(StillMutableSubclass.class);
@@ -132,14 +136,14 @@ public class SetterMethodCheckerTest {
         assertNotImmutable(result);
     }
 
-    @Ignore("Field [precision] can be reassigned within method [precision]" + "Field [stringCache] can be reassigned within method [toString]"
+    @FalsePositive("Field [precision] can be reassigned within method [precision]" + "Field [stringCache] can be reassigned within method [toString]"
             + "Field [intVal] can be reassigned within method [inflate]")
     @Test
     public void bigDecimalDoesNotFailCheck() throws Exception {
         assertImmutable(doCheck(BigDecimal.class));
     }
 
-    @Ignore("Field [hash] can be reassigned within method [hashCode]")
+    @FalsePositive("Field [hash] can be reassigned within method [hashCode]")
     @Test
     public void stringDoesNotFailCheck() throws Exception {
         assertImmutable(doCheck(String.class));
@@ -151,7 +155,7 @@ public class SetterMethodCheckerTest {
         assertNotImmutable(result);
     }
 
-    @Ignore("Field can be reassigned.")
+    @FalsePositive("Field can be reassigned.")
     @Test
     public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
         assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));

@@ -33,7 +33,6 @@ public final class ImmutableExample {
 interface MutableFieldInterface {
 }
 
-@SuppressWarnings("unused")
 final class ImmutableField implements MutableFieldInterface {
     public ImmutableField(MutableFieldInterface possiblyMutable) {
     }

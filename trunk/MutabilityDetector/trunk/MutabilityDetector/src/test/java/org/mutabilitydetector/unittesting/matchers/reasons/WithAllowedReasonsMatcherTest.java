@@ -35,13 +35,13 @@ import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedRea
 
 import org.hamcrest.Matcher;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 
+@SuppressWarnings("unchecked")
 public class WithAllowedReasonsMatcherTest {
 
     CodeLocation<?> unusedCodeLocation = TestUtil.unusedCodeLocation();
@@ -69,7 +69,7 @@ public class WithAllowedReasonsMatcherTest {
     @Test public void passesWhenResultDoesNotMatchButTheOffendingReasonsAreAllowed() {
         MutableReasonDetail anyReason = TestUtil.unusedMutableReasonDetail(); 
         
-        Matcher<MutableReasonDetail> allowWhateverReason = Mockito.mock(Matcher.class);
+        Matcher<MutableReasonDetail> allowWhateverReason = mock(Matcher.class);
         when(allowWhateverReason.matches(anyReason)).thenReturn(true);
         
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);

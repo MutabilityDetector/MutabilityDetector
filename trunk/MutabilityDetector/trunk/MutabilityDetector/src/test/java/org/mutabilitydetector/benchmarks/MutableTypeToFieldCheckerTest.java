@@ -32,8 +32,9 @@ import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
@@ -43,10 +44,14 @@ import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstra
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public class MutableTypeToFieldCheckerTest {
 
+    @Rule public MethodRule rule = new IncorrectAnalysisRule();
+    
     private IAnalysisSession mockSession;
     private MutableTypeToFieldChecker checker;
     private AnalysisResult result;
@@ -92,8 +97,8 @@ public class MutableTypeToFieldCheckerTest {
         assertNotImmutable(result);
     }
 
-    @Ignore
     @Test
+    @FalsePositive("Array field is final, is never published or modified.")
     public void instanceFieldWhichHasAFinalUnmodifiedArrayIsImmutable() throws Exception {
         result = runChecker(checker, ImmutableButHasUnmodifiedArrayAsField.class);
         assertImmutable(result);

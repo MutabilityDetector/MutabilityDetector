@@ -33,7 +33,6 @@ class MutableExample {
     public String name;
 }
 
-@SuppressWarnings("unused")
 class PublishTarget {
     public void publishMutableField(MutableExample mutableField) {
     }

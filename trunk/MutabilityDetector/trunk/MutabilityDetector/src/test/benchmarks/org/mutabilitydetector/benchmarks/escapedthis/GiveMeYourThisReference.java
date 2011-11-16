@@ -21,7 +21,6 @@ import java.util.HashSet;
 
 import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.SetThisReferenceAsInstanceFieldOfOtherObject;
 
-@SuppressWarnings("unused")
 public class GiveMeYourThisReference {
 
     private final String obtainedStringField;

@@ -19,7 +19,6 @@ package org.mutabilitydetector.benchmarks.escapedthis;
 
 
 
-@SuppressWarnings("unused")
 public class Unsafe {
 
     public static final class ThisPassedToPrivateMethodWhichDoesPublishReference {

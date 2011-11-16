@@ -53,6 +53,7 @@ public class AnalysisDatabase {
         return new AnalysisDatabase(sessionCheckerRunner);
     }
 
+    @SuppressWarnings("unchecked")
     public <I extends AnalysisInformation> I requestInformation(InfoKey<I> infoCategory) {
         return (infoMap.containsKey(infoCategory)) 
                 ? (I) infoMap.get(infoCategory)

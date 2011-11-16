@@ -32,18 +32,22 @@ import java.util.Date;
 
 import javax.management.ImmutableDescriptor;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 public class WellKnownJavaTypesTest {
 
+    @Rule public IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
+    
     @Test
     public void Object() throws Exception {
         assertInstancesOf(Object.class, areImmutable(), allowingForSubclassing());
     }
 
-    @Ignore("Not final " + "Reassigned field " + "Mutable type to field (BigInteger, String)")
     @Test
+    @FalsePositive("Not final " + "Reassigned field " + "Mutable type to field (BigInteger, String)")
     public void BigDecimal() {
         assertInstancesOf(BigDecimal.class, areImmutable(), 
                           provided(BigInteger.class).isAlsoImmutable(),
@@ -51,17 +55,17 @@ public class WellKnownJavaTypesTest {
                           allowingForSubclassing());
     }
 
-    @Ignore("Not final" + "Published fields can be reassigned"
+    @Test
+    @FalsePositive("Not final" + "Published fields can be reassigned"
             + "Reassigning field"
             + "Mutable type to field (primitive array)"
             + "Field which is a mutable type")
-    @Test
     public void BigInteger() {
         assertInstancesOf(BigInteger.class, areImmutable());
     }
 
-    @Ignore("Mutable type to field (primitive array)" + "Field which is a mutable type")
     @Test
+    @FalsePositive("Mutable type to field (primitive array)" + "Field which is a mutable type")
     public void String() {
         assertInstancesOf(String.class, areImmutable());
     }
@@ -88,7 +92,7 @@ public class WellKnownJavaTypesTest {
                           provided(Object.class).isAlsoImmutable());
     }
 
-    @Ignore("Not final" + "Field hashCode reassigned" + "Field of mutable type (primitive array)")
+    @FalsePositive("Not final" + "Field hashCode reassigned" + "Field of mutable type (primitive array)")
     @Test
     public void ImmutableDescriptor() {
         assertInstancesOf(ImmutableDescriptor.class, areImmutable());
