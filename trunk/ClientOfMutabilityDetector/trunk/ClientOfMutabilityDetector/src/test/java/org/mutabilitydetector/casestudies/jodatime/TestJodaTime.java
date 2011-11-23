@@ -1,5 +1,6 @@
 package org.mutabilitydetector.casestudies.jodatime;
 
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
@@ -19,9 +20,10 @@ public class TestJodaTime {
 	@Rule
 	public MethodRule pendingRule = new PendingRule();
 
-	@PendingImplementation
 	@Test public void testorg_joda_time_base_AbstractInstant() {
-	    assertImmutable(org.joda.time.base.AbstractInstant.class);
+	    assertInstancesOf(org.joda.time.base.AbstractInstant.class,
+	                      areImmutable(),
+	                      allowingForSubclassing());
 	}
 	
 	@PendingImplementation
