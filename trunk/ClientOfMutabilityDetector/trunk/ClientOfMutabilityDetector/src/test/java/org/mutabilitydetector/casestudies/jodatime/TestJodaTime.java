@@ -4,11 +4,14 @@ import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubcla
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import net.ttsui.junit.rules.pending.PendingImplementation;
 import net.ttsui.junit.rules.pending.PendingRule;
 
 import org.joda.time.Chronology;
+import org.joda.time.DateTimeField;
+import org.joda.time.DurationField;
 import org.joda.time.chrono.AssembledChronology;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,11 +29,16 @@ public class TestJodaTime {
 	                      allowingForSubclassing());
 	}
 	
-	@PendingImplementation
-	@Test public void testorg_joda_time_chrono_AssembledChronology() {
+	@PendingImplementation("Partly due to issue 21, partly due to serialisation weirdness")
+	@SuppressWarnings("unchecked")
+    @Test public void testorg_joda_time_chrono_AssembledChronology() {
 	    assertInstancesOf(AssembledChronology.class, 
-	    				  areImmutable(), 
-				          provided(Chronology.class).isAlsoImmutable());
+	    				  areEffectivelyImmutable(), 
+				          provided(Chronology.class).isAlsoImmutable(),
+				          provided(DateTimeField.class).isAlsoImmutable(),
+				          provided(DurationField.class).isAlsoImmutable(), // DurationField is not specified as immutable
+				          provided(Object.class).isAlsoImmutable(), // iParam
+				          allowingForSubclassing());
 	}
 	
 	@PendingImplementation
