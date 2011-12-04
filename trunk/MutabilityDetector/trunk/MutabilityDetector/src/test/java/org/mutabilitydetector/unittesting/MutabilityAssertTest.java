@@ -23,9 +23,11 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNotBeingFinalClass;
+import org.mutabilitydetector.benchmarks.finalfield.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 
@@ -144,5 +147,15 @@ public class MutabilityAssertTest {
                 areImmutable(),
                 allowingForSubclassing());
     }
+    
+    @Test
+    public void canMatchEffectivelyImmutableAllowingAnotherReason() throws Exception {
+        assertInstancesOf(AlmostEffectivelyImmutable.class,
+                          areEffectivelyImmutable(),
+                          allowingNonFinalFields(),
+                          allowingForSubclassing());
+    }
+    
+    
     
 }

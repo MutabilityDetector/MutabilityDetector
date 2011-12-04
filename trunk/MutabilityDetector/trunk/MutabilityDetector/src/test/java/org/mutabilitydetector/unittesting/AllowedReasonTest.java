@@ -79,9 +79,7 @@ public class AllowedReasonTest {
     
     @Test
     public void allowingNonFinalFieldsReturnsMatcherForNonFinalFieldsReason() throws Exception {
-        Matcher<MutableReasonDetail> allowingNonFinalFields = AllowedReason.allowingNonFinalFields();
-        
-        assertThat(allowingNonFinalFields, instanceOf(AllowingNonFinalFields.class));
+        assertThat(AllowedReason.allowingNonFinalFields(), instanceOf(AllowingNonFinalFields.class));
     }
 
 }
