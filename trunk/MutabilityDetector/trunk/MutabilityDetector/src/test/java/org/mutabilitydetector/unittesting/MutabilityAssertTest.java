@@ -30,6 +30,7 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstance
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
@@ -156,6 +157,23 @@ public class MutabilityAssertTest {
                           allowingForSubclassing());
     }
     
+    @Test
+    public void canMatchImmutableAllowingAnotherReason() throws Exception {
+        assertInstancesOf(AlmostEffectivelyImmutable.class,
+                          areImmutable(),
+                          allowingNonFinalFields(),
+                          allowingForSubclassing());
+    }
     
+    /**
+     * @see #canMatchEffectivelyImmutableAllowingAnotherReason() for a workaround
+     */
+    @Ignore("Issue 21: can't think of an elegant solution to this,")
+    @Test
+    public void canMatchEffectivelyImmutableAllowingAnotherReasonWithoutExplicitlyAllowingNonFinalFields() throws Exception {
+        assertInstancesOf(AlmostEffectivelyImmutable.class,
+                          areEffectivelyImmutable(),
+                          allowingForSubclassing());
+    }
     
 }

@@ -26,7 +26,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 
-public class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
+public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     
     public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
                                                                Iterable<Matcher<MutableReasonDetail>> allowing) {
@@ -36,7 +36,7 @@ public class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<Analysi
     private final Matcher<AnalysisResult> isImmutable;
     private final Iterable<Matcher<MutableReasonDetail>> allowedReasonMatchers;
 
-    public WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<MutableReasonDetail>> allowedReasons) {
+    private WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<MutableReasonDetail>> allowedReasons) {
         this.isImmutable = isImmutable;
         this.allowedReasonMatchers = allowedReasons;
     }

@@ -24,7 +24,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 
-public class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
+public final class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     private final IsImmutable isImmutable;
     private AnalysisResult result;
 

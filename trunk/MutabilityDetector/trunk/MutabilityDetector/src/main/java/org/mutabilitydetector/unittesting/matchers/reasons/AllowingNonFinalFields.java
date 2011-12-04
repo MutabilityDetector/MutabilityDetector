@@ -1,5 +1,7 @@
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
+import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
+
 import org.hamcrest.Description;
 import org.mutabilitydetector.MutableReasonDetail;
 
@@ -11,8 +13,8 @@ public class AllowingNonFinalFields extends BaseMutableReasonDetailMatcher {
     }
 
     @Override
-    protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
-        throw new UnsupportedOperationException("auto generated method stub");
+    protected boolean matchesSafely(MutableReasonDetail reason, Description mismatchDescription) {
+        return reason.reason().isOneOf(NON_FINAL_FIELD);
     }
 
 }
