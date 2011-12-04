@@ -20,6 +20,7 @@ package org.mutabilitydetector.unittesting;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
@@ -35,8 +36,9 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
+import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
 
-public class AllowedReasonsTest {
+public class AllowedReasonTest {
 
     @Test
     public void providedClassIsAlsoImmutableAllowsAssigningAbstractType() throws Exception {
@@ -73,6 +75,13 @@ public class AllowedReasonsTest {
         Matcher<MutableReasonDetail> nonAllowed = noReasonsAllowed();
 
         assertThat(nonAllowed.matches(result), is(false));
+    }
+    
+    @Test
+    public void allowingNonFinalFieldsReturnsMatcherForNonFinalFieldsReason() throws Exception {
+        Matcher<MutableReasonDetail> allowingNonFinalFields = AllowedReason.allowingNonFinalFields();
+        
+        assertThat(allowingNonFinalFields, instanceOf(AllowingNonFinalFields.class));
     }
 
 }

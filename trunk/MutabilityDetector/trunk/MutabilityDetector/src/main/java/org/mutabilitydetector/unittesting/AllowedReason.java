@@ -23,10 +23,11 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
+import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher;
 import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
 
-public class AllowedReason {
+public final class AllowedReason {
 
     private AllowedReason() { }
 
@@ -42,8 +43,13 @@ public class AllowedReason {
         return new AllowingForSubclassing();
     }
 
+    public static Matcher<MutableReasonDetail> allowingNonFinalFields() {
+        return new AllowingNonFinalFields();
+    }
+
     public static Matcher<MutableReasonDetail> noReasonsAllowed() {
         return NoReasonsAllowedMatcher.noWarningsAllowed();
     }
+
 
 }
