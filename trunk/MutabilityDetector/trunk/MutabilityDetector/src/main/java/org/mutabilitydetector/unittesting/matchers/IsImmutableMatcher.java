@@ -17,7 +17,7 @@
 
 package org.mutabilitydetector.unittesting.matchers;
 
-import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.formatReasons;
+import static java.lang.String.format;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -39,9 +39,7 @@ public final class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<Analysis
     @Override
     public boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
         this.result = item;
-        mismatchDescription.appendText(item.dottedClassName + " is actually " + item.isImmutable);
-        mismatchDescription.appendText("\n");
-        mismatchDescription.appendText(formatReasons(item.reasons));
+        mismatchDescription.appendText(format("%s is actually %s%n", item.dottedClassName, item.isImmutable));
         return this.isImmutable == item.isImmutable;
     }
 

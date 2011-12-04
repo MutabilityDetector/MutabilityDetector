@@ -17,11 +17,11 @@
 
 package org.mutabilitydetector.unittesting.internal;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
@@ -33,11 +33,11 @@ import static org.mutabilitydetector.locations.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
+import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withNoAllowedReasons;
 
 import java.util.Collection;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
@@ -46,7 +46,6 @@ import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
-import org.mutabilitydetector.unittesting.MutabilityMatchers;
 
 public class AssertionReporterTest {
 
@@ -78,13 +77,17 @@ public class AssertionReporterTest {
 
         AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
         try {
-            reporter.assertThat(analysisResult, areImmutable());
+            reporter.assertThat(analysisResult, withNoAllowedReasons(areImmutable()));
             fail("expected exception");
         } catch (MutabilityAssertionError e) {
-            assertThat(e.getMessage(), containsString("Expected: d.e.SimpleClassName to be " + IMMUTABLE + "\n"));
-            assertThat(e.getMessage(), containsString("but: d.e.SimpleClassName is actually " + NOT_IMMUTABLE + "\n"));
-            assertThat(e.getMessage(), containsString("Reasons:"));
-            assertThat(e.getMessage(), containsString("a reason the class is mutable [Class: d.e.SimpleClassName]\n" ));
+            String[] errorMessageLines = e.getMessage().split("\n");
+            assertThat(errorMessageLines[0], is(""));
+            assertThat(errorMessageLines[1], is("Expected: d.e.SimpleClassName to be " + IMMUTABLE));
+            assertThat(errorMessageLines[2], is("     but: d.e.SimpleClassName is actually " + NOT_IMMUTABLE));
+            assertThat(errorMessageLines[3], is("    Reasons:"));
+            assertThat(errorMessageLines[4], is("        a reason the class is mutable [Class: d.e.SimpleClassName]" ));
+            assertThat(errorMessageLines[5], is("    Allowed reasons:" ));
+            assertThat(errorMessageLines[6], is("        None." ));
         }
     }
 
@@ -94,35 +97,13 @@ public class AssertionReporterTest {
         reporter.assertThat(analysisResult, hasIsImmutableStatusOf(IsImmutable.EFFECTIVELY_IMMUTABLE));
     }
 
-    @Ignore("In progress")
-    @Test
-    public void thrownExceptionContainsMessageAboutWarningsWhichAreSuppressed() throws Exception {
-        MutableReasonDetail reason = newMutableReasonDetail("a reason the class is mutable",
-                ClassLocation.from(dotted("d.e.SimpleClassName")),
-                PUBLISHED_NON_FINAL_FIELD);
-
-        AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
-        try {
-            reporter.assertThat(analysisResult, areImmutable());
-            fail("expected exception");
-        } catch (MutabilityAssertionError e) {
-            String expectedMessage = format("\nSuppressed reasons:" + "\n\tNo reasons have been suppressed.");
-            assertThat(e.getMessage(), containsString(expectedMessage));
-        }
-    }
-    
-    @Test(expected=MutabilityAssertionError.class)
-    public void performsAssertThatButWrapsExceptionInMutabilityAssertionError() throws Exception {
-        reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, unusedReasons()), MutabilityMatchers.areImmutable());
-    }
-
     @Test
     public void performsAssertThatButWrapsExceptionInMutabilityAssertionErrorWithSameMessage() throws Exception {
         MutableReasonDetail reasonDetail = newMutableReasonDetail("this message should appear", 
                                                                    from(dotted("a.b.c")), 
                                                                    ESCAPED_THIS_REFERENCE);
         try {
-            reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), areImmutable());
+            reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), withNoAllowedReasons(areImmutable()));
             fail("expected exception");
         } catch (MutabilityAssertionError expectedError) {
             assertThat(expectedError.getMessage(), allOf(containsString("a.b.c to be IMMUTABLE\n"),

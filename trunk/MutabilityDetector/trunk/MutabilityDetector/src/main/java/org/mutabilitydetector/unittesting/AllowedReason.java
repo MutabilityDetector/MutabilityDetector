@@ -48,7 +48,7 @@ public final class AllowedReason {
     }
 
     public static Matcher<MutableReasonDetail> noReasonsAllowed() {
-        return NoReasonsAllowedMatcher.noWarningsAllowed();
+        return NoReasonsAllowedMatcher.noReasonsAllowed();
     }
 
 

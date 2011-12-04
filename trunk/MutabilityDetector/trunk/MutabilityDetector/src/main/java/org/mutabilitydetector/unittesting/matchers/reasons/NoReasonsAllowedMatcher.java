@@ -27,7 +27,16 @@ import org.mutabilitydetector.MutableReasonDetail;
 public class NoReasonsAllowedMatcher extends BaseMutableReasonDetailMatcher {
     private final Matcher<MutableReasonDetail> nothingEver = not(IsAnything.<MutableReasonDetail> anything());
 
+    /**
+     * Prefer {@link #noReasonsAllowed()}
+     * Will be removed in release following 0.8
+     */
+    @Deprecated
     public static Matcher<MutableReasonDetail> noWarningsAllowed() {
+        return new NoReasonsAllowedMatcher();
+    }
+
+    public static Matcher<MutableReasonDetail> noReasonsAllowed() {
         return new NoReasonsAllowedMatcher();
     }
 

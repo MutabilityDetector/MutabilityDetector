@@ -20,14 +20,15 @@ package org.mutabilitydetector.unittesting;
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
+import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withNoAllowedReasons;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.internal.AnalysisSessionHolder;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
@@ -194,12 +195,12 @@ public final class MutabilityAssert {
     private final static AssertionReporter reporter = new AssertionReporter();
 
     public static void assertImmutable(Class<?> expectedImmutableClass) {
-        reporter.assertThat(getResultFor(expectedImmutableClass), areImmutable());
+        reporter.assertThat(getResultFor(expectedImmutableClass), withNoAllowedReasons(areImmutable()));
     }
 
     
     public static void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher) {
-        reporter.assertThat(getResultFor(clazz), mutabilityMatcher);
+        reporter.assertThat(getResultFor(clazz), withNoAllowedReasons(mutabilityMatcher));
     }
 
     @SuppressWarnings("unchecked")

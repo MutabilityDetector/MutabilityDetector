@@ -23,17 +23,20 @@ import java.util.Collection;
 
 import org.mutabilitydetector.MutableReasonDetail;
 
-public class ReasonsFormatter {
+public final class ReasonsFormatter {
     private ReasonsFormatter() { }
     
-    public static String formatReasons(Collection<MutableReasonDetail> reasons, StringBuilder builder) {
-        builder.append(format("    Reasons:%n"));
+    private static String formatReasons(Collection<MutableReasonDetail> reasons, StringBuilder builder) {
         for (MutableReasonDetail reason : reasons) {
-            builder.append(format("        %s %s%n", reason.message(), reason.codeLocation().prettyPrint()));
+            builder.append(formatSingleReason(reason));
         }
         return builder.toString();
     }
 
+    public static String formatSingleReason(MutableReasonDetail reason) {
+        return format("        %s %s%n", reason.message(), reason.codeLocation().prettyPrint());
+    }
+    
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {
         return formatReasons(reasons, new StringBuilder());
     }

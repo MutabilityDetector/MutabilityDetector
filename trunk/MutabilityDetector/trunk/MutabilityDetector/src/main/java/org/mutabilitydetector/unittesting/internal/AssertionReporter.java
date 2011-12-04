@@ -26,7 +26,7 @@ import org.mutabilitydetector.unittesting.MutabilityAssertionError;
  * {@link AssertionReporter} is responsible for making an assertion in a test fail, by preparing and throwing the
  * appropriate {@link MutabilityAssertionError}.
  */
-public class AssertionReporter {
+public final class AssertionReporter {
 
 
     public void assertThat(AnalysisResult analysisResult, Matcher<AnalysisResult> areImmutable) {

@@ -17,11 +17,10 @@
 
 package org.mutabilitydetector.unittesting;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
@@ -45,6 +44,17 @@ public class MutabilityAssertTest {
 
     private final Class<?> immutableClass = ImmutableExample.class;
     private final Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
+    
+    private final String expectedError = "\n" +
+    		"Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE\n" + 
+    		"     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE\n" + 
+    		"    Reasons:\n" + 
+    		"        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
+    		"        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
+    		"        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
+    		"        Field can have a mutable type (java.lang.String) assigned to it. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
+    		"    Allowed reasons:\n" + 
+    		"        None.";
 
     @Test
     public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {
@@ -57,14 +67,22 @@ public class MutabilityAssertTest {
     }
 
     @Test
-    public void reasonsArePrintedWithAssertionFailure() throws Exception {
+    public void whenAssertImmutableFailsReasonsArePrintedWithAssertionFailure() throws Exception {
         try {
             assertImmutable(mutableClass);
             fail("Assertion should have failed.");
         } catch (final AssertionError ae) {
-            assertThat(ae.getMessage(), containsString(mutableClass.getSimpleName()));
-            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
+            assertThat(ae.getMessage(), equalTo(expectedError));
+        }
+    }
+    
+    @Test
+    public void whenAssertInstancesOfFailsReasonsArePrintedWithAssertionFailure() throws Exception {
+        try {
+            assertInstancesOf(mutableClass, areImmutable());
+            fail("Assertion should have failed.");
+        } catch (final AssertionError ae) {
+            assertThat(ae.getMessage(), equalTo(expectedError));
         }
     }
 
@@ -81,10 +99,9 @@ public class MutabilityAssertTest {
     @Test
     public void failedMatchMessageFromAssertThatIsDescriptive() throws Exception {
         try {
-            assertInstancesOf(MutableByHavingPublicNonFinalField.class, areImmutable());
+            assertInstancesOf(mutableClass, areImmutable());
         } catch (AssertionError ae) {
-            assertThat(ae.getMessage(), containsString(IMMUTABLE.name()));
-            assertThat(ae.getMessage(), containsString(NOT_IMMUTABLE.name()));
+            assertThat(ae.getMessage(), equalTo(expectedError));
         }
     }
     

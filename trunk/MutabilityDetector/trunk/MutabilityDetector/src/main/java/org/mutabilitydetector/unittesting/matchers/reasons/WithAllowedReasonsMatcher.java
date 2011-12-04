@@ -17,6 +17,11 @@
 
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
+import static java.lang.String.format;
+import static java.util.Collections.singleton;
+import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.formatReasons;
+import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -33,6 +38,10 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
         return new WithAllowedReasonsMatcher(areImmutable, allowing);
     }
     
+    public static WithAllowedReasonsMatcher withNoAllowedReasons(Matcher<AnalysisResult> areImmutable) {
+        return withAllowedReasons(areImmutable, singleton(noReasonsAllowed()));
+    }
+    
     private final Matcher<AnalysisResult> isImmutable;
     private final Iterable<Matcher<MutableReasonDetail>> allowedReasonMatchers;
 
@@ -43,20 +52,36 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
 
     @Override
     protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
-        if (isImmutable.matches(analysisResult)) {
-            return true;
-        } else if (mutabilityReasonsHaveBeenSuppressed(analysisResult.reasons)) {
-            return true;
-        } else {
+        boolean matches = true;
+        if (!isImmutable.matches(analysisResult)) {
+            matches = false;
             isImmutable.describeMismatch(analysisResult, mismatchDescription);
-            return false;
         }
+        
+        if (mutabilityReasonsHaveBeenAllowed(analysisResult.reasons, mismatchDescription)) {
+            matches = true;
+        }
+
+        return matches;
     }
     
-    private boolean mutabilityReasonsHaveBeenSuppressed(Collection<MutableReasonDetail> reasons) {
-        Collection<MutableReasonDetail> allowedReasons = new ArrayList<MutableReasonDetail>();
-        Collection<MutableReasonDetail> actualReasons = new ArrayList<MutableReasonDetail>(reasons);
+    private boolean mutabilityReasonsHaveBeenAllowed(Collection<MutableReasonDetail> reasons, Description mismatchDescription) {
+        Collection<MutableReasonDetail> unmatchedReasons = new ArrayList<MutableReasonDetail>(reasons);
+        Collection<MutableReasonDetail> allowedReasons = collectAllowedReasons(reasons);
         
+        unmatchedReasons.removeAll(allowedReasons);
+        
+        boolean allReasonsAllowed = unmatchedReasons.isEmpty();
+        
+        if (!allReasonsAllowed) {
+            describeMismatchedReasons(mismatchDescription, unmatchedReasons, allowedReasons);
+        }
+        
+        return allReasonsAllowed;
+    }
+
+    private Collection<MutableReasonDetail> collectAllowedReasons(Collection<MutableReasonDetail> reasons) {
+        Collection<MutableReasonDetail> allowedReasons = new ArrayList<MutableReasonDetail>();
         for (MutableReasonDetail reasonDetail: reasons) {
             for (Matcher<MutableReasonDetail> allowedReasonMatcher: allowedReasonMatchers) {
                 if (allowedReasonMatcher.matches(reasonDetail)) {
@@ -64,10 +89,14 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
                 }
             }
         }
-        
-        actualReasons.removeAll(allowedReasons);
-        
-        return actualReasons.isEmpty();
+        return allowedReasons;
+    }
+
+    private void describeMismatchedReasons(Description mismatchDescription, Collection<MutableReasonDetail> unmatchedReasons, Collection<MutableReasonDetail> allowedReasons) {
+        mismatchDescription.appendText(format("    Reasons:%n"));
+        mismatchDescription.appendText(formatReasons(unmatchedReasons));
+        mismatchDescription.appendText(format("    Allowed reasons:%n"));
+        mismatchDescription.appendText(allowedReasons.isEmpty() ? "        None." : formatReasons(allowedReasons));
     }
 
     @Override

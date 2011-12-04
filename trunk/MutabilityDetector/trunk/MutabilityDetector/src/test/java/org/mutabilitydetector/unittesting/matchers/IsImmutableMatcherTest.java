@@ -54,9 +54,9 @@ public class IsImmutableMatcherTest {
     }
 
     @Test
-    public void hasDescriptiveErrorMessageForMismatch() throws Exception {
+    public void hasDescriptiveErrortMessageForMismatch() throws Exception {
         Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
-        reasons.add(newMutableReasonDetail("mutable coz i sez so",
+        reasons.add(newMutableReasonDetail("unused message",
                 fromInternalName("c/d/e"),
                 ABSTRACT_TYPE_INHERENTLY_MUTABLE));
         AnalysisResult nonMatchingResult = analysisResult("c.d.e", NOT_IMMUTABLE, reasons);
@@ -64,8 +64,7 @@ public class IsImmutableMatcherTest {
         StringDescription description = new StringDescription();
         matcher.describeMismatch(nonMatchingResult, description);
 
-        assertThat(description.toString(), containsString("mutable coz i sez so"));
-        assertThat(description.toString(), containsString(NOT_IMMUTABLE.name()));
+        assertThat(description.toString(), containsString("c.d.e is actually " + NOT_IMMUTABLE + "\n"));
     }
 
 }
