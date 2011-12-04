@@ -3,8 +3,12 @@
 
 
 MD_JAR=$1
-RT_JAR=$JAVA_HOME/jre/lib/rt.jar
-COMMAND="java -jar ${MD_JAR} --verbose -cp $RT_JAR"
+JAR_TO_ANALYSE=$2
+if [ -z "$JAR_TO_ANALYSE" ]; then
+  JAR_TO_ANALYSE=$JAVA_HOME/jre/lib/rt.jar
+fi
+
+COMMAND="java -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
 
 echo "Running command: ${COMMAND}"
 START=`date`
