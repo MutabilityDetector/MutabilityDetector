@@ -22,12 +22,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.ClassLocation.from;
+import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.util.Arrays;
@@ -35,9 +35,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 import org.mutabilitydetector.locations.FieldLocation;
 
@@ -77,7 +77,7 @@ public class SessionResultsFormatterTest {
     public void verboseOutputIncludesDetailedReasonAndPrettyPrintedCodeLocation() throws Exception {
         Collection<MutableReasonDetail> reasons = Arrays.asList(newMutableReasonDetail("1st checker reason message",
                                                                                         from(slashed("path/to/MyClass")),
-                                                                                        NOT_DECLARED_FINAL),
+                                                                                        CAN_BE_SUBCLASSED),
                                                                 newMutableReasonDetail("2nd checker reason message",
                                                                                         FieldLocation.fieldLocation("myField",
                                                                                                                     fromInternalName("path/to/OtherClass")),

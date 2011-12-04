@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.sealed;
 
 public class MutableByNotBeingFinalClass {
 

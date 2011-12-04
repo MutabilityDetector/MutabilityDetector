@@ -85,7 +85,7 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
 
         @Override
         protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
-            if (isConstructor() || isInvalidStackValue(stackValue)) { return; }
+            if (MethodIs.aConstructor(name) || isInvalidStackValue(stackValue)) { return; }
 
             if (method(access).isStatic()) {
                 detectInStaticMethod(fieldInsnNode);
@@ -157,10 +157,6 @@ public class SetterMethodChecker extends AbstractMutabilityChecker {
         public void visitVarInsn(int opcode, int var) {
             super.visitVarInsn(opcode, var);
             varStack.visitVarInsn(var);
-        }
-
-        private boolean isConstructor() {
-            return "<init>".equals(name);
         }
 
         private void setIsImmutableResult(String fieldName) {

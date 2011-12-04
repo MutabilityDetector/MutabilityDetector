@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
-import org.mutabilitydetector.checkers.FinalClassChecker;
+import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
@@ -41,7 +41,7 @@ public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
         AnalysisDatabase database = analysisSession.analysisDatabase();
 
         Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
-        checkers.add(new FinalClassChecker());
+        checkers.add(new CanSubclassChecker());
         checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
         checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());

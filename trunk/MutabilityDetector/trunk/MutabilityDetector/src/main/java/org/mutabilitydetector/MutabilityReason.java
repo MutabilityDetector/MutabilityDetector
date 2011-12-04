@@ -43,16 +43,31 @@ public enum MutabilityReason implements Reason {
             IsImmutable.NOT_IMMUTABLE),
 
     /**
-     * Class is not declared final. While this specific class may still be immutable, it is recommended that the class
-     * be declared final if possible. This will allow clients to be confident that parameters declared to be this type
-     * will indeed be of this type at runtime, not an instance of a mutable subclass. Note that applying the final
-     * keyword to a class does not have any effect on the Java Memory Model.
+     * The given class can be subclassed. While this specific class may still be immutable, subclasses may not. It is
+     * recommended that the class be declared final, or all of its constructors declared private. This will allow
+     * clients to be confident that parameters declared to be this type will indeed be of this type at runtime, not an
+     * instance of a mutable subclass. Note that applying the final keyword to a class does not have any effect on the
+     * Java Memory Model.
      */
-    NOT_DECLARED_FINAL("Class is not declared final. While this specific class may still be immutable, " + "it is recommended that the class be declared final if possible. This will allow clients to "
+    CAN_BE_SUBCLASSED("Class can be subclassed. While this specific class may still be immutable, it is recommended that the class " +
+            "be declared final, or all of its constructors declared private. This will allow clients to "
             + "be confident that parameters declared to be this type will indeed be of this type at runtime, "
             + "not an instance of a mutable subclass. Note that applying the final keyword to a class does not have any effect on the Java Memory Model.",
             IsImmutable.NOT_IMMUTABLE),
 
+    /**
+     * Scheduled for removal in the release following v0.8. There are better semantics specified in the reason {@link #CAN_BE_SUBCLASSED}
+     * @see MutabilityReason#CAN_BE_SUBCLASSED
+     * 
+     */
+    @Deprecated
+    NOT_DECLARED_FINAL("Class is not declared final. While this specific class may still be immutable, " 
+            + "it is recommended that the class be declared final if possible. This will allow clients to "
+            + "be confident that parameters declared to be this type will indeed be of this type at runtime, "
+            + "not an instance of a mutable subclass. Note that applying the final keyword to a class does not have any effect on the Java Memory Model.",
+            IsImmutable.NOT_IMMUTABLE),
+
+            
     /**
      * Abstract types (interfaces or abstract classes) are considered to be \"Inherently Mutable\" in particular cases.
      * Because the concrete implementation cannot be known until compile-time, run-time instances of abstract types

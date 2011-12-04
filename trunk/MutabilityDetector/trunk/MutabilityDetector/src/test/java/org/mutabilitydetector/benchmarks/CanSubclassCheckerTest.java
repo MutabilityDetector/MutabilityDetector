@@ -1,0 +1,106 @@
+/*
+ *    Copyright (c) 2008-2011 Graham Allan
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+package org.mutabilitydetector.benchmarks;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertIsImmutable;
+import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
+import static org.mutabilitydetector.TestUtil.runChecker;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.benchmarks.sealed.ImmutableByHavingOnlyPrivateConstructors;
+import org.mutabilitydetector.benchmarks.sealed.IsFinalAndHasOnlyPrivateConstructors;
+import org.mutabilitydetector.benchmarks.sealed.HasFinalFieldsAndADefaultConstructor;
+import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
+import org.mutabilitydetector.benchmarks.sealed.SealedImmutable;
+import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.checkers.CanSubclassChecker;
+import org.mutabilitydetector.locations.ClassLocation;
+
+@RunWith(Theories.class)
+public class CanSubclassCheckerTest {
+
+    private CanSubclassChecker checker;
+
+    @Before
+    public void createChecker() {
+        checker = new CanSubclassChecker();
+    }
+    
+    @DataPoints public static final AnalysisResultTheory[] classes = new AnalysisResultTheory[] {
+        AnalysisResultTheory.of(MutableByNotBeingFinalClass.class, NOT_IMMUTABLE),
+        AnalysisResultTheory.of(SealedImmutable.class, NOT_IMMUTABLE),
+        AnalysisResultTheory.of(HasFinalFieldsAndADefaultConstructor.class, NOT_IMMUTABLE),
+        AnalysisResultTheory.of(IsFinalAndHasOnlyPrivateConstructors.class, IMMUTABLE),
+        AnalysisResultTheory.of(ImmutableByHavingOnlyPrivateConstructors.class, IMMUTABLE),
+    };
+
+    public static class AnalysisResultTheory {
+        public final IsImmutable expected;
+        public final Class<?> clazz;
+        public AnalysisResultTheory(Class<?> clazz, IsImmutable expected) {
+            this.expected = expected;
+            this.clazz = clazz;
+        }
+        
+        public static AnalysisResultTheory of(Class<?> clazz, IsImmutable toBe) {
+            return new AnalysisResultTheory(clazz, toBe);
+        }
+    }
+    
+    @Theory
+    public void correctlyAnalyses(AnalysisResultTheory expected) throws Exception {
+        assertIsImmutable(expected.expected, runChecker(checker, expected.clazz));
+    }
+    
+    @Test
+    public void aClassWhichIsNotFinalIsNotImmutable() throws Exception {
+        AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
+        assertThat(checker, hasReasons());
+        assertNotImmutable(result);
+    }
+
+    @Test
+    public void immutableExampleIsReportedAsImmutable() throws Exception {
+        assertImmutable(runChecker(checker, ImmutableExample.class));
+    }
+
+    @Test
+    public void enumTypeIsImmutable() throws Exception {
+        assertImmutable(runChecker(checker, EnumType.class));
+    }
+
+    @Test
+    public void hasCodeLocationWithCorrectTypeName() throws Exception {
+        runChecker(checker, MutableByNotBeingFinalClass.class);
+        ClassLocation location = (ClassLocation) checker.reasons().iterator().next().codeLocation();
+        assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
+    }
+    
+}

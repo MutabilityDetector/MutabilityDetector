@@ -16,22 +16,42 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassLocation;
+import org.objectweb.asm.MethodVisitor;
 
-public class FinalClassChecker extends AbstractMutabilityChecker {
+public final class CanSubclassChecker extends AbstractMutabilityChecker {
 
+    private boolean isFinal = true;
+    private boolean hasOnlyPrivateConstructors = true;
+    
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
 
         if (type(access).isNotFinal()) {
-            addResult("Can be subclassed, therefore parameters declared to be this type " + "could be mutable subclasses at runtime.",
-                    ClassLocation.fromInternalName(ownerClass),
-                    MutabilityReason.NOT_DECLARED_FINAL);
+            isFinal = false;
         }
     }
+    
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        if (MethodIs.aConstructor(name) && method(access).isNotPrivate()) {
+            hasOnlyPrivateConstructors = false;
+        }
+        return super.visitMethod(access, name, desc, signature, exceptions);
+    }
+    
+    @Override
+    public void visitEnd() {
+        if (!(isFinal || hasOnlyPrivateConstructors)) {
+            addResult("Can be subclassed, therefore parameters declared to be this type " + "could be mutable subclasses at runtime.",
+                      ClassLocation.fromInternalName(ownerClass),
+                      MutabilityReason.CAN_BE_SUBCLASSED);
+        }
+     }
 
 }

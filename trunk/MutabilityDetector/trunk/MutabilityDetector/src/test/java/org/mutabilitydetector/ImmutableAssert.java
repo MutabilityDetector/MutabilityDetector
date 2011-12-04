@@ -57,7 +57,11 @@ public class ImmutableAssert {
     public static void assertNotImmutable(AnalysisResult result) {
         doAssertEquals(result.dottedClassName, NOT_IMMUTABLE, result);
     }
-
+    
+    public static void assertIsImmutable(IsImmutable expected, AnalysisResult result) {
+        doAssertEquals(result.dottedClassName, expected, result);
+    }
+ 
     private static AnalysisResult getResultAndPrintErrors(Class<?> toAnalyse) {
         IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
         String className = toAnalyse.getName();

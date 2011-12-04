@@ -37,7 +37,7 @@ public class EscapedThisReferenceChecker extends AbstractMutabilityChecker {
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         super.visitMethod(access, name, desc, signature, exceptions);
-        return name.equals("<init>")
+        return MethodIs.aConstructor(name)
                 ? new ThisEscapingFromConstructorVistor(access, name, desc, signature, exceptions)
                 : new EmptyVisitor();
     }
@@ -60,7 +60,7 @@ public class EscapedThisReferenceChecker extends AbstractMutabilityChecker {
         @Override
         public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc) {
             super.visitMethodInsn(opcode, owner, methodName, methodDesc);
-            if (methodName.equals("<init>") && owner.equals("java/lang/Object")) { return; }
+            if (MethodIs.aConstructor(methodName) && owner.equals("java/lang/Object")) { return; }
             methodCalls.add((MethodInsnNode) instructions.getLast());
         }
 

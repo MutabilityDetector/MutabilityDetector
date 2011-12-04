@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
+import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.objectweb.asm.MethodVisitor;
@@ -82,7 +83,7 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
         @Override
         public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc) {
-            if ("<init>".equals(this.name)) { return; }
+            if (MethodIs.aConstructor(this.name)) { return; }
 
             MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(methodName, methodDesc));
             privateMethodCalledFromConstructorMap.put(identifier, false);
