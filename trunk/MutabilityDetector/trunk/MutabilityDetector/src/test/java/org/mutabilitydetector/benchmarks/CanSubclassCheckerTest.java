@@ -33,7 +33,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.AnalysisResultTheory;
 import org.mutabilitydetector.benchmarks.sealed.ImmutableByHavingOnlyPrivateConstructors;
 import org.mutabilitydetector.benchmarks.sealed.IsFinalAndHasOnlyPrivateConstructors;
 import org.mutabilitydetector.benchmarks.sealed.HasFinalFieldsAndADefaultConstructor;
@@ -61,19 +61,6 @@ public class CanSubclassCheckerTest {
         AnalysisResultTheory.of(ImmutableByHavingOnlyPrivateConstructors.class, IMMUTABLE),
     };
 
-    public static class AnalysisResultTheory {
-        public final IsImmutable expected;
-        public final Class<?> clazz;
-        public AnalysisResultTheory(Class<?> clazz, IsImmutable expected) {
-            this.expected = expected;
-            this.clazz = clazz;
-        }
-        
-        public static AnalysisResultTheory of(Class<?> clazz, IsImmutable toBe) {
-            return new AnalysisResultTheory(clazz, toBe);
-        }
-    }
-    
     @Theory
     public void correctlyAnalyses(AnalysisResultTheory expected) throws Exception {
         assertIsImmutable(expected.expected, runChecker(checker, expected.clazz));
