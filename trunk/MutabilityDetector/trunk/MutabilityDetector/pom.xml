@@ -128,6 +128,9 @@
 								<relocation>
 									<pattern>org.hamcrest</pattern>
 									<shadedPattern>${repackage.base}.org.hamcrest</shadedPattern>
+									<excludes>
+										<exclude>org/hamcrest/Matcher</exclude>
+									</excludes>
 								</relocation>
 								<relocation>
 									<pattern>org.apache.commons.cli</pattern>
