@@ -23,6 +23,7 @@ public class TestJodaTime {
 	@Rule
 	public MethodRule pendingRule = new PendingRule();
 
+	@PendingImplementation("Missing describeMismatch support")
 	@Test public void testorg_joda_time_base_AbstractInstant() {
 	    assertInstancesOf(org.joda.time.base.AbstractInstant.class,
 	                      areImmutable(),
@@ -197,7 +198,6 @@ public class TestJodaTime {
 	    assertImmutable(org.joda.time.field.DividedDateTimeField.class);
 	}
 	
-	@PendingImplementation
 	@Test public void testorg_joda_time_field_FieldUtils() {
 	    assertImmutable(org.joda.time.field.FieldUtils.class);
 	}
@@ -283,7 +283,6 @@ public class TestJodaTime {
 	    assertImmutable(org.joda.time.format.DateTimeFormatter.class);
 	}
 	
-	@PendingImplementation
 	@Test public void testorg_joda_time_format_FormatUtils() {
 	    assertImmutable(org.joda.time.format.FormatUtils.class);
 	}

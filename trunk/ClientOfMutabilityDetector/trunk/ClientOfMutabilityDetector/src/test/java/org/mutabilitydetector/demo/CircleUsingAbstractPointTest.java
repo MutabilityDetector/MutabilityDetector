@@ -1,13 +1,19 @@
 package org.mutabilitydetector.demo;
 
-import org.junit.Ignore;
+import net.ttsui.junit.rules.pending.PendingImplementation;
+import net.ttsui.junit.rules.pending.PendingRule;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class CircleUsingAbstractPointTest {
     
+    @Rule public MethodRule pendingRule = new PendingRule();
+    
     @Test
-    @Ignore
+    @PendingImplementation("This should fail - something is bad if it doesn't")
     public void circleIsImmutable() throws Exception {
         MutabilityAssert.assertImmutable(CircleUsingAbstractPoint.class);
     }
