@@ -20,10 +20,10 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,18 +31,24 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.TestUtil.unusedReason;
 import static org.mutabilitydetector.locations.ClassLocation.from;
+import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.StringDescription;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -147,6 +153,47 @@ public class WithAllowedReasonsMatcherTest {
             assertThat(errorMessageLines[5], is("    Allowed reasons:"));
             assertThat(errorMessageLines[6], is("        None."));
         }
+    }
+    
+    @Test
+    public void describesMismatchItselfIfNoSuchMethodExistsForDelegateMatcher() throws Exception {
+        WithAllowedReasonsMatcher usingHamcrest1_1_matcher = withAllowedReasons(new Hamcrest1_1_Matcher(), singleton(noReasonsAllowed()));
+        
+        Description description = new StringDescription();
+        AnalysisResult result = analysisResult("org.some.Thing", NOT_IMMUTABLE, 
+                                               newMutableReasonDetail("it sucks", fromInternalName("org/some/Thing"), CAN_BE_SUBCLASSED));
+        usingHamcrest1_1_matcher.describeMismatch(result, description);
+        
+        String expectedError = 
+                "org.some.Thing is actually NOT_IMMUTABLE\n" + 
+                "    Reasons:\n" + 
+                "        it sucks [Class: org.some.Thing]\n" + 
+                "    Allowed reasons:\n" + 
+                "        None.";
+        
+        assertThat(description.toString(), is(expectedError));
+        
+    }
+    
+    private static class Hamcrest1_1_Matcher extends BaseMatcher<AnalysisResult> {
+        @Override
+        public boolean matches(Object item) {
+            return false;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("either")
+                       .appendValue(IsImmutable.EFFECTIVELY_IMMUTABLE)
+                       .appendText(" or ")
+                       .appendValue(IsImmutable.IMMUTABLE);
+        }
+        
+        @Override
+        public void describeMismatch(Object item, Description description) {
+            throw new NoSuchMethodError();
+        }
+        
     }
 
 }

@@ -17,10 +17,11 @@
 
 package org.mutabilitydetector.unittesting.internal;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
+import org.hamcrest.Description;
+import org.hamcrest.StringDescription;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
+import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
 
 /**
  * {@link AssertionReporter} is responsible for making an assertion in a test fail, by preparing and throwing the
@@ -29,11 +30,15 @@ import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 public final class AssertionReporter {
 
 
-    public void assertThat(AnalysisResult analysisResult, Matcher<AnalysisResult> areImmutable) {
-        try {
-            MatcherAssert.assertThat(analysisResult, areImmutable);
-        } catch (AssertionError e) {
-            throw new MutabilityAssertionError(e.getMessage());
+    public void assertThat(AnalysisResult analysisResult, WithAllowedReasonsMatcher resultMatcher) {
+        if (!resultMatcher.matches(analysisResult)) {
+            Description description = new StringDescription();
+            description.appendText("\nExpected: ")
+                       .appendDescriptionOf(resultMatcher)
+                       .appendText("\n     but: ");
+            resultMatcher.describeMismatch(analysisResult, description);
+            
+            throw new MutabilityAssertionError(description.toString());
         }
     }
 }

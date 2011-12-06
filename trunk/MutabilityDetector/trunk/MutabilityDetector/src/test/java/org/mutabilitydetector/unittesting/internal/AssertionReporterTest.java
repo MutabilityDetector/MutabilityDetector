@@ -59,13 +59,13 @@ public class AssertionReporterTest {
     @Test
     public void reporterDoesNotThrowAssertionErrorForImmutableResult() throws Exception {
         AnalysisResult analysisResult = AnalysisResult.definitelyImmutable("a.b.c");
-        reporter.assertThat(analysisResult, areImmutable());
+        reporter.assertThat(analysisResult, withNoAllowedReasons(areImmutable()));
     }
 
     @Test(expected = MutabilityAssertionError.class)
     public void reporterThrowsExceptionForMutableResult() {
         AnalysisResult analysisResult = analysisResult("a.b.c", NOT_IMMUTABLE, unusedReasons());
-        reporter.assertThat(analysisResult, areImmutable());
+        reporter.assertThat(analysisResult, withNoAllowedReasons(areImmutable()));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class AssertionReporterTest {
     @Test
     public void expectedIsImmutableStatusDoesNotThrowException() throws Exception {
         AnalysisResult analysisResult = analysisResult("g.h.i", IsImmutable.EFFECTIVELY_IMMUTABLE, unusedReasons());
-        reporter.assertThat(analysisResult, hasIsImmutableStatusOf(IsImmutable.EFFECTIVELY_IMMUTABLE));
+        reporter.assertThat(analysisResult, withNoAllowedReasons(hasIsImmutableStatusOf(IsImmutable.EFFECTIVELY_IMMUTABLE)));
     }
 
     @Test

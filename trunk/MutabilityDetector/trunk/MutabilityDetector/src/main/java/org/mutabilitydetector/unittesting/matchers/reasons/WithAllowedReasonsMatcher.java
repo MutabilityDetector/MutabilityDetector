@@ -25,13 +25,14 @@ import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllow
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.StringDescription;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 
-public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
+public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult> {
     
     public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
                                                                Iterable<Matcher<MutableReasonDetail>> allowing) {
@@ -50,12 +51,32 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
         this.allowedReasonMatchers = allowedReasons;
     }
 
+    
     @Override
-    protected boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
+    public boolean matches(Object item) {
+        return matchesSafely(checkIsValidToMatchOn(item), new StringDescription());
+    }
+    
+    private AnalysisResult checkIsValidToMatchOn(Object item) {
+        if (item == null || !(item instanceof AnalysisResult)) {
+            throw new IllegalArgumentException(
+               "Trying to pass " + item + "where an " + AnalysisResult.class.getSimpleName() + "is required. " +
+               "This is probably a programmer error, not your fault. Please file an issue.");
+        } else {
+            return (AnalysisResult) item;
+        }
+    }
+
+    @Override
+    public void describeMismatch(Object item, Description description) {
+        matchesSafely(checkIsValidToMatchOn(item), description);
+    }
+    
+    private boolean matchesSafely(AnalysisResult analysisResult, Description mismatchDescription) {
         boolean matches = true;
         if (!isImmutable.matches(analysisResult)) {
             matches = false;
-            isImmutable.describeMismatch(analysisResult, mismatchDescription);
+            describeMismatchHandlingHamcrest1_1Matcher(analysisResult, mismatchDescription);
         }
         
         if (mutabilityReasonsHaveBeenAllowed(analysisResult.reasons, mismatchDescription)) {
@@ -63,6 +84,14 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
         }
 
         return matches;
+    }
+
+    private void describeMismatchHandlingHamcrest1_1Matcher(AnalysisResult analysisResult, Description mismatchDescription) {
+        try {
+            isImmutable.describeMismatch(analysisResult, mismatchDescription);
+        } catch (NoSuchMethodError e) {
+            mismatchDescription.appendText(format("%s is actually %s%n", analysisResult.dottedClassName, analysisResult.isImmutable));
+        }
     }
     
     private boolean mutabilityReasonsHaveBeenAllowed(Collection<MutableReasonDetail> reasons, Description mismatchDescription) {
@@ -103,7 +132,6 @@ public final class WithAllowedReasonsMatcher extends TypeSafeDiagnosingMatcher<A
     public void describeTo(Description description) {
         isImmutable.describeTo(description);
     }
-
 
 
 }

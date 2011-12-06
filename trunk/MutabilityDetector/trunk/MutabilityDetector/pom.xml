@@ -103,6 +103,7 @@
 
 							<shadedArtifactAttached>false</shadedArtifactAttached>
 							<createDependencyReducedPom>true</createDependencyReducedPom>
+							<minimizeJar>true</minimizeJar>
 
 							<filters>
 								<filter>
@@ -111,6 +112,9 @@
 										<exclude>LICENSE.txt</exclude>
 										<exclude>META-INF/LICENSE.txt</exclude>
 										<exclude>META-INF/NOTICE.txt</exclude>
+										<exclude>org/hamcrest/Matcher.class</exclude>
+										<exclude>org/hamcrest/SelfDescribing.class</exclude>
+										<exclude>org/hamcrest/Description.class</exclude>
 									</excludes>
 
 								</filter>
@@ -130,6 +134,8 @@
 									<shadedPattern>${repackage.base}.org.hamcrest</shadedPattern>
 									<excludes>
 										<exclude>org/hamcrest/Matcher</exclude>
+										<exclude>org/hamcrest/SelfDescribing</exclude>
+										<exclude>org/hamcrest/Description</exclude>
 									</excludes>
 								</relocation>
 								<relocation>
