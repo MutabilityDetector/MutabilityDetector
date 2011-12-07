@@ -23,7 +23,6 @@ public class TestJodaTime {
 	@Rule
 	public MethodRule pendingRule = new PendingRule();
 
-	@PendingImplementation("Missing describeMismatch support")
 	@Test public void testorg_joda_time_base_AbstractInstant() {
 	    assertInstancesOf(org.joda.time.base.AbstractInstant.class,
 	                      areImmutable(),

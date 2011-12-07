@@ -1,44 +1,81 @@
 package org.mutabilitydetector;
 
+import static org.junit.Assert.assertEquals;
+import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import net.ttsui.junit.rules.pending.PendingImplementation;
-import net.ttsui.junit.rules.pending.PendingRule;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MethodRule;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
+import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 public class VanillaJUnitMatcherCompatibility {
 
-    @Rule public MethodRule pendingRule = new PendingRule();
-    
     public final static class CheckThisClass {
         public int reassignMe;
     }
     
-    @PendingImplementation("Fails when attempting to invoke describeMismatch, which didn't exist in hamcrest 1.1")
     @Test
     public void isImmutable() throws Exception {
-        MutabilityAssert.assertInstancesOf(CheckThisClass.class, areImmutable(), new AllowAnyReason());
+        assertInstancesOf(CheckThisClass.class, areImmutable(), new AllowAnyReason());
+    }
+
+    @Test
+    public void hasSomeSortOfDecentErrorMessage() throws Exception {
+        try {
+            assertInstancesOf(CheckThisClass.class, new IsEitherImmutableOrEffectivelyImmutable(), new AllowNothing());
+        } catch (MutabilityAssertionError e) {
+            assertEquals(e.getMessage(), 
+                    "\n" +
+            		"Expected: either Immutable or Effectively Immutable\n" + 
+            		"     but: org.mutabilitydetector.VanillaJUnitMatcherCompatibility$CheckThisClass is actually NOT_IMMUTABLE\n" + 
+            		"    Reasons:\n" + 
+            		"        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: reassignMe, Class: org.mutabilitydetector.VanillaJUnitMatcherCompatibility$CheckThisClass]\n" + 
+            		"        Field is visible outwith this class, and is not declared final. [Field: reassignMe, Class: org.mutabilitydetector.VanillaJUnitMatcherCompatibility$CheckThisClass]\n" + 
+            		"    Allowed reasons:\n" + 
+            		"        None.");
+        }
     }
     
     public static class AllowAnyReason extends BaseMatcher<MutableReasonDetail> {
 
-        public static Matcher<MutableReasonDetail> allowingAReasonThatMatches() {
-            return new AllowAnyReason();
-        }
-        
-        @Override
         public boolean matches(Object arg0) {
             return true;
         }
 
         @Override
         public void describeTo(Description arg0) { }
+        
+    }
+    
+    public static class AllowNothing extends BaseMatcher<MutableReasonDetail> {
+
+        @Override
+        public boolean matches(Object arg0) {
+            return false;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("an object that never satisfies");
+        }
+        
+    }
+    
+    public static class IsEitherImmutableOrEffectivelyImmutable extends BaseMatcher<AnalysisResult> {
+
+        @Override
+        public boolean matches(Object item) {
+            AnalysisResult result = (AnalysisResult) item;
+            return result.isImmutable == IMMUTABLE || result.isImmutable == EFFECTIVELY_IMMUTABLE;
+        }
+
+        @Override
+        public void describeTo(Description arg0) {
+            arg0.appendText("either Immutable or Effectively Immutable");
+        }
         
     }
 }
