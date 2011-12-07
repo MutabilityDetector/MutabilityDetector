@@ -4,12 +4,13 @@
 (in no particular order)
 
 
- * Change 'not declared final' rule to, not sub-classable rule, which checks either it's declared final or it's constructors are all private.
+
  * Create a video to show off the unit testing capability of the tool
  * Add code location information to the verbose output, keep reason string constant.
  * Create a new `CodeLocation` implementation which includes the line number of the offending reason (i.e. where a mutable type is assigned to a field)
  * Admit defeat and hardcode java.lang.String as immutable. Probably BigDecimal as well.
 
+ * ~~Change 'not declared final' rule to, not sub-classable rule, which checks either it's declared final or it's constructors are all private.~~
  * ~~Add JUnit documentation to Getting Started guide~~
  * ~~Create an `allowingSubclassing()` allowed reason for unit tests (mainly for classes not marked as final)~~
  * ~~Create a new `CodeLocation` for fields.~~
