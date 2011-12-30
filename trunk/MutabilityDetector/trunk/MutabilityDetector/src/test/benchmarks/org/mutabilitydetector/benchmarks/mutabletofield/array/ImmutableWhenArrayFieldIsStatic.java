@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector.benchmarks.mutabletofield;
+package org.mutabilitydetector.benchmarks.mutabletofield.array;
 
 public class ImmutableWhenArrayFieldIsStatic {
     static final String names[] = new String[] { "Rick", "Levon", "Richard", "Garth", "Robbie" };

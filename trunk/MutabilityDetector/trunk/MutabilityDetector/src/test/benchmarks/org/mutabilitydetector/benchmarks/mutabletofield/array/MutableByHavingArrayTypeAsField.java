@@ -14,15 +14,18 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector.benchmarks.mutabletofield;
+package org.mutabilitydetector.benchmarks.mutabletofield.array;
 
-public class MutableByAssigningPrimitiveArrayToField {
+import java.util.Arrays;
 
-    @SuppressWarnings("unused")
-    private final int[] intArray;
+public class MutableByHavingArrayTypeAsField {
+    private final String names[];
 
-    public MutableByAssigningPrimitiveArrayToField(int[] intArray) {
-        this.intArray = intArray;
+    public MutableByHavingArrayTypeAsField(String... names) {
+        this.names = Arrays.copyOf(names, names.length);
     }
-    
+
+    public void mutateArray() {
+        names[0] = "Haha I've mutated this instance!";
+    }
 }

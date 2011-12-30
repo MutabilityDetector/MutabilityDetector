@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.mutabletofield;
+package org.mutabilitydetector.benchmarks.mutabletofield.array;
 
 public final class ImmutableButHasUnmodifiedArrayAsField {
     private final int[] unmodifiedArray;
