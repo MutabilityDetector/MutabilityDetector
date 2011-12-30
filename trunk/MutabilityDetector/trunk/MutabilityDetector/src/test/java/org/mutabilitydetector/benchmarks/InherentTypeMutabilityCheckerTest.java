@@ -26,7 +26,7 @@ import static org.mutabilitydetector.TestUtil.runChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.benchmarks.mutabletofield.ImmutableWhenArrayFieldIsStatic;
+import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
