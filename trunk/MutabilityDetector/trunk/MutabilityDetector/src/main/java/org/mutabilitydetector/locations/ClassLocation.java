@@ -21,9 +21,9 @@ import javax.annotation.Nonnull;
 
 public final class ClassLocation implements CodeLocation<ClassLocation> {
 
-    private final String dottedClassName;
+    private final @Nonnull String dottedClassName;
 
-    public ClassLocation(@Nonnull String dottedClassName) {
+    public ClassLocation(String dottedClassName) {
         this.dottedClassName = dottedClassName;
     }
 

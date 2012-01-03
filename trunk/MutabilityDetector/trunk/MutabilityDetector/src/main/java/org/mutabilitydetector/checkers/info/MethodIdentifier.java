@@ -28,13 +28,12 @@ import org.mutabilitydetector.locations.Slashed;
 @Immutable
 public final class MethodIdentifier {
 
-    private final Dotted dottedClassName;
-    private final String methodDescriptor;
+    private final @Nonnull Dotted dottedClassName;
+    private final @Nonnull String methodDescriptor;
 
-    public MethodIdentifier(@Nonnull Dotted className, @Nonnull String methodDescriptor) {
+    public MethodIdentifier(Dotted className, String methodDescriptor) {
         this.dottedClassName = className;
         this.methodDescriptor = methodDescriptor;
-
     }
 
     @Override
