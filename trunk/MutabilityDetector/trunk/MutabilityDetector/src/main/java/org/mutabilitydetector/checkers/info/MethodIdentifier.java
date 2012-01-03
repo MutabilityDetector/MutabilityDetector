@@ -19,15 +19,19 @@ package org.mutabilitydetector.checkers.info;
 
 import static org.mutabilitydetector.locations.Dotted.fromSlashed;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.Slashed;
 
-public class MethodIdentifier {
+@Immutable
+public final class MethodIdentifier {
 
     private final Dotted dottedClassName;
     private final String methodDescriptor;
 
-    public MethodIdentifier(Dotted className, String methodDescriptor) {
+    public MethodIdentifier(@Nonnull Dotted className, @Nonnull String methodDescriptor) {
         this.dottedClassName = className;
         this.methodDescriptor = methodDescriptor;
 
@@ -42,8 +46,8 @@ public class MethodIdentifier {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((dottedClassName == null) ? 0 : dottedClassName.hashCode());
-        result = prime * result + ((methodDescriptor == null) ? 0 : methodDescriptor.hashCode());
+        result = prime * result + dottedClassName.hashCode();
+        result = prime * result + methodDescriptor.hashCode();
         return result;
     }
 
@@ -53,13 +57,9 @@ public class MethodIdentifier {
         if (obj == null) { return false; }
         if (getClass() != obj.getClass()) { return false; }
         MethodIdentifier other = (MethodIdentifier) obj;
-        if (dottedClassName == null) {
-            if (other.dottedClassName != null) { return false; }
-        } else if (!dottedClassName.equals(other.dottedClassName)) { return false; }
-        if (methodDescriptor == null) {
-            if (other.methodDescriptor != null) { return false; }
-        } else if (!methodDescriptor.equals(other.methodDescriptor)) { return false; }
-        return true;
+        
+        return dottedClassName.equals(other.dottedClassName) 
+                && methodDescriptor.equals(other.methodDescriptor);
     }
 
     public static MethodIdentifier forMethod(Dotted className, String methodDescriptor) {

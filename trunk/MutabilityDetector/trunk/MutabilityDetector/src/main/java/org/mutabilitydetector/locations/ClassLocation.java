@@ -17,11 +17,13 @@
 
 package org.mutabilitydetector.locations;
 
+import javax.annotation.Nonnull;
+
 public final class ClassLocation implements CodeLocation<ClassLocation> {
 
     private final String dottedClassName;
 
-    public ClassLocation(String dottedClassName) {
+    public ClassLocation(@Nonnull String dottedClassName) {
         this.dottedClassName = dottedClassName;
     }
 

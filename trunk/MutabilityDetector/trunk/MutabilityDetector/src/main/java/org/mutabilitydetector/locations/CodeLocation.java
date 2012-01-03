@@ -17,12 +17,15 @@
 
 package org.mutabilitydetector.locations;
 
+import javax.annotation.concurrent.Immutable;
+
 public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
 
     String typeName();
 
     public abstract String prettyPrint();
     
+    @Immutable
     public final static class UnknownCodeLocation implements CodeLocation<UnknownCodeLocation> {
 
         public static final UnknownCodeLocation UNKNOWN = new UnknownCodeLocation();
@@ -36,7 +39,7 @@ public interface CodeLocation<T extends CodeLocation<T>> extends Comparable<T> {
         
         @Override
         public boolean equals(Object obj) {
-            return obj == UNKNOWN;
+            return obj == this;
         }
         
         @Override

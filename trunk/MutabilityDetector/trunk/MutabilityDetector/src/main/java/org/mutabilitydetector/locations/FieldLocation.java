@@ -16,7 +16,10 @@
  */
 package org.mutabilitydetector.locations;
 
-public class FieldLocation implements CodeLocation<FieldLocation> {
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
+public final class FieldLocation implements CodeLocation<FieldLocation> {
 
     private final String fieldName;
     private final ClassLocation ownerOfField;

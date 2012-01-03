@@ -20,8 +20,12 @@ package org.mutabilitydetector;
 import static java.lang.Integer.toHexString;
 import static java.lang.String.format;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
 import org.mutabilitydetector.locations.CodeLocation;
 
+@Immutable
 public final class MutableReasonDetail {
 
     private final String message;
@@ -34,7 +38,8 @@ public final class MutableReasonDetail {
         this.reason = reason;
     }
     
-    public static MutableReasonDetail newMutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
+    public static MutableReasonDetail newMutableReasonDetail(@Nonnull String message, 
+            @Nonnull CodeLocation<?> location, @Nonnull Reason reason) {
         checkNotNull(message, location, reason);
         return new MutableReasonDetail(message, location, reason);
     }

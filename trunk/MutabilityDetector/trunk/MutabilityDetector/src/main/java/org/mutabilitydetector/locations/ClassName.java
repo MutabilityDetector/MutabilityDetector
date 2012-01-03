@@ -17,10 +17,15 @@
 
 package org.mutabilitydetector.locations;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
+
+@Immutable
 public class ClassName {
     private String asString;
 
-    public ClassName(String className) {
+    public ClassName(@Nonnull String className) {
         this.asString = className;
     }
 
@@ -37,7 +42,7 @@ public class ClassName {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((asString == null) ? 0 : asString.hashCode());
+        result = prime * result + asString.hashCode();
         return result;
     }
 
@@ -47,10 +52,7 @@ public class ClassName {
         if (obj == null) { return false; }
         if (getClass() != obj.getClass()) { return false; }
         ClassName other = (ClassName) obj;
-        if (asString == null) {
-            if (other.asString != null) { return false; }
-        } else if (!asString.equals(other.asString)) { return false; }
-        return true;
+        return asString.equals(other.asString);
     }
 
 }
