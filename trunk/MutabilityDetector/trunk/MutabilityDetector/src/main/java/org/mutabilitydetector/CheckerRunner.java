@@ -77,6 +77,7 @@ public class CheckerRunner {
             Throwable e) {
         String errorDescription = createErrorDescription(dottedClassPath);
         checker.visitAnalysisException(e);
+        e.printStackTrace(System.err);
         AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
         analysisSession.addAnalysisError(error);
     }

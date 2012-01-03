@@ -26,7 +26,6 @@ import static org.mutabilitydetector.TestUtil.runChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -34,7 +33,6 @@ import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.checkers.IMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.locations.ClassLocation;
-import org.mutabilitydetector.locations.FieldLocation;
 
 public class InherentTypeMutabilityCheckerTest {
 
@@ -85,29 +83,6 @@ public class InherentTypeMutabilityCheckerTest {
          */
     }
 
-    @Test
-    public void arrayTypesAreInherentlyMutable() throws Exception {
-        result = runChecker(checker, ClassWithAllPrimitives.Array.class);
-
-        assertThat(checker, hasReasons());
-        assertNotImmutable(result);
-    }
-
-    @Test
-    public void arrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
-        result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
-
-        assertImmutable(result);
-    }
-
-    @Test
-    public void arrayFieldCodeLocationIsFieldLocationWithNameOfField() throws Exception {
-        runChecker(checker, ClassWithAllPrimitives.Array.class);
-        FieldLocation sourceLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
-
-        assertThat(sourceLocation.typeName(), is(ClassWithAllPrimitives.Array.class.getName()));
-        assertThat(sourceLocation.fieldName(), is("anArray"));
-    }
 
     @Test
     public void codeLocationOfAbstractTypeIsClassLocationWithNameOfClass() throws Exception {
