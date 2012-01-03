@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -44,8 +44,8 @@ public class AllChecksRunner {
     public AnalysisResult runCheckers(IAnalysisSession analysisSession) {
         Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
 
-        Collection<IMutabilityChecker> checkers = factory.createInstances(analysisSession);
-        for (IMutabilityChecker checker : checkers) {
+        Collection<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession);
+        for (AsmMutabilityChecker checker : checkers) {
             checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);
             IsImmutable result = checker.result();
             results.put(result, getNewCount(results, result));

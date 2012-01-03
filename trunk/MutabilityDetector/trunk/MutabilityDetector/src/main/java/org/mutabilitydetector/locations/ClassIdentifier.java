@@ -19,7 +19,7 @@ package org.mutabilitydetector.locations;
 
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-public class ClassIdentifier {
+public final class ClassIdentifier {
 
     private Dotted dotted;
 

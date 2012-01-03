@@ -17,7 +17,7 @@
 
 package org.mutabilitydetector.locations;
 
-public class Slashed extends ClassName {
+public final class Slashed extends ClassName {
 
     private Slashed(String slashedClassName) {
         super(slashedClassName);

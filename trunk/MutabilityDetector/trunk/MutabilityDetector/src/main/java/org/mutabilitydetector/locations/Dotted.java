@@ -18,7 +18,7 @@
 package org.mutabilitydetector.locations;
 
 
-public class Dotted extends ClassName {
+public final class Dotted extends ClassName {
 
     private Dotted(String className) {
         super(className);

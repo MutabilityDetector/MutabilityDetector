@@ -29,7 +29,7 @@ import org.mutabilitydetector.locations.ClassLocation;
 
 public class AbstractMutabilityCheckerTest {
 
-    private final IMutabilityChecker defaultChecker = new AbstractMutabilityChecker() {
+    private final AsmMutabilityChecker defaultChecker = new AbstractMutabilityChecker() {
     };
 
     @Test

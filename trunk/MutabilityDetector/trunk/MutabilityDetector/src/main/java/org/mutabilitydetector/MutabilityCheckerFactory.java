@@ -28,7 +28,7 @@ import java.util.Collections;
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
@@ -38,10 +38,10 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 public class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 
     @Override
-    public Collection<IMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
+    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
         AnalysisDatabase database = analysisSession.analysisDatabase();
 
-        Collection<IMutabilityChecker> checkers = new ArrayList<IMutabilityChecker>();
+        Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
         checkers.add(new NonFinalFieldChecker());

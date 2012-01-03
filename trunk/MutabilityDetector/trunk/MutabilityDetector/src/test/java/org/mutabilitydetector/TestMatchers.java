@@ -23,7 +23,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Ignore;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 
 /*
  * Mutability Detector
@@ -38,11 +38,11 @@ import org.mutabilitydetector.checkers.IMutabilityChecker;
 @Ignore
 public class TestMatchers {
 
-    public static Matcher<? super IMutabilityChecker> hasReasons() {
-        return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
+    public static Matcher<? super AsmMutabilityChecker> hasReasons() {
+        return new TypeSafeDiagnosingMatcher<AsmMutabilityChecker>() {
 
             @Override
-            protected boolean matchesSafely(IMutabilityChecker item, Description mismatchDescription) {
+            protected boolean matchesSafely(AsmMutabilityChecker item, Description mismatchDescription) {
 
                 mismatchDescription.appendText(" got a checker (" + item.toString() + ") containing zero reasons ");
                 return !(item.reasons().isEmpty());
@@ -56,11 +56,11 @@ public class TestMatchers {
         };
     }
 
-    public static Matcher<? super IMutabilityChecker> hasNoReasons() {
-        return new TypeSafeDiagnosingMatcher<IMutabilityChecker>() {
+    public static Matcher<? super AsmMutabilityChecker> hasNoReasons() {
+        return new TypeSafeDiagnosingMatcher<AsmMutabilityChecker>() {
 
             @Override
-            protected boolean matchesSafely(IMutabilityChecker checker, Description mismatchDescription) {
+            protected boolean matchesSafely(AsmMutabilityChecker checker, Description mismatchDescription) {
                 String mismatch = format(" got a checker containing %d reasons, %n%s",
                         checker.reasons().size(),
                         formatReasons(checker.reasons()));

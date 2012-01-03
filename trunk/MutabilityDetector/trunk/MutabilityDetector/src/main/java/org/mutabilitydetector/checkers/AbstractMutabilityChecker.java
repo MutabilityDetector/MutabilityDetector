@@ -33,7 +33,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-public abstract class AbstractMutabilityChecker implements IMutabilityChecker {
+public abstract class AbstractMutabilityChecker implements AsmMutabilityChecker {
 
     protected Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
     private IsImmutable result = IsImmutable.IMMUTABLE;

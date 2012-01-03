@@ -34,14 +34,14 @@ import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public class AbstractTypeToFieldCheckerTest {
 
-    IMutabilityChecker checker;
+    AsmMutabilityChecker checker;
     AnalysisResult result;
 
     @Before

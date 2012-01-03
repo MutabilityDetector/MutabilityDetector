@@ -24,13 +24,13 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 
 public class CheckerRunnerTest {
 
     @Test
     public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
-        IMutabilityChecker checker = Mockito.mock(IMutabilityChecker.class);
+        AsmMutabilityChecker checker = Mockito.mock(AsmMutabilityChecker.class);
 
         Throwable toBeThrown = new NoSuchMethodError();
         doThrow(toBeThrown).when(checker).visit(anyInt(),

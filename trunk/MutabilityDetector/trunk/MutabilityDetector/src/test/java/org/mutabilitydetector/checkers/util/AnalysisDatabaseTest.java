@@ -27,7 +27,7 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisD
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 import org.mutabilitydetector.checkers.info.AnalysisInformation;
@@ -39,7 +39,7 @@ public class AnalysisDatabaseTest {
 
     @Before
     public void setUp() {
-        ISessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(),
+        AsmSessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(),
                 createWithCurrentClasspath());
         db = newAnalysisDatabase(sessionRunner);
     }

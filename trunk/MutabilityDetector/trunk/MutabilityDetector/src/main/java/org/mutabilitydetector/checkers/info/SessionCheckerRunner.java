@@ -19,11 +19,11 @@ package org.mutabilitydetector.checkers.info;
 
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
-import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.locations.ClassIdentifier;
 
-public class SessionCheckerRunner implements ISessionCheckerRunner {
+public class SessionCheckerRunner implements AsmSessionCheckerRunner {
 
     private final CheckerRunner checkerRunner;
     private final IAnalysisSession analysisSession;
@@ -34,7 +34,7 @@ public class SessionCheckerRunner implements ISessionCheckerRunner {
     }
 
     @Override
-    public void run(IMutabilityChecker checker, ClassIdentifier classIdentifier) {
+    public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier) {
         checkerRunner.run(analysisSession, checker, classIdentifier.asDotted());
     }
 

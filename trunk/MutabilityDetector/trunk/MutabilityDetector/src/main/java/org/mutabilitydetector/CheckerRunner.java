@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.mutabilitydetector.IAnalysisSession.AnalysisError;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
@@ -46,7 +46,7 @@ public class CheckerRunner {
         return new CheckerRunner(new ClassPathFactory().createFromJVM());
     }
 
-    public void run(IAnalysisSession analysisSession, IMutabilityChecker checker, Dotted className) {
+    public void run(IAnalysisSession analysisSession, AsmMutabilityChecker checker, Dotted className) {
         try {
             try {
                 cr = new ClassReader(className.asString());
@@ -64,7 +64,7 @@ public class CheckerRunner {
         }
     }
 
-    private void analyseAsStream(IMutabilityChecker checker, String dottedClassPath) throws IOException {
+    private void analyseAsStream(AsmMutabilityChecker checker, String dottedClassPath) throws IOException {
         String slashedClassPath = dottedClassPath.replace(".", "/").concat(".class");
         InputStream classStream = classpath.getResourceAsStream(slashedClassPath);
         cr = new ClassReader(classStream);
@@ -72,7 +72,7 @@ public class CheckerRunner {
     }
 
     private void handleException(IAnalysisSession analysisSession,
-            IMutabilityChecker checker,
+            AsmMutabilityChecker checker,
             String dottedClassPath,
             Throwable e) {
         String errorDescription = createErrorDescription(dottedClassPath);
@@ -86,7 +86,7 @@ public class CheckerRunner {
         return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
     }
 
-    private String getNameOfChecker(IMutabilityChecker checker) {
+    private String getNameOfChecker(AsmMutabilityChecker checker) {
         String checkerName = checker.getClass().getName();
         checkerName = checkerName.substring(checkerName.lastIndexOf(".") + 1);
         return checkerName;

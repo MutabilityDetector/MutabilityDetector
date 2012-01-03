@@ -28,12 +28,12 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public class ArrayFieldMutabilityCheckerTest {
 
-    private IMutabilityChecker checker;
+    private AsmMutabilityChecker checker;
     private AnalysisResult result;
 
     @Before

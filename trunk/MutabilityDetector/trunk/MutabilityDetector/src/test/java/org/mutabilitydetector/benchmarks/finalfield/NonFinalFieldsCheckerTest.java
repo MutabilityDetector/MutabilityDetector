@@ -22,13 +22,13 @@ import org.junit.Test;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 
 public class NonFinalFieldsCheckerTest {
 
     
-    private final IMutabilityChecker checker = new NonFinalFieldChecker();
+    private final AsmMutabilityChecker checker = new NonFinalFieldChecker();
 
 
     @Test

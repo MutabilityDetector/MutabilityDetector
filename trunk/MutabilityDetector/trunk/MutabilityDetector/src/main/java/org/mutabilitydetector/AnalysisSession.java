@@ -26,14 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 
-public class AnalysisSession implements IAnalysisSession {
+public final class AnalysisSession implements IAnalysisSession {
 
     private final Map<String, AnalysisResult> analysedClasses = new HashMap<String, AnalysisResult>();
     private final List<AnalysisError> analysisErrors = new ArrayList<AnalysisError>();
@@ -44,7 +44,7 @@ public class AnalysisSession implements IAnalysisSession {
 
     public AnalysisSession(ClassPath classpath) {
         checkerRunnerFactory = new CheckerRunnerFactory(classpath);
-        ISessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
+        AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         database = newAnalysisDatabase(sessionCheckerRunner);
     }
 

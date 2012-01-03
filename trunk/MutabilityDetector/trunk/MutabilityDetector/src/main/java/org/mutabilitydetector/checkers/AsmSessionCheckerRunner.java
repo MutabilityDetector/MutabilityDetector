@@ -14,20 +14,13 @@
  *   limitations under the License.
  *
  */
+
 package org.mutabilitydetector.checkers;
 
-import java.util.Collection;
+import org.mutabilitydetector.locations.ClassIdentifier;
 
-import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.IsImmutable;
-import org.objectweb.asm.ClassVisitor;
+public interface AsmSessionCheckerRunner {
 
-public interface IMutabilityChecker extends ClassVisitor {
-
-    public Collection<MutableReasonDetail> reasons();
-
-    public IsImmutable result();
-
-    public void visitAnalysisException(Throwable toBeThrown);
+    public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier);
 
 }

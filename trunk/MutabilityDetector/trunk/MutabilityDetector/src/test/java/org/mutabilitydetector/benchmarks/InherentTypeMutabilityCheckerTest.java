@@ -30,13 +30,13 @@ import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.locations.ClassLocation;
 
 public class InherentTypeMutabilityCheckerTest {
 
-    private IMutabilityChecker checker;
+    private AsmMutabilityChecker checker;
     private AnalysisResult result;
 
     @Before

@@ -18,10 +18,10 @@ package org.mutabilitydetector;
 
 import java.util.Collection;
 
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 
 public interface IMutabilityCheckerFactory {
 
-    public Collection<IMutabilityChecker> createInstances(IAnalysisSession analysisSession);
+    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession);
 
 }

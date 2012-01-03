@@ -33,7 +33,7 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-public class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
+public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final IAnalysisSession analysisSession;
     private final TypeStructureInformation typeStructureInformation;

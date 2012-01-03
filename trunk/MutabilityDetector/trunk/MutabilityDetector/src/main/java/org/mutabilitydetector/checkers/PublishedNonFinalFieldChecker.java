@@ -23,7 +23,7 @@ import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 
-public class PublishedNonFinalFieldChecker extends AbstractMutabilityChecker {
+public final class PublishedNonFinalFieldChecker extends AbstractMutabilityChecker {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {

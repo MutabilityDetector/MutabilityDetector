@@ -23,17 +23,17 @@ import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.TypeStructureInformationChecker;
 import org.mutabilitydetector.locations.Dotted;
 
 public class TypeStructureInformation implements AnalysisInformation {
 
-    private final ISessionCheckerRunner sessionCheckerRunner;
+    private final AsmSessionCheckerRunner sessionCheckerRunner;
     private final Map<Dotted, Boolean> isAbstractMap = new HashMap<Dotted, Boolean>();
     private final Map<Dotted, Boolean> isInterfaceMap = new HashMap<Dotted, Boolean>();
 
-    public TypeStructureInformation(ISessionCheckerRunner sessionCheckerRunner) {
+    public TypeStructureInformation(AsmSessionCheckerRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
     }
 

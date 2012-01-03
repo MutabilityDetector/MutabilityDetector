@@ -20,7 +20,7 @@ import org.mutabilitydetector.cli.URLFallbackClassLoader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
-public class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
+public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
     private URLFallbackClassLoader classLoader;
 

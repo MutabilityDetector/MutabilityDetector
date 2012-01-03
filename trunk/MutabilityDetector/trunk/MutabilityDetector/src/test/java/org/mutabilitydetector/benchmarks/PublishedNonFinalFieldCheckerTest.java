@@ -26,13 +26,13 @@ import static org.mutabilitydetector.TestUtil.runChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.checkers.IMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public class PublishedNonFinalFieldCheckerTest {
 
-    private IMutabilityChecker checker;
+    private AsmMutabilityChecker checker;
     private AnalysisResult result;
 
     @Before

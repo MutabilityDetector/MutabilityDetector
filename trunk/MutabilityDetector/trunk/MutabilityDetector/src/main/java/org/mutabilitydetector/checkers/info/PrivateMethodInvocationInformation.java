@@ -22,16 +22,16 @@ import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.ISessionCheckerRunner;
+import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker;
 import org.mutabilitydetector.locations.Dotted;
 
 public class PrivateMethodInvocationInformation implements AnalysisInformation {
 
     private final Map<Dotted, PrivateMethodInvocationChecker> checkerCache = new HashMap<Dotted, PrivateMethodInvocationChecker>();
-    private final ISessionCheckerRunner sessionCheckerRunner;
+    private final AsmSessionCheckerRunner sessionCheckerRunner;
 
-    public PrivateMethodInvocationInformation(ISessionCheckerRunner sessionCheckerRunner) {
+    public PrivateMethodInvocationInformation(AsmSessionCheckerRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
 
     }

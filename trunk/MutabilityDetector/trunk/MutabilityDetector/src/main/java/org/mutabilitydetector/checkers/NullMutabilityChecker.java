@@ -21,7 +21,7 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.mutabilitydetector.MutabilityReason;
 
-public class NullMutabilityChecker extends AbstractMutabilityChecker {
+public final class NullMutabilityChecker extends AbstractMutabilityChecker {
 
     public NullMutabilityChecker() {
         addResult("This checker is a placeholder for a proper checker.",

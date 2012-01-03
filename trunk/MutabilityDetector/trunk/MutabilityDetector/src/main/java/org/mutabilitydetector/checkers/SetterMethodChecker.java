@@ -40,7 +40,7 @@ import org.objectweb.asm.tree.analysis.Frame;
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
  */
-public class SetterMethodChecker extends AbstractMutabilityChecker {
+public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
 
