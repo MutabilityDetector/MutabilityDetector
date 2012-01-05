@@ -31,7 +31,7 @@ public final class CheckerRunnerFactory implements ICheckerRunnerFactory {
 
     @Override
     public CheckerRunner createRunner() {
-        return new CheckerRunner(classpath);
+        return CheckerRunner.createWithClasspath(classpath);
     }
 
 }

@@ -16,6 +16,9 @@
  */
 package org.mutabilitydetector;
 
+import static java.util.Arrays.asList;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
@@ -29,6 +32,7 @@ import java.util.Map;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.locations.ClassLocation;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -42,22 +46,21 @@ public final class AnalysisSession implements IAnalysisSession {
     private final List<String> requestedAnalysis = new ArrayList<String>();
     private final AnalysisDatabase database;
 
-    public AnalysisSession(ClassPath classpath) {
-        checkerRunnerFactory = new CheckerRunnerFactory(classpath);
+    private AnalysisSession(ClassPath classpath, CheckerRunnerFactory checkerRunnerFactory) {
+        this.checkerRunnerFactory = checkerRunnerFactory;
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
-        database = newAnalysisDatabase(sessionCheckerRunner);
-    }
-
-    public AnalysisSession() {
-        this(new ClassPathFactory().createFromJVM());
+        this.database = newAnalysisDatabase(sessionCheckerRunner);
     }
 
     public static IAnalysisSession createWithGivenClassPath(ClassPath classpath) {
-        return new AnalysisSession(classpath);
+        return new AnalysisSession(classpath, new CheckerRunnerFactory(classpath));
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
-        return new AnalysisSession(new ClassPathFactory().createFromJVM());
+        ClassPath classpath = new ClassPathFactory().createFromJVM();
+        
+        
+        return new AnalysisSession(classpath, new CheckerRunnerFactory(classpath));
     }
 
     @Override
@@ -67,25 +70,28 @@ public final class AnalysisSession implements IAnalysisSession {
             return resultForClass;
         }
         
-        requestAnalysis(className);
-        return resultFor(className);
+        return addAnalysisResult(requestAnalysis(className));
     }
 
-    private void requestAnalysis(String className) {
+    private AnalysisResult requestAnalysis(String className) {
         if (requestedAnalysis.contains(className)) {
             // isImmutable has already been called for this class, and the
             // result not yet generated
-            
-            return;
+            return circularReferenceResult(className);
         }
         
         requestedAnalysis.add(className);
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
                                                               dotted(className));
-        AnalysisResult result = allChecksRunner.runCheckers(this);
-        addAnalysisResult(result);
+        return allChecksRunner.runCheckers(this);
+    }
 
+    private AnalysisResult circularReferenceResult(String className) {
+        return analysisResult(className, IsImmutable.NOT_IMMUTABLE, 
+                              asList(newMutableReasonDetail("Circular reference", 
+                                                            ClassLocation.from(dotted(className)),
+                                                            MutabilityReason.CANNOT_ANALYSE)));
     }
 
     @Override
@@ -99,10 +105,10 @@ public final class AnalysisSession implements IAnalysisSession {
         }
     }
 
-    @Override
-    public void addAnalysisResult(AnalysisResult result) {
+    private AnalysisResult addAnalysisResult(AnalysisResult result) {
         requestedAnalysis.remove(result.dottedClassName);
         analysedClasses.put(result.dottedClassName, result);
+        return result;
     }
 
     @Override

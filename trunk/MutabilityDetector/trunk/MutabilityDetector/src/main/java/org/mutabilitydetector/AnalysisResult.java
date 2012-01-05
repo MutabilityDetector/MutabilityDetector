@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public final class AnalysisResult {
     public final String dottedClassName;
     public final IsImmutable isImmutable;

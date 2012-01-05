@@ -104,6 +104,12 @@ public class WellKnownJavaTypesTest {
     }
 
     @Test
+    public void Constructor() {
+        assertInstancesOf(Class.class, areNotImmutable());
+        assertInstancesOf(java.lang.reflect.Constructor.class, areNotImmutable());
+    }
+
+    @Test
     public void ArrayList() {
         assertInstancesOf(ArrayList.class, areNotImmutable());
     }

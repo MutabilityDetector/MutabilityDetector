@@ -17,14 +17,11 @@
 package org.mutabilitydetector.benchmarks.circular;
 
 public final class CircularReferenceClasses {
-}
-
-@SuppressWarnings("unused")
-final class ImmutableClassA {
-    private ImmutableClassB circularRef;
-}
-
-@SuppressWarnings("unused")
-final class ImmutableClassB {
-    private ImmutableClassA circularRef;
+    public final ImmutableClassA classA;
+    public final ImmutableClassB classB;
+    
+    public CircularReferenceClasses(ImmutableClassA classA, ImmutableClassB classB) {
+        this.classA = classA;
+        this.classB = classB;
+    }
 }

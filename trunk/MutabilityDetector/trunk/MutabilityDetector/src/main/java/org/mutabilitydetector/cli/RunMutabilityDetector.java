@@ -18,6 +18,7 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
+import static org.mutabilitydetector.AnalysisSession.createWithGivenClassPath;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.locations.ClassNameConvertor;
 
@@ -76,10 +76,10 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
-        IAnalysisSession session = new AnalysisSession(classpath);
+        IAnalysisSession session = createWithGivenClassPath(classpath);
         List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
+        
         session.runAnalysis(filtered);
-
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         StringBuilder output = new SessionResultsFormatter(options, readerFactory).format(session);
         return output;

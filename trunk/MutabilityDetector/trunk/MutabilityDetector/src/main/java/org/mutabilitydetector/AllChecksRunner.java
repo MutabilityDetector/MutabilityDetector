@@ -25,7 +25,7 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.locations.Dotted;
 
-public class AllChecksRunner {
+public final class AllChecksRunner {
 
     private final Dotted toAnalyse;
     private final Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
@@ -35,7 +35,7 @@ public class AllChecksRunner {
     public AllChecksRunner(IMutabilityCheckerFactory checkerFactory,
             ICheckerRunnerFactory checkerRunnerFactory,
             Dotted toAnalyse) {
-        factory = checkerFactory;
+        this.factory = checkerFactory;
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.toAnalyse = toAnalyse;
 

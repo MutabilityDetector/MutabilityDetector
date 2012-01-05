@@ -16,6 +16,8 @@
  */
 package org.mutabilitydetector;
 
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -25,6 +27,7 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 
 public class CheckerRunnerTest {
 
@@ -42,7 +45,12 @@ public class CheckerRunnerTest {
 
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
 
-        checkerRunner.run(new AnalysisSession(), checker, fromClass(CheckerRunner.class));
+//        try {
+            checkerRunner.run(AnalysisSession.createWithCurrentClassPath(), checker, fromClass(CheckerRunner.class));
+//            fail("expected exception");
+//        } catch (MutabilityAnalysisException expected) {
+//            assertSame(toBeThrown, expected.getCause());
+//        }
 
         verify(checker).visitAnalysisException(toBeThrown);
     }

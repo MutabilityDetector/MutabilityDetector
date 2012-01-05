@@ -24,8 +24,6 @@ public interface IAnalysisSession {
 
     AnalysisResult resultFor(String className);
 
-    void addAnalysisResult(AnalysisResult result);
-
     void addAnalysisError(AnalysisError error);
 
     void runAnalysis(Collection<String> classNames);

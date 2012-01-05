@@ -37,12 +37,12 @@ import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = new AnalysisSession().resultFor(toAnalyse.getName()).isImmutable;
+        IsImmutable result = AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).isImmutable;
         return result;
     }
 
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return new AnalysisSession().resultFor(toAnalyse.getName());
+        return AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName());
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {
@@ -60,7 +60,7 @@ public class TestUtil {
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
-        CheckerRunner.createWithCurrentClasspath().run(new AnalysisSession(), checker, fromClass(toAnalyse));
+        CheckerRunner.createWithCurrentClasspath().run(AnalysisSession.createWithCurrentClassPath(), checker, fromClass(toAnalyse));
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 

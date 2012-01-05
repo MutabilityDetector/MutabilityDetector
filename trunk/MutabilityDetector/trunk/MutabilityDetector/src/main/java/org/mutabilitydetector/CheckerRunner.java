@@ -29,21 +29,24 @@ import org.objectweb.asm.ClassReader;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 
-public class CheckerRunner {
+public final class CheckerRunner {
 
     private ClassReader cr;
     private final ClassPath classpath;
+    @SuppressWarnings("unused")
+    private final UnhandledExceptionBuilder unhandledExceptionBuilder;
 
-    public CheckerRunner(ClassPath classpath) {
+    private CheckerRunner(ClassPath classpath, UnhandledExceptionBuilder unhandledExceptionBuilder) {
         this.classpath = classpath;
+        this.unhandledExceptionBuilder = unhandledExceptionBuilder;
     }
 
     public static CheckerRunner createWithClasspath(ClassPath classpath) {
-        return new CheckerRunner(classpath);
+        return new CheckerRunner(classpath, new UnhandledExceptionBuilder());
     }
 
     public static CheckerRunner createWithCurrentClasspath() {
-        return new CheckerRunner(new ClassPathFactory().createFromJVM());
+        return createWithClasspath(new ClassPathFactory().createFromJVM());
     }
 
     public void run(IAnalysisSession analysisSession, AsmMutabilityChecker checker, Dotted className) {
@@ -61,6 +64,7 @@ public class CheckerRunner {
             }
         } catch (Throwable e) {
             handleException(analysisSession, checker, className.asString(), e);
+            // throw unhandledExceptionBuilder.unhandledException(e, analysisSession, checker, className);
         }
     }
 
@@ -77,7 +81,6 @@ public class CheckerRunner {
             Throwable e) {
         String errorDescription = createErrorDescription(dottedClassPath);
         checker.visitAnalysisException(e);
-        e.printStackTrace(System.err);
         AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
         analysisSession.addAnalysisError(error);
     }

@@ -36,6 +36,12 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
     }
 
     @Test
+    public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
+        IAnalysisSession session = createWithCurrentClassPath();
+        session.resultFor(CircularReferenceClasses.class.getName());
+    }
+
+    @Test
     public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
         IAnalysisSession session = createWithCurrentClassPath();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
@@ -43,4 +49,5 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }
+
 }
