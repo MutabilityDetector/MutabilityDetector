@@ -3,6 +3,10 @@
 
 
 MD_JAR=$1
+if [ -z "$MD_JAR" ]; then
+  MD_JAR=./target/MutabilityDetector-0.8-SNAPSHOT.jar
+fi
+
 JAR_TO_ANALYSE=$2
 if [ -z "$JAR_TO_ANALYSE" ]; then
   JAR_TO_ANALYSE=$JAVA_HOME/jre/lib/rt.jar
