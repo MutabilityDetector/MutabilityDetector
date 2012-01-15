@@ -37,12 +37,12 @@ import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).isImmutable;
+        IsImmutable result = AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).result.isImmutable;
         return result;
     }
 
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName());
+        return AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).result;
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {

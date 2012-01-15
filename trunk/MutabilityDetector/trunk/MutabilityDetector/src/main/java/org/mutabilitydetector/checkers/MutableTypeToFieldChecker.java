@@ -20,9 +20,9 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
-import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -35,12 +35,12 @@ import org.objectweb.asm.tree.analysis.Frame;
 
 public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
-    private final IAnalysisSession analysisSession;
     private final TypeStructureInformation typeStructureInformation;
+    private final MutableTypeInformation mutableTypeInfo;
 
-    public MutableTypeToFieldChecker(IAnalysisSession analysisSession, TypeStructureInformation typeStructureInformation) {
-        this.analysisSession = analysisSession;
-        this.typeStructureInformation = typeStructureInformation;
+    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo) {
+        this.typeStructureInformation = info;
+        this.mutableTypeInfo = mutableTypeInfo;
     }
 
     @Override
@@ -79,12 +79,15 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             int sort = type.getSort();
             switch (sort) {
             case Type.OBJECT:
-                String dottedClassName = dottedClassName(type);
-                IsImmutable isImmutable = analysisSession.resultFor(dottedClassName).isImmutable;
-
-                boolean isConcreteType = isConcreteType(dotted(dottedClassName));
-                if (!isImmutable.equals(IMMUTABLE) && isConcreteType) {
-                    addResult("Field can have a mutable type (" + dottedClassName + ") " + "assigned to it.",
+                Dotted className = dotted(dottedClassName(type));
+                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className);
+                
+                if (!requestedAnalysis.analysisComplete) {
+                    addResult("There is a field assigned which creates a circular reference.", 
+                              fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                              MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+                } else if (!requestedAnalysis.result.isImmutable.equals(IMMUTABLE) && isConcreteType(className)) {
+                    addResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
                             fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 }

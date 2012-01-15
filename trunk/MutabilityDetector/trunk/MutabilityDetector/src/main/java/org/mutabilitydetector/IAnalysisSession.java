@@ -22,7 +22,7 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 
 public interface IAnalysisSession {
 
-    AnalysisResult resultFor(String className);
+    RequestedAnalysis resultFor(String className);
 
     void addAnalysisError(AnalysisError error);
 
@@ -43,7 +43,24 @@ public interface IAnalysisSession {
             this.onClass = onClass;
             this.checkerName = checkerName;
             this.description = errorDescription;
-
+        }
+    }
+    
+    public static final class RequestedAnalysis {
+        public final AnalysisResult result;
+        public final boolean analysisComplete;
+        
+        private RequestedAnalysis(AnalysisResult result) {
+            this.result = result;
+            this.analysisComplete = result != null;
+        }
+        
+        public static RequestedAnalysis incomplete() {
+            return new RequestedAnalysis(null);
+        }
+        
+        public static RequestedAnalysis complete(AnalysisResult result) {
+            return new RequestedAnalysis(result);
         }
     }
 

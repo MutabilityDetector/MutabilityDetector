@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
+import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.locations.ClassNameConvertor;
 
 import com.google.classpath.ClassPath;
@@ -76,7 +78,10 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
-        IAnalysisSession session = createWithGivenClassPath(classpath);
+        IAnalysisSession session = createWithGivenClassPath(classpath, 
+                                                            new CheckerRunnerFactory(classpath), 
+                                                            new MutabilityCheckerFactory());
+        
         List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
         
         session.runAnalysis(filtered);

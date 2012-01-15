@@ -17,12 +17,14 @@
 package org.mutabilitydetector.asmoverride;
 
 import org.mutabilitydetector.cli.URLFallbackClassLoader;
+import org.mutabilitydetector.locations.ClassNameConvertor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
-    private URLFallbackClassLoader classLoader;
+    private final URLFallbackClassLoader classLoader;
+    private final ClassNameConvertor classNameConverter = new ClassNameConvertor();
 
     public CustomClassLoadingSimpleVerifier() {
         classLoader = new URLFallbackClassLoader();
@@ -34,7 +36,7 @@ public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
         try {
             if (t.getSort() == Type.ARRAY) {
-                className = t.getDescriptor().replace('/', '.');
+                className = classNameConverter.dotted(t.getDescriptor());
             } else {
                 className = t.getClassName();
             }

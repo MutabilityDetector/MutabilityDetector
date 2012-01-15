@@ -37,9 +37,9 @@ public class URLFallbackClassLoader {
 
         Class<?> toReturn;
         try {
-            toReturn = fromJVMClassLoader(dottedClassPath);
-        } catch (ClassNotFoundException e) {
             toReturn = fromURLClassLoader(dottedClassPath);
+        } catch (ClassNotFoundException e) {
+            toReturn = fromJVMClassLoader(dottedClassPath);
         }
 
         classCache.put(dottedClassPath, toReturn);

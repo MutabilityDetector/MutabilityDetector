@@ -90,6 +90,9 @@ public enum MutabilityReason implements Reason {
     /**
      * A mutable type can be assigned to a field. Since references to the mutable field may be kept, the containing type
      * can be mutated after construction.
+     * 
+     * This reason can also indicate a circular reference in the fields of several types. E.g. type A has a field of type B, and type B has a field of type A. 
+     * Therefore one of these types has to not be completely constructed when passed to the other type.
      */
     MUTABLE_TYPE_TO_FIELD("A mutable type can be assigned to a field. Since references to the mutable field " + "may be kept, the containing type can be mutated after construction.",
             IsImmutable.NOT_IMMUTABLE),

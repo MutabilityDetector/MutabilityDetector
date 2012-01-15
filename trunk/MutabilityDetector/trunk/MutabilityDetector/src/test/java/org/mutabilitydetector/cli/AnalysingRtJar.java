@@ -35,12 +35,18 @@ public class AnalysingRtJar {
         }
     });
 
-    @Ignore
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
+    }
+    
+    @Test
+    public void checkExceptionIsNotThrownRunOnSelfJar() {
+        String selfJarPath = System.getProperty("user.home") + "/.m2/repository/joda-time/joda-time/2.0/joda-time-2.0.jar";
+        BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-v", "-cp", selfJarPath);
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(selfJarPath), options).run();
     }
     
     @Ignore

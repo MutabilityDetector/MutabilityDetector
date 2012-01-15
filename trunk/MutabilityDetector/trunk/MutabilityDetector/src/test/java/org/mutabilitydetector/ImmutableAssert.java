@@ -65,7 +65,7 @@ public class ImmutableAssert {
     private static AnalysisResult getResultAndPrintErrors(Class<?> toAnalyse) {
         IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
         String className = toAnalyse.getName();
-        AnalysisResult result = session.resultFor(className);
+        AnalysisResult result = session.resultFor(className).result;
 
         for (AnalysisError error : session.getErrors()) {
             System.err.printf("Analysis error running checker=[%s] on class=[%s.class]:%n%s%n",

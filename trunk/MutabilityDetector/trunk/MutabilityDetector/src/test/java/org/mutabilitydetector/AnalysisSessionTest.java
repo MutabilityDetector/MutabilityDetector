@@ -16,19 +16,12 @@
  */
 package org.mutabilitydetector;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.circular.ImmutableClassA;
 
 public class AnalysisSessionTest {
 
@@ -48,28 +41,15 @@ public class AnalysisSessionTest {
 
         checker.runCheckers(analysisSession);
 
-        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
+        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
         assertImmutable(result);
     }
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
         IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName());
+        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
         assertImmutable(result);
     }
     
-    @Ignore
-    @Test
-    public void reRequestingAnAnalysisBeforeCompleteWillReturnACircularReferenceResult() throws Exception {
-        IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-        AnalysisResult result = analysisSession.resultFor(ImmutableClassA.class.getCanonicalName());
-        
-        assertThat(result.isImmutable, is(NOT_IMMUTABLE));
-        
-        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        assertThat(reasonDetail.message(), containsString("Circular reference"));
-        assertTrue(reasonDetail.reason().isOneOf(MutabilityReason.CANNOT_ANALYSE));
-    }
-
 }

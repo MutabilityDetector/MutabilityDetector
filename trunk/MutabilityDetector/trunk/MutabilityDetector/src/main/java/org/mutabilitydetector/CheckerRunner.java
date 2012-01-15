@@ -33,7 +33,6 @@ public final class CheckerRunner {
 
     private ClassReader cr;
     private final ClassPath classpath;
-    @SuppressWarnings("unused")
     private final UnhandledExceptionBuilder unhandledExceptionBuilder;
 
     private CheckerRunner(ClassPath classpath, UnhandledExceptionBuilder unhandledExceptionBuilder) {
@@ -64,7 +63,7 @@ public final class CheckerRunner {
             }
         } catch (Throwable e) {
             handleException(analysisSession, checker, className.asString(), e);
-            // throw unhandledExceptionBuilder.unhandledException(e, analysisSession, checker, className);
+            throw unhandledExceptionBuilder.unhandledException(e, analysisSession, checker, className);
         }
     }
 

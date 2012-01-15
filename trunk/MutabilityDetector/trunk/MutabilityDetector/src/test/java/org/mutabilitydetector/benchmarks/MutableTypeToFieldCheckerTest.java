@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.IAnalysisSession.RequestedAnalysis.complete;
 import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
 import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
@@ -37,12 +38,14 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableButHasUnmodifiedArrayAsField;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
@@ -52,29 +55,29 @@ public class MutableTypeToFieldCheckerTest {
 
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
     
-    private IAnalysisSession mockSession;
+    private IAnalysisSession session;
     private MutableTypeToFieldChecker checker;
     private AnalysisResult result;
     private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
 
     @Before
     public void setUp() {
-        mockSession = mock(IAnalysisSession.class);
+        session = mock(IAnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        checker = new MutableTypeToFieldChecker(mockSession, info);
+        checker = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session));
     }
 
     @Test
     public void requestsMutableStatusOfPublishedField() throws Exception {
-        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(MutableExample.class.getCanonicalName())).thenReturn(complete(unusedAnalysisResult));
         runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
-        verify(mockSession).resultFor(MutableExample.class.getCanonicalName());
+        verify(session).resultFor(MutableExample.class.getCanonicalName());
     }
 
     @Test
     public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
-        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(MutableExample.class.getCanonicalName())).thenReturn(complete(unusedAnalysisResult));
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
@@ -83,14 +86,26 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
-        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(MutableExample.class.getCanonicalName())).thenReturn(complete(unusedAnalysisResult));
 
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
         assertNotImmutable(result);
     }
+    
+    @Test
+    public void isMutableWhenCircularReferenceCheckingForFieldBeingMutable() throws Exception {
+        when(session.resultFor(MutableExample.class.getName())).thenReturn(RequestedAnalysis.incomplete());
+        TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+        MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session);
+        checker = new MutableTypeToFieldChecker(info, mutableTypeInfo);
+        
 
+        result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
+        assertNotImmutable(result);
+    }
+    
     @Test
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
@@ -112,7 +127,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void doesNotRaiseErrorForAbstractTypeSinceThisIsRaisedByAbstractTypeToFieldChecker() throws Exception {
-        when(mockSession.resultFor(AbstractStringContainer.class.getName())).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(AbstractStringContainer.class.getName())).thenReturn(complete(unusedAnalysisResult));
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 
         assertThat(checker, hasNoReasons());
@@ -121,7 +136,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void codeLocationIsFieldLocation() throws Exception {
-        when(mockSession.resultFor(MutableExample.class.getCanonicalName())).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(MutableExample.class.getCanonicalName())).thenReturn(complete(unusedAnalysisResult));
         runChecker(checker, MutableByHavingMutableFieldAssigned.class);
         FieldLocation codeLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
 

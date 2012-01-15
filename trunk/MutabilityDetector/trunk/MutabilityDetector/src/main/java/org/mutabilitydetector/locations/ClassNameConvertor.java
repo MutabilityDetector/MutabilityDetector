@@ -19,12 +19,29 @@ package org.mutabilitydetector.locations;
 
 /**
  * @author Graham Allan / Grundlefleck at gmail dot com
- * 
  */
 public final class ClassNameConvertor {
 
-    public String dotted(String slashed) {
-        return slashed.replace(".class", "").replace("/", ".");
+    public String dotted(final String slashed) {
+        String withNoArrayDescriptor = stripArrayDescriptorFromTypeArrayDescriptor(slashed);
+        
+        return withNoArrayDescriptor
+                   .replace(".class", "")
+                   .replace("/", ".")
+                   .replace(";", "");
     }
 
+
+    private String stripArrayDescriptorFromTypeArrayDescriptor(String slashed) {
+        return slashed.contains("[L") 
+            ? slashed.replace("[L", "")
+                     .replace("[", "") // multi-dimensional arrays
+            : slashed;
+    }
+
+    
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class<?> forName = Class.forName("B");
+        System.out.println(forName);
+    }
 }

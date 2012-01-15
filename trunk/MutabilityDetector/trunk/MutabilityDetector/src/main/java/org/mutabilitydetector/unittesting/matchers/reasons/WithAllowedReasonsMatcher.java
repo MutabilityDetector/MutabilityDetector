@@ -132,6 +132,4 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     public void describeTo(Description description) {
         isImmutable.describeTo(description);
     }
-
-
 }

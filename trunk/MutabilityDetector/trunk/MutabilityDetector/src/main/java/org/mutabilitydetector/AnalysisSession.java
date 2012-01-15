@@ -16,9 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import static java.util.Arrays.asList;
-import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
@@ -32,7 +29,6 @@ import java.util.Map;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
-import org.mutabilitydetector.locations.ClassLocation;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -41,43 +37,47 @@ public final class AnalysisSession implements IAnalysisSession {
 
     private final Map<String, AnalysisResult> analysedClasses = new HashMap<String, AnalysisResult>();
     private final List<AnalysisError> analysisErrors = new ArrayList<AnalysisError>();
-    private final IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
-    private final CheckerRunnerFactory checkerRunnerFactory;
+    private final IMutabilityCheckerFactory checkerFactory;
+    private final ICheckerRunnerFactory checkerRunnerFactory;
     private final List<String> requestedAnalysis = new ArrayList<String>();
     private final AnalysisDatabase database;
 
-    private AnalysisSession(ClassPath classpath, CheckerRunnerFactory checkerRunnerFactory) {
+    private AnalysisSession(ClassPath classpath, ICheckerRunnerFactory checkerRunnerFactory,
+            IMutabilityCheckerFactory checkerFactory) {
         this.checkerRunnerFactory = checkerRunnerFactory;
+        this.checkerFactory = checkerFactory;
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
     }
 
-    public static IAnalysisSession createWithGivenClassPath(ClassPath classpath) {
-        return new AnalysisSession(classpath, new CheckerRunnerFactory(classpath));
+    public static IAnalysisSession createWithGivenClassPath(ClassPath classpath, 
+                                                              ICheckerRunnerFactory checkerRunnerFactory,
+                                                              IMutabilityCheckerFactory checkerFactory) {
+        return new AnalysisSession(classpath, checkerRunnerFactory, checkerFactory);
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
-        
-        
-        return new AnalysisSession(classpath, new CheckerRunnerFactory(classpath));
+        return new AnalysisSession(classpath, 
+                                    new CheckerRunnerFactory(classpath), 
+                                    new MutabilityCheckerFactory());
     }
 
     @Override
-    public AnalysisResult resultFor(String className) {
-        AnalysisResult resultForClass = analysedClasses.get(className);
-        if (resultForClass != null) {
-            return resultForClass;
-        }
-        
-        return addAnalysisResult(requestAnalysis(className));
+    public RequestedAnalysis resultFor(String className) {
+        AnalysisResult resultForClass = requestAnalysis(className);
+        return resultForClass == null 
+                ? RequestedAnalysis.incomplete()
+                : RequestedAnalysis.complete(addAnalysisResult(resultForClass));
     }
 
     private AnalysisResult requestAnalysis(String className) {
-        if (requestedAnalysis.contains(className)) {
-            // isImmutable has already been called for this class, and the
-            // result not yet generated
-            return circularReferenceResult(className);
+        if (isRepeatedRequestFor(className)) {
+            return null;
+        }
+        
+        if (resultHasAlreadyBeenGenerated(className)) {
+            return analysedClasses.get(className);
         }
         
         requestedAnalysis.add(className);
@@ -87,11 +87,13 @@ public final class AnalysisSession implements IAnalysisSession {
         return allChecksRunner.runCheckers(this);
     }
 
-    private AnalysisResult circularReferenceResult(String className) {
-        return analysisResult(className, IsImmutable.NOT_IMMUTABLE, 
-                              asList(newMutableReasonDetail("Circular reference", 
-                                                            ClassLocation.from(dotted(className)),
-                                                            MutabilityReason.CANNOT_ANALYSE)));
+
+    private boolean isRepeatedRequestFor(String className) {
+        return requestedAnalysis.contains(className);
+    }
+
+    private boolean resultHasAlreadyBeenGenerated(String className) {
+        return analysedClasses.containsKey(className);
     }
 
     @Override

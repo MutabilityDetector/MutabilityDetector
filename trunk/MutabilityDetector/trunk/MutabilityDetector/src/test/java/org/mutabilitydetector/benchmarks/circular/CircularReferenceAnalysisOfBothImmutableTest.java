@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 
 public class CircularReferenceAnalysisOfBothImmutableTest {
@@ -45,7 +46,7 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
     public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
         IAnalysisSession session = createWithCurrentClassPath();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(session, information);
+        AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(information, new MutableTypeInformation(session));
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }

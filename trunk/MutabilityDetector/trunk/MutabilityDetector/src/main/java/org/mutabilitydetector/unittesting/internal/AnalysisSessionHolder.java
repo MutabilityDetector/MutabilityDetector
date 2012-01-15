@@ -26,6 +26,6 @@ public class AnalysisSessionHolder {
     private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 
     public static AnalysisResult analysisResultFor(Class<?> from) {
-        return assertionAnalysisSession.resultFor(from.getName());
+        return assertionAnalysisSession.resultFor(from.getName()).result;
     }
 }
