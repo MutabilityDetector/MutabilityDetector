@@ -181,7 +181,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
             reasons.append("Specified file is a directory.");
         }
 
-        if (classListFile.exists() && !classListFile.canRead()) {
+        if (unreadableClassFileListExists()) {
             isInvalid = true;
             reasons.append("File exists but cannot be read from.");
         }
@@ -193,6 +193,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         }
 
     }
+
+	private boolean unreadableClassFileListExists() {
+		return classListFile.exists() && !classListFile.canRead();
+	}
 
     private void extractShowErrorsOption(CommandLine line) {
         this.reportErrors = line.hasOption("e") || line.hasOption("showErrors");
