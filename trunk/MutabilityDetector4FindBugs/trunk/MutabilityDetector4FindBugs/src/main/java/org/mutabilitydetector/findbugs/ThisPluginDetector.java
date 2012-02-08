@@ -3,17 +3,13 @@ package org.mutabilitydetector.findbugs;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 
 public class ThisPluginDetector implements Detector {
     private static final String loggingLabel = MutabilityDetector.class.getSimpleName();
 	
-    private static class SetupChecker {
-        
-        private SetupChecker() { }
-        public static SetupChecker SINGLETON_INSTANCE = new SetupChecker();
-    }
-
 	static {
         System.out.printf("Registered plugin detector [%s]%n", loggingLabel);
     }
@@ -28,8 +24,10 @@ public class ThisPluginDetector implements Detector {
     public void report() { }
 
 	public void visitClassContext(ClassContext classContext) {
-	    actualDetector.visitClassContext(classContext);
+	    JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
+	    if (jcipAnotationDatabase.hasClassAnnotation(classContext.getJavaClass().getClassName().replace('/', '.'), "Immutable")) {
+	        actualDetector.visitClassContext(classContext);
+	    }
 	}
-	
 
 }
