@@ -169,6 +169,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.youdevise</groupId>
+			<artifactId>test-driven-detectors4findbugs</artifactId>
+			<version>0.2</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 </project>
