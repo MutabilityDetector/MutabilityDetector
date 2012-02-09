@@ -2,8 +2,8 @@
 
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" defaultenabled="true" >
 
-  <Detector class="org.mutabilitydetector.ThisPluginDetector" speed="fast" />
-  <BugPattern type="..." abbrev=".." category="CORRECTNESS" />
+  <Detector class="org.mutabilitydetector.findbugs.ThisPluginDetector" speed="fast" />
+  <BugPattern type="JCIP_IS_NOT_IMMUTABLE" abbrev="JCIP" category="CORRECTNESS" />
 
 </FindbugsPlugin>
 

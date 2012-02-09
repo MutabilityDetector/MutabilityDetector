@@ -1,33 +1,55 @@
 package org.mutabilitydetector.findbugs;
 
 
+import java.util.Map;
+
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.IAnalysisSession;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
+import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 
-public class ThisPluginDetector implements Detector {
+public class ThisPluginDetector extends AnnotationDetector implements Detector {
     private static final String loggingLabel = MutabilityDetector.class.getSimpleName();
 	
 	static {
         System.out.printf("Registered plugin detector [%s]%n", loggingLabel);
     }
-
-    private MutabilityDetector actualDetector;
 	
+	private static class AnalysisSessionHolder {
+	    public static final IAnalysisSession analysisSession = initialise();
+        
+	    private static IAnalysisSession initialise() {
+            return AnalysisSession.createWithCurrentClassPath();
+        }
+	}
+
+    private final MutabilityDetector actualDetector;
+    private boolean doMutabilityDetectionOnCurrentClass;
 	
 	public ThisPluginDetector(BugReporter bugReporter) {
-		this.actualDetector = new MutabilityDetector(this, bugReporter);
+		this.actualDetector = new MutabilityDetector(this, bugReporter, AnalysisSessionHolder.analysisSession);
 	}
 	
     public void report() { }
 
+    
+    
 	public void visitClassContext(ClassContext classContext) {
-	    JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext().getJCIPAnnotationDatabase();
-	    if (jcipAnotationDatabase.hasClassAnnotation(classContext.getJavaClass().getClassName().replace('/', '.'), "Immutable")) {
+	    super.visitClassContext(classContext);
+
+	    if (doMutabilityDetectionOnCurrentClass) {
 	        actualDetector.visitClassContext(classContext);
 	    }
+	}
+	
+	@Override
+	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+	    super.visitAnnotation(annotationClass, map, runtimeVisible);
+	    
+        doMutabilityDetectionOnCurrentClass = annotationClass.endsWith(".Immutable");
 	}
 
 }

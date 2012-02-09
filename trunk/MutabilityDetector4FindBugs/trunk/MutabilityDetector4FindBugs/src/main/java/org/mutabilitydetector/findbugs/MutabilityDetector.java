@@ -23,6 +23,11 @@
 
 package org.mutabilitydetector.findbugs;
 
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.IsImmutable;
+
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
@@ -36,13 +41,23 @@ public class MutabilityDetector implements Detector {
 
     private final Detector pluginToRegisterBugsWith;
 
-	public MutabilityDetector(Detector pluginToRegisterBugsWith, BugReporter bugReporter) {
+    private final IAnalysisSession analysisSession;
+
+	public MutabilityDetector(Detector pluginToRegisterBugsWith, BugReporter bugReporter, IAnalysisSession analysissession) {
 		this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
         this.bugReporter = bugReporter;
+        this.analysisSession = analysissession;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		AnalysisResult result = analysisSession.resultFor(classContext.getClassDescriptor().getDottedClassName());
 		
+		if (result.isImmutable != IsImmutable.IMMUTABLE) {
+		    BugInstance bugInstance = new BugInstance(pluginToRegisterBugsWith, "JCIP_IS_NOT_IMMUTABLE", PRIORITY_TO_REPORT)
+		                                    .addClass(classContext.getClassDescriptor());
+            bugReporter.reportBug(bugInstance);
+            
+		}
 	}
 	
 	public void report() { }

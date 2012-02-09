@@ -2,56 +2,35 @@
 
 <!-- Plugin information -->
     <Plugin>
-        <ShortDescription>Findbugs4JUnit plugin</ShortDescription>
+        <ShortDescription>MutabilityDetectorFindbugs plugin</ShortDescription>
         <Details>
             <![CDATA[
-<p>This plugin detects incorrect usage of the JUnit library.</p>
+<p>This plugin detects classes annotated with @Immutable that are actually mutable</p>
 ]]>
         </Details>
     </Plugin>
 
-  <Detector class="com.youdevise.fbplugins.junit.ThisPluginDetector" >
+  <Detector class="org.mutabilitydetector.findbugs.ThisPluginDetector" >
     <Details>
-      <![CDATA[<p> This detector looks for JUnit test cases which have been @Ignored for too long.
+      <![CDATA[<p> This plugin detects classes annotated with @Immutable that are actually mutable.
 </p>]]>
     </Details>
   </Detector>
 
 
-  <BugPattern type="JUNIT_IGNORED_TOO_LONG">
-    <ShortDescription>@Ignore'd a JUnit test for too long</ShortDescription>
+  <BugPattern type="JCIP_IS_NOT_IMMUTABLE">
+    <ShortDescription>@Immutable class is actually mutable</ShortDescription>
 
-<LongDescription>{1} contains a test case which has been ignored for too long.</LongDescription>
+<LongDescription>{1} is annotated as Immutable, but is actually mutable.</LongDescription>
 
 <Details>
-  <![CDATA[<p>
-The @Ignore annotation in JUnit allows you to exclude test cases from being executed. This is convenient when developing new functionality, but if the @Ignore annotation is left in the source code for too long, this may indicate that a developer has forgotten to remove it.
-<p>
-If the annotation has been left by mistake, developers may have a false sense of security with regard to the coverage of their tests, as they won't fail when the actual functionality breaks.
-However, @Ignores left deliberately can also be a problem in much the same way that comments in source code can become a problem - they can easily get out of date, and describe functionality that is not implemented, or intended to be implemented.
-<p>
-<br>
-When an @Ignore has been left in the source code for too long, the recommended action is to:
-<pre>
-remove the annotation
-if ( the test passes ) {
-leave the annotation off
-} else if ( the test fails but can't do anything about it and you just want FindBugs to stop annoying you ) {
-update the comment inside the @Ignore, and re-commit to version control
-} else {
-find out if the functionality is being used, or is expected to exist
-if ( it is used ) {
-fix the test, and/or the code
-} else {
-remove the entire test case
-}
-}
-</pre>
+  <![CDATA[
+
 ]]>
 </Details>
   </BugPattern>
 
-  <BugCode abbrev="JUNIT">Ignored A JUnit Test For Too Long</BugCode>
+  <BugCode abbrev="JCIP">@Immutable class is actually mutable</BugCode>
   
 </MessageCollection>
 

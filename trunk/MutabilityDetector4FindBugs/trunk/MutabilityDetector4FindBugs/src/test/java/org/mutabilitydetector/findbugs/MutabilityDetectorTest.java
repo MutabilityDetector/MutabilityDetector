@@ -47,15 +47,21 @@ public class MutabilityDetectorTest {
     
     private void setupAnalysisSessionToHaveScannedForImmutableAnnotation(Class<?> lookForAnnotation)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Class<?> detectorRunnerClass = Class.forName("com.youdevise.fbplugins.tdd4fb.DetectorRunner");
-        Method runDetector = detectorRunnerClass.getMethod("runDetectorOnClass", Detector.class, Class.class, BugReporter.class);
-        runDetector.setAccessible(true);
-        BugReporter reporterForTesting = DetectorAssert.bugReporterForTesting();
-        runDetector.invoke(null, new NoteJCIPAnnotation(reporterForTesting), lookForAnnotation, reporterForTesting);
+        
+        runAnArbritaryDetectorToInitialiseFindBugs(lookForAnnotation);
         
         AnalysisContext.currentAnalysisContext()
             .getJCIPAnnotationDatabase()
             .getEntryForClass(lookForAnnotation.getClass().getName())
             .put("Immutable", null);
+    }
+
+    private void runAnArbritaryDetectorToInitialiseFindBugs(Class<?> lookForAnnotation) throws ClassNotFoundException,
+            NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Class<?> detectorRunnerClass = Class.forName("com.youdevise.fbplugins.tdd4fb.DetectorRunner");
+        Method runDetector = detectorRunnerClass.getMethod("runDetectorOnClass", Detector.class, Class.class, BugReporter.class);
+        runDetector.setAccessible(true);
+        BugReporter reporterForTesting = DetectorAssert.bugReporterForTesting();
+        runDetector.invoke(null, new NoteJCIPAnnotation(reporterForTesting), lookForAnnotation, reporterForTesting);
     }
 }

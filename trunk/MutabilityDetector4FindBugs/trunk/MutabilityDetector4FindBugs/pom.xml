@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.mutabilitydetector</groupId>
-	<artifactId>MutabilityDetector</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<artifactId>MutabilityDetector4FindBugs</artifactId>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>MutabilityDetector</name>
+	<name>MutabilityDetector4FindBugs</name>
 	<description>FindBugs plugin using the lightweight analysis tool for detecting mutability in Java
 		classes.</description>
-	<url>http://code.google.com/p/mutability-detector</url>
+	<url>www.mutabilitydetector.org</url>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -37,9 +37,9 @@
 	</issueManagement>
 
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk/MutabilityDetector</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk/MutabilityDetector</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</developerConnection>
 	</scm>
 
 	<developers>
@@ -99,9 +99,42 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+                				<includes>
+                  					<include>org.mutabilitydetector:MutabilityDetector</include>
+                  				</includes>
+               				</artifactSet>
+
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<includes>
+									</includes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
+	
 	<profiles>
 		<profile>
 			<id>release-sign-artifacts</id>
