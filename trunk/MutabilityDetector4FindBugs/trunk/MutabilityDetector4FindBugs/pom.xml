@@ -170,7 +170,7 @@
 		<dependency>
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
-			<version>0.7</version>
+			<version>0.8-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		

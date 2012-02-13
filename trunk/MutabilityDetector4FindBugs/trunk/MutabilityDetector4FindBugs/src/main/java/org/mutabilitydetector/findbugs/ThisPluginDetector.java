@@ -38,6 +38,8 @@ public class ThisPluginDetector extends AnnotationDetector implements Detector {
     
     
 	public void visitClassContext(ClassContext classContext) {
+	    doMutabilityDetectionOnCurrentClass = false;
+	    
 	    super.visitClassContext(classContext);
 
 	    if (doMutabilityDetectionOnCurrentClass) {

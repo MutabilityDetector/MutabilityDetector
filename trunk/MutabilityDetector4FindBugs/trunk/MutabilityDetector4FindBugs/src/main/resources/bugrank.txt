@@ -1,1 +1,0 @@
-0 BugPattern JCIP_IS_NOT_IMMUTABLE
