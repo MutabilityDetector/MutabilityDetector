@@ -78,11 +78,11 @@ public enum MutabilityReason implements Reason {
             IsImmutable.NOT_IMMUTABLE),
 
     /**
-     * Since a primitive array can be mutated after construction (by modifying what it contains) they are inherently
+     * Since an array can be mutated after construction (by modifying what it contains) they are inherently
      * mutable. However, since it is possible that a field which is an array type is never mutated after construction,
      * it is still possible for the containing type to be immutable
      */
-    ARRAY_TYPE_INHERENTLY_MUTABLE("Since a primitive array can be mutated after construction " + "(by modifying what it contains) they are inherently mutable. However, since it is possible "
+    ARRAY_TYPE_INHERENTLY_MUTABLE("Since an array can be mutated after construction " + "(by modifying what it contains) they are inherently mutable. However, since it is possible "
             + "that a field which is an array type is never mutated after construction, it is still possible "
             + "for the containing type to be immutable.",
             IsImmutable.NOT_IMMUTABLE),
