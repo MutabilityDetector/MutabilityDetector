@@ -18,7 +18,7 @@ package org.mutabilitydetector.benchmarks.types;
 
 @SuppressWarnings("unused")
 public class ClassWithAllPrimitives {
-    public static class Boolean {
+    public static final class Boolean {
         private boolean aBoolean;
     }
 

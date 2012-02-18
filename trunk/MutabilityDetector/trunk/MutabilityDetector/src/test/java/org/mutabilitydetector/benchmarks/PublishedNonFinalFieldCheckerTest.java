@@ -18,10 +18,10 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,32 +45,33 @@ public class PublishedNonFinalFieldCheckerTest {
         result = runChecker(checker, ImmutableExample.class);
 
         assertThat(checker, hasNoReasons());
-        assertImmutable(result);
+        assertThat(result, areImmutable());
+        
     }
 
     @Test
     public void classWithPublicNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingPublicNonFinalField.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void classWithProtectedNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingProtectedNonFinalField.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void classWithDefaultVisibleNonFinalFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByHavingDefaultVisibleNonFinalField.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void classWithPublicFinalFieldPassesCheck() throws Exception {
         result = runChecker(checker, ImmutableWithPublicFinalField.class);
         assertThat(checker, hasNoReasons());
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test

@@ -16,8 +16,9 @@
  */
 package org.mutabilitydetector.benchmarks.inheritance;
 
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.MutableByExtendingMutableType;
@@ -27,7 +28,7 @@ public class TestSubclassingOfMutableType {
 
     @Test
     public void testSupertypeIsEffectivelyImmutable() throws Exception {
-        assertNotImmutable(ImmutableSupertype.class);
+        assertInstancesOf(ImmutableSupertype.class, areNotImmutable());
     }
 
     @Test
@@ -37,7 +38,7 @@ public class TestSubclassingOfMutableType {
 
     @Test
     public void mutableSubtype() throws Exception {
-        assertNotImmutable(MutableSubtypeOfImmutableSupertype.class);
+        assertInstancesOf(MutableSubtypeOfImmutableSupertype.class, areNotImmutable());
     }
 
     @Test
@@ -52,6 +53,6 @@ public class TestSubclassingOfMutableType {
 
     @Test
     public void immutableSubclassIsMutableIfSuperclassIsMutable() throws Exception {
-        assertNotImmutable(MutableByExtendingMutableType.class);
+        assertInstancesOf(MutableByExtendingMutableType.class, areNotImmutable());
     }
 }

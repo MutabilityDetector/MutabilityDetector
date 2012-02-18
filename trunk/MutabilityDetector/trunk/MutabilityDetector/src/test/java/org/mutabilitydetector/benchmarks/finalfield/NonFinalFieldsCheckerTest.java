@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.benchmarks.visibility.HasNonFinalField;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 

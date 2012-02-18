@@ -16,9 +16,9 @@
  */
 package org.mutabilitydetector.benchmarks.inheritance;
 
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
-import static org.mutabilitydetector.TestUtil.getAnalysisResult;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class TestSubclassingOfImmutableType {
     
     @Test
     public void supertypeIsDefinitelyNotImmutable() throws Exception {
-        assertNotImmutable(getAnalysisResult(MutableSupertype.class));
+        assertInstancesOf(MutableSupertype.class, areNotImmutable());
     }
 
     @FalseNegative("InheritedMutabilityChecker doesn't work properly yet.")
@@ -44,11 +44,11 @@ public class TestSubclassingOfImmutableType {
 
     @Test
     public void mutableSubtype() throws Exception {
-        assertNotImmutable(MutableSubtypeOfMutableSupertype.class);
+        assertInstancesOf(MutableSubtypeOfMutableSupertype.class, areNotImmutable());
     }
 
     @Test
     public void enumTypeIsDefinitelyImmutable() throws Exception {
-        assertImmutable(getAnalysisResult(EnumType.class));
+        assertImmutable(EnumType.class);
     }
 }

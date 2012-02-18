@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector.benchmarks.finalfield;
+package org.mutabilitydetector.benchmarks.visibility;
 
 public final class HasNonFinalField {
     public final int isFinal;

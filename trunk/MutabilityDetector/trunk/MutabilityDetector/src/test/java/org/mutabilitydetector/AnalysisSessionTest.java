@@ -16,8 +16,9 @@
  */
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,14 +43,14 @@ public class AnalysisSessionTest {
         checker.runCheckers(analysisSession);
 
         AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
         IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
         AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
     
 }

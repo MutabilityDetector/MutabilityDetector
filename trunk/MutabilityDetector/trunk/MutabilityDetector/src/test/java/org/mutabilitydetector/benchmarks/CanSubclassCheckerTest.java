@@ -18,13 +18,13 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertIsImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
+import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +34,9 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisResultTheory;
+import org.mutabilitydetector.benchmarks.sealed.HasFinalFieldsAndADefaultConstructor;
 import org.mutabilitydetector.benchmarks.sealed.ImmutableByHavingOnlyPrivateConstructors;
 import org.mutabilitydetector.benchmarks.sealed.IsFinalAndHasOnlyPrivateConstructors;
-import org.mutabilitydetector.benchmarks.sealed.HasFinalFieldsAndADefaultConstructor;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.sealed.SealedImmutable;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -63,24 +63,24 @@ public class CanSubclassCheckerTest {
 
     @Theory
     public void correctlyAnalyses(AnalysisResultTheory expected) throws Exception {
-        assertIsImmutable(expected.expected, runChecker(checker, expected.clazz));
+        assertThat(runChecker(checker, expected.clazz), hasIsImmutableStatusOf(expected.expected));
     }
     
     @Test
     public void aClassWhichIsNotFinalIsNotImmutable() throws Exception {
         AnalysisResult result = runChecker(checker, MutableByNotBeingFinalClass.class);
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void immutableExampleIsReportedAsImmutable() throws Exception {
-        assertImmutable(runChecker(checker, ImmutableExample.class));
+        assertImmutable(ImmutableExample.class);
     }
 
     @Test
     public void enumTypeIsImmutable() throws Exception {
-        assertImmutable(runChecker(checker, EnumType.class));
+        assertImmutable(EnumType.class);
     }
 
     @Test

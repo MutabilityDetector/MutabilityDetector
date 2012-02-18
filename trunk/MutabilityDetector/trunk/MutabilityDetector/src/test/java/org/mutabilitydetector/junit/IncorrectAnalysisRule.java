@@ -41,7 +41,7 @@ public class IncorrectAnalysisRule implements MethodRule {
         }
         throw new AssertionError("The test is expected to fail with a False Positive result, " +
                 "i.e. the class is immutable but the test fails.\n" +
-                "This this test is correctly passing, therefore the analysis is no longer incorrect, " +
+                "This test is correctly passing, therefore the analysis is no longer incorrect, " +
                 "and the annotation can be removed.");
     }
 

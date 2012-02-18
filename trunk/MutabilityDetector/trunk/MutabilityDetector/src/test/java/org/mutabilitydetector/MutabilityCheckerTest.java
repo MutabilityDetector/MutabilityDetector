@@ -18,11 +18,12 @@ package org.mutabilitydetector;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mutabilitydetector.ImmutableAssert.assertEffectivelyImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import java.util.Collection;
 
@@ -34,12 +35,13 @@ import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
 import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethodCall;
-import org.mutabilitydetector.benchmarks.finalfield.HasNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.benchmarks.visibility.HasNonFinalField;
+import org.mutabilitydetector.benchmarks.visibility.SafelyPublishesUsingVolatile;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
@@ -54,27 +56,33 @@ public class MutabilityCheckerTest {
     
     @Test
     public void effectivelyImmutableByHavingNonFinalField() throws Exception {
-        assertEffectivelyImmutable(HasNonFinalField.class);
+        assertInstancesOf(HasNonFinalField.class, areEffectivelyImmutable());
+    }
+    
+    @Test
+    @FalsePositive("Ensures non-final fields are immediately visible")
+    public void volatileAssignmentOfFieldEnsuresOtherNonFinalFieldsAreImmediatelyVisible() throws Exception {
+        assertImmutable(SafelyPublishesUsingVolatile.class);
     }
     
     @Test
     public void mutableByAllowingAccessToNonFinalField() throws Exception {
-        assertNotImmutable(MutableByHavingPublicNonFinalField.class);
+        assertInstancesOf(MutableByHavingPublicNonFinalField.class, areNotImmutable());
     }
 
     @Test
     public void mutableByHavingMutableFieldAssigned() throws Exception {
-        assertNotImmutable(MutableByHavingMutableFieldAssigned.class);
+        assertInstancesOf(MutableByHavingMutableFieldAssigned.class, areNotImmutable());
     }
 
     @Test
     public void mutableByHavingSetterMethod() throws Exception {
-        assertNotImmutable(MutableByHavingSetterMethod.class);
+        assertInstancesOf(MutableByHavingSetterMethod.class, areNotImmutable());
     }
 
     @Test
     public void mutableByNoCopyOfIndirectlyConstructedField() throws Exception {
-        assertNotImmutable(MutableByNoCopyOfIndirectlyConstructedField.class);
+        assertInstancesOf(MutableByNoCopyOfIndirectlyConstructedField.class, areNotImmutable());
     }
 
     @Test
@@ -91,12 +99,12 @@ public class MutabilityCheckerTest {
 
     @Test
     public void mutableByNotBeingFinalClass() throws Exception {
-        assertNotImmutable(MutableByNotBeingFinalClass.class);
+        assertInstancesOf(MutableByNotBeingFinalClass.class, areNotImmutable());
     }
     
     @Test
     public void mutableByLettingTheThisReferenceEscapeDuringConstruction() throws Exception {
-        assertNotImmutable(PassesThisReferenceToMethodCall.AsOneOfSeveralParameters.class);
+        assertInstancesOf(PassesThisReferenceToMethodCall.AsOneOfSeveralParameters.class, areNotImmutable());
     }
 
     @Test

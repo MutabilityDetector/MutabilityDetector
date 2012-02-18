@@ -22,7 +22,7 @@ import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 
-public class AnalysisSessionHolder {
+public final class AnalysisSessionHolder {
     private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 
     public static AnalysisResult analysisResultFor(Class<?> from) {

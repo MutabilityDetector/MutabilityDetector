@@ -20,10 +20,10 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import java.math.BigDecimal;
 
@@ -82,49 +82,49 @@ public class SetterMethodCheckerTest {
 
     @Test
     public void immutableExamplePassesCheck() throws Exception {
-        assertImmutable(doCheck(ImmutableExample.class));
+        assertThat(doCheck(ImmutableExample.class), areImmutable());
     }
 
     @Test
     public void mutableByHavingSetterMethodFailsCheck() throws Exception {
-        assertNotImmutable(doCheck(MutableByHavingSetterMethod.class));
+        assertThat(doCheck(MutableByHavingSetterMethod.class), areNotImmutable());
     }
 
     @Test
     public void integerClassPassesCheck() throws Exception {
-        assertImmutable(doCheck(Integer.class));
+        assertThat(doCheck(Integer.class), areImmutable());
     }
 
     @Test
     public void enumTypePassesCheck() throws Exception {
-        assertImmutable(doCheck(EnumType.class));
+        assertThat(doCheck(EnumType.class), areImmutable());
     }
 
     @FalsePositive("Field [myField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]" + "Field [primitiveField] can be reassigned within method [setPrivateFieldOnInstanceOfSelf]")
     @Test
     public void settingFieldOfOtherInstanceDoesNotRenderClassMutable() throws Exception {
-        assertImmutable(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class));
+        assertThat(doCheck(ImmutableButSetsPrivateFieldOfInstanceOfSelf.class), areImmutable());
     }
 
     @Test
     public void settingFieldOfOtherInstanceAndThisInstanceRendersClassMutable() throws Exception {
-        assertNotImmutable(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class));
+        assertThat(doCheck(MutableBySettingFieldOnThisInstanceAndOtherInstance.class), areNotImmutable());
     }
 
     @Test
     public void fieldsSetInPrivateMethodCalledOnlyFromConstructorIsImmutable() {
-        assertImmutable(doCheck(ImmutableUsingPrivateFieldSettingMethod.class));
+        assertThat(doCheck(ImmutableUsingPrivateFieldSettingMethod.class), areImmutable());
     }
 
     @FalsePositive("Field [reassignable] can be reassigned within method [setFieldOnParameter]")
     @Test
     public void settingFieldOfObjectPassedAsParameterDoesNotRenderClassMutable() throws Exception {
-        assertImmutable(doCheck(ImmutableButSetsFieldOfOtherClass.class));
+        assertThat(doCheck(ImmutableButSetsFieldOfOtherClass.class), areImmutable());
     }
 
     @Test
     public void settingFieldOfMutableFieldRendersClassMutable() throws Exception {
-        assertNotImmutable(doCheck(MutableBySettingFieldOfField.class));
+        assertThat(doCheck(MutableBySettingFieldOfField.class), areNotImmutable());
     }
 
     @FalsePositive("Does not create any reasons.")
@@ -133,37 +133,37 @@ public class SetterMethodCheckerTest {
         AnalysisResult result = doCheck(StillMutableSubclass.class);
 
         assertThat(checker.reasons().size(), is(not(0)));
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @FalsePositive("Field [precision] can be reassigned within method [precision]" + "Field [stringCache] can be reassigned within method [toString]"
             + "Field [intVal] can be reassigned within method [inflate]")
     @Test
     public void bigDecimalDoesNotFailCheck() throws Exception {
-        assertImmutable(doCheck(BigDecimal.class));
+        assertThat(doCheck(BigDecimal.class), areImmutable());
     }
 
     @FalsePositive("Field [hash] can be reassigned within method [hashCode]")
     @Test
     public void stringDoesNotFailCheck() throws Exception {
-        assertImmutable(doCheck(String.class));
+        assertThat(doCheck(String.class), areImmutable());
     }
 
     @Test
     public void fieldReassignmentInPublicStaticMethodMakesClassMutable() throws Exception {
         AnalysisResult result = doCheck(MutableByAssigningFieldOnInstanceWithinStaticMethod.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @FalsePositive("Field can be reassigned.")
     @Test
     public void reassignmentOfStackConfinedObjectDoesNotFailCheck() throws Exception {
-        assertImmutable(doCheck(ImmutableWithMutatingStaticFactoryMethod.class));
+        assertThat(doCheck(ImmutableWithMutatingStaticFactoryMethod.class), areImmutable());
     }
 
     @Test
     public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
-        assertNotImmutable(doCheck(MutableByAssigningFieldToNewedUpObject.class));
+        assertThat(doCheck(MutableByAssigningFieldToNewedUpObject.class), areNotImmutable());
     }
 
     @DataPoints
@@ -174,7 +174,7 @@ public class SetterMethodCheckerTest {
     @Theory
     public void settingFieldsOfAnyTypeShouldBeMutable(Class<?> mutableSettingField) throws Exception {
         AnalysisResult result = runChecker(checker, mutableSettingField);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
 }

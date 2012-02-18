@@ -18,13 +18,13 @@ package org.mutabilitydetector.benchmarks.mutabletofield.array;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertIsImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
+import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -56,14 +56,14 @@ public class ArrayFieldMutabilityCheckerTest {
         result = runChecker(checker, ClassWithAllPrimitives.Array.class);
 
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void arrayFieldWhichIsStaticAllowsClassToRemainImmutable() throws Exception {
         result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
 
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ArrayFieldMutabilityCheckerTest {
     @Ignore
     @Theory
     public void correctlyAnalyses(AnalysisResultTheory expected) throws Exception {
-        assertIsImmutable(expected.expected, runChecker(checker, expected.clazz));
+        assertThat(runChecker(checker, expected.clazz), hasIsImmutableStatusOf(expected.expected));
     }
 
 }

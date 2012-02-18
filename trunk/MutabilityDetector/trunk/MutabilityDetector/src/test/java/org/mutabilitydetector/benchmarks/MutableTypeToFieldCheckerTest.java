@@ -22,8 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.IAnalysisSession.RequestedAnalysis.complete;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -31,6 +29,8 @@ import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -81,7 +81,7 @@ public class MutableTypeToFieldCheckerTest {
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
@@ -91,7 +91,8 @@ public class MutableTypeToFieldCheckerTest {
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
+        
     }
     
     @Test
@@ -103,26 +104,26 @@ public class MutableTypeToFieldCheckerTest {
         
 
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
     
     @Test
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checker, MutableByHavingArrayTypeAsField.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     @FalsePositive("Array field is final, is never published or modified.")
     public void instanceFieldWhichHasAFinalUnmodifiedArrayIsImmutable() throws Exception {
         result = runChecker(checker, ImmutableButHasUnmodifiedArrayAsField.class);
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test
     public void staticFieldWhichHasAMutatedArrayIsImmutable() throws Exception {
         result = runChecker(checker, ImmutableWhenArrayFieldIsStatic.class);
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test
@@ -131,7 +132,7 @@ public class MutableTypeToFieldCheckerTest {
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 
         assertThat(checker, hasNoReasons());
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test

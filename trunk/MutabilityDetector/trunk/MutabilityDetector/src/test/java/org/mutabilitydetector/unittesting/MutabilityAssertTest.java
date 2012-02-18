@@ -35,10 +35,10 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
-import org.mutabilitydetector.benchmarks.finalfield.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
+import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
 
 public class MutabilityAssertTest {
 

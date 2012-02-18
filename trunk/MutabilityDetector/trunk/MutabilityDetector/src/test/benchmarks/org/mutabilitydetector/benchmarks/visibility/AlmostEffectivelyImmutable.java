@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.finalfield;
+package org.mutabilitydetector.benchmarks.visibility;
 
 public class AlmostEffectivelyImmutable {
     

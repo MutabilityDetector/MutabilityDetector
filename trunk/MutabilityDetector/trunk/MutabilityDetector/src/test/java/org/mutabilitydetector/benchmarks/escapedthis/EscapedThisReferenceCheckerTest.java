@@ -16,11 +16,12 @@
  */
 package org.mutabilitydetector.benchmarks.escapedthis;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -162,7 +163,7 @@ public class EscapedThisReferenceCheckerTest {
     @Theory
     public void thisReferenceEscapingRendersClassMutable(Class<?> passesThisReference) throws Exception {
         AnalysisResult result = runChecker(new EscapedThisReferenceChecker(), passesThisReference);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
         assertEquals(reasonDetailFor(passesThisReference), result.reasons.iterator().next());
     }
 

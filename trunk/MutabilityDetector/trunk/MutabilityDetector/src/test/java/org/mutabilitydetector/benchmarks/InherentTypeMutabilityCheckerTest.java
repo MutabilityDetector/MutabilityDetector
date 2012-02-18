@@ -18,10 +18,10 @@ package org.mutabilitydetector.benchmarks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,14 +49,14 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, AbstractType.class);
 
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void enumTypesAreInherentlyImmutable() throws Exception {
         result = runChecker(checker, EnumType.class);
 
-        assertImmutable(result);
+        assertThat(result, areImmutable());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class InherentTypeMutabilityCheckerTest {
         result = runChecker(checker, InterfaceType.class);
 
         assertThat(checker, hasReasons());
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
@@ -93,6 +93,6 @@ public class InherentTypeMutabilityCheckerTest {
     }
 
     private void assertImmutableClass(Class<?> toCheck) {
-        assertImmutable(runChecker(checker, toCheck));
+        assertThat(runChecker(checker, toCheck), areImmutable());
     }
 }

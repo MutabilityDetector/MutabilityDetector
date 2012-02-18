@@ -22,9 +22,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.ImmutableAssert.assertImmutable;
-import static org.mutabilitydetector.ImmutableAssert.assertNotImmutable;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class AbstractTypeToFieldCheckerTest {
     @Test
     public void testImmutableExamplePassesCheck() throws Exception {
         result = runChecker(checker, ImmutableExample.class);
-        assertImmutable(result);
+        assertThat(result, areImmutable());
         assertEquals(result.reasons.size(), 0);
     }
 
@@ -63,13 +63,13 @@ public class AbstractTypeToFieldCheckerTest {
     public void testMutableByAssigningInterfaceTypeToFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByAssigningInterfaceToField.class);
 
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test
     public void testMutableByAssigningAbstractClassToFieldFailsCheck() throws Exception {
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
-        assertNotImmutable(result);
+        assertThat(result, areNotImmutable());
     }
 
     @Test

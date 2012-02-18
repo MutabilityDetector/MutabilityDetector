@@ -35,6 +35,7 @@ public class AnalysingRtJar {
         }
     });
 
+    @Ignore
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
@@ -42,6 +43,7 @@ public class AnalysingRtJar {
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
     }
     
+    @Ignore
     @Test
     public void checkExceptionIsNotThrownRunOnSelfJar() {
         String selfJarPath = System.getProperty("user.home") + "/.m2/repository/joda-time/joda-time/2.0/joda-time-2.0.jar";
