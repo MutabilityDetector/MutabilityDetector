@@ -59,120 +59,151 @@
 		<version>7</version>
 	</parent>
 
-	<build>
+
+	<reporting>
 		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/benchmarks</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-
-							<shadedArtifactAttached>false</shadedArtifactAttached>
-							<createDependencyReducedPom>true</createDependencyReducedPom>
-							<minimizeJar>true</minimizeJar>
-
-							<artifactSet>
-                				<excludes>
-                  					<exclude>com.google.code.findbugs:jsr305</exclude>
-                  				</excludes>
-               				</artifactSet>
-
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>LICENSE.txt</exclude>
-										<exclude>META-INF/LICENSE.txt</exclude>
-										<exclude>META-INF/NOTICE.txt</exclude>
-									</excludes>
-								</filter>
-							</filters>
-							<relocations>
-								<relocation>
-									<pattern>org.objectweb.asm</pattern>
-									<shadedPattern>${repackage.base}.org.objectweb.asm
-									</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>com.google</pattern>
-									<shadedPattern>${repackage.base}.com.google</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>org.hamcrest</pattern>
-									<shadedPattern>${repackage.base}.org.hamcrest</shadedPattern>
-									<excludes>
-										<exclude>org/hamcrest/Matcher</exclude>
-										<exclude>org/hamcrest/SelfDescribing</exclude>
-										<exclude>org/hamcrest/Description</exclude>
-									</excludes>
-								</relocation>
-								<relocation>
-									<pattern>org.apache.commons.cli</pattern>
-									<shadedPattern>${repackage.base}.org.apache.commons.cli
-									</shadedPattern>
-								</relocation>
-							</relocations>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>${package.base}.cli.RunMutabilityDetector
-									</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.3.3</version>
 			</plugin>
 		</plugins>
+	</reporting>
+
+  <build>
+
+	<pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.4.0</version>
+			</plugin>
+		</plugins>
+	</pluginManagement>
+  
+	<plugins>
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.0.2</version>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+			</configuration>
+		</plugin>
+
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>build-helper-maven-plugin</artifactId>
+			<version>1.7</version>
+			<executions>
+				<execution>
+					<phase>generate-sources</phase>
+					<goals>
+						<goal>add-test-source</goal>
+					</goals>
+					<configuration>
+						<sources>
+							<source>src/test/benchmarks</source>
+						</sources>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<version>1.4</version>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					<configuration>
+
+						<shadedArtifactAttached>false</shadedArtifactAttached>
+						<createDependencyReducedPom>true</createDependencyReducedPom>
+						<minimizeJar>true</minimizeJar>
+
+						<artifactSet>
+               				<excludes>
+                 					<exclude>com.google.code.findbugs:jsr305</exclude>
+                 				</excludes>
+              				</artifactSet>
+
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<exclude>LICENSE.txt</exclude>
+									<exclude>META-INF/LICENSE.txt</exclude>
+									<exclude>META-INF/NOTICE.txt</exclude>
+								</excludes>
+							</filter>
+						</filters>
+						<relocations>
+							<relocation>
+								<pattern>org.objectweb.asm</pattern>
+								<shadedPattern>${repackage.base}.org.objectweb.asm
+								</shadedPattern>
+							</relocation>
+							<relocation>
+								<pattern>com.google</pattern>
+								<shadedPattern>${repackage.base}.com.google</shadedPattern>
+							</relocation>
+							<relocation>
+								<pattern>org.hamcrest</pattern>
+								<shadedPattern>${repackage.base}.org.hamcrest</shadedPattern>
+								<excludes>
+									<exclude>org/hamcrest/Matcher</exclude>
+									<exclude>org/hamcrest/SelfDescribing</exclude>
+									<exclude>org/hamcrest/Description</exclude>
+								</excludes>
+							</relocation>
+							<relocation>
+								<pattern>org.apache.commons.cli</pattern>
+								<shadedPattern>${repackage.base}.org.apache.commons.cli
+								</shadedPattern>
+							</relocation>
+						</relocations>
+						<transformers>
+							<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<mainClass>${package.base}.cli.RunMutabilityDetector
+								</mainClass>
+							</transformer>
+						</transformers>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+
+
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<version>2.1.2</version>
+			<executions>
+				<execution>
+					<id>attach-sources</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>findbugs-maven-plugin</artifactId>
+			<version>2.4.0</version>
+		</plugin>
+       
+	</plugins>
 
 
 
