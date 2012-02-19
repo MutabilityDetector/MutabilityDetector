@@ -14,13 +14,14 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector.benchmarks.finalfield;
+package org.mutabilitydetector.benchmarks.visibility;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.visibility.HasNonFinalField;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
@@ -34,14 +35,12 @@ public class NonFinalFieldsCheckerTest {
 
     @Test
     public void remainsImmutableWhenFieldIsFinal() throws Exception {
-        TestUtil.runChecker(checker, ImmutableExample.class);
-        assertEquals(IsImmutable.IMMUTABLE, checker.result());
+        assertThat(runChecker(checker, ImmutableExample.class), areImmutable());
     }
     
     
     @Test
     public void isEffectivelyImmutableWhenTheFieldIsNotDeclaredFinal() throws Exception {
-        TestUtil.runChecker(checker, HasNonFinalField.class);
-        assertEquals(IsImmutable.EFFECTIVELY_IMMUTABLE, checker.result());
+        assertThat(runChecker(checker, HasNonFinalField.class), areEffectivelyImmutable());
     }
 }

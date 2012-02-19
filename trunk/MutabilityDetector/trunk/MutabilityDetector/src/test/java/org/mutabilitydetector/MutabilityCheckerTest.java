@@ -40,7 +40,7 @@ import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstra
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
-import org.mutabilitydetector.benchmarks.visibility.HasNonFinalField;
+import org.mutabilitydetector.benchmarks.visibility.EffectivelyImmutable;
 import org.mutabilitydetector.benchmarks.visibility.SafelyPublishesUsingVolatile;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
@@ -56,7 +56,7 @@ public class MutabilityCheckerTest {
     
     @Test
     public void effectivelyImmutableByHavingNonFinalField() throws Exception {
-        assertInstancesOf(HasNonFinalField.class, areEffectivelyImmutable());
+        assertInstancesOf(EffectivelyImmutable.class, areEffectivelyImmutable());
     }
     
     @Test

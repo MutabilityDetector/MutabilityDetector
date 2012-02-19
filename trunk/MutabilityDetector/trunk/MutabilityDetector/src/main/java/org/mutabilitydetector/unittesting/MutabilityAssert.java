@@ -51,6 +51,10 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * <li><a href="#FirstTestCase">Your first test case.</a></li>
  * <li><a href="#ConfiguringTheAssertion">A more specific assertion</a></li>
  * <li><a href="#AllowingAReason">Allowing a reason for mutability</a></li>
+ *  <ul>
+ *  <li><a href="#OutOfTheBox">Out-of-the-box Allowed Reasons</a></li>
+ *  </ul>
+ * </li>
  * </ol>
  * 
  * 
@@ -178,6 +182,8 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
  * <p>
  * For a mutable class to pass the test, each {@link MutableReasonDetail} must be matched by at least one allowed reason.
  * </p>
+ * 
+ * <h3 id="OutOfTheBox">
  * 
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
