@@ -23,6 +23,8 @@
 
 package org.mutabilitydetector.findbugs;
 
+import java.util.Map;
+
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IsImmutable;
@@ -33,16 +35,16 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 
-public class MutabilityDetector implements Detector {
+public class MutabilityDetector extends AnnotationDetector implements Detector {
 
 	private static final int PRIORITY_TO_REPORT = Priorities.NORMAL_PRIORITY;
-	
 	private final BugReporter bugReporter;
-
     private final Detector pluginToRegisterBugsWith;
-
     private final IAnalysisSession analysisSession;
+    
+    private boolean doMutabilityDetectionOnCurrentClass;
 
 	public MutabilityDetector(Detector pluginToRegisterBugsWith, BugReporter bugReporter, IAnalysisSession analysissession) {
 		this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
@@ -50,22 +52,41 @@ public class MutabilityDetector implements Detector {
         this.analysisSession = analysissession;
 	}
 
-	public void visitClassContext(ClassContext classContext) {
-		String toAnalyse = classContext.getClassDescriptor().getDottedClassName();
+	
+   @Override
+    public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+        super.visitAnnotation(annotationClass, map, runtimeVisible);
+        
+        doMutabilityDetectionOnCurrentClass = annotationClass.endsWith(".Immutable");
+    }
+   
+    public void visitClassContext(ClassContext classContext) {
+        doMutabilityDetectionOnCurrentClass = false;
+
+        super.visitClassContext(classContext);
+
+        if (doMutabilityDetectionOnCurrentClass) {
+            doMutabilityAnalysis(classContext);
+        }
+    }
+    
+    private void doMutabilityAnalysis(ClassContext classContext) {
+        String toAnalyse = classContext.getClassDescriptor().getDottedClassName();
         AnalysisResult result = analysisSession.resultFor(toAnalyse).result;
-		
-		if (result.isImmutable != IsImmutable.IMMUTABLE) {
-		    
-		    for (MutableReasonDetail reasonDetail : result.reasons) {
-		        BugInstance bugInstance = new BugInstance(pluginToRegisterBugsWith, 
-		                                                  "MUTDEC_"+ reasonDetail.reason().code(), 
-		                                                  PRIORITY_TO_REPORT)
-		            .addClass(classContext.getClassDescriptor());
+        
+        if (result.isImmutable != IsImmutable.IMMUTABLE) {
+            
+            for (MutableReasonDetail reasonDetail : result.reasons) {
+                BugInstance bugInstance = new BugInstance(pluginToRegisterBugsWith, 
+                                                          "MUTDEC_"+ reasonDetail.reason().code(), 
+                                                          PRIORITY_TO_REPORT)
+                    .addClass(classContext.getClassDescriptor());
                 
-		        bugReporter.reportBug(bugInstance);
+                bugReporter.reportBug(bugInstance);
             }
-		}
-	}
+        }
+    }
+   
 	
 	public void report() { }
 	

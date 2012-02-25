@@ -6,9 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CheckerRunnerFactory;
@@ -16,7 +14,6 @@ import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
 import org.mutabilitydetector.repackaged.com.google.classpath.ClassPath;
-import org.mutabilitydetector.repackaged.com.google.classpath.ClassPathFactory;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -24,7 +21,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IClassPath;
-import edu.umd.cs.findbugs.classfile.ICodeBase;
 
 public class ThisPluginDetector extends AnnotationDetector implements Detector {
     private static final String loggingLabel = MutabilityDetector.class.getSimpleName();
@@ -47,10 +43,11 @@ public class ThisPluginDetector extends AnnotationDetector implements Detector {
 	        IClassPath findBugsClassPath = Global.getAnalysisCache().getClassPath();
 	        
 	        try {
-	            List<String> codeBasePaths = listOfCodeBasePaths(findBugsClassPath);
-	            ClassPath mutabilityDetectorClasspath = createClassPathForCodeBases(codeBasePaths);
+	            List<String> codeBasePaths = new FBCodeBasePathExtractor().listOfCodeBasePaths(findBugsClassPath);
+	            
 	            setCustomClassLoader(codeBasePaths);
 	            
+	            ClassPath mutabilityDetectorClasspath = new FBClasspathConverter().createClassPathForCodeBases(codeBasePaths);
 	            return AnalysisSession.createWithGivenClassPath(mutabilityDetectorClasspath, 
 	                                                            new CheckerRunnerFactory(mutabilityDetectorClasspath), 
 	                                                            new MutabilityCheckerFactory());
@@ -77,36 +74,8 @@ public class ThisPluginDetector extends AnnotationDetector implements Detector {
 	        Thread.currentThread().setContextClassLoader(classLoader);
 	    }
 
-        private static ClassPath createClassPathForCodeBases(List<String> codeBasePaths) {
-            StringBuilder allClassPathsInString = new StringBuilder();
-	        for (String classPathUrl : codeBasePaths) {
-                allClassPathsInString.append(classPathUrl + File.pathSeparator);
-            }
-	        
-	        return new ClassPathFactory().createFromPath(allClassPathsInString.toString());
-        }
-
-        private static List<String> listOfCodeBasePaths(IClassPath findBugsClassPath) throws InterruptedException {
-            List<String> codeBasePaths = new ArrayList<String>();
-	        pathsFromCodeBase(codeBasePaths, findBugsClassPath.appCodeBaseIterator());
-	        pathsFromCodeBase(codeBasePaths, findBugsClassPath.auxCodeBaseIterator());
-            return codeBasePaths;
-        }
-
-        private static void pathsFromCodeBase(List<String> codeBasePaths, Iterator<? extends ICodeBase> codeBaseIterator) {
-            while (codeBaseIterator.hasNext()) {
-	            ICodeBase codeBase = codeBaseIterator.next();
-	            String pathName = codeBase.getPathName();
-	            
-	            if (pathName != null) {
-	                codeBasePaths.add(pathName);
-	            }
-	        }
-        }
-	    
 	}
 
-    private boolean doMutabilityDetectionOnCurrentClass;
     private final BugReporter bugReporter;
 	
 	public ThisPluginDetector(BugReporter bugReporter) {
@@ -114,25 +83,9 @@ public class ThisPluginDetector extends AnnotationDetector implements Detector {
 	}
 	
     public void report() { }
-
-    
     
 	public void visitClassContext(ClassContext classContext) {
-	    doMutabilityDetectionOnCurrentClass = false;
-	    
-	    super.visitClassContext(classContext);
-	    
-	    if (doMutabilityDetectionOnCurrentClass) {
-	        new MutabilityDetector(this, bugReporter, AnalysisSessionHolder.analysisSession)
-	            .visitClassContext(classContext);
-	    }
+        new MutabilityDetector(this, bugReporter, AnalysisSessionHolder.analysisSession).visitClassContext(classContext);
 	}
 	
-	@Override
-	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
-	    super.visitAnnotation(annotationClass, map, runtimeVisible);
-	    
-        doMutabilityDetectionOnCurrentClass = annotationClass.endsWith(".Immutable");
-	}
-
 }
