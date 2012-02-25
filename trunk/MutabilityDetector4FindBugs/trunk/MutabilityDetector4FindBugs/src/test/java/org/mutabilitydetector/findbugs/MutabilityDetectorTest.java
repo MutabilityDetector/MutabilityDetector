@@ -21,6 +21,7 @@ import org.mutabilitydetector.findbugs.warningtypes.NonFinalField;
 import org.mutabilitydetector.findbugs.warningtypes.PublishedNonFinalField;
 import org.mutabilitydetector.findbugs.warningtypes.ReassignField;
 import org.mutabilitydetector.findbugs.warningtypes.UseArrayField;
+import org.mutabilitydetector.locations.ClassName;
 
 import com.youdevise.fbplugins.tdd4fb.DetectorAssert;
 
@@ -42,6 +43,11 @@ public class MutabilityDetectorTest {
     @Test
     public void doesNotRaiseBugForImmutableClass() throws Exception {
         assertNoBugsReported(ImmutableExample.class, detector, bugReporter);
+    }
+
+    @Test
+    public void doesNotRaiseBug() throws Exception {
+        assertNoBugsReported(ClassName.class, detector, bugReporter);
     }
 
     @Test
