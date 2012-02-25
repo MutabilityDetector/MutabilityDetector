@@ -18,11 +18,10 @@ import org.mutabilitydetector.repackaged.com.google.classpath.ClassPath;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 
-public class ThisPluginDetector extends AnnotationDetector implements Detector {
+public class ThisPluginDetector implements Detector {
     private static final String loggingLabel = MutabilityDetector.class.getSimpleName();
 	
 	static {
