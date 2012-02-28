@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 
 public class ThisPluginDetector implements Detector {
-    private static final String loggingLabel = MutabilityDetector.class.getSimpleName();
+    private static final String loggingLabel = MutabilityDetectorFindBugsPlugin.class.getSimpleName();
 	
 	static {
         System.out.printf("Registered plugin detector [%s]%n", loggingLabel);
@@ -84,7 +84,7 @@ public class ThisPluginDetector implements Detector {
     public void report() { }
     
 	public void visitClassContext(ClassContext classContext) {
-        new MutabilityDetector(this, bugReporter, AnalysisSessionHolder.analysisSession).visitClassContext(classContext);
+        new MutabilityDetectorFindBugsPlugin(this, bugReporter, AnalysisSessionHolder.analysisSession).visitClassContext(classContext);
 	}
 	
 }

@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 
-public class MutabilityDetector extends AnnotationDetector implements Detector {
+public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector implements Detector {
 
 	private static final int PRIORITY_TO_REPORT = Priorities.NORMAL_PRIORITY;
 	private final BugReporter bugReporter;
@@ -46,7 +46,7 @@ public class MutabilityDetector extends AnnotationDetector implements Detector {
     
     private boolean doMutabilityDetectionOnCurrentClass;
 
-	public MutabilityDetector(Detector pluginToRegisterBugsWith, BugReporter bugReporter, IAnalysisSession analysissession) {
+	public MutabilityDetectorFindBugsPlugin(Detector pluginToRegisterBugsWith, BugReporter bugReporter, IAnalysisSession analysissession) {
 		this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
         this.bugReporter = bugReporter;
         this.analysisSession = analysissession;
