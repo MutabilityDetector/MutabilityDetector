@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>MutabilityDetector4FindBugs</artifactId>
-	<version>0.1</version>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>MutabilityDetector4FindBugs</name>
 	<description>FindBugs plugin using the lightweight analysis tool for detecting mutability in Java
@@ -36,9 +37,9 @@
 	</issueManagement>
 
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.1</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.1</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.1</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk/MutabilityDetector4FindBugs</developerConnection>
 	</scm>
 
 	<developers>
@@ -123,7 +124,8 @@
 								</filter>
 							</filters>
 							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 								</transformer>
 							</transformers>
 						</configuration>
