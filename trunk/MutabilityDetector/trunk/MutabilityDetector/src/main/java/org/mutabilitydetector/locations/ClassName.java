@@ -18,8 +18,9 @@
 package org.mutabilitydetector.locations;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-
+@Immutable
 public abstract class ClassName {
     private String asString;
 

@@ -19,6 +19,9 @@ package org.mutabilitydetector.locations;
 
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class ClassIdentifier {
 
     private Dotted dotted;

@@ -17,6 +17,9 @@
 
 package org.mutabilitydetector.locations;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class Slashed extends ClassName {
 
     private Slashed(String slashedClassName) {
