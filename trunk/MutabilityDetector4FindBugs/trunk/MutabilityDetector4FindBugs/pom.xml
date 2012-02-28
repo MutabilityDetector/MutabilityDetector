@@ -20,7 +20,7 @@
 	<distributionManagement>
 		<site>
 			<id>google.code</id>
-			<url>scm:svn:https://mutability-detector.googlecode.com/svn/site
+			<url>svn:https://mutability-detector.googlecode.com/svn/site/MutabilityDetector4FindBugs
 			</url>
 		</site>
 	</distributionManagement>
@@ -131,6 +131,15 @@
 				</executions>
 			</plugin>
 		</plugins>
+		
+        <extensions>
+            <extension>
+                <groupId>com.google.code.maven-svn-wagon</groupId>
+                <artifactId>maven-svn-wagon</artifactId>
+                <version>1.4</version>
+            </extension>
+        </extensions>
+        
 	</build>
 	
 	<profiles>
