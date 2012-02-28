@@ -1,5 +1,6 @@
 package org.mutabilitydetector.findbugs;
 
+import static java.lang.String.format;
 import static org.mutabilitydetector.MutabilityReason.CANNOT_ANALYSE;
 import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
@@ -44,22 +45,25 @@ public class WriteFindBugsConfigFiles {
         for (MutabilityReason reason : MutabilityReason.values()) {
             if (isReasonToExclude(reason)) { continue; }
             
+            String description = format("@Immutable class is actually mutable (%s)", humanReadableReasonCode(reason));
             content.append("<BugPattern type=\"MUTDEC_" + reason.name() + "\">\n")
-            .append("<ShortDescription>@Immutable class is actually mutable</ShortDescription>\n")
-            .append("<LongDescription>\n")
+            .append("<ShortDescription>" + description + "</ShortDescription>\n")
+            .append("<LongDescription>"+ description +"</LongDescription>\n");
             
-            .append(reason.description() + "\n")
-            
-            .append("</LongDescription>\n");
-            
-            writeEmptyDetailsNode(content)
+            writeDetailsNode(content, reason)
             .append("</BugPattern>\n")
             .append("\n");
         }
         
+        content.append("<BugCode abbrev=\"MUTDEC\">Class annotated with @Immutable is actually mutable</BugCode>\n\n");
+        
         content.append("</MessageCollection>\n");
         
         writeFile("src/main/resources/messages.xml", content);
+    }
+
+    private static String humanReadableReasonCode(MutabilityReason reason) {
+        return reason.code().replace("_", " ").toLowerCase();
     }
 
     private static void writeFindbugsXml() throws Exception {
@@ -80,7 +84,6 @@ public class WriteFindBugsConfigFiles {
             content.append("</BugPattern>\n");
             
         }
-
         content.append("</FindbugsPlugin>\n");
         
         writeFile("src/main/resources/findbugs.xml", content);
@@ -90,6 +93,16 @@ public class WriteFindBugsConfigFiles {
         content.append("<Details>\n")
                .append("<![CDATA[]]>\n")
                .append("</Details>\n");
+        
+        return content;
+    }
+
+    private static StringBuilder writeDetailsNode(StringBuilder content, MutabilityReason reason) {
+        content.append("<Details>\n")
+        .append("<![CDATA[\n")
+        .append(reason.description() + "\n")
+        .append("]]>\n")
+        .append("</Details>\n");
         
         return content;
     }
