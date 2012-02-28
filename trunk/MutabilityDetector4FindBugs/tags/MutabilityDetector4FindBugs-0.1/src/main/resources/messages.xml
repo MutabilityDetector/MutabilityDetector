@@ -1,0 +1,114 @@
+<MessageCollection>
+
+<Plugin>
+<ShortDescription>MutabilityDetector4FindBugs plugin</ShortDescription>
+<Details>
+<![CDATA[
+<p>This plugin detects classes annotated with @Immutable that are actually mutable</p>
+]]>
+</Details>
+</Plugin>
+
+
+<Detector class="org.mutabilitydetector.findbugs.ThisPluginDetector">
+<Details>
+<![CDATA[
+<p>This plugin detects classes annotated with @Immutable that are actually mutable</p>
+]]>
+</Details>
+</Detector>
+
+<!-- Each of the individual reasons for mutability -->
+<BugPattern type="MUTDEC_ABSTRACT_TYPE_TO_FIELD">
+<ShortDescription>@Immutable class is actually mutable (abstract type to field)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (abstract type to field)</LongDescription>
+<Details>
+<![CDATA[
+For an object to be immutable, its fields must also be immutable. By assigning an abstract type to a field, it is not known if the concrete fields supplied will be immutable or not.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_CAN_BE_SUBCLASSED">
+<ShortDescription>@Immutable class is actually mutable (can be subclassed)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (can be subclassed)</LongDescription>
+<Details>
+<![CDATA[
+Class can be subclassed. While this specific class may still be immutable, it is recommended that the class be declared final, or all of its constructors declared private. This will allow clients to be confident that parameters declared to be this type will indeed be of this type at runtime, not an instance of a mutable subclass. Note that applying the final keyword to a class does not have any effect on the Java Memory Model.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_ABSTRACT_TYPE_INHERENTLY_MUTABLE">
+<ShortDescription>@Immutable class is actually mutable (abstract type inherently mutable)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (abstract type inherently mutable)</LongDescription>
+<Details>
+<![CDATA[
+Abstract types (interfaces or abstract classes) are considered to be "Inherently Mutable" in particular cases. Because the concrete implementation cannot be knownuntil compile-time, instances of abstract types could be either mutable or immutable.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_ARRAY_TYPE_INHERENTLY_MUTABLE">
+<ShortDescription>@Immutable class is actually mutable (array type inherently mutable)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (array type inherently mutable)</LongDescription>
+<Details>
+<![CDATA[
+Since an array can be mutated after construction (by modifying what it contains) they are inherently mutable. However, since it is possible that a field which is an array type is never mutated after construction, it is still possible for the containing type to be immutable.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_MUTABLE_TYPE_TO_FIELD">
+<ShortDescription>@Immutable class is actually mutable (mutable type to field)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (mutable type to field)</LongDescription>
+<Details>
+<![CDATA[
+A mutable type can be assigned to a field. Since references to the mutable field may be kept, the containing type can be mutated after construction.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_ESCAPED_THIS_REFERENCE">
+<ShortDescription>@Immutable class is actually mutable (escaped this reference)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (escaped this reference)</LongDescription>
+<Details>
+<![CDATA[
+[Experimental] The 'this' reference escaped during construction. Whoever receives the reference may observe values of the object mutating.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_NON_FINAL_FIELD">
+<ShortDescription>@Immutable class is actually mutable (non final field)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (non final field)</LongDescription>
+<Details>
+<![CDATA[
+Field is not declared final. If the object is published across threads the Java Memory Model does not guarantee that it will be fully initialised before it is read. However, if the object is only used in a single thread, reads are guaranteed to see the fully initialised fields.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_PUBLISHED_NON_FINAL_FIELD">
+<ShortDescription>@Immutable class is actually mutable (published non final field)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (published non final field)</LongDescription>
+<Details>
+<![CDATA[
+Class has a published, non-final field. Fields of an immutable class may not be reassigned after an instance is constructed. If an accessible field is not made final, it can be reassigned.
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="MUTDEC_FIELD_CAN_BE_REASSIGNED">
+<ShortDescription>@Immutable class is actually mutable (field can be reassigned)</ShortDescription>
+<LongDescription>@Immutable class is actually mutable (field can be reassigned)</LongDescription>
+<Details>
+<![CDATA[
+For a class to be immutable, fields cannot be reassigned once an instance is constructed.
+]]>
+</Details>
+</BugPattern>
+
+<BugCode abbrev="MUTDEC">Class annotated with @Immutable is actually mutable</BugCode>
+
+</MessageCollection>
