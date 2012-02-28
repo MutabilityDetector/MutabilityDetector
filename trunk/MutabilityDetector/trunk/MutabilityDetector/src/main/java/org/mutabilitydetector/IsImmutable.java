@@ -42,7 +42,7 @@ public enum IsImmutable {
     NOT_IMMUTABLE,
 
     /**
-     * Instances can be any of {@link #IMMUTABLE}/{@link IsImmutable#IMMUTABLE}/{@link #NOT_IMMUTABLE}, however, an
+     * Instances can be any of {@link #IMMUTABLE}/{@link IsImmutable#EFFECTIVELY_IMMUTABLE}/{@link #NOT_IMMUTABLE}, however, an
      * internal error has occurred during analysis, and no result is meaningful.
      */
     COULD_NOT_ANALYSE;
