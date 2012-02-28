@@ -35,6 +35,6 @@ public interface Reason {
 
     IsImmutable createsResult();
     
-    public boolean isOneOf(Reason... reasons);
+    boolean isOneOf(Reason... reasons);
 
 }
