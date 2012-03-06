@@ -31,20 +31,24 @@ public final class AllChecksRunner {
     private final Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
     private final IMutabilityCheckerFactory factory;
     private final ICheckerRunnerFactory checkerRunnerFactory;
+    private final AnalysisClassLoader analysisClassLoader;
 
     public AllChecksRunner(IMutabilityCheckerFactory checkerFactory,
             ICheckerRunnerFactory checkerRunnerFactory,
-            Dotted toAnalyse) {
+            Dotted toAnalyse, 
+            AnalysisClassLoader analysisClassLoader) {
         this.factory = checkerFactory;
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.toAnalyse = toAnalyse;
+        this.analysisClassLoader = analysisClassLoader;
 
     }
 
     public AnalysisResult runCheckers(IAnalysisSession analysisSession) {
         Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
 
-        Collection<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession);
+        Collection<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, analysisClassLoader);
+
         for (AsmMutabilityChecker checker : checkers) {
             checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);
             IsImmutable result = checker.result();

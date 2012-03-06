@@ -20,6 +20,7 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -37,10 +38,12 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final TypeStructureInformation typeStructureInformation;
     private final MutableTypeInformation mutableTypeInfo;
+    private final AnalysisClassLoader analysisClassLoader;
 
-    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo) {
+    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo, AnalysisClassLoader analysisClassLoader) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
+        this.analysisClassLoader = analysisClassLoader;
     }
 
     @Override
@@ -55,7 +58,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions);
+        return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions, analysisClassLoader);
     }
 
     class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
@@ -65,8 +68,9 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 String name,
                 String desc,
                 String signature,
-                String[] exceptions) {
-            super(owner, access, name, desc, signature, exceptions);
+                String[] exceptions, 
+                AnalysisClassLoader analysisClassLoader) {
+            super(owner, access, name, desc, signature, exceptions, analysisClassLoader);
         }
 
         @Override

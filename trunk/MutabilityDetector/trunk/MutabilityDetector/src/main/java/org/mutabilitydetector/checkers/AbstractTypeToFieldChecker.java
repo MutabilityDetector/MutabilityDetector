@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -32,13 +33,15 @@ import org.objectweb.asm.tree.analysis.Frame;
 public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final TypeStructureInformation typeStructureInformation;
+    private final AnalysisClassLoader analysisClassLoader;
 
-    public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation) {
+    public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation, AnalysisClassLoader analysisClassLoader) {
         this.typeStructureInformation = typeStructureInformation;
+        this.analysisClassLoader = analysisClassLoader;
     }
 
-    public static AbstractTypeToFieldChecker newAbstractTypeToFieldChecker(TypeStructureInformation requestInformation) {
-        return new AbstractTypeToFieldChecker(requestInformation);
+    public static AbstractTypeToFieldChecker newAbstractTypeToFieldChecker(TypeStructureInformation requestInformation, AnalysisClassLoader analysisClassLoader) {
+        return new AbstractTypeToFieldChecker(requestInformation, analysisClassLoader);
     }
 
     @Override
@@ -48,7 +51,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions);
+        return new AssignAbstractTypeVisitor(ownerClass, access, name, desc, signature, exceptions, analysisClassLoader);
     }
 
     private class AssignAbstractTypeVisitor extends FieldAssignmentVisitor {
@@ -58,8 +61,9 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
                 String name,
                 String desc,
                 String signature,
-                String[] exceptions) {
-            super(owner, access, name, desc, signature, exceptions);
+                String[] exceptions, 
+                AnalysisClassLoader fallbackClassLoader) {
+            super(owner, access, name, desc, signature, exceptions, fallbackClassLoader);
         }
 
         @Override

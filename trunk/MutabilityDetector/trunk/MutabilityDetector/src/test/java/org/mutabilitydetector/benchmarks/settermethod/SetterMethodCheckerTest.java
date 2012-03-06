@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
@@ -73,7 +74,7 @@ public class SetterMethodCheckerTest {
         checkerRunner = CheckerRunner.createWithCurrentClasspath();
         analysisSession = createWithCurrentClassPath();
         info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
-        checker = newSetterMethodChecker(info);
+        checker = newSetterMethodChecker(info, testingAnalysisClassLoader());
     }
 
     private AnalysisResult doCheck(Class<?> toCheck) {

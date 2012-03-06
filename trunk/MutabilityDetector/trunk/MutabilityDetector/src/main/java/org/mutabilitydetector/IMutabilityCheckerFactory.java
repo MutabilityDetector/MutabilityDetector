@@ -22,6 +22,6 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 
 public interface IMutabilityCheckerFactory {
 
-    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession);
+    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader);
 
 }

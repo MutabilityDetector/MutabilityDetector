@@ -19,6 +19,7 @@ package org.mutabilitydetector.checkers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -32,15 +33,18 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
     protected List<FieldInsnNode> fieldAssignments = new ArrayList<FieldInsnNode>();
     protected final String owner;
+    private final AnalysisClassLoader analysisClassLoader;
 
     public FieldAssignmentVisitor(String owner,
             int access,
             String name,
             String desc,
             String signature,
-            String[] exceptions) {
+            String[] exceptions, 
+            AnalysisClassLoader analysisClassLoader) {
         super(access, name, desc, signature, exceptions);
         this.owner = owner;
+        this.analysisClassLoader = analysisClassLoader;
     }
 
     @Override
@@ -70,7 +74,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
         if (fieldAssignments.isEmpty()) { return; }
 
-        Analyzer<BasicValue> a = new Analyzer<BasicValue>(new CustomClassLoadingSimpleVerifier());
+        Analyzer<BasicValue> a = new Analyzer<BasicValue>(new CustomClassLoadingSimpleVerifier(analysisClassLoader));
         Frame<BasicValue>[] frames;
         try {
             frames = a.analyze(owner, this);

@@ -136,7 +136,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private void extractReportMode(CommandLine line) {
         if (line.hasOption("r") || line.hasOption("report")) {
             String mode = line.getOptionValue("report");
-            this.reportMode = ReportMode.valueOf(ReportMode.class, mode.toUpperCase());
+            this.reportMode = Enum.valueOf(ReportMode.class, mode.toUpperCase());
         } else {
             this.reportMode = ReportMode.ALL;
         }

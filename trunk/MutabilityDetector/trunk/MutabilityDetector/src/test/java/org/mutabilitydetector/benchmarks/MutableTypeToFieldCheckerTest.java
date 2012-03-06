@@ -27,6 +27,7 @@ import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -64,7 +65,7 @@ public class MutableTypeToFieldCheckerTest {
     public void setUp() {
         session = mock(IAnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        checker = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session));
+        checker = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session), testingAnalysisClassLoader());
     }
 
     @Test
@@ -100,7 +101,7 @@ public class MutableTypeToFieldCheckerTest {
         when(session.resultFor(MutableExample.class.getName())).thenReturn(RequestedAnalysis.incomplete());
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session);
-        checker = new MutableTypeToFieldChecker(info, mutableTypeInfo);
+        checker = new MutableTypeToFieldChecker(info, mutableTypeInfo, testingAnalysisClassLoader());
         
 
         result = runChecker(checker, MutableByHavingMutableFieldAssigned.class);

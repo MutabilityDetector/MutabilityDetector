@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
@@ -49,7 +50,7 @@ public class AbstractTypeToFieldCheckerTest {
         SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(),
                 createWithCurrentClasspath());
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
-        checker = new AbstractTypeToFieldChecker(typeInfo);
+        checker = new AbstractTypeToFieldChecker(typeInfo, testingAnalysisClassLoader());
     }
 
     @Test

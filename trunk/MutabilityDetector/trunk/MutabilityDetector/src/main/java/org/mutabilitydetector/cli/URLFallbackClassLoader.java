@@ -17,21 +17,22 @@
 
 package org.mutabilitydetector.cli;
 
-import static java.lang.String.format;
-
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class URLFallbackClassLoader {
+import org.mutabilitydetector.AnalysisClassLoader;
+
+public class URLFallbackClassLoader implements AnalysisClassLoader {
 
     private final URLClassLoader urlClassLoader;
     private Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
 
-    public URLFallbackClassLoader() {
-        this.urlClassLoader = getURLClassLoader();
+    public URLFallbackClassLoader(URLClassLoader urlClassLoader) {
+        this.urlClassLoader = urlClassLoader;
     }
 
+    @Override
     public Class<?> getClass(String dottedClassPath) throws ClassNotFoundException {
         if (classCache.containsKey(dottedClassPath)) { return classCache.get(dottedClassPath); }
 
@@ -54,14 +55,4 @@ public class URLFallbackClassLoader {
         return urlClassLoader.loadClass(dottedClassPath);
     }
 
-    private URLClassLoader getURLClassLoader() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader instanceof URLClassLoader) {
-            return (URLClassLoader) classLoader;
-        } 
-
-        String message = format("Expected currentThread().getContextClassLoader() to return a URLClassLoader, " + "but returned %s.",
-                                classLoader);
-        throw new ClassCastException(message);
-    }
 }

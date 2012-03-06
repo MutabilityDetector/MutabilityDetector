@@ -26,9 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
-import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
-import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.CanSubclassChecker;
+import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
@@ -39,17 +39,18 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 public final class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
 
     @Override
-    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession) {
+    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader) {
         AnalysisDatabase database = analysisSession.analysisDatabase();
 
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
-        checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE)));
+        checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), analysisClassLoader));
         checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
-        checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
+        checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION), analysisClassLoader));
         checkers.add(new MutableTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), 
-                                                   new MutableTypeInformation(analysisSession)));
+                                                   new MutableTypeInformation(analysisSession), 
+                                                   analysisClassLoader));
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());
         checkers.add(new EscapedThisReferenceChecker());

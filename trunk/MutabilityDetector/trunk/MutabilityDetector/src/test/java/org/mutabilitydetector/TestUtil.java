@@ -83,4 +83,8 @@ public class TestUtil {
     public static Reason unusedReason() {
         return MutabilityReason.NULL_REASON;
     }
+
+    public static AnalysisClassLoader testingAnalysisClassLoader() {
+        return new PassthroughAnalysisClassLoader();
+    }
 }

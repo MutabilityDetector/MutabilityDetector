@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
@@ -42,10 +43,8 @@ import com.google.classpath.RegExpResourceFilter;
 /**
  * Runs an analysis configured by the given classpath and options.
  * 
- * Instances of this class, along with the related analysis, are unlikely to be thread safe. This class uses
- * {@link Thread#currentThread()} to set a class loader which can be used in the analysis.
  */
-public class RunMutabilityDetector implements Runnable, Callable<String> {
+public final class RunMutabilityDetector implements Runnable, Callable<String> {
 
     private final ClassPath classpath;
     private final BatchAnalysisOptions options;
@@ -73,14 +72,14 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private StringBuilder getResultString() {
-        setCustomClassLoader(options);
-
+        AnalysisClassLoader fallbackClassLoader = new URLFallbackClassLoader(getCustomClassLoader());
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
         IAnalysisSession session = createWithGivenClassPath(classpath, 
                                                             new CheckerRunnerFactory(classpath), 
-                                                            new MutabilityCheckerFactory());
+                                                            new MutabilityCheckerFactory(), 
+                                                            fallbackClassLoader);
         
         List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
         
@@ -90,10 +89,10 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
         return output;
     }
 
-    private void setCustomClassLoader(BatchAnalysisOptions options) {
+    private URLClassLoader getCustomClassLoader() {
         String[] classPathUrls = options.classpath().split(":");
 
-        List<URL> urlList = new ArrayList<URL>();
+        List<URL> urlList = new ArrayList<URL>(classPathUrls.length);
 
         for (String classPathUrl : classPathUrls) {
             try {
@@ -103,8 +102,7 @@ public class RunMutabilityDetector implements Runnable, Callable<String> {
                 System.err.printf("Classpath option %s is invalid.", classPathUrl);
             }
         }
-        ClassLoader classLoader = new URLClassLoader(urlList.toArray(new URL[] {}));
-        Thread.currentThread().setContextClassLoader(classLoader);
+        return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
     }
 
     private static List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {

@@ -41,26 +41,32 @@ public final class AnalysisSession implements IAnalysisSession {
     private final ICheckerRunnerFactory checkerRunnerFactory;
     private final List<String> requestedAnalysis = new ArrayList<String>();
     private final AnalysisDatabase database;
+    private final AnalysisClassLoader analysisClassLoader;
 
-    private AnalysisSession(ClassPath classpath, ICheckerRunnerFactory checkerRunnerFactory,
-            IMutabilityCheckerFactory checkerFactory) {
+    private AnalysisSession(ClassPath classpath, 
+                             ICheckerRunnerFactory checkerRunnerFactory,
+                             IMutabilityCheckerFactory checkerFactory, 
+                             AnalysisClassLoader analysisClassLoader) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
+        this.analysisClassLoader = analysisClassLoader;
     }
 
     public static IAnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               ICheckerRunnerFactory checkerRunnerFactory,
-                                                              IMutabilityCheckerFactory checkerFactory) {
-        return new AnalysisSession(classpath, checkerRunnerFactory, checkerFactory);
+                                                              IMutabilityCheckerFactory checkerFactory, 
+                                                              AnalysisClassLoader analysisClassLoader) {
+        return new AnalysisSession(classpath, checkerRunnerFactory, checkerFactory, analysisClassLoader);
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
         return new AnalysisSession(classpath, 
                                     new CheckerRunnerFactory(classpath), 
-                                    new MutabilityCheckerFactory());
+                                    new MutabilityCheckerFactory(), 
+                                    new PassthroughAnalysisClassLoader());
     }
 
     @Override
@@ -83,7 +89,8 @@ public final class AnalysisSession implements IAnalysisSession {
         requestedAnalysis.add(className);
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
-                                                              dotted(className));
+                                                              dotted(className), 
+                                                              analysisClassLoader);
         return allChecksRunner.runCheckers(this);
     }
 

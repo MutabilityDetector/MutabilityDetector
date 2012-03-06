@@ -22,6 +22,7 @@ import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
@@ -43,16 +44,16 @@ import org.objectweb.asm.tree.analysis.Frame;
 public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
+    private final AnalysisClassLoader analysisClassLoader;
 
-    /**
-     * @see #newSetterMethodChecker(PrivateMethodInvocationInformation)
-     */
-    private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
+    private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
+                                 AnalysisClassLoader analysisClassLoader) {
         this.privateMethodInvocationInfo = privateMethodInvocationInfo;
+        this.analysisClassLoader = analysisClassLoader;
     }
 
-    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
-        return new SetterMethodChecker(privateMethodInvocationInfo);
+    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AnalysisClassLoader analysisClassLoader) {
+        return new SetterMethodChecker(privateMethodInvocationInfo, analysisClassLoader);
     }
 
     @Override
@@ -67,7 +68,8 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
                 name,
                 desc,
                 signature,
-                exceptions);
+                exceptions, 
+                analysisClassLoader);
     }
 
     class SetterAssignmentVisitor extends FieldAssignmentVisitor {
@@ -79,8 +81,9 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
                 String name,
                 String desc,
                 String signature,
-                String[] exceptions) {
-            super(ownerName, access, name, desc, signature, exceptions);
+                String[] exceptions, 
+                AnalysisClassLoader fallbackClassLoader) {
+            super(ownerName, access, name, desc, signature, exceptions, fallbackClassLoader);
         }
 
         @Override
