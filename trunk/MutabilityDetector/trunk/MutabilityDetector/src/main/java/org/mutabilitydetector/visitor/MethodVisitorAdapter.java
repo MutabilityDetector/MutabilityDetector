@@ -20,9 +20,14 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-public class MethodVisitorAdapter implements MethodVisitor {
+public class MethodVisitorAdapter extends MethodVisitor {
 
+    public MethodVisitorAdapter() {
+        super(Opcodes.ASM4);
+    }
+    
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         return null;
@@ -124,7 +129,7 @@ public class MethodVisitorAdapter implements MethodVisitor {
     }
 
     @Override
-    public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels) {
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
 
     }
 

@@ -18,16 +18,21 @@ package org.mutabilitydetector.checkers;
 
 import java.util.Collection;
 
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
 
-public interface AsmMutabilityChecker extends ClassVisitor {
+public abstract class AsmMutabilityChecker extends ClassVisitor {
 
-    public Collection<MutableReasonDetail> reasons();
+    public AsmMutabilityChecker() {
+        super(Opcodes.ASM4);
+    }
+    
+    public abstract Collection<MutableReasonDetail> reasons();
 
-    public IsImmutable result();
+    public abstract IsImmutable result();
 
-    public void visitAnalysisException(Throwable toBeThrown);
+    public abstract void visitAnalysisException(Throwable toBeThrown);
 
 }

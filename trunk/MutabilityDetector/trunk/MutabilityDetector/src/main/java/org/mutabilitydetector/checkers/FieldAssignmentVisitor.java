@@ -62,7 +62,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 	 * @param assignmentFrame
 	 * @param fieldInsnNode
 	 */
-	abstract protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue);
+	abstract protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue);
 
 	@Override
     public void visitEnd() {
@@ -70,15 +70,15 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
         if (fieldAssignments.isEmpty()) { return; }
 
-        Analyzer a = new Analyzer(new CustomClassLoadingSimpleVerifier());
-        Frame[] frames;
+        Analyzer<BasicValue> a = new Analyzer<BasicValue>(new CustomClassLoadingSimpleVerifier());
+        Frame<BasicValue>[] frames;
         try {
             frames = a.analyze(owner, this);
 
             for (FieldInsnNode fieldInsnNode : fieldAssignments) {
-                Frame assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
+                Frame<BasicValue> assignmentFrame = frames[instructions.indexOf(fieldInsnNode)];
                 int stackSlot = assignmentFrame.getStackSize() - 1;
-                BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
+                BasicValue stackValue = assignmentFrame.getStack(stackSlot);
                 visitFieldAssignmentFrame(assignmentFrame, fieldInsnNode, stackValue);
             }
         } catch (AnalyzerException forwarded) {
@@ -90,9 +90,9 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
         return stackValue == null || "Lnull;".equals(stackValue.getType().toString());
     }
 
-    protected BasicValue getStackValue(Frame assignmentFrame) {
+    protected BasicValue getStackValue(Frame<BasicValue> assignmentFrame) {
         int stackSlot = assignmentFrame.getStackSize() - 1;
-        BasicValue stackValue = (BasicValue) assignmentFrame.getStack(stackSlot);
+        BasicValue stackValue = assignmentFrame.getStack(stackSlot);
         return stackValue;
     }
 }

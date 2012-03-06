@@ -63,7 +63,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
         }
 
         @Override
-        protected void visitFieldAssignmentFrame(Frame assignmentFrame,
+        protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame,
                 FieldInsnNode fieldInsnNode,
                 BasicValue stackValue) {
             if (isInvalidStackValue(stackValue)) { return; }

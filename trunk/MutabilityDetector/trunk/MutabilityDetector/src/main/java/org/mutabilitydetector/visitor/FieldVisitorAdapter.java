@@ -16,25 +16,13 @@
  */
 package org.mutabilitydetector.visitor;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 
-public abstract class FieldVisitorAdapter implements FieldVisitor {
+public abstract class FieldVisitorAdapter extends FieldVisitor {
 
-    @Override
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        return null;
-    }
-
-    @Override
-    public void visitAttribute(Attribute attr) {
-
-    }
-
-    @Override
-    public void visitEnd() {
-
+    public FieldVisitorAdapter() {
+        super(Opcodes.ASM4);
     }
 
 }

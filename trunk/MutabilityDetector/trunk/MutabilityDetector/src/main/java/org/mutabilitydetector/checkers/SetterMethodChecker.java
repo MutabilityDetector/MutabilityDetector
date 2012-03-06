@@ -84,7 +84,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
         }
 
         @Override
-        protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+        protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
             if (MethodIs.aConstructor(name) || isInvalidStackValue(stackValue)) { return; }
 
             if (method(access).isStatic()) {
