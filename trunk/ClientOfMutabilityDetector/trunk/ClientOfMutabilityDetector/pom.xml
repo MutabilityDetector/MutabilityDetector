@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>MutabilityDetector</artifactId>
-			<version>0.8-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		
@@ -52,6 +52,13 @@
 			<version>4.8</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>11.0.1</version>
+		</dependency>
+		
 		
 		<dependency>
 			<groupId>joda-time</groupId>
