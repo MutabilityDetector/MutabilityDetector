@@ -51,4 +51,9 @@ public class TestGuavasImmutableCollections {
                           allowingForSubclassing(),
                           provided(ImmutableList.class).isAlsoImmutable());
     }
+    
+    @Test
+    public void com_google_common_collect_ImmutableMap() throws Exception {
+        assertInstancesOf(ImmutableMap.class, areImmutable(), allowingForSubclassing());
+    }
 }

@@ -2,7 +2,7 @@ package org.mutabilitydetector.issues;
 
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
-import static org.mutabilitydetector.issues.ImmutableConfiguration.MutabilityTest.AssumeCopiedIntoUnmodifiableCollection.assuming;
+import static org.mutabilitydetector.issues.ImmutableConfiguration.MutabilityTest.AssumeCopiedIntoUnmodifiable.assuming;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
@@ -40,6 +40,10 @@ public final class ImmutableConfiguration {
         }
         this.propMap = Collections.unmodifiableMap(store);
     }
+    
+    public Object getSomeProperty(String key) {
+        return propMap.get(key);
+    }
 
     public static interface Configuration {
         Iterator getKeys();
@@ -62,27 +66,18 @@ public final class ImmutableConfiguration {
         public void immutableConfiguration_assumeACopyFromUnmodifiableCollection() throws Exception {
             assertInstancesOf(ImmutableConfiguration.class, 
                               areImmutable(),
-                              assuming("propMap").hadUnmodifiableCollectionAssignedToIt());
+                              assuming("propMap").hasCollectionsUnmodifiableTypeAssignedToIt());
         }
         
-        public static class AssumeCopiedIntoUnmodifiableCollection extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
-
-            private final String fieldName;
-
-            private static final List<Dotted> unmodifiableTypes = asList(dotted("java.util.List"), 
-                                                                            dotted("java.util.Map"), 
-                                                                            dotted("java.util.Set"),
-                                                                            dotted("java.util.Collection"),
-                                                                            dotted("java.util.SortedSet"),
-                                                                            dotted("java.util.SortedMap"));
+        public static class AssumeCopiedIntoUnmodifiable extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
 
             private static class Assuming {
                 private final String fieldName;
                 public Assuming(String fieldName) {
                     this.fieldName = fieldName;
                 }
-                public Matcher<MutableReasonDetail> hadUnmodifiableCollectionAssignedToIt() {
-                    return new AssumeCopiedIntoUnmodifiableCollection(fieldName);
+                public Matcher<MutableReasonDetail> hasCollectionsUnmodifiableTypeAssignedToIt() {
+                    return new AssumeCopiedIntoUnmodifiable(fieldName);
                 }
                 
             }
@@ -90,10 +85,18 @@ public final class ImmutableConfiguration {
             public static Assuming assuming(String fieldName) {
                 return new Assuming(fieldName);
             }
+
+            private static final List<Dotted> unmodifiableTypes = asList(dotted("java.util.List"), 
+                                                                         dotted("java.util.Map"), 
+                                                                         dotted("java.util.Set"),
+                                                                         dotted("java.util.Collection"),
+                                                                         dotted("java.util.SortedSet"),
+                                                                         dotted("java.util.SortedMap"));
+
+            private final String fieldName;
             
-            public AssumeCopiedIntoUnmodifiableCollection(String fieldName) {
+            public AssumeCopiedIntoUnmodifiable(String fieldName) {
                 this.fieldName = fieldName;
-                
             }
             
             @Override
