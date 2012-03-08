@@ -132,6 +132,7 @@
 						<artifactSet>
                				<excludes>
                  					<exclude>com.google.code.findbugs:jsr305</exclude>
+                 					<exclude>org.hamcrest:hamcrest-core</exclude>
                  				</excludes>
               				</artifactSet>
 
@@ -154,15 +155,6 @@
 							<relocation>
 								<pattern>com.google</pattern>
 								<shadedPattern>${repackage.base}.com.google</shadedPattern>
-							</relocation>
-							<relocation>
-								<pattern>org.hamcrest</pattern>
-								<shadedPattern>${repackage.base}.org.hamcrest</shadedPattern>
-								<excludes>
-									<exclude>org/hamcrest/Matcher</exclude>
-									<exclude>org/hamcrest/SelfDescribing</exclude>
-									<exclude>org/hamcrest/Description</exclude>
-								</excludes>
 							</relocation>
 							<relocation>
 								<pattern>org.apache.commons.cli</pattern>
