@@ -14,18 +14,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.FieldLocation;
-import org.mutabilitydetector.repackaged.org.hamcrest.TypeSafeDiagnosingMatcher;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class ImmutableConfiguration {
 
-    @SuppressWarnings("unused")
     private final Map<String, Object> propMap;
 
     public ImmutableConfiguration(AbstractConfiguration origConfiguration) {
@@ -69,7 +68,7 @@ public final class ImmutableConfiguration {
                               assuming("propMap").hasCollectionsUnmodifiableTypeAssignedToIt());
         }
         
-        public static class AssumeCopiedIntoUnmodifiable extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
+        public static class AssumeCopiedIntoUnmodifiable extends BaseMatcher {
 
             private static class Assuming {
                 private final String fieldName;
@@ -102,8 +101,15 @@ public final class ImmutableConfiguration {
             @Override
             public void describeTo(Description description) { }
 
+
+            private Dotted sniffOutAssignedTypeFromMessage(String message) {
+                return dotted(message.substring(message.lastIndexOf("(") + 1, message.lastIndexOf(")")));
+            }
+
+
             @Override
-            protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description description) {
+            public boolean matches(Object arg0) {
+                MutableReasonDetail reasonDetail = (MutableReasonDetail) arg0;
                 if (reasonDetail.reason().isOneOf(ABSTRACT_TYPE_TO_FIELD)) {
                     String potentiallyAbstractField = ((FieldLocation) reasonDetail.codeLocation()).fieldName();
                     Dotted assignedType = sniffOutAssignedTypeFromMessage(reasonDetail.message());
@@ -113,11 +119,6 @@ public final class ImmutableConfiguration {
                 }
                 
                 return false;
-            }
-
-
-            private Dotted sniffOutAssignedTypeFromMessage(String message) {
-                return dotted(message.substring(message.lastIndexOf("(") + 1, message.lastIndexOf(")")));
             }
 
         }
