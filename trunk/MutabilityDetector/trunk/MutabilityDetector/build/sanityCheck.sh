@@ -4,7 +4,7 @@
 
 MD_JAR=$1
 if [ -z "$MD_JAR" ]; then
-  MD_JAR=./target/MutabilityDetector-0.8-SNAPSHOT.jar
+  MD_JAR=./target/MutabilityDetector-0.9-SNAPSHOT.jar
 fi
 
 JAR_TO_ANALYSE=$2
