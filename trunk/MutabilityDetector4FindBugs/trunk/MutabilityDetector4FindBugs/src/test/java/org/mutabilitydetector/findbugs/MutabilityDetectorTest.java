@@ -3,7 +3,6 @@ package org.mutabilitydetector.findbugs;
 import static com.youdevise.fbplugins.tdd4fb.DetectorAssert.assertBugReported;
 import static com.youdevise.fbplugins.tdd4fb.DetectorAssert.assertNoBugsReported;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.Before;
@@ -96,9 +95,7 @@ public class MutabilityDetectorTest {
     }
     
     
-    private void setupAnalysisSessionToHaveScannedForImmutableAnnotation(Class<?> lookForAnnotation)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        
+    private void setupAnalysisSessionToHaveScannedForImmutableAnnotation(Class<?> lookForAnnotation) throws Exception {
         runAnArbritaryDetectorToInitialiseFindBugs(lookForAnnotation);
         
         AnalysisContext.currentAnalysisContext()
@@ -107,8 +104,7 @@ public class MutabilityDetectorTest {
             .put("Immutable", null);
     }
 
-    private void runAnArbritaryDetectorToInitialiseFindBugs(Class<?> lookForAnnotation) 
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void runAnArbritaryDetectorToInitialiseFindBugs(Class<?> lookForAnnotation) throws Exception {
         Class<?> detectorRunnerClass = Class.forName("com.youdevise.fbplugins.tdd4fb.DetectorRunner");
         Method runDetector = detectorRunnerClass.getMethod("runDetectorOnClass", Detector.class, Class.class, BugReporter.class);
         runDetector.setAccessible(true);
