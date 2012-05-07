@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+pluginid="org.mutabilitydetector.findbugs"
+website="http://www.mutabilitydetector.org"
+defaultenabled="true" >
+<Detector class="org.mutabilitydetector.findbugs.ThisPluginDetector" speed="fast"
+	reports="MUTDEC_ABSTRACT_TYPE_TO_FIELD,
+		MUTDEC_CAN_BE_SUBCLASSED,
+		MUTDEC_ABSTRACT_TYPE_INHERENTLY_MUTABLE,
+		MUTDEC_ARRAY_TYPE_INHERENTLY_MUTABLE,
+		MUTDEC_MUTABLE_TYPE_TO_FIELD,
+		MUTDEC_ESCAPED_THIS_REFERENCE,
+		MUTDEC_NON_FINAL_FIELD,
+		MUTDEC_PUBLISHED_NON_FINAL_FIELD,
+		MUTDEC_FIELD_CAN_BE_REASSIGNED"/>
+
+<!-- Each bug pattern -->
+<BugPattern type="MUTDEC_ABSTRACT_TYPE_TO_FIELD" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_CAN_BE_SUBCLASSED" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_ABSTRACT_TYPE_INHERENTLY_MUTABLE" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_ARRAY_TYPE_INHERENTLY_MUTABLE" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_MUTABLE_TYPE_TO_FIELD" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_ESCAPED_THIS_REFERENCE" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_NON_FINAL_FIELD" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_PUBLISHED_NON_FINAL_FIELD" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+<BugPattern type="MUTDEC_FIELD_CAN_BE_REASSIGNED" abbrev="MUTDEC" category="CORRECTNESS">
+<Details>
+<![CDATA[]]>
+</Details>
+</BugPattern>
+</FindbugsPlugin>
