@@ -3,7 +3,7 @@
 
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>MutabilityDetector4FindBugs</artifactId>
-	<version>0.2.1</version>
+	<version>0.2.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>MutabilityDetector4FindBugs</name>
 	<description>FindBugs plugin using the lightweight analysis tool for detecting mutability in Java
@@ -36,9 +36,9 @@
 	</issueManagement>
 
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.2.1</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.2.1</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/tags/MutabilityDetector4FindBugs-0.2.1</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/trunk</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk</developerConnection>
 	</scm>
 
 	<developers>
