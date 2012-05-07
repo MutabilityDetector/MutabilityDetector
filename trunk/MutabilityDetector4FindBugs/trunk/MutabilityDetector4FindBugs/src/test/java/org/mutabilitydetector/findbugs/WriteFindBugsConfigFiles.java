@@ -8,6 +8,8 @@ import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mutabilitydetector.MutabilityReason;
 
@@ -69,14 +71,23 @@ public class WriteFindBugsConfigFiles {
     private static void writeFindbugsXml() throws Exception {
         StringBuilder content = new StringBuilder();
         
-        content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-        .append("<FindbugsPlugin xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" defaultenabled=\"true\" >\n")
-        .append("<Detector class=\"" + ThisPluginDetector.class.getName() + "\" speed=\"fast\" />\n\n")
+        
+        List<MutabilityReason> includedReasons = includedReasons();
+        
+        content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        
+        content
+        .append("<FindbugsPlugin xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+        		"pluginid=\"org.mutabilitydetector.findbugs\"\n" +
+        		"website=\"http://www.mutabilitydetector.org\"\n" +
+        		"defaultenabled=\"true\" >\n")
+        .append("<Detector class=\"" + ThisPluginDetector.class.getName() + "\" speed=\"fast\"\n" +
+        		"\treports=\"" + reasonsAsCsvList(includedReasons) + "\"" +
+        		"/>\n\n")
         .append("<!-- Each bug pattern -->\n");
         
-        for (MutabilityReason reason : MutabilityReason.values()) {
-            if (isReasonToExclude(reason)) { continue; }
-            
+        
+        for (MutabilityReason reason : includedReasons) {
             content.append("<BugPattern type=\"MUTDEC_" + reason.name() + "\" abbrev=\"MUTDEC\" category=\"CORRECTNESS\">\n");
             
             writeEmptyDetailsNode(content);
@@ -89,7 +100,31 @@ public class WriteFindBugsConfigFiles {
         writeFile("src/main/resources/findbugs.xml", content);
     }
 
-    private static StringBuilder writeEmptyDetailsNode(StringBuilder content) {
+    private static String reasonsAsCsvList(List<MutabilityReason> includedReasons) {
+		StringBuilder csvList = new StringBuilder();
+		
+		csvList.append("MUTDEC_" + includedReasons.get(0) + ",\n");
+		
+		for (MutabilityReason mutabilityReason : includedReasons.subList(1, includedReasons.size())) {
+			csvList.append("\t\tMUTDEC_" + mutabilityReason + ",\n");
+		}
+		
+		String csvString = csvList.toString();
+		
+		return csvString.substring(0, csvString.length() - ",\n".length());
+	}
+
+	private static List<MutabilityReason> includedReasons() {
+    	List<MutabilityReason> includedReasons = new ArrayList<MutabilityReason>();
+    	for (MutabilityReason reason : MutabilityReason.values()) {
+            if (!isReasonToExclude(reason)) { 
+            	includedReasons.add(reason);
+            }
+    	}
+    	return includedReasons;
+	}
+
+	private static StringBuilder writeEmptyDetailsNode(StringBuilder content) {
         content.append("<Details>\n")
                .append("<![CDATA[]]>\n")
                .append("</Details>\n");
