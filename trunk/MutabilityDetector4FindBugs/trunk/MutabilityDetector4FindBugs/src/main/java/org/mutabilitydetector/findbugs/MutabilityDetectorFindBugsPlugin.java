@@ -26,9 +26,9 @@ package org.mutabilitydetector.findbugs;
 import java.util.Map;
 
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.findbugs.ThisPluginDetector.AnalysisSessionHolder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -42,18 +42,18 @@ public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector impleme
 	private static final int PRIORITY_TO_REPORT = Priorities.NORMAL_PRIORITY;
 	private final BugReporter bugReporter;
     private final Detector pluginToRegisterBugsWith;
-    private final IAnalysisSession analysisSession;
+    private final AnalysisSessionHolder analysisSessionHolder;
     
     private boolean doMutabilityDetectionOnCurrentClass;
 
-	public MutabilityDetectorFindBugsPlugin(Detector pluginToRegisterBugsWith, BugReporter bugReporter, IAnalysisSession analysissession) {
+	public MutabilityDetectorFindBugsPlugin(Detector pluginToRegisterBugsWith, BugReporter bugReporter, AnalysisSessionHolder analysisSessionHolder) {
 		this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
         this.bugReporter = bugReporter;
-        this.analysisSession = analysissession;
+        this.analysisSessionHolder = analysisSessionHolder;
 	}
 
 	
-   @Override
+	@Override
     public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
         super.visitAnnotation(annotationClass, map, runtimeVisible);
         
@@ -72,7 +72,7 @@ public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector impleme
     
     private void doMutabilityAnalysis(ClassContext classContext) {
         String toAnalyse = classContext.getClassDescriptor().getDottedClassName();
-        AnalysisResult result = analysisSession.resultFor(toAnalyse).result;
+        AnalysisResult result = analysisSessionHolder.lazyGet().resultFor(toAnalyse).result;
         
         if (result.isImmutable != IsImmutable.IMMUTABLE) {
             

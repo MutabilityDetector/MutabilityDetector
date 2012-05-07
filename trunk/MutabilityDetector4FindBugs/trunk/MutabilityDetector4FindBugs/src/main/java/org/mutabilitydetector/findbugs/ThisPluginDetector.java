@@ -12,7 +12,6 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
-import org.mutabilitydetector.cli.RunMutabilityDetector;
 import org.mutabilitydetector.repackaged.com.google.classpath.ClassPath;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -28,63 +27,68 @@ public class ThisPluginDetector implements Detector {
         System.out.printf("Registered plugin detector [%s]%n", loggingLabel);
     }
 	
-	/**
-	 * Unfortunately this stuff is cribbed from {@link RunMutabilityDetector} internals.
-	 */
-	private static class AnalysisSessionHolder {
-	    public static final IAnalysisSession analysisSession = initialise();
-        
-	    private static IAnalysisSession initialise() {
-	        return makeFindBugsClasspathAvailable();
-        }
-	    
-	    private static IAnalysisSession makeFindBugsClasspathAvailable() {
-	        IClassPath findBugsClassPath = Global.getAnalysisCache().getClassPath();
-	        
-	        try {
-	            List<String> codeBasePaths = new FBCodeBasePathExtractor().listOfCodeBasePaths(findBugsClassPath);
-	            
-	            setCustomClassLoader(codeBasePaths);
-	            
-	            ClassPath mutabilityDetectorClasspath = new FBClasspathConverter().createClassPathForCodeBases(codeBasePaths);
-	            return AnalysisSession.createWithGivenClassPath(mutabilityDetectorClasspath, 
-	                                                            new CheckerRunnerFactory(mutabilityDetectorClasspath), 
-	                                                            new MutabilityCheckerFactory());
-	        } catch (InterruptedException e) {
-	            throw new ExceptionInInitializerError("Problem getting class path entries from FindBugs");
-	        }
-	    }
-
-	    private static void setCustomClassLoader(List<String> codeBasePaths) {
-	        List<URL> urlList = new ArrayList<URL>();
-
-	        for (String classPathUrl : codeBasePaths) {
-	            try {
-	                URL toAdd = new File(classPathUrl).toURI().toURL();
-	                urlList.add(toAdd);
-	            } catch (MalformedURLException e) {
-	                System.err.printf("Classpath option %s is invalid.", classPathUrl);
-	            }
-	        }
-	        
-	        ClassLoader classLoader = new URLClassLoader(urlList.toArray(new URL[] {}), 
-	                                                     Thread.currentThread().getContextClassLoader());
-	        
-	        Thread.currentThread().setContextClassLoader(classLoader);
-	    }
-
-	}
-
     private final BugReporter bugReporter;
 	
 	public ThisPluginDetector(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
+
+	public void report() { }
 	
-    public void report() { }
-    
 	public void visitClassContext(ClassContext classContext) {
-        new MutabilityDetectorFindBugsPlugin(this, bugReporter, AnalysisSessionHolder.analysisSession).visitClassContext(classContext);
+		new MutabilityDetectorFindBugsPlugin(this, bugReporter, new AnalysisSessionHolder()).visitClassContext(classContext);
 	}
+	
+	public static class AnalysisSessionHolder {
+		private volatile IAnalysisSession analysisSession = null;
+		
+		public IAnalysisSession lazyGet() {
+			if (analysisSession == null) {
+				analysisSession = createNewAnalysisSession();
+			}
+			
+			return analysisSession;
+		}
+
+		private IAnalysisSession createNewAnalysisSession() {
+			return makeFindBugsClasspathAvailable();
+		}
+		
+		private IAnalysisSession makeFindBugsClasspathAvailable() {
+			IClassPath findBugsClassPath = Global.getAnalysisCache().getClassPath();
+			
+			try {
+				List<String> codeBasePaths = new FBCodeBasePathExtractor().listOfCodeBasePaths(findBugsClassPath);
+				
+				setCustomClassLoader(codeBasePaths);
+				
+				ClassPath mutabilityDetectorClasspath = new FBClasspathConverter().createClassPathForCodeBases(codeBasePaths);
+				return AnalysisSession.createWithGivenClassPath(mutabilityDetectorClasspath, 
+						new CheckerRunnerFactory(mutabilityDetectorClasspath), 
+						new MutabilityCheckerFactory());
+			} catch (InterruptedException e) {
+				throw new ExceptionInInitializerError("Problem getting class path entries from FindBugs");
+			}
+		}
+		
+		private void setCustomClassLoader(List<String> codeBasePaths) {
+			List<URL> urlList = new ArrayList<URL>();
+			
+			for (String classPathUrl : codeBasePaths) {
+				try {
+					URL toAdd = new File(classPathUrl).toURI().toURL();
+					urlList.add(toAdd);
+				} catch (MalformedURLException e) {
+					System.err.printf("Classpath option %s is invalid.", classPathUrl);
+				}
+			}
+			
+			ClassLoader classLoader = new URLClassLoader(urlList.toArray(new URL[] {}), 
+					Thread.currentThread().getContextClassLoader());
+			
+			Thread.currentThread().setContextClassLoader(classLoader);
+		}
+	}
+
 	
 }
