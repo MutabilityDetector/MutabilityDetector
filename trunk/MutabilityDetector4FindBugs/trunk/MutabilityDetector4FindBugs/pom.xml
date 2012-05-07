@@ -36,9 +36,9 @@
 	</issueManagement>
 
 	<scm>
-		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs</url>
-		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs</connection>
-		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs</developerConnection>
+		<url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector4FindBugs/trunk</url>
+		<connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk</connection>
+		<developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector4FindBugs/trunk</developerConnection>
 	</scm>
 
 	<developers>
