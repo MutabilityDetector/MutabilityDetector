@@ -21,7 +21,7 @@ For users of other dependency/build tools, the relevant information is:
 || Group ID	|| Artifact ID	|| Version ||
 || org.mutabilitydetector	|| !MutabilityDetector	|| 0.8 ||
 
-= Mutability Detector 4 FindBugs=
+= Mutability Detector 4 !FindBugs=
 
 {{{
 <dependency>
