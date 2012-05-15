@@ -2,18 +2,16 @@
 
 = Introduction =
 
-The Mutability Detector is now available with maven (and compatible build tools) from Maven Central.
+Mutability Detector and Mutability Detector 4 FindBugs are now available with maven (and compatible build tools) from Maven Central.
 
 
-= Details =
-
-The dependency snippet for Mutability Detector is:
+= Mutability Detector =
 
 {{{
 <dependency>
   <groupId>org.mutabilitydetector</groupId>
   <artifactId>MutabilityDetector</artifactId>
-  <version>0.7</version>
+  <version>0.8</version>
   <scope>test</scope>
 </dependency>
 }}}
@@ -22,3 +20,19 @@ For users of other dependency/build tools, the relevant information is:
 
 || Group ID	|| Artifact ID	|| Version ||
 || org.mutabilitydetector	|| !MutabilityDetector	|| 0.8 ||
+
+= Mutability Detector 4 FindBugs=
+
+{{{
+<dependency>
+  <groupId>org.mutabilitydetector</groupId>
+  <artifactId>MutabilityDetector4FindBugs</artifactId>
+  <version>0.2.3</version>
+  <scope>test</scope>
+</dependency>
+}}}
+
+For users of other dependency/build tools, the relevant information is:
+
+|| Group ID	|| Artifact ID	|| Version ||
+|| org.mutabilitydetector	|| !MutabilityDetector4FindBugs	|| 0.2.3 ||
