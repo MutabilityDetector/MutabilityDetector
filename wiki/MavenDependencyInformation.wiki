@@ -21,4 +21,4 @@ The dependency snippet for Mutability Detector is:
 For users of other dependency/build tools, the relevant information is:
 
 || Group ID	|| Artifact ID	|| Version ||
-|| org.mutabilitydetector	|| !MutabilityDetector	|| 0.7 ||
+|| org.mutabilitydetector	|| !MutabilityDetector	|| 0.8 ||
