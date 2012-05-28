@@ -21,9 +21,13 @@ import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+
+import com.google.common.collect.Sets;
 
 public class AnalysisSessionTest {
 
@@ -54,5 +58,16 @@ public class AnalysisSessionTest {
         AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
         assertThat(result, areImmutable());
     }
+    
+    @Test
+	public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
+    	Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
+    	
+    	Configuration configuration = new Configuration(predefinedResults);
+		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath(configuration);
+		AnalysisResult result = analysisSession.resultFor("some.type.i.say.is.Immutable").result;
+		
+		assertThat(result, areImmutable());
+	}
     
 }

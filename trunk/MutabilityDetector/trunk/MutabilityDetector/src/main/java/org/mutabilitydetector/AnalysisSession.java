@@ -32,6 +32,7 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
+import com.google.common.base.Optional;
 
 public final class AnalysisSession implements IAnalysisSession {
 
@@ -42,32 +43,44 @@ public final class AnalysisSession implements IAnalysisSession {
     private final List<String> requestedAnalysis = new ArrayList<String>();
     private final AnalysisDatabase database;
     private final AnalysisClassLoader analysisClassLoader;
+	private final Configuration configuration;
 
     private AnalysisSession(ClassPath classpath, 
                              ICheckerRunnerFactory checkerRunnerFactory,
                              IMutabilityCheckerFactory checkerFactory, 
-                             AnalysisClassLoader analysisClassLoader) {
+                             AnalysisClassLoader analysisClassLoader, 
+                             Configuration configuration) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
         this.analysisClassLoader = analysisClassLoader;
+        this.configuration = configuration;
     }
 
     public static IAnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               ICheckerRunnerFactory checkerRunnerFactory,
                                                               IMutabilityCheckerFactory checkerFactory, 
                                                               AnalysisClassLoader analysisClassLoader) {
-        return new AnalysisSession(classpath, checkerRunnerFactory, checkerFactory, analysisClassLoader);
+        return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION);
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
-        ClassPath classpath = new ClassPathFactory().createFromJVM();
-        return new AnalysisSession(classpath, 
+        return createWithCurrentClassPath(Configuration.NO_CONFIGURATION);
+    }
+    
+	public static IAnalysisSession createWithCurrentClassPath(Configuration configuration) {
+		ClassPath classpath = new ClassPathFactory().createFromJVM();
+        return createWithGivenClassPath(classpath, configuration);
+	}
+
+	private static IAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration) {
+		return new AnalysisSession(classpath, 
                                     new CheckerRunnerFactory(classpath), 
                                     new MutabilityCheckerFactory(), 
-                                    new PassthroughAnalysisClassLoader());
-    }
+                                    new PassthroughAnalysisClassLoader(),
+                                    configuration);
+	}
 
     @Override
     public RequestedAnalysis resultFor(String className) {
@@ -78,6 +91,12 @@ public final class AnalysisSession implements IAnalysisSession {
     }
 
     private AnalysisResult requestAnalysis(String className) {
+    	
+    	Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
+    	if (hardcodedResult.isPresent()) {
+    		return hardcodedResult.get();
+    	}
+    	
         if (isRepeatedRequestFor(className)) {
             return null;
         }
@@ -94,8 +113,7 @@ public final class AnalysisSession implements IAnalysisSession {
         return allChecksRunner.runCheckers(this);
     }
 
-
-    private boolean isRepeatedRequestFor(String className) {
+	private boolean isRepeatedRequestFor(String className) {
         return requestedAnalysis.contains(className);
     }
 
