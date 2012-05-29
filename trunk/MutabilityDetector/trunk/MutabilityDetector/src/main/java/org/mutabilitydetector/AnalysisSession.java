@@ -65,7 +65,7 @@ public final class AnalysisSession implements IAnalysisSession {
                                                               IMutabilityCheckerFactory checkerFactory, 
                                                               AnalysisClassLoader analysisClassLoader,
                                                               Configuration configuration) {
-        return createWithGivenClassPath(classpath, configuration);
+        return createWithGivenClassPath(classpath, configuration, analysisClassLoader);
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
@@ -74,14 +74,14 @@ public final class AnalysisSession implements IAnalysisSession {
     
 	public static IAnalysisSession createWithCurrentClassPath(Configuration configuration) {
 		ClassPath classpath = new ClassPathFactory().createFromJVM();
-        return createWithGivenClassPath(classpath, configuration);
+        return createWithGivenClassPath(classpath, configuration, new PassthroughAnalysisClassLoader());
 	}
 
-	private static IAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration) {
+	private static IAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AnalysisClassLoader analysisClassLoader) {
 		return new AnalysisSession(classpath, 
                                     new CheckerRunnerFactory(classpath), 
                                     new MutabilityCheckerFactory(), 
-                                    new PassthroughAnalysisClassLoader(),
+                                    analysisClassLoader,
                                     configuration);
 	}
 
