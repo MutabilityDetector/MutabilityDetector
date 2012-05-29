@@ -18,6 +18,7 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.mutabilitydetector.AnalysisSession.createWithGivenClassPath;
 
 import java.io.File;
@@ -32,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.CheckerRunnerFactory;
+import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.locations.ClassNameConvertor;
@@ -39,6 +41,7 @@ import org.mutabilitydetector.locations.ClassNameConvertor;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Runs an analysis configured by the given classpath and options.
@@ -79,7 +82,8 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         IAnalysisSession session = createWithGivenClassPath(classpath, 
                                                             new CheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
-                                                            fallbackClassLoader);
+                                                            fallbackClassLoader,
+                                                            Configuration.JDK);
         
         List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
         
@@ -106,18 +110,17 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private static List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {
-        List<String> filtered = new ArrayList<String>();
-        List<String> classNames = new ArrayList<String>();
+        List<String> filtered = newArrayList();
+        List<String> classNames = newArrayList();
         classNames.addAll(Arrays.asList(findResources));
         String matcher = options.match();
         for (String className : classNames) {
-
             String dottedClassName = new ClassNameConvertor().dotted(className);
             if (Pattern.matches(matcher, dottedClassName)) {
                 filtered.add(className);
             }
         }
-        return filtered;
+        return ImmutableList.<String>copyOf(filtered);
     }
 
     public static void main(String[] args) {

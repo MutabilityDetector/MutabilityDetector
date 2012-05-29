@@ -16,19 +16,20 @@
  */
 package org.mutabilitydetector;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.locations.Dotted;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -36,11 +37,12 @@ import com.google.common.base.Optional;
 
 public final class AnalysisSession implements IAnalysisSession {
 
-    private final Map<String, AnalysisResult> analysedClasses = new HashMap<String, AnalysisResult>();
-    private final List<AnalysisError> analysisErrors = new ArrayList<AnalysisError>();
+    private final Map<Dotted, AnalysisResult> analysedClasses = newHashMap();
+    private final List<Dotted> requestedAnalysis = newArrayList();
+    private final List<AnalysisError> analysisErrors = newArrayList();
+
     private final IMutabilityCheckerFactory checkerFactory;
     private final ICheckerRunnerFactory checkerRunnerFactory;
-    private final List<String> requestedAnalysis = new ArrayList<String>();
     private final AnalysisDatabase database;
     private final AnalysisClassLoader analysisClassLoader;
 	private final Configuration configuration;
@@ -61,8 +63,9 @@ public final class AnalysisSession implements IAnalysisSession {
     public static IAnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               ICheckerRunnerFactory checkerRunnerFactory,
                                                               IMutabilityCheckerFactory checkerFactory, 
-                                                              AnalysisClassLoader analysisClassLoader) {
-        return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION);
+                                                              AnalysisClassLoader analysisClassLoader,
+                                                              Configuration configuration) {
+        return createWithGivenClassPath(classpath, configuration);
     }
 
     public static IAnalysisSession createWithCurrentClassPath() {
@@ -83,14 +86,14 @@ public final class AnalysisSession implements IAnalysisSession {
 	}
 
     @Override
-    public RequestedAnalysis resultFor(String className) {
+    public RequestedAnalysis resultFor(Dotted className) {
         AnalysisResult resultForClass = requestAnalysis(className);
         return resultForClass == null 
                 ? RequestedAnalysis.incomplete()
                 : RequestedAnalysis.complete(addAnalysisResult(resultForClass));
     }
 
-    private AnalysisResult requestAnalysis(String className) {
+    private AnalysisResult requestAnalysis(Dotted className) {
     	
     	Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
     	if (hardcodedResult.isPresent()) {
@@ -108,16 +111,16 @@ public final class AnalysisSession implements IAnalysisSession {
         requestedAnalysis.add(className);
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
-                                                              dotted(className), 
+                                                              className, 
                                                               analysisClassLoader);
         return allChecksRunner.runCheckers(this);
     }
 
-	private boolean isRepeatedRequestFor(String className) {
+	private boolean isRepeatedRequestFor(Dotted className) {
         return requestedAnalysis.contains(className);
     }
 
-    private boolean resultHasAlreadyBeenGenerated(String className) {
+    private boolean resultHasAlreadyBeenGenerated(Dotted className) {
         return analysedClasses.containsKey(className);
     }
 
@@ -128,13 +131,13 @@ public final class AnalysisSession implements IAnalysisSession {
             if (resource.endsWith(".class")) {
                 resource = resource.substring(0, resource.lastIndexOf(".class"));
             }
-            requestAnalysis(resource);
+            requestAnalysis(dotted(resource));
         }
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
-        requestedAnalysis.remove(result.dottedClassName);
-        analysedClasses.put(result.dottedClassName, result);
+        requestedAnalysis.remove(dotted(result.dottedClassName));
+        analysedClasses.put(dotted(result.dottedClassName), result);
         return result;
     }
 

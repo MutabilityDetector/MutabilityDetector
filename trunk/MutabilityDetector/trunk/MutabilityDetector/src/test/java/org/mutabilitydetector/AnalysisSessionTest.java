@@ -18,44 +18,40 @@ package org.mutabilitydetector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
-import static org.mutabilitydetector.locations.Dotted.fromClass;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.collect.Sets;
 
 public class AnalysisSessionTest {
 
-    private Class<ImmutableExample> immutableClass;
+    private final Dotted immutableClass = Dotted.fromClass(ImmutableExample.class);
+    
     private AnalysisClassLoader fallbackClassLoader = testingAnalysisClassLoader();
-
-    @Before
-    public void setUp() {
-        immutableClass = ImmutableExample.class;
-    }
 
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
         IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
         IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
-        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, fromClass(immutableClass), fallbackClassLoader);
+        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, immutableClass, fallbackClassLoader);
 
         checker.runCheckers(analysisSession);
 
-        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
+        AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
     }
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
         IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-        AnalysisResult result = analysisSession.resultFor(immutableClass.getCanonicalName()).result;
+        AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
     }
     
@@ -65,7 +61,7 @@ public class AnalysisSessionTest {
     	
     	Configuration configuration = new Configuration(predefinedResults);
 		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath(configuration);
-		AnalysisResult result = analysisSession.resultFor("some.type.i.say.is.Immutable").result;
+		AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
 		
 		assertThat(result, areImmutable());
 	}

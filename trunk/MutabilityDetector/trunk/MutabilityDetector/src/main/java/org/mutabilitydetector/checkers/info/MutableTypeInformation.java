@@ -13,7 +13,7 @@ public final class MutableTypeInformation {
     }
 
     public RequestedAnalysis resultOf(Dotted dotted) {
-        return analysisSession.resultFor(dotted.asString());
+        return analysisSession.resultFor(dotted);
     }
     
 }

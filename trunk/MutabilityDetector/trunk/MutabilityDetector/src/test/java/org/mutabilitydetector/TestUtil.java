@@ -32,17 +32,18 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).result.isImmutable;
+        IsImmutable result = AnalysisSession.createWithCurrentClassPath().resultFor(Dotted.fromClass(toAnalyse)).result.isImmutable;
         return result;
     }
 
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return AnalysisSession.createWithCurrentClassPath().resultFor(toAnalyse.getName()).result;
+        return AnalysisSession.createWithCurrentClassPath().resultFor(Dotted.fromClass(toAnalyse)).result;
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {

@@ -19,10 +19,11 @@ package org.mutabilitydetector;
 import java.util.Collection;
 
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.locations.Dotted;
 
 public interface IAnalysisSession {
 
-    RequestedAnalysis resultFor(String className);
+    RequestedAnalysis resultFor(Dotted className);
 
     void addAnalysisError(AnalysisError error);
 

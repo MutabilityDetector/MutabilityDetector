@@ -21,11 +21,12 @@ import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
 
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.locations.Dotted;
 
 public final class AnalysisSessionHolder {
     private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 
     public static AnalysisResult analysisResultFor(Class<?> from) {
-        return assertionAnalysisSession.resultFor(from.getName()).result;
+        return assertionAnalysisSession.resultFor(Dotted.fromClass(from)).result;
     }
 }

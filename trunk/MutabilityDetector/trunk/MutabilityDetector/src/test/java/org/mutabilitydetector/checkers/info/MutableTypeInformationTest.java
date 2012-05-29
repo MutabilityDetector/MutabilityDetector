@@ -20,10 +20,12 @@ import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.Dotted;
 
 public class MutableTypeInformationTest {
 
-    private final CodeLocation<?> unusedCodeLocation = from(dotted("a.b.c.D"));
+    private final Dotted className = dotted("a.b.c.D");
+	private final CodeLocation<?> unusedCodeLocation = from(className);
     private final IAnalysisSession session = mock(IAnalysisSession.class);
     
     @Test
@@ -33,22 +35,22 @@ public class MutableTypeInformationTest {
         AnalysisResult result = analysisResult("a.b.c.D", 
                                                isImmutableResult, 
                                                asList(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
-        when(session.resultFor("a.b.c.D")).thenReturn(complete(result));
+        when(session.resultFor(className)).thenReturn(complete(result));
         
         MutableTypeInformation information = new MutableTypeInformation(session);
         
-        assertThat(information.resultOf(dotted("a.b.c.D")).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(dotted("a.b.c.D")).analysisComplete, is(true));
+        assertThat(information.resultOf(className).result.isImmutable, is(isImmutableResult));
+        assertThat(information.resultOf(className).analysisComplete, is(true));
     }
     
     @Test
     public void isNotImmutableWithCircularReferenceReasonWhenResultIsRequestedMultipleTimesAndAnalysisSessionHasNoResult() {
-        when(session.resultFor("a.b.c.D")).thenReturn(RequestedAnalysis.incomplete());
+        when(session.resultFor(className)).thenReturn(RequestedAnalysis.incomplete());
         
         MutableTypeInformation information = new MutableTypeInformation(session);
         
-        assertThat(information.resultOf(dotted("a.b.c.D")).analysisComplete, is(false));
-        assertThat(information.resultOf(dotted("a.b.c.D")).result, is(nullValue()));
+        assertThat(information.resultOf(className).analysisComplete, is(false));
+        assertThat(information.resultOf(className).result, is(nullValue()));
     }
     
 }

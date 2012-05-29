@@ -27,6 +27,7 @@ import org.mutabilitydetector.benchmarks.circular.AssignsItselfToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.types.EnumType;
+import org.mutabilitydetector.locations.Dotted;
 
 public class StackOverflowInAnalysisTest {
 
@@ -34,28 +35,28 @@ public class StackOverflowInAnalysisTest {
 
     @Test
     public void innerClassDoesNotCauseStackOverflowError() throws Exception {
-        session.resultFor(ImmutableExample.class.getName());
+        session.resultFor(Dotted.fromClass(ImmutableExample.class));
 
-        session.resultFor(AbstractStringContainer.class.getName());
-        session.resultFor(MutableByAssigningAbstractTypeToField.class.getName());
-        session.resultFor(AbstractStringContainer.class.getName());
+        session.resultFor(Dotted.fromClass(AbstractStringContainer.class));
+        session.resultFor(Dotted.fromClass(MutableByAssigningAbstractTypeToField.class));
+        session.resultFor(Dotted.fromClass(AbstractStringContainer.class));
     }
 
     @Test
     public void visitingEnumTypeDoesNotCauseStackOverflowError() throws Exception {
-        session.resultFor(EnumType.class.getName());
+        session.resultFor(Dotted.fromClass(EnumType.class));
     }
 
     @Test
     public void analysingThisTestDoesNotCauseStackOverflowError() throws Exception {
-        session.resultFor(this.getClass().getName());
+        session.resultFor(Dotted.fromClass(this.getClass()));
     }
 
     @Test
     public void analysingConstructorClassDoesNotCauseStackOverflow() throws Exception {
         // Constructor has a field of type 'Class'
         // Class has a field of type 'Constructor'
-        session.resultFor(Constructor.class.getName());
+        session.resultFor(Dotted.fromClass(Constructor.class));
     }
 
     @Test
@@ -65,6 +66,6 @@ public class StackOverflowInAnalysisTest {
     
     @Test public void
     HashMap$EntryDoesntCauseStackOverflow() {
-        session.resultFor(HashMap.class.getName()); 
+        session.resultFor(Dotted.fromClass(HashMap.class)); 
     }
 }

@@ -28,19 +28,20 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.Dotted;
 
 public class CircularReferenceAnalysisOfBothImmutableTest {
 
     @Test
     public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
         IAnalysisSession session = createWithCurrentClassPath();
-        session.resultFor(ImmutableClassA.class.getName());
+        session.resultFor(Dotted.fromClass(ImmutableClassA.class));
     }
 
     @Test
     public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
         IAnalysisSession session = createWithCurrentClassPath();
-        session.resultFor(CircularReferenceClasses.class.getName());
+        session.resultFor(Dotted.fromClass(CircularReferenceClasses.class));
     }
 
     @Test
