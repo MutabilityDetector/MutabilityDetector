@@ -27,7 +27,7 @@ public interface IAnalysisSession {
 
     void addAnalysisError(AnalysisError error);
 
-    void runAnalysis(Collection<String> classNames);
+    void runAnalysis(Iterable<Dotted> filtered);
 
     Collection<AnalysisResult> getResults();
 

@@ -58,7 +58,7 @@ public final class ClassLocation implements CodeLocation<ClassLocation> {
     }
 
     public static ClassLocation fromInternalName(String internalClassName) {
-        String dottedClassName = new ClassNameConvertor().dotted(internalClassName);
+        String dottedClassName = new ClassNameConverter().dotted(internalClassName);
         return new ClassLocation(dottedClassName);
     }
 

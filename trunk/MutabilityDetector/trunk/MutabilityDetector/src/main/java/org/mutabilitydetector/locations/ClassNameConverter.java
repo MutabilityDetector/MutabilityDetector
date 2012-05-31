@@ -17,31 +17,33 @@
 
 package org.mutabilitydetector.locations;
 
+import com.google.common.base.Function;
+
 /**
  * @author Graham Allan / Grundlefleck at gmail dot com
  */
-public final class ClassNameConvertor {
+public final class ClassNameConverter {
 
-    public String dotted(final String slashed) {
-        String withNoArrayDescriptor = stripArrayDescriptorFromTypeArrayDescriptor(slashed);
-        
-        return withNoArrayDescriptor
-                   .replace(".class", "")
-                   .replace("/", ".")
-                   .replace(";", "");
+	private static final ClassNameConverter CONVERTER = new ClassNameConverter();
+    public static final Function<String, String> TO_DOTTED_STRING = new Function<String, String>() {
+		@Override public String apply(String input) { return CONVERTER.dotted(input); }
+    };
+
+	public String dotted(final String slashed) {
+	    String withNoClassExtension = stripClassExtension(slashed); 
+        String withNoArrayDescriptor = stripArrayDescriptorFromReferenceArrayDescriptor(withNoClassExtension);
+        return withNoArrayDescriptor.replace("/", ".").replace(";", "");
     }
 
+    private String stripClassExtension(String resource) {
+        return resource.endsWith(".class") ? resource.replace(".class", "") : resource;
+    }
 
-    private String stripArrayDescriptorFromTypeArrayDescriptor(String slashed) {
+    private String stripArrayDescriptorFromReferenceArrayDescriptor(String slashed) {
         return slashed.contains("[L") 
             ? slashed.replace("[L", "")
                      .replace("[", "") // multi-dimensional arrays
             : slashed;
     }
-
     
-    public static void main(String[] args) throws ClassNotFoundException {
-        Class<?> forName = Class.forName("B");
-        System.out.println(forName);
-    }
 }

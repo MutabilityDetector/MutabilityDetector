@@ -56,12 +56,12 @@ public class UnhandledExceptionBuilderTest {
     
     @Test
     public void messageOfExceptionContainsUsefulInformationForDeveloper_classBeingAnalysed() throws Exception {
-        Dotted classBeingAnalysed = Dotted.dotted("this.is.the.class.being.Analysed");
+        Dotted classBeingAnalysed = Dotted.dotted("this.is.the.clazz.being.Analysed");
         MutabilityAnalysisException unhandledException = 
                 exceptionBuilder.unhandledException(unusedCause, unusedAnalysisSession, unusedChecker, classBeingAnalysed);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString("\nClass being analysed: this.is.the.class.being.Analysed\n"));
+                   containsString("\nClass being analysed: this.is.the.clazz.being.Analysed\n"));
     }
     
     @Test

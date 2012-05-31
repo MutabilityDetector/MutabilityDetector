@@ -35,22 +35,22 @@ public class ProvidedOtherClassTest {
 
     @Test
     public void matchesWhenReasonIsAssigningAbstractTypeWithGivenClassNameToField() throws Exception {
-        MutableReasonDetail reason = newMutableReasonDetail("Field can have an abstract type (some.mutable.class) assigned to it.",
+        MutableReasonDetail reason = newMutableReasonDetail("Field can have an abstract type (some.mutable.clazz) assigned to it.",
                                                              unusedClassLocation,
                                                              ABSTRACT_TYPE_TO_FIELD);
 
-        matcher = ProvidedOtherClass.provided(dotted("some.mutable.class")).isAlsoImmutable();
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.clazz")).isAlsoImmutable();
 
         assertTrue(matcher.matches(reason));
     }
     
     @Test
     public void matchesWhenReasonIsAssigningMutableTypeWithGivenClassNameToField() throws Exception {
-        MutableReasonDetail reason = newMutableReasonDetail("Field can have an abstract type (some.mutable.class) assigned to it.",
+        MutableReasonDetail reason = newMutableReasonDetail("Field can have an abstract type (some.mutable.clazz) assigned to it.",
                                                              unusedClassLocation,
                                                              MUTABLE_TYPE_TO_FIELD);
 
-        matcher = ProvidedOtherClass.provided(dotted("some.mutable.class")).isAlsoImmutable();
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.clazz")).isAlsoImmutable();
 
         assertTrue(matcher.matches(reason));
     }

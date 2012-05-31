@@ -20,28 +20,40 @@ package org.mutabilitydetector;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mutabilitydetector.locations.ClassNameConvertor;
+import org.mutabilitydetector.locations.ClassNameConverter;
 
 public class ClassNameConverterTest {
 
-    private static final ClassNameConvertor CONVERTOR = new ClassNameConvertor();
+    private static final ClassNameConverter CONVERTER = new ClassNameConverter();
 
     @Test
     public void dottedClassNamesRemainTheSame() throws Exception {
         String dotted = "some.dotted.ClassName";
-        assertEquals(dotted, CONVERTOR.dotted(dotted));
+        assertEquals(dotted, CONVERTER.dotted(dotted));
     }
 
     @Test
     public void slashedClassNameIsReturnedDotted() throws Exception {
         String slashed = "some/slashed/ClassName";
-        assertEquals("some.slashed.ClassName", CONVERTOR.dotted(slashed));
+        assertEquals("some.slashed.ClassName", CONVERTER.dotted(slashed));
     }
 
     @Test
     public void dotClassSuffixIsRemoved() throws Exception {
         String dotClass = "some/slashed/ClassName.class";
-        assertEquals("some.slashed.ClassName", CONVERTOR.dotted(dotClass));
+        assertEquals("some.slashed.ClassName", CONVERTER.dotted(dotClass));
+    }
+    
+    @Test
+	public void doesNotReplaceTheWordClassIfItAppearsInMiddleOfWord() throws Exception {
+    	String containsWordClass = "some/slashed/packagewithwordclassinit/ClassName.class";
+    	assertEquals("some.slashed.packagewithwordclassinit.ClassName", CONVERTER.dotted(containsWordClass));
+	}
+
+    @Test
+    public void doesNotReplaceTheWordClassIfItAppearsAtStartOfPackageName() throws Exception {
+    	String containsWordClass = "com/sun/org/apache/bcel/internal/classfile/AccessFlags.class";
+    	assertEquals("com.sun.org.apache.bcel.internal.classfile.AccessFlags", CONVERTER.dotted(containsWordClass));
     }
 
 }

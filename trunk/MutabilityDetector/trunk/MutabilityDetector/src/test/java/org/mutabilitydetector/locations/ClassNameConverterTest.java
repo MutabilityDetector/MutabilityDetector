@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ClassNameConverterTest {
 
-    private final ClassNameConvertor converter = new ClassNameConvertor();
+    private final ClassNameConverter converter = new ClassNameConverter();
     
     @Test
     public void canExtractTypeNameFromInternalDescriptorOfArrayReference() throws Exception {

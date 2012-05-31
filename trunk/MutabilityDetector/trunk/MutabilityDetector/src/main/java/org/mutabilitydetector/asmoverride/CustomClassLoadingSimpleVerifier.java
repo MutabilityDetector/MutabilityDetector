@@ -17,14 +17,14 @@
 package org.mutabilitydetector.asmoverride;
 
 import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.locations.ClassNameConvertor;
+import org.mutabilitydetector.locations.ClassNameConverter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
     private final AnalysisClassLoader classLoader;
-    private final ClassNameConvertor classNameConverter = new ClassNameConvertor();
+    private final ClassNameConverter classNameConverter = new ClassNameConverter();
 
     public CustomClassLoadingSimpleVerifier(AnalysisClassLoader fallbackClassLoader) {
         classLoader = fallbackClassLoader;

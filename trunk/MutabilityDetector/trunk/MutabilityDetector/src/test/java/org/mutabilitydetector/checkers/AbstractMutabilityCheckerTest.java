@@ -42,10 +42,10 @@ public class AbstractMutabilityCheckerTest {
 
     @Test
     public void providesADescriptiveReasonAfterVisitingAnAnalysisException() {
-        defaultChecker.visit(0, 0, "some/class/ToAnalyse.class", null, null, null);
+        defaultChecker.visit(0, 0, "some/clazz/ToAnalyse.class", null, null, null);
         defaultChecker.visitAnalysisException(new RuntimeException());
         MutableReasonDetail reason = newMutableReasonDetail("Encountered an unhandled error in analysis.",
-                ClassLocation.fromInternalName("some/class/ToAnalyse.class"),
+                ClassLocation.fromInternalName("some/clazz/ToAnalyse.class"),
                 MutabilityReason.CANNOT_ANALYSE);
         assertThat(defaultChecker.reasons(), contains(is(Matchers.equalTo(reason))));
     }

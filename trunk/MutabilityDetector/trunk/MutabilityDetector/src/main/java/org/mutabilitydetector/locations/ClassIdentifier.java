@@ -40,7 +40,7 @@ public final class ClassIdentifier {
 
     public static ClassIdentifier forClass(Slashed className) {
         String slashed = className.asString();
-        String dottedString = new ClassNameConvertor().dotted(slashed);
+        String dottedString = new ClassNameConverter().dotted(slashed);
 
         return forClass(dotted(dottedString));
     }

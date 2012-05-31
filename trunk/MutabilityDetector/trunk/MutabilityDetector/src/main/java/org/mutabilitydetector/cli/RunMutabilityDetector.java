@@ -18,30 +18,31 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.base.Predicates.containsPattern;
+import static java.util.Arrays.asList;
 import static org.mutabilitydetector.AnalysisSession.createWithGivenClassPath;
+import static org.mutabilitydetector.locations.ClassNameConverter.TO_DOTTED_STRING;
+import static org.mutabilitydetector.locations.Dotted.TO_DOTTED;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 
 import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.CheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
-import org.mutabilitydetector.locations.ClassNameConvertor;
+import org.mutabilitydetector.locations.Dotted;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.FluentIterable;
 
 /**
  * Runs an analysis configured by the given classpath and options.
@@ -85,7 +86,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                                                             fallbackClassLoader,
                                                             Configuration.JDK);
         
-        List<String> filtered = getNamesOfClassesToAnalyse(options, findResources);
+        List<Dotted> filtered = new ClassNamesToAnalyse().asDotted(options, findResources);
         
         session.runAnalysis(filtered);
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
@@ -109,19 +110,16 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
     }
 
-    private static List<String> getNamesOfClassesToAnalyse(BatchAnalysisOptions options, String[] findResources) {
-        List<String> filtered = newArrayList();
-        List<String> classNames = newArrayList();
-        classNames.addAll(Arrays.asList(findResources));
-        String matcher = options.match();
-        for (String className : classNames) {
-            String dottedClassName = new ClassNameConvertor().dotted(className);
-            if (Pattern.matches(matcher, dottedClassName)) {
-                filtered.add(className);
-            }
-        }
-        return ImmutableList.<String>copyOf(filtered);
-    }
+	public static class ClassNamesToAnalyse {
+
+		public List<Dotted> asDotted(BatchAnalysisOptions options, String[] findResources) {
+			return FluentIterable.from(asList(findResources))
+					.transform(TO_DOTTED_STRING)
+					.filter(containsPattern(options.match()))
+					.transform(TO_DOTTED).toImmutableList();
+		}
+
+	}
 
     public static void main(String[] args) {
         BatchAnalysisOptions options = createOptionsFromArgs(args);

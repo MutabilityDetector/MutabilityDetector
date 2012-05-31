@@ -1,0 +1,3 @@
+Running command: java -jar ./target/MutabilityDetector-0.9-SNAPSHOT.jar --verbose -cp /home/graham/dev/jdks/jdk1.7.0_06//jre/lib/rt.jar
+Started:		Tue May 29 22:56:03 BST 2012
+Ended:			Tue May 29 22:56:21 BST 2012

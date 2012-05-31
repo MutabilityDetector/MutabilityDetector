@@ -125,13 +125,9 @@ public final class AnalysisSession implements IAnalysisSession {
     }
 
     @Override
-    public void runAnalysis(Collection<String> classNames) {
-        for (String resource : classNames) {
-            resource = resource.replace("/", ".");
-            if (resource.endsWith(".class")) {
-                resource = resource.substring(0, resource.lastIndexOf(".class"));
-            }
-            requestAnalysis(dotted(resource));
+    public void runAnalysis(Iterable<Dotted> classNames) {
+        for (Dotted className : classNames) {
+            requestAnalysis(className);
         }
     }
 
@@ -143,7 +139,7 @@ public final class AnalysisSession implements IAnalysisSession {
 
     @Override
     public void addAnalysisError(AnalysisError error) {
-        requestedAnalysis.remove(error.onClass);
+        requestedAnalysis.remove(dotted(error.onClass));
         analysisErrors.add(error);
     }
 
