@@ -25,6 +25,10 @@ public final class Configuration {
 	public static final Configuration JDK = new Configuration(
 			new ImmutableSet.Builder<AnalysisResult>()
 			.add(definitelyImmutable("java.lang.String"))
+			.add(definitelyImmutable("java.lang.Integer"))
+			.add(definitelyImmutable("java.lang.Class"))
+			.add(definitelyImmutable("java.math.BigDecimal"))
+			.add(definitelyImmutable("java.math.BigInteger"))
 			.build()
 	);
 	

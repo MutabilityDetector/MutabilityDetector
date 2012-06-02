@@ -18,7 +18,7 @@
 package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertSame;
-import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;

@@ -1,14 +1,14 @@
 package org.mutabilitydetector.checkers.info;
 
-import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class MutableTypeInformation {
 
-    private final IAnalysisSession analysisSession;
+    private final AnalysisSession analysisSession;
 
-    public MutableTypeInformation(IAnalysisSession analysisSession) {
+    public MutableTypeInformation(AnalysisSession analysisSession) {
         this.analysisSession = analysisSession;
     }
 

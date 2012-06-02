@@ -16,146 +16,53 @@
  */
 package org.mutabilitydetector;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.locations.Dotted;
 
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import com.google.common.base.Optional;
+public interface AnalysisSession {
 
-public final class AnalysisSession implements IAnalysisSession {
+    RequestedAnalysis resultFor(Dotted className);
 
-    private final Map<Dotted, AnalysisResult> analysedClasses = newHashMap();
-    private final List<Dotted> requestedAnalysis = newArrayList();
-    private final List<AnalysisError> analysisErrors = newArrayList();
+    void addAnalysisError(AnalysisError error);
 
-    private final IMutabilityCheckerFactory checkerFactory;
-    private final ICheckerRunnerFactory checkerRunnerFactory;
-    private final AnalysisDatabase database;
-    private final AnalysisClassLoader analysisClassLoader;
-	private final Configuration configuration;
+    void runAnalysis(Iterable<Dotted> filtered);
 
-    private AnalysisSession(ClassPath classpath, 
-                             ICheckerRunnerFactory checkerRunnerFactory,
-                             IMutabilityCheckerFactory checkerFactory, 
-                             AnalysisClassLoader analysisClassLoader, 
-                             Configuration configuration) {
-        this.checkerRunnerFactory = checkerRunnerFactory;
-        this.checkerFactory = checkerFactory;
-        AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
-        this.database = newAnalysisDatabase(sessionCheckerRunner);
-        this.analysisClassLoader = analysisClassLoader;
-        this.configuration = configuration;
-    }
+    Collection<AnalysisResult> getResults();
 
-    public static IAnalysisSession createWithGivenClassPath(ClassPath classpath, 
-                                                              ICheckerRunnerFactory checkerRunnerFactory,
-                                                              IMutabilityCheckerFactory checkerFactory, 
-                                                              AnalysisClassLoader analysisClassLoader,
-                                                              Configuration configuration) {
-        return createWithGivenClassPath(classpath, configuration, analysisClassLoader);
-    }
+    Collection<AnalysisError> getErrors();
 
-    public static IAnalysisSession createWithCurrentClassPath() {
-        return createWithCurrentClassPath(Configuration.NO_CONFIGURATION);
+    AnalysisDatabase analysisDatabase();
+
+    public static final class AnalysisError {
+        public final String checkerName;
+        public final String description;
+        public final String onClass;
+
+        public AnalysisError(String onClass, String checkerName, String errorDescription) {
+            this.onClass = onClass;
+            this.checkerName = checkerName;
+            this.description = errorDescription;
+        }
     }
     
-	public static IAnalysisSession createWithCurrentClassPath(Configuration configuration) {
-		ClassPath classpath = new ClassPathFactory().createFromJVM();
-        return createWithGivenClassPath(classpath, configuration, new PassthroughAnalysisClassLoader());
-	}
-
-	private static IAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AnalysisClassLoader analysisClassLoader) {
-		return new AnalysisSession(classpath, 
-                                    new CheckerRunnerFactory(classpath), 
-                                    new MutabilityCheckerFactory(), 
-                                    analysisClassLoader,
-                                    configuration);
-	}
-
-    @Override
-    public RequestedAnalysis resultFor(Dotted className) {
-        AnalysisResult resultForClass = requestAnalysis(className);
-        return resultForClass == null 
-                ? RequestedAnalysis.incomplete()
-                : RequestedAnalysis.complete(addAnalysisResult(resultForClass));
-    }
-
-    private AnalysisResult requestAnalysis(Dotted className) {
-    	
-    	Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
-    	if (hardcodedResult.isPresent()) {
-    		return hardcodedResult.get();
-    	}
-    	
-        if (isRepeatedRequestFor(className)) {
-            return null;
+    public static final class RequestedAnalysis {
+        public final AnalysisResult result;
+        public final boolean analysisComplete;
+        
+        private RequestedAnalysis(AnalysisResult result) {
+            this.result = result;
+            this.analysisComplete = result != null;
         }
         
-        if (resultHasAlreadyBeenGenerated(className)) {
-            return analysedClasses.get(className);
+        public static RequestedAnalysis incomplete() {
+            return new RequestedAnalysis(null);
         }
         
-        requestedAnalysis.add(className);
-        AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
-                                                              checkerRunnerFactory,
-                                                              className, 
-                                                              analysisClassLoader);
-        return allChecksRunner.runCheckers(this);
-    }
-
-	private boolean isRepeatedRequestFor(Dotted className) {
-        return requestedAnalysis.contains(className);
-    }
-
-    private boolean resultHasAlreadyBeenGenerated(Dotted className) {
-        return analysedClasses.containsKey(className);
-    }
-
-    @Override
-    public void runAnalysis(Iterable<Dotted> classNames) {
-        for (Dotted className : classNames) {
-            requestAnalysis(className);
+        public static RequestedAnalysis complete(AnalysisResult result) {
+            return new RequestedAnalysis(result);
         }
-    }
-
-    private AnalysisResult addAnalysisResult(AnalysisResult result) {
-        requestedAnalysis.remove(dotted(result.dottedClassName));
-        analysedClasses.put(dotted(result.dottedClassName), result);
-        return result;
-    }
-
-    @Override
-    public void addAnalysisError(AnalysisError error) {
-        requestedAnalysis.remove(dotted(error.onClass));
-        analysisErrors.add(error);
-    }
-
-    @Override
-    public Collection<AnalysisResult> getResults() {
-        return Collections.unmodifiableCollection(analysedClasses.values());
-    }
-
-    @Override
-    public Collection<AnalysisError> getErrors() {
-        return Collections.unmodifiableCollection(analysisErrors);
-    }
-
-    @Override
-    public AnalysisDatabase analysisDatabase() {
-        return database;
     }
 
 }

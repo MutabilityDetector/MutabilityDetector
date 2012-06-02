@@ -16,14 +16,14 @@
  */
 package org.mutabilitydetector.benchmarks.circular;
 
-import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Test;
-import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -34,19 +34,19 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 
     @Test
     public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        IAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(ImmutableClassA.class));
     }
 
     @Test
     public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        IAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(CircularReferenceClasses.class));
     }
 
     @Test
     public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
-        IAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(information, new MutableTypeInformation(session), testingAnalysisClassLoader());
 

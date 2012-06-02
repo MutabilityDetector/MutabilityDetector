@@ -16,22 +16,8 @@
  */
 package org.mutabilitydetector;
 
-import javax.annotation.concurrent.Immutable;
+public interface CheckerRunnerFactory {
 
-import com.google.classpath.ClassPath;
-
-@Immutable
-public final class CheckerRunnerFactory implements ICheckerRunnerFactory {
-
-    private final ClassPath classpath;
-
-    public CheckerRunnerFactory(ClassPath classpath) {
-        this.classpath = classpath;
-    }
-
-    @Override
-    public CheckerRunner createRunner() {
-        return CheckerRunner.createWithClasspath(classpath);
-    }
+    CheckerRunner createRunner();
 
 }

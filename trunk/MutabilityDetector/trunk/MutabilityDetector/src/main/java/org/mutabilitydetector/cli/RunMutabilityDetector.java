@@ -18,11 +18,7 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static com.google.common.base.Predicates.containsPattern;
-import static java.util.Arrays.asList;
-import static org.mutabilitydetector.AnalysisSession.createWithGivenClassPath;
-import static org.mutabilitydetector.locations.ClassNameConverter.TO_DOTTED_STRING;
-import static org.mutabilitydetector.locations.Dotted.TO_DOTTED;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -33,16 +29,15 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.CheckerRunnerFactory;
+import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
-import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
-import com.google.common.collect.FluentIterable;
 
 /**
  * Runs an analysis configured by the given classpath and options.
@@ -52,10 +47,12 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
 
     private final ClassPath classpath;
     private final BatchAnalysisOptions options;
+    private final NamesFromClassResources namesFromClassResources;
 
-    public RunMutabilityDetector(ClassPath classpath, BatchAnalysisOptions options) {
+    public RunMutabilityDetector(ClassPath classpath, BatchAnalysisOptions options, NamesFromClassResources namesFromClassResources) {
         this.classpath = classpath;
         this.options = options;
+        this.namesFromClassResources = namesFromClassResources;
     }
 
     /**
@@ -80,13 +77,13 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
-        IAnalysisSession session = createWithGivenClassPath(classpath, 
-                                                            new CheckerRunnerFactory(classpath), 
+        AnalysisSession session = createWithGivenClassPath(classpath, 
+                                                            new ClassPathBasedCheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
                                                             fallbackClassLoader,
-                                                            Configuration.JDK);
+                                                            Configuration.NO_CONFIGURATION);
         
-        List<Dotted> filtered = new ClassNamesToAnalyse().asDotted(options, findResources);
+        List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
         session.runAnalysis(filtered);
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
@@ -95,7 +92,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private URLClassLoader getCustomClassLoader() {
-        String[] classPathUrls = options.classpath().split(":");
+        String[] classPathUrls = options.classpath().split(System.getProperty("path.separator"));
 
         List<URL> urlList = new ArrayList<URL>(classPathUrls.length);
 
@@ -110,22 +107,11 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
     }
 
-	public static class ClassNamesToAnalyse {
-
-		public List<Dotted> asDotted(BatchAnalysisOptions options, String[] findResources) {
-			return FluentIterable.from(asList(findResources))
-					.transform(TO_DOTTED_STRING)
-					.filter(containsPattern(options.match()))
-					.transform(TO_DOTTED).toImmutableList();
-		}
-
-	}
-
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         BatchAnalysisOptions options = createOptionsFromArgs(args);
         ClassPath classpath = new ClassPathFactory().createFromPath(options.classpath());
 
-        new RunMutabilityDetector(classpath, options).run();
+        new RunMutabilityDetector(classpath, options, new NamesFromClassResources(options.match())).run();
     }
 
     private static BatchAnalysisOptions createOptionsFromArgs(String[] args) {

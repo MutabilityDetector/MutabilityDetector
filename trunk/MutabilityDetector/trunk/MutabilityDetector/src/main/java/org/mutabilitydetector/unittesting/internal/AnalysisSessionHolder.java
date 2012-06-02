@@ -17,14 +17,14 @@
 
 package org.mutabilitydetector.unittesting.internal;
 
-import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class AnalysisSessionHolder {
-    private static final IAnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
+    private static final AnalysisSession assertionAnalysisSession = createWithCurrentClassPath();
 
     public static AnalysisResult analysisResultFor(Class<?> from) {
         return assertionAnalysisSession.resultFor(Dotted.fromClass(from)).result;

@@ -19,7 +19,7 @@ package org.mutabilitydetector.benchmarks.settermethod;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.AnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
@@ -38,7 +38,7 @@ import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsBoolean;
@@ -66,7 +66,7 @@ public class SetterMethodCheckerTest {
 
     private SetterMethodChecker checker;
     private CheckerRunner checkerRunner;
-    private IAnalysisSession analysisSession;
+    private AnalysisSession analysisSession;
     private PrivateMethodInvocationInformation info;
 
     @Before

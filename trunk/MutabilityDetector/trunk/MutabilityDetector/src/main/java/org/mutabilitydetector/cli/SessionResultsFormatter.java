@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.AnalysisError;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.AnalysisSession.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
@@ -48,7 +48,7 @@ public class SessionResultsFormatter {
         this.reportMode = options.reportMode();
     }
 
-    public StringBuilder format(IAnalysisSession completedSession) {
+    public StringBuilder format(AnalysisSession completedSession) {
         StringBuilder output = new StringBuilder();
 
         classesToReport = getClassesToReport();
@@ -65,7 +65,7 @@ public class SessionResultsFormatter {
                 : Collections.<String> emptySet();
     }
 
-    private void appendErrors(IAnalysisSession completedSession, StringBuilder output) {
+    private void appendErrors(AnalysisSession completedSession, StringBuilder output) {
 
         if (!options.reportErrors()) return;
 
@@ -81,7 +81,7 @@ public class SessionResultsFormatter {
 
     }
 
-    private void appendAnalysisResults(IAnalysisSession completedSession, StringBuilder output) {
+    private void appendAnalysisResults(AnalysisSession completedSession, StringBuilder output) {
         List<AnalysisResult> sortedList = sortByClassname(completedSession.getResults());
 
         for (AnalysisResult result : sortedList) {

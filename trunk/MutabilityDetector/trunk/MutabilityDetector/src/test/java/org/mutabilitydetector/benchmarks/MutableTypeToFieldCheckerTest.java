@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.IAnalysisSession.RequestedAnalysis.complete;
+import static org.mutabilitydetector.AnalysisSession.RequestedAnalysis.complete;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestMatchers.hasNoReasons;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -38,8 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession;
-import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableButHasUnmodifiedArrayAsField;
@@ -57,7 +57,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
     
-    private IAnalysisSession session;
+    private AnalysisSession session;
     private MutableTypeToFieldChecker checker;
     private AnalysisResult result;
     private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
@@ -66,7 +66,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Before
     public void setUp() {
-        session = mock(IAnalysisSession.class);
+        session = mock(AnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checker = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session), testingAnalysisClassLoader());
     }

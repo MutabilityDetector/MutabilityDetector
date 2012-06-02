@@ -29,12 +29,12 @@ public final class AllChecksRunner {
 
     private final Dotted toAnalyse;
     private final Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
-    private final IMutabilityCheckerFactory factory;
-    private final ICheckerRunnerFactory checkerRunnerFactory;
+    private final MutabilityCheckerFactory factory;
+    private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisClassLoader analysisClassLoader;
 
-    public AllChecksRunner(IMutabilityCheckerFactory checkerFactory,
-            ICheckerRunnerFactory checkerRunnerFactory,
+    public AllChecksRunner(MutabilityCheckerFactory checkerFactory,
+            CheckerRunnerFactory checkerRunnerFactory,
             Dotted toAnalyse, 
             AnalysisClassLoader analysisClassLoader) {
         this.factory = checkerFactory;
@@ -44,10 +44,10 @@ public final class AllChecksRunner {
 
     }
 
-    public AnalysisResult runCheckers(IAnalysisSession analysisSession) {
+    public AnalysisResult runCheckers(AnalysisSession analysisSession) {
         Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
 
-        Collection<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, analysisClassLoader);
+        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, analysisClassLoader);
 
         for (AsmMutabilityChecker checker : checkers) {
             checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);

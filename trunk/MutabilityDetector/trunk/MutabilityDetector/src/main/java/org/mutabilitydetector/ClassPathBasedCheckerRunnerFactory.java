@@ -16,12 +16,22 @@
  */
 package org.mutabilitydetector;
 
-import java.util.Collection;
+import javax.annotation.concurrent.Immutable;
 
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import com.google.classpath.ClassPath;
 
-public interface IMutabilityCheckerFactory {
+@Immutable
+public final class ClassPathBasedCheckerRunnerFactory implements CheckerRunnerFactory {
 
-    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader);
+    private final ClassPath classpath;
+
+    public ClassPathBasedCheckerRunnerFactory(ClassPath classpath) {
+        this.classpath = classpath;
+    }
+
+    @Override
+    public CheckerRunner createRunner() {
+        return CheckerRunner.createWithClasspath(classpath);
+    }
 
 }

@@ -21,7 +21,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.IAnalysisSession.RequestedAnalysis;
+import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;

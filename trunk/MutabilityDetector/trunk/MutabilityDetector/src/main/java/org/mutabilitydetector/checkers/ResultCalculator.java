@@ -52,8 +52,7 @@ public final class ResultCalculator {
         if (!results.containsKey(resultType)) { return valueOf(0); }
 
         Integer numOfResultType = valueOf(results.get(resultType));
-        return (numOfResultType != null) 
-                ? numOfResultType.intValue()
-                        : valueOf(0);
+        
+        return (numOfResultType != null) ? numOfResultType.intValue() : valueOf(0);
     }
 }

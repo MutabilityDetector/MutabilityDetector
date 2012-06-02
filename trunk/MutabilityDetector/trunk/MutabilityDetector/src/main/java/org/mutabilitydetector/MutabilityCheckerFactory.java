@@ -36,10 +36,9 @@ import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 
-public final class MutabilityCheckerFactory implements IMutabilityCheckerFactory {
+public final class MutabilityCheckerFactory {
 
-    @Override
-    public Collection<AsmMutabilityChecker> createInstances(IAnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader) {
+    public Iterable<AsmMutabilityChecker> createInstances(AnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader) {
         AnalysisDatabase database = analysisSession.analysisDatabase();
 
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();

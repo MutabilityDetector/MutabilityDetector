@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.IAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -20,7 +20,7 @@ public class UnhandledExceptionBuilderTest {
     
     
     private final Throwable unusedCause = new NullPointerException();
-    private final IAnalysisSession unusedAnalysisSession = mock(IAnalysisSession.class);
+    private final AnalysisSession unusedAnalysisSession = mock(AnalysisSession.class);
     private final AsmMutabilityChecker unusedChecker = mock(AsmMutabilityChecker.class);
     private final Dotted unusedClass = Dotted.dotted("unus.ed");
     
@@ -66,7 +66,7 @@ public class UnhandledExceptionBuilderTest {
     
     @Test
     public void messageOfExceptionContainsUsefulInformationForDeveloper_fromAnalysisSession() throws Exception {
-        IAnalysisSession analysisSession = mock(IAnalysisSession.class);
+        AnalysisSession analysisSession = mock(AnalysisSession.class);
         
         AnalysisResult first = AnalysisResult.definitelyImmutable("a.b.c");
         AnalysisResult second = AnalysisResult.definitelyImmutable("e.f.g");

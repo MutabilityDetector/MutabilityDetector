@@ -37,9 +37,9 @@ public class AnalysisSessionTest {
 
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
-        IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
-        IMutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
-        ICheckerRunnerFactory checkerRunnerFactory = new CheckerRunnerFactory(null);
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
+        CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, immutableClass, fallbackClassLoader);
 
         checker.runCheckers(analysisSession);
@@ -50,7 +50,7 @@ public class AnalysisSessionTest {
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-        IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath();
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
     }
@@ -60,7 +60,7 @@ public class AnalysisSessionTest {
     	Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
     	
     	Configuration configuration = new Configuration(predefinedResults);
-		IAnalysisSession analysisSession = AnalysisSession.createWithCurrentClassPath(configuration);
+		AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration);
 		AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
 		
 		assertThat(result, areImmutable());

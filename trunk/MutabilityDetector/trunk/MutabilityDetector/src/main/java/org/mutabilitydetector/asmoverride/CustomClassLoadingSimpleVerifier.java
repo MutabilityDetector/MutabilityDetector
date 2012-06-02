@@ -27,7 +27,7 @@ public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
     private final ClassNameConverter classNameConverter = new ClassNameConverter();
 
     public CustomClassLoadingSimpleVerifier(AnalysisClassLoader fallbackClassLoader) {
-        classLoader = fallbackClassLoader;
+        this.classLoader = fallbackClassLoader;
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.mutabilitydetector;
 
 import org.mutabilitydetector.cli.BatchAnalysisOptions;
 import org.mutabilitydetector.cli.CommandLineOptions;
+import org.mutabilitydetector.cli.NamesFromClassResources;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
 
 import com.google.classpath.ClassPath;
@@ -35,7 +36,7 @@ public class CheckSomeClass {
         ClassPath cp = new ClassPathFactory().createFromJVM();
         String match = toAnalyse.getName().replace("$", "\\$");
         BatchAnalysisOptions options = new CommandLineOptions(System.err, "-verbose", "-match", match);
-        new RunMutabilityDetector(cp, options).run();
+        new RunMutabilityDetector(cp, options, new NamesFromClassResources(options.match())).run();
     }
 
     public class IAmImmutable {

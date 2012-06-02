@@ -21,7 +21,7 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.mutabilitydetector.IAnalysisSession.AnalysisError;
+import org.mutabilitydetector.AnalysisSession.AnalysisError;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
@@ -48,7 +48,7 @@ public final class CheckerRunner {
         return createWithClasspath(new ClassPathFactory().createFromJVM());
     }
 
-    public void run(IAnalysisSession analysisSession, AsmMutabilityChecker checker, Dotted className) {
+    public void run(AnalysisSession analysisSession, AsmMutabilityChecker checker, Dotted className) {
         try {
             try {
                 cr = new ClassReader(className.asString());
@@ -74,7 +74,7 @@ public final class CheckerRunner {
         cr.accept(checker, 0);
     }
 
-    private void handleException(IAnalysisSession analysisSession,
+    private void handleException(AnalysisSession analysisSession,
             AsmMutabilityChecker checker,
             String dottedClassPath,
             Throwable e) {

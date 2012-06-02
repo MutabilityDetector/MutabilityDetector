@@ -20,8 +20,8 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.IAnalysisSession;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.circular.AssignsItselfToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
@@ -31,7 +31,7 @@ import org.mutabilitydetector.locations.Dotted;
 
 public class StackOverflowInAnalysisTest {
 
-    private final IAnalysisSession session = AnalysisSession.createWithCurrentClassPath();
+    private final AnalysisSession session = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
 
     @Test
     public void innerClassDoesNotCauseStackOverflowError() throws Exception {

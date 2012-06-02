@@ -34,13 +34,14 @@ public class AnalysingRtJar {
             // suppress output in tests
         }
     });
+    private final NamesFromClassResources namesFromClassResources = new NamesFromClassResources(".*");
 
     @Ignore
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
-        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options, namesFromClassResources).run();
     }
     
     @Ignore
@@ -48,7 +49,7 @@ public class AnalysingRtJar {
     public void checkExceptionIsNotThrownRunOnSelfJar() {
         String selfJarPath = System.getProperty("user.home") + "/.m2/repository/joda-time/joda-time/2.0/joda-time-2.0.jar";
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-v", "-cp", selfJarPath);
-        new RunMutabilityDetector(new ClassPathFactory().createFromPath(selfJarPath), options).run();
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(selfJarPath), options, namesFromClassResources).run();
     }
     
     @Ignore
@@ -56,7 +57,7 @@ public class AnalysingRtJar {
     public void checkNullPointerExceptionIsNotThrownOnAbritaryCodebase() {
         String rtJarPath = "...";
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
-        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options).run();
+        new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options, namesFromClassResources).run();
     }
     
 }
