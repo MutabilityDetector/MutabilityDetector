@@ -31,8 +31,13 @@ public final class ClassNameConverter {
 
 	public String dotted(final String slashed) {
 	    String withNoClassExtension = stripClassExtension(slashed); 
-        String withNoArrayDescriptor = stripArrayDescriptorFromReferenceArrayDescriptor(withNoClassExtension);
+	    String forceAsSingleDimensionalArray = stripMultidimensionalArrayDescriptor(withNoClassExtension);
+        String withNoArrayDescriptor = stripArrayDescriptorFromReferenceArrayDescriptor(forceAsSingleDimensionalArray);
         return withNoArrayDescriptor.replace("/", ".").replace(";", "");
+    }
+
+    private String stripMultidimensionalArrayDescriptor(String mulidimensionalArray) {
+        return mulidimensionalArray.replaceAll("\\[+", "[");
     }
 
     private String stripClassExtension(String resource) {
@@ -40,10 +45,7 @@ public final class ClassNameConverter {
     }
 
     private String stripArrayDescriptorFromReferenceArrayDescriptor(String slashed) {
-        return slashed.contains("[L") 
-            ? slashed.replace("[L", "")
-                     .replace("[", "") // multi-dimensional arrays
-            : slashed;
+        return slashed.replace("[L", "");
     }
     
 }

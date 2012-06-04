@@ -33,17 +33,17 @@ public class URLFallbackClassLoader implements AnalysisClassLoader {
     }
 
     @Override
-    public Class<?> getClass(String dottedClassPath) throws ClassNotFoundException {
-        if (classCache.containsKey(dottedClassPath)) { return classCache.get(dottedClassPath); }
+    public Class<?> getClass(String dottedClass) throws ClassNotFoundException {
+        if (classCache.containsKey(dottedClass)) { return classCache.get(dottedClass); }
 
         Class<?> toReturn;
         try {
-            toReturn = fromURLClassLoader(dottedClassPath);
+            toReturn = fromURLClassLoader(dottedClass);
         } catch (ClassNotFoundException e) {
-            toReturn = fromJVMClassLoader(dottedClassPath);
+            toReturn = fromJVMClassLoader(dottedClass);
         }
 
-        classCache.put(dottedClassPath, toReturn);
+        classCache.put(dottedClass, toReturn);
         return toReturn;
     }
 
