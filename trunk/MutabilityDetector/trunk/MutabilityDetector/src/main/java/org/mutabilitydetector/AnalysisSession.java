@@ -24,11 +24,9 @@ public interface AnalysisSession {
     RequestedAnalysis resultFor(Dotted className);
 
     void addAnalysisError(AnalysisError error);
-
     void runAnalysis(Iterable<Dotted> filtered);
 
     Iterable<AnalysisResult> getResults();
-
     Iterable<AnalysisError> getErrors();
 
     AnalysisDatabase analysisDatabase();

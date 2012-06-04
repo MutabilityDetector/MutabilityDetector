@@ -8,6 +8,9 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
@@ -18,17 +21,21 @@ public class UnhandledExceptionBuilderTest {
 
     private final UnhandledExceptionBuilder exceptionBuilder = new UnhandledExceptionBuilder();
     
-    
     private final Throwable unusedCause = new NullPointerException();
-    private final AnalysisSession unusedAnalysisSession = mock(AnalysisSession.class);
     private final AsmMutabilityChecker unusedChecker = mock(AsmMutabilityChecker.class);
     private final Dotted unusedClass = Dotted.dotted("unus.ed");
+    
+    private AnalysisSession analysisSession = mock(AnalysisSession.class);
+
+    @Before public void setUp() {
+        when(analysisSession.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+    }
     
     @Test
     public void exceptionCreatedHasGivenExceptionAsCause() throws Exception {
         Exception cause = new NullPointerException();
         MutabilityAnalysisException unhandledException = 
-                exceptionBuilder.unhandledException(cause, unusedAnalysisSession, unusedChecker, unusedClass);
+                exceptionBuilder.unhandledException(cause, analysisSession, unusedChecker, unusedClass);
         
         assertSame(cause, unhandledException.getCause());
     }
@@ -36,7 +43,7 @@ public class UnhandledExceptionBuilderTest {
     @Test
     public void messageOfExceptionContainsUsefulInformationForEndUser() throws Exception {
         MutabilityAnalysisException unhandledException = 
-                exceptionBuilder.unhandledException(unusedCause, unusedAnalysisSession, unusedChecker, unusedClass);
+                exceptionBuilder.unhandledException(unusedCause, analysisSession, unusedChecker, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
                    allOf(containsString("sorry"),
@@ -48,7 +55,7 @@ public class UnhandledExceptionBuilderTest {
     public void messageOfExceptionContainsUsefulInformationForDeveloper_whichCheckerFailed() throws Exception {
         AsmMutabilityChecker checkerThatFailed = new NullMutabilityChecker();
         MutabilityAnalysisException unhandledException = 
-                exceptionBuilder.unhandledException(unusedCause, unusedAnalysisSession, checkerThatFailed, unusedClass);
+                exceptionBuilder.unhandledException(unusedCause, analysisSession, checkerThatFailed, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
                    containsString("\nChecker that failed: NullMutabilityChecker\n"));
@@ -58,7 +65,7 @@ public class UnhandledExceptionBuilderTest {
     public void messageOfExceptionContainsUsefulInformationForDeveloper_classBeingAnalysed() throws Exception {
         Dotted classBeingAnalysed = Dotted.dotted("this.is.the.clazz.being.Analysed");
         MutabilityAnalysisException unhandledException = 
-                exceptionBuilder.unhandledException(unusedCause, unusedAnalysisSession, unusedChecker, classBeingAnalysed);
+                exceptionBuilder.unhandledException(unusedCause, analysisSession, unusedChecker, classBeingAnalysed);
         
         assertThat(unhandledException.getMessage(), 
                    containsString("\nClass being analysed: this.is.the.clazz.being.Analysed\n"));
@@ -66,7 +73,7 @@ public class UnhandledExceptionBuilderTest {
     
     @Test
     public void messageOfExceptionContainsUsefulInformationForDeveloper_fromAnalysisSession() throws Exception {
-        AnalysisSession analysisSession = mock(AnalysisSession.class);
+        analysisSession = mock(AnalysisSession.class);
         
         AnalysisResult first = AnalysisResult.definitelyImmutable("a.b.c");
         AnalysisResult second = AnalysisResult.definitelyImmutable("e.f.g");
