@@ -17,6 +17,9 @@
 
 package org.mutabilitydetector.locations;
 
+import static com.google.common.collect.FluentIterable.from;
+import static java.util.Collections.singleton;
+
 import com.google.common.base.Function;
 
 /**
@@ -29,23 +32,34 @@ public final class ClassNameConverter {
 		@Override public String apply(String input) { return CONVERTER.dotted(input); }
     };
 
-	public String dotted(final String slashed) {
-	    String withNoClassExtension = stripClassExtension(slashed); 
-	    String forceAsSingleDimensionalArray = stripMultidimensionalArrayDescriptor(withNoClassExtension);
-        String withNoArrayDescriptor = stripArrayDescriptorFromReferenceArrayDescriptor(forceAsSingleDimensionalArray);
-        return withNoArrayDescriptor.replace("/", ".").replace(";", "");
+	public String dotted(final String givenClassName) {
+	    return from(singleton(givenClassName))
+	            .transform(SINGLE_DIMENSIONAL_IF_ARRAY)
+	            .transform(REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE)
+	            .transform(REMOVE_CLASS_EXTENSION)
+	            .transform(REMOVE_TRAILING_SEMICOLON)
+	            .transform(REPLACE_SLASHES_WITH_DOTS)
+	            .first().get();
     }
 
-    private String stripMultidimensionalArrayDescriptor(String mulidimensionalArray) {
-        return mulidimensionalArray.replaceAll("\\[+", "[");
-    }
+	private static final Function<String, String> SINGLE_DIMENSIONAL_IF_ARRAY = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.replaceAll("\\[+", "["); }
+	};
 
-    private String stripClassExtension(String resource) {
-        return resource.endsWith(".class") ? resource.replace(".class", "") : resource;
-    }
+	private static final Function<String, String> REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.startsWith("[L") ? input.replace("[L", "") : input; }
+	};
+	
+	private static final Function<String, String> REMOVE_CLASS_EXTENSION = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.endsWith(".class") ? input.replace(".class", "") : input; }
+	};
 
-    private String stripArrayDescriptorFromReferenceArrayDescriptor(String slashed) {
-        return slashed.replace("[L", "");
-    }
+	private static final Function<String, String> REMOVE_TRAILING_SEMICOLON = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.replace(";", ""); }
+	};
+
+	private static final Function<String, String> REPLACE_SLASHES_WITH_DOTS = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.replace("/", "."); }
+	};
     
 }
