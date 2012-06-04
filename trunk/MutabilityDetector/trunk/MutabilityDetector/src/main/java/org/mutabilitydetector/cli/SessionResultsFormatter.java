@@ -20,56 +20,55 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.AnalysisSession.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
-public class SessionResultsFormatter {
+import com.google.common.collect.Ordering;
+
+@Immutable
+public final class SessionResultsFormatter {
 
     private final boolean verbose;
     private final ReportMode reportMode;
-    private Collection<String> classesToReport;
-    private final ClassListReaderFactory readerFactory;
+    private final Collection<String> classesToReport;
     private final BatchAnalysisOptions options;
 
     public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
         this.options = options;
-        this.readerFactory = readerFactory;
         this.verbose = options.verbose();
         this.reportMode = options.reportMode();
+        this.classesToReport = getClassesToReport(options.isUsingClassList(), readerFactory);
     }
 
-    public StringBuilder format(AnalysisSession completedSession) {
+    public StringBuilder format(Iterable<AnalysisResult> results, Iterable<AnalysisError> errors, AnalysisSession completedSession) {
         StringBuilder output = new StringBuilder();
 
-        classesToReport = getClassesToReport();
-
-        appendErrors(completedSession, output);
-        appendAnalysisResults(completedSession, output);
+        appendErrors(errors, output);
+        appendAnalysisResults(results, output);
 
         return output;
     }
 
-    private Collection<String> getClassesToReport() {
-        return options.isUsingClassList()
-                ? readerFactory.createReader().classListToReport()
-                : Collections.<String> emptySet();
+    private Collection<String> getClassesToReport(boolean isUsingClassList, ClassListReaderFactory readerFactory) {
+        return isUsingClassList ? readerFactory.createReader().classListToReport() : Collections.<String> emptySet();
     }
 
-    private void appendErrors(AnalysisSession completedSession, StringBuilder output) {
+    private void appendErrors(Iterable<AnalysisError> errors, StringBuilder output) {
 
         if (!options.reportErrors()) return;
 
-        for (AnalysisError error : completedSession.getErrors()) {
+        for (AnalysisError error : errors) {
 
             String message = String.format("Error while running %s on class %s.%n", error.checkerName, error.onClass);
             output.append(message);
@@ -81,8 +80,8 @@ public class SessionResultsFormatter {
 
     }
 
-    private void appendAnalysisResults(AnalysisSession completedSession, StringBuilder output) {
-        List<AnalysisResult> sortedList = sortByClassname(completedSession.getResults());
+    private void appendAnalysisResults(Iterable<AnalysisResult> results, StringBuilder output) {
+        List<AnalysisResult> sortedList = sortByClassname(results);
 
         for (AnalysisResult result : sortedList) {
             IsImmutable isImmutable = result.isImmutable;
@@ -90,10 +89,8 @@ public class SessionResultsFormatter {
         }
     }
 
-    private List<AnalysisResult> sortByClassname(Collection<AnalysisResult> sessionResults) {
-        List<AnalysisResult> sortedList = new ArrayList<AnalysisResult>(sessionResults);
-        Collections.sort(sortedList, new ClassnameComparator());
-        return sortedList;
+    private List<AnalysisResult> sortByClassname(Iterable<AnalysisResult> sessionResults) {
+        return Ordering.from(new ClassnameComparator()).sortedCopy(sessionResults);
     }
 
     private void addResultForClass(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {

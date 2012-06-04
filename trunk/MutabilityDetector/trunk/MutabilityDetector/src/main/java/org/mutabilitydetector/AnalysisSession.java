@@ -16,8 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import java.util.Collection;
-
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -29,9 +27,9 @@ public interface AnalysisSession {
 
     void runAnalysis(Iterable<Dotted> filtered);
 
-    Collection<AnalysisResult> getResults();
+    Iterable<AnalysisResult> getResults();
 
-    Collection<AnalysisError> getErrors();
+    Iterable<AnalysisError> getErrors();
 
     AnalysisDatabase analysisDatabase();
 
