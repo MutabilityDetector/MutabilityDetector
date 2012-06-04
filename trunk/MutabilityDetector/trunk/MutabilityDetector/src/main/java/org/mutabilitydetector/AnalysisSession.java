@@ -16,7 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.locations.Dotted;
 
 public interface AnalysisSession {
@@ -28,8 +27,6 @@ public interface AnalysisSession {
 
     Iterable<AnalysisResult> getResults();
     Iterable<AnalysisError> getErrors();
-
-    AnalysisDatabase analysisDatabase();
 
     public static final class AnalysisError {
         public final String checkerName;

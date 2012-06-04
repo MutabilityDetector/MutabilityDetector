@@ -22,6 +22,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
 
         try {
-            checkerRunner.run(ThreadUnsafeAnalysisSession.createWithCurrentClassPath(), checker, fromClass(CheckerRunner.class));
+            checkerRunner.run(createWithCurrentClassPath(), checker, fromClass(CheckerRunner.class));
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
             assertSame(toBeThrown, expected.getCause());

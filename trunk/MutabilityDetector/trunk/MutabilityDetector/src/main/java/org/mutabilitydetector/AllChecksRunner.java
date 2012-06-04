@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.ResultCalculator;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class AllChecksRunner {
@@ -35,19 +36,18 @@ public final class AllChecksRunner {
 
     public AllChecksRunner(MutabilityCheckerFactory checkerFactory,
             CheckerRunnerFactory checkerRunnerFactory,
-            Dotted toAnalyse, 
-            AnalysisClassLoader analysisClassLoader) {
+            AnalysisClassLoader analysisClassLoader, 
+            Dotted toAnalyse) {
         this.factory = checkerFactory;
         this.checkerRunnerFactory = checkerRunnerFactory;
-        this.toAnalyse = toAnalyse;
         this.analysisClassLoader = analysisClassLoader;
-
+        this.toAnalyse = toAnalyse;
     }
 
-    public AnalysisResult runCheckers(AnalysisSession analysisSession) {
+    public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisDatabase database) {
         Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
 
-        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, analysisClassLoader);
+        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, analysisClassLoader);
 
         for (AsmMutabilityChecker checker : checkers) {
             checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);

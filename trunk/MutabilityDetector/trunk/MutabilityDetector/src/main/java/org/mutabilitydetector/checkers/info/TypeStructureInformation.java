@@ -27,7 +27,7 @@ import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.TypeStructureInformationChecker;
 import org.mutabilitydetector.locations.Dotted;
 
-public class TypeStructureInformation implements AnalysisInformation {
+public final class TypeStructureInformation implements AnalysisInformation {
 
     private final AsmSessionCheckerRunner sessionCheckerRunner;
     private final Map<Dotted, Boolean> isAbstractMap = new HashMap<Dotted, Boolean>();

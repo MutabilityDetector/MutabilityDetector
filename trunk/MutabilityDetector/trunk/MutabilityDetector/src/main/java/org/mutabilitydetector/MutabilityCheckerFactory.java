@@ -38,9 +38,7 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 
 public final class MutabilityCheckerFactory {
 
-    public Iterable<AsmMutabilityChecker> createInstances(AnalysisSession analysisSession, AnalysisClassLoader analysisClassLoader) {
-        AnalysisDatabase database = analysisSession.analysisDatabase();
-
+    public Iterable<AsmMutabilityChecker> createInstances(AnalysisSession analysisSession, AnalysisDatabase database, AnalysisClassLoader analysisClassLoader) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), analysisClassLoader));

@@ -86,6 +86,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
         session.runAnalysis(filtered);
+        
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         return new SessionResultsFormatter(options, readerFactory)
                        .format(session.getResults(), session.getErrors(), session);

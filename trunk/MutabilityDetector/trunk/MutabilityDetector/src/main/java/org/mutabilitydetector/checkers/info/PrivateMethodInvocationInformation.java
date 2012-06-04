@@ -26,21 +26,19 @@ import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker;
 import org.mutabilitydetector.locations.Dotted;
 
-public class PrivateMethodInvocationInformation implements AnalysisInformation {
+public final class PrivateMethodInvocationInformation implements AnalysisInformation {
 
     private final Map<Dotted, PrivateMethodInvocationChecker> checkerCache = new HashMap<Dotted, PrivateMethodInvocationChecker>();
     private final AsmSessionCheckerRunner sessionCheckerRunner;
 
     public PrivateMethodInvocationInformation(AsmSessionCheckerRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
-
     }
 
     public boolean isOnlyCalledFromConstructor(MethodIdentifier forMethod) {
         PrivateMethodInvocationChecker checker = null;
         if (checkerCache.containsKey(forMethod.dottedClassName())) {
             checker = checkerCache.get(forMethod.dottedClassName());
-
         } else {
             checker = PrivateMethodInvocationChecker.newChecker();
             sessionCheckerRunner.run(checker, forClass(forMethod.dottedClassName()));

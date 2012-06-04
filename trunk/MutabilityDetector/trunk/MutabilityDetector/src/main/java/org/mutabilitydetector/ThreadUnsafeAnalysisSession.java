@@ -111,9 +111,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         requestedAnalysis.add(className);
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
-                                                              className, 
-                                                              analysisClassLoader);
-        return allChecksRunner.runCheckers(this);
+                                                              analysisClassLoader, 
+                                                              className);
+        return allChecksRunner.runCheckers(this, database);
     }
 
 	private boolean isRepeatedRequestFor(Dotted className) {
@@ -151,11 +151,6 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     @Override
     public Collection<AnalysisError> getErrors() {
         return Collections.unmodifiableCollection(analysisErrors);
-    }
-
-    @Override
-    public AnalysisDatabase analysisDatabase() {
-        return database;
     }
 
 }
