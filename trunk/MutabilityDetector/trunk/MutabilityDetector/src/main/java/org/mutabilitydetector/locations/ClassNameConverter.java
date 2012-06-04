@@ -20,11 +20,15 @@ package org.mutabilitydetector.locations;
 import static com.google.common.collect.FluentIterable.from;
 import static java.util.Collections.singleton;
 
+import javax.annotation.concurrent.Immutable;
+
+
 import com.google.common.base.Function;
 
 /**
  * @author Graham Allan / Grundlefleck at gmail dot com
  */
+@Immutable
 public final class ClassNameConverter {
 
 	private static final ClassNameConverter CONVERTER = new ClassNameConverter();
