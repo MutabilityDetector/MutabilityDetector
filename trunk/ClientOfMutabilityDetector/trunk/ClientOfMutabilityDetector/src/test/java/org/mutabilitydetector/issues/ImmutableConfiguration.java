@@ -68,7 +68,7 @@ public final class ImmutableConfiguration {
                               assuming("propMap").hasCollectionsUnmodifiableTypeAssignedToIt());
         }
         
-        public static class AssumeCopiedIntoUnmodifiable extends BaseMatcher {
+        public static class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetail> {
 
             private static class Assuming {
                 private final String fieldName;
