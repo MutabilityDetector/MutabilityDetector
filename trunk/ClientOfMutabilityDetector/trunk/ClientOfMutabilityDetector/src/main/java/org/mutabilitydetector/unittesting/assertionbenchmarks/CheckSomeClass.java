@@ -13,6 +13,7 @@ package org.mutabilitydetector.unittesting.assertionbenchmarks;
 import java.math.BigDecimal;
 
 import org.mutabilitydetector.cli.CommandLineOptions;
+import org.mutabilitydetector.cli.NamesFromClassResources;
 import org.mutabilitydetector.cli.RunMutabilityDetector;
 import org.mutabilitydetector.repackaged.com.google.classpath.ClassPath;
 import org.mutabilitydetector.repackaged.com.google.classpath.ClassPathFactory;
@@ -30,7 +31,7 @@ public class CheckSomeClass {
 		ClassPath cp = new ClassPathFactory().createFromJVM();
 		String match = toAnalyse.getName().replace("$", "\\$");
 		CommandLineOptions options = new CommandLineOptions(System.out, "-v", "-match", match);
-		new RunMutabilityDetector(cp, options).run();
+		new RunMutabilityDetector(cp, options, new NamesFromClassResources(options.match())).run();
 	}
 
 }
