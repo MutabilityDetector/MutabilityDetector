@@ -16,9 +16,10 @@
  */
 package org.mutabilitydetector;
 
-import java.util.ArrayList;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
@@ -28,11 +29,10 @@ import org.mutabilitydetector.locations.Dotted;
 
 public final class AllChecksRunner {
 
-    private final Dotted toAnalyse;
-    private final Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
     private final MutabilityCheckerFactory factory;
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisClassLoader analysisClassLoader;
+    private final Dotted toAnalyse;
 
     public AllChecksRunner(MutabilityCheckerFactory checkerFactory,
             CheckerRunnerFactory checkerRunnerFactory,
@@ -45,7 +45,8 @@ public final class AllChecksRunner {
     }
 
     public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisDatabase database) {
-        Map<IsImmutable, Integer> results = new HashMap<IsImmutable, Integer>();
+        Map<IsImmutable, Integer> results = newHashMap();
+        Collection<MutableReasonDetail> reasons = newArrayList();
 
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, analysisClassLoader);
 
