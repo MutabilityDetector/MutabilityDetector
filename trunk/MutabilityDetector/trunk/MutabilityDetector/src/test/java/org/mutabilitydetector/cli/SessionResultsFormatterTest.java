@@ -65,7 +65,7 @@ public class SessionResultsFormatterTest {
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
 
-        StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors(), analysisSession);
+        StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(),
                    allOf(containsString("a.b.c is IMMUTABLE\n"),
@@ -94,7 +94,7 @@ public class SessionResultsFormatterTest {
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
 
-        StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors(), analysisSession);
+        StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(), containsString("a.b.c is NOT_IMMUTABLE\n" + "\t1st checker reason message [Class: path.to.MyClass]\n"
                 + "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]\n"));

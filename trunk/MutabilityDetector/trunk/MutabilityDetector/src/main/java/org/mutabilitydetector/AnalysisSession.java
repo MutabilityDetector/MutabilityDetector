@@ -20,10 +20,10 @@ import org.mutabilitydetector.locations.Dotted;
 
 public interface AnalysisSession {
 
+    void runAnalysis(Iterable<Dotted> filtered);
     RequestedAnalysis resultFor(Dotted className);
 
     void addAnalysisError(AnalysisError error);
-    void runAnalysis(Iterable<Dotted> filtered);
 
     Iterable<AnalysisResult> getResults();
     Iterable<AnalysisError> getErrors();

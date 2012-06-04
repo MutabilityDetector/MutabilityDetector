@@ -28,7 +28,6 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.AnalysisSession.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -51,7 +50,7 @@ public final class SessionResultsFormatter {
         this.classesToReport = getClassesToReport(options.isUsingClassList(), readerFactory);
     }
 
-    public StringBuilder format(Iterable<AnalysisResult> results, Iterable<AnalysisError> errors, AnalysisSession completedSession) {
+    public StringBuilder format(Iterable<AnalysisResult> results, Iterable<AnalysisError> errors) {
         StringBuilder output = new StringBuilder();
 
         appendErrors(errors, output);
