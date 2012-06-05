@@ -16,9 +16,9 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mutabilitydetector.IsImmutable;
@@ -31,12 +31,12 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 
 public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
 
-    protected Collection<MutableReasonDetail> reasons = new ArrayList<MutableReasonDetail>();
+    protected Collection<MutableReasonDetail> reasons = newArrayList();
     private IsImmutable result = IsImmutable.IMMUTABLE;
+
     protected String ownerClass;
 
     @Override
@@ -112,12 +112,6 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
         return ownerClass != null 
                 ? ClassLocation.from(slashed(ownerClass))
                 : CodeLocation.UnknownCodeLocation.UNKNOWN;
-    }
-
-    protected String dottedClassName(Type objectType) {
-        String className = objectType.getInternalName();
-        String dottedClassName = className.replace("/", ".");
-        return dottedClassName;
     }
 
     protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {

@@ -83,7 +83,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             int sort = type.getSort();
             switch (sort) {
             case Type.OBJECT:
-                Dotted className = dotted(dottedClassName(type));
+                Dotted className = dotted(type.getInternalName());
                 RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className);
                 
                 if (!requestedAnalysis.analysisComplete) {
@@ -97,7 +97,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 }
                 break;
             case Type.ARRAY:
-                addResult("Field can have a mutable type (a primitive array) assigned to it.",
+                addResult("Field can have a mutable type (an array) assigned to it.",
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 break;
