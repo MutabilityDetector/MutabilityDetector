@@ -23,7 +23,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.benchmarks.visibility.HasNonFinalField;
+import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 
@@ -42,5 +42,10 @@ public class NonFinalFieldsCheckerTest {
     @Test
     public void isEffectivelyImmutableWhenTheFieldIsNotDeclaredFinal() throws Exception {
         assertThat(runChecker(checker, HasNonFinalField.class), areEffectivelyImmutable());
+    }
+    
+    @Test
+    public void isMutableForNonFinalFieldsSetOnlyInConstructor() throws Exception {
+        assertThat(runChecker(checker, ImmutableUsingPrivateFieldSettingMethod.class), areEffectivelyImmutable());
     }
 }
