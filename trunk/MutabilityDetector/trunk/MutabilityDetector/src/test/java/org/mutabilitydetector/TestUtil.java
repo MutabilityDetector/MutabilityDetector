@@ -17,10 +17,10 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -86,6 +86,6 @@ public class TestUtil {
     }
 
     public static AnalysisClassLoader testingAnalysisClassLoader() {
-        return new PassthroughAnalysisClassLoader();
+        return new CachingAnalysisClassLoader(new ClassForNameWrapper());
     }
 }

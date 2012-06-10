@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.mutabilitydetector.AnalysisClassLoader;
+import org.mutabilitydetector.CachingAnalysisClassLoader;
+import org.mutabilitydetector.ClassForNameWrapper;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.AnalysisSession;
@@ -73,7 +75,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private StringBuilder getResultString() {
-        AnalysisClassLoader fallbackClassLoader = new URLFallbackClassLoader(getCustomClassLoader());
+        AnalysisClassLoader fallbackClassLoader = new CachingAnalysisClassLoader(new URLFallbackClassLoader(getCustomClassLoader(), new ClassForNameWrapper()));
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 

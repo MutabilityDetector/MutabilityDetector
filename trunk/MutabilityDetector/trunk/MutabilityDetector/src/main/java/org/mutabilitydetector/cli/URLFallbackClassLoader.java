@@ -18,41 +18,28 @@
 package org.mutabilitydetector.cli;
 
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.mutabilitydetector.AnalysisClassLoader;
+import org.mutabilitydetector.ClassForNameWrapper;
 
-public class URLFallbackClassLoader implements AnalysisClassLoader {
+public final class URLFallbackClassLoader implements AnalysisClassLoader {
 
     private final URLClassLoader urlClassLoader;
-    private Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
+    private final ClassForNameWrapper classForNameWrapper;
 
-    public URLFallbackClassLoader(URLClassLoader urlClassLoader) {
+    public URLFallbackClassLoader(URLClassLoader urlClassLoader, ClassForNameWrapper classForNameWrapper) {
         this.urlClassLoader = urlClassLoader;
+        this.classForNameWrapper = classForNameWrapper;
     }
 
     @Override
-    public Class<?> getClass(String dottedClass) throws ClassNotFoundException {
-        if (classCache.containsKey(dottedClass)) { return classCache.get(dottedClass); }
-
+    public Class<?> loadClass(final String dottedClass) throws ClassNotFoundException {
         Class<?> toReturn;
         try {
-            toReturn = fromURLClassLoader(dottedClass);
+            toReturn = urlClassLoader.loadClass(dottedClass);
         } catch (ClassNotFoundException e) {
-            toReturn = fromJVMClassLoader(dottedClass);
+            toReturn = classForNameWrapper.loadClass(dottedClass);
         }
-
-        classCache.put(dottedClass, toReturn);
         return toReturn;
     }
-
-    private Class<?> fromJVMClassLoader(String dottedClassPath) throws ClassNotFoundException {
-        return Class.forName(dottedClassPath);
-    }
-
-    private Class<?> fromURLClassLoader(String dottedClassPath) throws ClassNotFoundException {
-        return urlClassLoader.loadClass(dottedClassPath);
-    }
-
 }

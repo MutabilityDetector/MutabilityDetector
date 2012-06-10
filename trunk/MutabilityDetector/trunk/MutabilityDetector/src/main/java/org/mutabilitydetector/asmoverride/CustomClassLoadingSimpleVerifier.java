@@ -40,7 +40,7 @@ public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
             } else {
                 className = t.getClassName();
             }
-            return classLoader.getClass(className);
+            return classLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

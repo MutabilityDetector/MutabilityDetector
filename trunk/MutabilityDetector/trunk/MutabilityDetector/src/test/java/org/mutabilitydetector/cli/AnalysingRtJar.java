@@ -36,7 +36,6 @@ public class AnalysingRtJar {
     });
     private final NamesFromClassResources namesFromClassResources = new NamesFromClassResources(".*");
 
-    @Ignore
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";

@@ -1,5 +1,5 @@
 package org.mutabilitydetector;
 
 public interface AnalysisClassLoader {
-    Class<?> getClass(String dottedClassPath) throws ClassNotFoundException;
+    Class<?> loadClass(String dottedClass) throws ClassNotFoundException;
 }

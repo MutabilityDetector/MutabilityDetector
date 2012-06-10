@@ -74,7 +74,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     
 	public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
 		ClassPath classpath = new ClassPathFactory().createFromJVM();
-        return createWithGivenClassPath(classpath, configuration, new PassthroughAnalysisClassLoader());
+        return createWithGivenClassPath(classpath, configuration, new CachingAnalysisClassLoader(new ClassForNameWrapper()));
 	}
 
 	private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AnalysisClassLoader analysisClassLoader) {
