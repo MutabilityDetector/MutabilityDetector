@@ -20,10 +20,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
+import static org.mutabilitydetector.checkers.AbstractTypeToFieldChecker.newAbstractTypeToFieldChecker;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
@@ -31,10 +31,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
-import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -50,7 +50,7 @@ public class AbstractTypeToFieldCheckerTest {
         SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(),
                 createWithCurrentClasspath());
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
-        checker = new AbstractTypeToFieldChecker(typeInfo, testingAnalysisClassLoader());
+        checker = newAbstractTypeToFieldChecker(typeInfo, TestUtil.testingVerifierFactory());
     }
 
     @Test

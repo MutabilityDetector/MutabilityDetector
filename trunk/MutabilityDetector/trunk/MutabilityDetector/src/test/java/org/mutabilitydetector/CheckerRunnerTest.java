@@ -20,6 +20,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
@@ -53,7 +54,7 @@ public class CheckerRunnerTest {
             assertSame(toBeThrown, expected.getCause());
         }
 
-        verify(checker).visitAnalysisException(toBeThrown);
+        verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
     }
 
 }

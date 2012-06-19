@@ -26,6 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
@@ -44,28 +49,28 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisDatabase database;
-    private final AnalysisClassLoader analysisClassLoader;
 	private final Configuration configuration;
-
+    private final AsmVerifierFactory verifierFactory;
+	
     private ThreadUnsafeAnalysisSession(ClassPath classpath, 
                              CheckerRunnerFactory checkerRunnerFactory,
                              MutabilityCheckerFactory checkerFactory, 
-                             AnalysisClassLoader analysisClassLoader, 
+                             AsmVerifierFactory verifierFactory,
                              Configuration configuration) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
+        this.verifierFactory = verifierFactory;
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
-        this.analysisClassLoader = analysisClassLoader;
         this.configuration = configuration;
     }
 
     public static AnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               CheckerRunnerFactory checkerRunnerFactory,
                                                               MutabilityCheckerFactory checkerFactory, 
-                                                              AnalysisClassLoader analysisClassLoader,
+                                                              AsmVerifierFactory verifierFactory,
                                                               Configuration configuration) {
-        return createWithGivenClassPath(classpath, configuration, analysisClassLoader);
+        return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
     public static AnalysisSession createWithCurrentClassPath() {
@@ -74,14 +79,22 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     
 	public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
 		ClassPath classpath = new ClassPathFactory().createFromJVM();
-        return createWithGivenClassPath(classpath, configuration, new CachingAnalysisClassLoader(new ClassForNameWrapper()));
+        ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
+        return createWithGivenClassPath(classpath, configuration, verifierFactory);
+	}
+	
+	public static AnalysisSession tempCreateWithVerifier() {
+	    ClassPath classpath = new ClassPathFactory().createFromJVM();
+	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(new CachingTypeHierarchyReader(new TypeHierarchyReader()));
+	    return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
+	    
 	}
 
-	private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AnalysisClassLoader analysisClassLoader) {
+	private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
 		return new ThreadUnsafeAnalysisSession(classpath, 
                                     new ClassPathBasedCheckerRunnerFactory(classpath), 
                                     new MutabilityCheckerFactory(), 
-                                    analysisClassLoader,
+                                    verifierFactory,
                                     configuration);
 	}
 
@@ -111,7 +124,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         requestedAnalysis.add(className);
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
-                                                              analysisClassLoader, 
+                                                              verifierFactory, 
                                                               className);
         return allChecksRunner.runCheckers(this, database);
     }

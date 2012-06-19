@@ -63,6 +63,7 @@ public final class CheckerRunner {
             }
         } catch (Throwable e) {
             handleException(analysisSession, checker, className.asString(), e);
+            checker.visitAnalysisException(e);
             throw unhandledExceptionBuilder.unhandledException(e, analysisSession, checker, className);
         }
     }

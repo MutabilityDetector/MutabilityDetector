@@ -19,27 +19,29 @@ package org.mutabilitydetector.cli;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.CachingAnalysisClassLoader;
-import org.mutabilitydetector.ClassForNameWrapper;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.MutabilityCheckerFactory;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.FileBasedTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
+import com.google.common.io.InputSupplier;
 
 /**
  * Runs an analysis configured by the given classpath and options.
@@ -75,14 +77,14 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private StringBuilder getResultString() {
-        AnalysisClassLoader fallbackClassLoader = new CachingAnalysisClassLoader(new URLFallbackClassLoader(getCustomClassLoader(), new ClassForNameWrapper()));
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
+        AsmVerifierFactory verifierFactory = createVerifierFactory(findResources);
         AnalysisSession session = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
-                                                            fallbackClassLoader,
+                                                            verifierFactory,
                                                             Configuration.NO_CONFIGURATION);
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
@@ -94,20 +96,25 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                        .format(session.getResults(), session.getErrors());
     }
 
-    private URLClassLoader getCustomClassLoader() {
-        String[] classPathUrls = options.classpath().split(System.getProperty("path.separator"));
+    private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
+        return new NonClassLoadingVerifierFactory(
+                new CachingTypeHierarchyReader(
+                        new FileBasedTypeHierarchyReader(
+                                getClassPathFileSuppliers(findResources))));
+    }
+    
+    private Map<Dotted, InputSupplier<InputStream>> getClassPathFileSuppliers(String[] findResources) {
+        Map<Dotted, InputSupplier<InputStream>> classFileInputMap = new ConcurrentHashMap<Dotted, InputSupplier<InputStream>>(findResources.length);
 
-        List<URL> urlList = new ArrayList<URL>(classPathUrls.length);
-
-        for (String classPathUrl : classPathUrls) {
-            try {
-                URL toAdd = new File(classPathUrl).toURI().toURL();
-                urlList.add(toAdd);
-            } catch (MalformedURLException e) {
-                System.err.printf("Classpath option %s is invalid.", classPathUrl);
-            }
+        for (final String resourcePath : findResources) {
+            classFileInputMap.put(dotted(resourcePath), new InputSupplier<InputStream>() {
+                @Override
+                public InputStream getInput() throws IOException {
+                    return classpath.getResourceAsStream(resourcePath);
+                }
+            });
         }
-        return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
+        return classFileInputMap;
     }
 
 	public static void main(String[] args) {

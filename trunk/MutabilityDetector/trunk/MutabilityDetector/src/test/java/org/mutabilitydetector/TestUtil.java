@@ -27,6 +27,9 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 import java.util.Collection;
 
 import org.junit.Ignore;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
@@ -87,5 +90,13 @@ public class TestUtil {
 
     public static AnalysisClassLoader testingAnalysisClassLoader() {
         return new CachingAnalysisClassLoader(new ClassForNameWrapper());
+    }
+
+    public static TypeHierarchyReader testingTypeHierarchyReader() {
+        return new TypeHierarchyReader();
+    }
+
+    public static AsmVerifierFactory testingVerifierFactory() {
+        return new ClassLoadingVerifierFactory(testingAnalysisClassLoader());
     }
 }

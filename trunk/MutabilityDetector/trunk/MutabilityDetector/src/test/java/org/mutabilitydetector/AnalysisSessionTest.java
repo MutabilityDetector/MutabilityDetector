@@ -18,7 +18,7 @@ package org.mutabilitydetector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
-import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
+import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
@@ -34,14 +34,12 @@ public class AnalysisSessionTest {
 
     private final Dotted immutableClass = Dotted.fromClass(ImmutableExample.class);
     
-    private AnalysisClassLoader fallbackClassLoader = testingAnalysisClassLoader();
-
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
         AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
-        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, fallbackClassLoader, immutableClass);
+        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, testingVerifierFactory(), immutableClass);
 
         checker.runCheckers(analysisSession, analysisDatabase());
 

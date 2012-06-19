@@ -22,8 +22,8 @@ import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
-import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
@@ -44,16 +44,16 @@ import org.objectweb.asm.tree.analysis.Frame;
 public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
-    private final AnalysisClassLoader analysisClassLoader;
+    private final AsmVerifierFactory verifierFactory;
 
     private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
-                                 AnalysisClassLoader analysisClassLoader) {
+                                 AsmVerifierFactory verifierFactory) {
         this.privateMethodInvocationInfo = privateMethodInvocationInfo;
-        this.analysisClassLoader = analysisClassLoader;
+        this.verifierFactory = verifierFactory;
     }
 
-    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AnalysisClassLoader analysisClassLoader) {
-        return new SetterMethodChecker(privateMethodInvocationInfo, analysisClassLoader);
+    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AsmVerifierFactory verifierFactory) {
+        return new SetterMethodChecker(privateMethodInvocationInfo, verifierFactory);
     }
 
     @Override
@@ -69,7 +69,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
                 desc,
                 signature,
                 exceptions, 
-                analysisClassLoader);
+                verifierFactory);
     }
 
     class SetterAssignmentVisitor extends FieldAssignmentVisitor {
@@ -82,8 +82,8 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
                 String desc,
                 String signature,
                 String[] exceptions, 
-                AnalysisClassLoader fallbackClassLoader) {
-            super(ownerName, access, name, desc, signature, exceptions, fallbackClassLoader);
+                AsmVerifierFactory verifierFactory) {
+            super(ownerName, access, name, desc, signature, exceptions, verifierFactory);
         }
 
         @Override

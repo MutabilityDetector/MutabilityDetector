@@ -19,9 +19,9 @@ package org.mutabilitydetector.benchmarks.settermethod;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testingAnalysisClassLoader;
+import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
@@ -37,8 +37,8 @@ import org.junit.experimental.theories.Theory;
 import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes.SetsBoolean;
@@ -74,7 +74,7 @@ public class SetterMethodCheckerTest {
         checkerRunner = CheckerRunner.createWithCurrentClasspath();
         analysisSession = createWithCurrentClassPath();
         info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
-        checker = newSetterMethodChecker(info, testingAnalysisClassLoader());
+        checker = newSetterMethodChecker(info, testingVerifierFactory());
     }
 
     private AnalysisResult doCheck(Class<?> toCheck) {

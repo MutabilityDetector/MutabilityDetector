@@ -19,8 +19,7 @@ package org.mutabilitydetector.checkers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.asmoverride.CustomClassLoadingSimpleVerifier;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -33,7 +32,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
     protected List<FieldInsnNode> fieldAssignments = new ArrayList<FieldInsnNode>();
     protected final String owner;
-    private final AnalysisClassLoader analysisClassLoader;
+    private final AsmVerifierFactory verifierFactory;
 
     public FieldAssignmentVisitor(String owner,
             int access,
@@ -41,10 +40,10 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
             String desc,
             String signature,
             String[] exceptions, 
-            AnalysisClassLoader analysisClassLoader) {
+            AsmVerifierFactory verifierFactory) {
         super(access, name, desc, signature, exceptions);
         this.owner = owner;
-        this.analysisClassLoader = analysisClassLoader;
+        this.verifierFactory = verifierFactory;
     }
 
     @Override
@@ -74,7 +73,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
         if (fieldAssignments.isEmpty()) { return; }
 
-        Analyzer<BasicValue> a = new Analyzer<BasicValue>(new CustomClassLoadingSimpleVerifier(analysisClassLoader));
+        Analyzer<BasicValue> a = new Analyzer<BasicValue>(verifierFactory.interpreter());
         Frame<BasicValue>[] frames;
         try {
             frames = a.analyze(owner, this);

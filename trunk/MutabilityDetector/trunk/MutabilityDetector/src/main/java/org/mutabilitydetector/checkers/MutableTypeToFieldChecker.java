@@ -20,9 +20,9 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
-import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -38,12 +38,12 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final TypeStructureInformation typeStructureInformation;
     private final MutableTypeInformation mutableTypeInfo;
-    private final AnalysisClassLoader analysisClassLoader;
+    private final AsmVerifierFactory verifierFactory;
 
-    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo, AnalysisClassLoader analysisClassLoader) {
+    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo, AsmVerifierFactory verifierFactory) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
-        this.analysisClassLoader = analysisClassLoader;
+        this.verifierFactory = verifierFactory;
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions, analysisClassLoader);
+        return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions, verifierFactory);
     }
 
     class AssignMutableTypeToFieldChecker extends FieldAssignmentVisitor {
@@ -69,8 +69,8 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 String desc,
                 String signature,
                 String[] exceptions, 
-                AnalysisClassLoader analysisClassLoader) {
-            super(owner, access, name, desc, signature, exceptions, analysisClassLoader);
+                AsmVerifierFactory verifierFactory) {
+            super(owner, access, name, desc, signature, exceptions, verifierFactory);
         }
 
         @Override
