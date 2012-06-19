@@ -32,17 +32,17 @@ public final class Dotted extends ClassName {
 		@Override public Dotted apply(String className) { return dotted(className); }
     };
 
-    public static Dotted dotted(String dottedClassName) {
-        return new Dotted(new ClassNameConverter().dotted(dottedClassName));
+    public static Dotted dotted(String className) {
+        return new Dotted(new ClassNameConverter().dotted(className));
     }
 
-    public static Dotted fromSlashed(Slashed slashedClassName) {
-        String converted = new ClassNameConverter().dotted(slashedClassName.asString());
+    public static Dotted fromSlashed(Slashed className) {
+        String converted = new ClassNameConverter().dotted(className.asString());
         return dotted(converted);
     }
 
-    public static Dotted fromSlashedString(String slashedClassNameString) {
-        String dottedClassNameString = new ClassNameConverter().dotted(slashedClassNameString);
+    public static Dotted fromSlashedString(String className) {
+        String dottedClassNameString = new ClassNameConverter().dotted(className);
         return dotted(dottedClassNameString);
     }
 
