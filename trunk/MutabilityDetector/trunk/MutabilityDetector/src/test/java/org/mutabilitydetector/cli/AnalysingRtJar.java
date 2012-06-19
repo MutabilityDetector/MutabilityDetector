@@ -20,6 +20,7 @@ package org.mutabilitydetector.cli;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Date;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,11 +37,22 @@ public class AnalysingRtJar {
     });
     private final NamesFromClassResources namesFromClassResources = new NamesFromClassResources(".*");
 
+    @Ignore
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options, namesFromClassResources).run();
+    }
+    
+    public static void main(String[] args) throws Exception {
+        Date started = new Date();
+        new AnalysingRtJar().checkExceptionIsNotThrown();
+        Date ended = new Date();
+
+        System.out.println("======================================");
+        System.out.println("Started: " + started);
+        System.out.println("Ended: " + ended);
     }
     
     @Ignore
