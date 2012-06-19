@@ -17,6 +17,7 @@
 
 package org.mutabilitydetector;
 
+import static org.junit.Assert.fail;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
@@ -32,10 +33,14 @@ import java.util.Date;
 
 import javax.management.ImmutableDescriptor;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
+
+import com.sun.corba.se.impl.activation.ORBD;
+import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
 
 public class WellKnownJavaTypesTest {
 
@@ -112,6 +117,27 @@ public class WellKnownJavaTypesTest {
     @Test
     public void ArrayList() {
         assertInstancesOf(ArrayList.class, areNotImmutable());
+    }
+
+    @Test
+    public void ORBD() {
+        assertInstancesOf(ORBD.class, areNotImmutable());
+    }
+
+    @Ignore
+    @Test
+    public void XPDefaultRenderer() {
+        Class<?> enclosingClass = WindowsTableHeaderUI.class;
+        Class<?>[] declaredClasses = enclosingClass.getDeclaredClasses();
+        
+        for (Class<?> declaredClass : declaredClasses) {
+            if ("XPDefaultRenderer".equals(declaredClass.getSimpleName())) {
+                assertInstancesOf(declaredClass, areNotImmutable());
+                return;
+            }
+        }
+        fail("Didn't find private class");
+        
     }
     
 
