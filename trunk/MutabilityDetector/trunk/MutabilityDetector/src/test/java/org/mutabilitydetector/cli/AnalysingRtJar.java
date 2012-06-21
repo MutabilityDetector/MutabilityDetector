@@ -21,11 +21,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.classpath.ClassPathFactory;
+import com.google.common.base.Stopwatch;
 
 public class AnalysingRtJar {
 
@@ -41,18 +43,22 @@ public class AnalysingRtJar {
     @Test
     public void checkExceptionIsNotThrown() {
         String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
-        BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
+        BatchAnalysisOptions options = new CommandLineOptions(System.err, "-cp", rtJarPath, "-e");
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options, namesFromClassResources).run();
     }
     
     public static void main(String[] args) throws Exception {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.start();
         Date started = new Date();
         new AnalysingRtJar().checkExceptionIsNotThrown();
         Date ended = new Date();
+        stopwatch.stop();
 
         System.out.println("======================================");
         System.out.println("Started: " + started);
         System.out.println("Ended: " + ended);
+        System.out.println("Total: " + stopwatch.elapsedTime(TimeUnit.SECONDS));
     }
     
     @Ignore

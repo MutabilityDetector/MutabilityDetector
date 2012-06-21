@@ -95,7 +95,7 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
     }
 
     @Override
-    public void visitAnalysisException(Throwable toBeThrown) {
+    public final void visitAnalysisException(Throwable toBeThrown) {
         addResult(errorReasonDescription(toBeThrown), getCodeLocationForException(), MutabilityReason.CANNOT_ANALYSE);
     }
 

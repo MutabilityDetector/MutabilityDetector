@@ -35,6 +35,9 @@ import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.FileBasedTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -96,11 +99,18 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                        .format(session.getResults(), session.getErrors());
     }
 
+    @SuppressWarnings("unused")
+    private NonClassLoadingVerifierFactory createGuavaVerifierFactory(String[] findResources) {
+        return new NonClassLoadingVerifierFactory(
+                new GuavaIsAssignableFromCachingTypeHierarchyReader(
+                        new GuavaCachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
+                                                            findResources.length)));
+    }
     private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
         return new NonClassLoadingVerifierFactory(
-                new CachingTypeHierarchyReader(
-                        new FileBasedTypeHierarchyReader(
-                                getClassPathFileSuppliers(findResources))));
+                new IsAssignableFromCachingTypeHierarchyReader(
+                        new CachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
+                                findResources.length)));
     }
     
     private Map<Dotted, InputSupplier<InputStream>> getClassPathFileSuppliers(String[] findResources) {

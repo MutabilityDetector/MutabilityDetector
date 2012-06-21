@@ -5,9 +5,9 @@ import org.objectweb.asm.tree.analysis.Interpreter;
 
 public class NonClassLoadingVerifierFactory implements AsmVerifierFactory {
 
-    private final CachingTypeHierarchyReader typeHierarchyReader;
+    private final TypeHierarchyReader typeHierarchyReader;
 
-    public NonClassLoadingVerifierFactory(CachingTypeHierarchyReader typeHierarchyReader) {
+    public NonClassLoadingVerifierFactory(TypeHierarchyReader typeHierarchyReader) {
         this.typeHierarchyReader = typeHierarchyReader;
     }
     

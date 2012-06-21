@@ -22,7 +22,7 @@ public class CachingTypeHierarchyReaderTest {
     private final TypeHierarchyReader baseReader = mock(TypeHierarchyReader.class);
     private final Type toType = Type.getType(List.class);
     private final Type fromType = Type.getType(ArrayList.class);
-    private final CachingTypeHierarchyReader reader = new CachingTypeHierarchyReader(baseReader);
+    private final GuavaCachingTypeHierarchyReader reader = new GuavaCachingTypeHierarchyReader(baseReader, 1);
 
     @Test
     public void usesUnderlyingReaderToCalculateTypeHierarchy() throws Exception {

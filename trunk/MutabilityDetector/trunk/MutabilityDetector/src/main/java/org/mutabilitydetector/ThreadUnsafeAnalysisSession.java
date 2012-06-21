@@ -17,18 +17,16 @@
 package org.mutabilitydetector;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
@@ -39,10 +37,12 @@ import org.mutabilitydetector.locations.Dotted;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 
-    private final Map<Dotted, AnalysisResult> analysedClasses = newHashMap();
+    private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
     private final List<Dotted> requestedAnalysis = newArrayList();
     private final List<AnalysisError> analysisErrors = newArrayList();
 
@@ -85,7 +85,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 	
 	public static AnalysisSession tempCreateWithVerifier() {
 	    ClassPath classpath = new ClassPathFactory().createFromJVM();
-	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(new CachingTypeHierarchyReader(new TypeHierarchyReader()));
+	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(new GuavaCachingTypeHierarchyReader(new TypeHierarchyReader(), 1));
 	    return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
 	    
 	}
@@ -103,7 +103,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         AnalysisResult resultForClass = requestAnalysis(className);
         return resultForClass == null 
                 ? RequestedAnalysis.incomplete()
-                : RequestedAnalysis.complete(addAnalysisResult(resultForClass));
+                : RequestedAnalysis.complete(resultForClass);
     }
 
     private AnalysisResult requestAnalysis(Dotted className) {
@@ -117,8 +117,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
             return null;
         }
         
-        if (resultHasAlreadyBeenGenerated(className)) {
-            return analysedClasses.get(className);
+        AnalysisResult existingResult = analysedClasses.getIfPresent(className);
+        if (existingResult != null) {
+            return existingResult;
         }
         
         requestedAnalysis.add(className);
@@ -126,15 +127,12 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
                                                               checkerRunnerFactory,
                                                               verifierFactory, 
                                                               className);
-        return allChecksRunner.runCheckers(this, database);
+        
+        return addAnalysisResult(allChecksRunner.runCheckers(this, database));
     }
 
 	private boolean isRepeatedRequestFor(Dotted className) {
         return requestedAnalysis.contains(className);
-    }
-
-    private boolean resultHasAlreadyBeenGenerated(Dotted className) {
-        return analysedClasses.containsKey(className);
     }
 
     @Override
@@ -142,6 +140,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         for (Dotted className : classNames) {
             requestAnalysis(className);
         }
+        System.out.println(analysedClasses.stats());
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
@@ -158,7 +157,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 
     @Override
     public Collection<AnalysisResult> getResults() {
-        return Collections.unmodifiableCollection(analysedClasses.values());
+        return Collections.unmodifiableCollection(analysedClasses.asMap().values());
     }
 
     @Override

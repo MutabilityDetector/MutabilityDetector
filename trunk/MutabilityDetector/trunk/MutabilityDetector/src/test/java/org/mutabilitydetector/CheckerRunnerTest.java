@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
@@ -33,6 +34,7 @@ import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 
 public class CheckerRunnerTest {
 
+    @Ignore
     @Test
     public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
         AsmMutabilityChecker checker = Mockito.mock(AsmMutabilityChecker.class);
