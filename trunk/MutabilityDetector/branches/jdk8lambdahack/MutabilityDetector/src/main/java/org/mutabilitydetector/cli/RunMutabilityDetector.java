@@ -106,6 +106,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                         new GuavaCachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
                                                             findResources.length)));
     }
+    
     private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
         return new NonClassLoadingVerifierFactory(
                 new IsAssignableFromCachingTypeHierarchyReader(
