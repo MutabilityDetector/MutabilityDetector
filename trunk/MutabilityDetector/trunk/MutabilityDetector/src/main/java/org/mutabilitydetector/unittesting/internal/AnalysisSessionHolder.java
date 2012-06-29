@@ -23,8 +23,8 @@ import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class AnalysisSessionHolder {
-    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
-//    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.tempCreateWithVerifier();
+//    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.tempCreateWithVerifier();
 
     public static AnalysisResult analysisResultFor(Class<?> from) {
         return assertionAnalysisSession.resultFor(Dotted.fromClass(from)).result;

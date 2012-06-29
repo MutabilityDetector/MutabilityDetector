@@ -25,8 +25,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
@@ -85,7 +87,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 	
 	public static AnalysisSession tempCreateWithVerifier() {
 	    ClassPath classpath = new ClassPathFactory().createFromJVM();
-	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(new GuavaCachingTypeHierarchyReader(new TypeHierarchyReader(), 1));
+	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
+	            new IsAssignableFromCachingTypeHierarchyReader(
+	                    new CachingTypeHierarchyReader(new TypeHierarchyReader(), 1)));
 	    return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
 	    
 	}
