@@ -40,9 +40,9 @@ public final class UnhandledExceptionBuilder {
     }
 
     private void appendClassesAnalysed(StringBuilder errorMessage, AnalysisSession analysisSession) {
-        for (AnalysisResult result : analysisSession.getResults()) {
-            errorMessage.append(format("    %s%n", result.dottedClassName));
-        }
+        analysisSession.getResults().forEach(result -> { 
+        	errorMessage.append(format("    %s%n", result.dottedClassName)); 
+    	});
     }
 
 }

@@ -17,6 +17,7 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
+import static org.mutabilitydetector.AnalysisClassLoader.CLASS_FOR_NAME_LOADER;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
@@ -89,7 +90,7 @@ public class TestUtil {
     }
 
     public static AnalysisClassLoader testingAnalysisClassLoader() {
-        return new CachingAnalysisClassLoader(new ClassForNameWrapper());
+        return new CachingAnalysisClassLoader(CLASS_FOR_NAME_LOADER);
     }
 
     public static TypeHierarchyReader testingTypeHierarchyReader() {

@@ -23,7 +23,6 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,7 +89,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                                                             verifierFactory,
                                                             Configuration.NO_CONFIGURATION);
         
-        List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
+        Iterable<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
         session.runAnalysis(filtered);
         

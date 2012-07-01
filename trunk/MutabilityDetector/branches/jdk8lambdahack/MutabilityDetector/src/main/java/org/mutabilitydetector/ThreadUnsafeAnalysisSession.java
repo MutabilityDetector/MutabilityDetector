@@ -17,6 +17,7 @@
 package org.mutabilitydetector;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mutabilitydetector.AnalysisClassLoader.CLASS_FOR_NAME_LOADER;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
@@ -27,7 +28,6 @@ import java.util.List;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
@@ -81,7 +81,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     
 	public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
 		ClassPath classpath = new ClassPathFactory().createFromJVM();
-        ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
+        ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(CLASS_FOR_NAME_LOADER));
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
 	}
 	

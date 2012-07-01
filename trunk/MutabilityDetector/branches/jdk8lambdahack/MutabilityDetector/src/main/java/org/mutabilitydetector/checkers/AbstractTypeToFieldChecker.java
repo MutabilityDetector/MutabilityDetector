@@ -36,7 +36,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
     private final TypeStructureInformation typeStructureInformation;
     private final AsmVerifierFactory verifierFactory;
 
-    private AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation, AsmVerifierFactory verifierFactory) {
+    public AbstractTypeToFieldChecker(TypeStructureInformation typeStructureInformation, AsmVerifierFactory verifierFactory) {
         this.typeStructureInformation = typeStructureInformation;
         this.verifierFactory = verifierFactory;
     }

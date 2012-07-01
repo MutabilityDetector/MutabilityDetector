@@ -17,12 +17,16 @@
 
 package org.mutabilitydetector.locations;
 
+import java.util.functions.Mapper;
+
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Function;
 
 @Immutable
 public final class Dotted extends ClassName {
+
+	public static final Mapper<Dotted, String> DOTTED_TO_STRING_MAPPER = dotted -> dotted.asString();
 
     private Dotted(String className) {
         super(className);
@@ -34,6 +38,10 @@ public final class Dotted extends ClassName {
 
     public static Dotted dotted(String className) {
         return new Dotted(new ClassNameConverter().dotted(className));
+    }
+
+    public static Dotted from(String className) {
+    	return new Dotted(new ClassNameConverter().dotted(className));
     }
 
     public static Dotted fromSlashed(Slashed className) {

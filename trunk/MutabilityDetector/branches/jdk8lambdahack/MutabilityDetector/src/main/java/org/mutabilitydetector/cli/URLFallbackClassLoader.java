@@ -20,14 +20,13 @@ package org.mutabilitydetector.cli;
 import java.net.URLClassLoader;
 
 import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.ClassForNameWrapper;
 
 public final class URLFallbackClassLoader implements AnalysisClassLoader {
 
     private final URLClassLoader urlClassLoader;
-    private final ClassForNameWrapper classForNameWrapper;
+    private final AnalysisClassLoader classForNameWrapper;
 
-    public URLFallbackClassLoader(URLClassLoader urlClassLoader, ClassForNameWrapper classForNameWrapper) {
+    public URLFallbackClassLoader(URLClassLoader urlClassLoader, AnalysisClassLoader classForNameWrapper) {
         this.urlClassLoader = urlClassLoader;
         this.classForNameWrapper = classForNameWrapper;
     }
