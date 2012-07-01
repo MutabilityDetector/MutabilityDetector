@@ -16,15 +16,15 @@
  */
 package org.mutabilitydetector.asmoverride;
 
+import static org.mutabilitydetector.locations.ClassNameConverter.toDottedString;
+
 import org.mutabilitydetector.AnalysisClassLoader;
-import org.mutabilitydetector.locations.ClassNameConverter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
     private final AnalysisClassLoader classLoader;
-    private final ClassNameConverter classNameConverter = new ClassNameConverter();
 
     public CustomClassLoadingSimpleVerifier(AnalysisClassLoader fallbackClassLoader) {
         this.classLoader = fallbackClassLoader;
@@ -36,7 +36,7 @@ public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
         try {
             if (t.getSort() == Type.ARRAY) {
-                className = classNameConverter.dotted(t.getDescriptor());
+                className = toDottedString(t.getDescriptor());
             } else {
                 className = t.getClassName();
             }

@@ -19,9 +19,9 @@ public final class NamesFromClassResources {
 
     public Iterable<Dotted> asDotted(String[] findResources) {
     	return asList(findResources)
-				 .map(ClassNameConverter.CONVERTER::dotted)
+				 .map(ClassNameConverter::toDottedString)
 				 .filter(GuavaToJavaPredicate.of(containsPattern(classNameRegex)))
-				 .map(Dotted::dotted);
+				 .map(Dotted::from);
 	}
 
 }

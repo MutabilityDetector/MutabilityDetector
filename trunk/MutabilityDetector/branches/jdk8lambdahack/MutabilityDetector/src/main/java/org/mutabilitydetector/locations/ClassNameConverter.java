@@ -17,7 +17,10 @@
 
 package org.mutabilitydetector.locations;
 
+import static java.util.Collections.singleton;
+
 import java.util.Collections;
+import java.util.functions.Mapper;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -29,19 +32,29 @@ import com.google.common.base.Function;
 @Immutable
 public final class ClassNameConverter {
 
-	public static final ClassNameConverter CONVERTER = new ClassNameConverter();
-    public static final Function<String, String> TO_DOTTED_STRING = new Function<String, String>() {
-		@Override public String apply(String input) { return CONVERTER.dotted(input); }
-    };
-
-	public String dotted(final String givenClassName) {
-	    return Collections.singleton(givenClassName)
-	            .map(input -> input.replaceAll("\\[+", "["))
-	            .map(input -> input.startsWith("[L") ? input.replace("[L", "") : input)
-	            .map(input -> input.endsWith(".class") ? input.replace(".class", "") : input)
-	            .map(input -> input.replace(";", ""))
-	            .map(input -> input.replace("/", "."))
+	public static String toDottedString(final String givenClassName) {
+	    return singleton(givenClassName)
+	            .map(MAKE_SINGLE_DIMENSIONAL_IF_ARRAY)
+	            .map(REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE)
+	            .map(REMOVE_CLASS_EXTENSION)
+	            .map(REMOVE_TRAILING_SEMI_COLON)
+	            .map(REPLACE_SLASHES_WITH_DOTS)
 	            .getFirst();
     }
+	
+	private static final Mapper<String, String> 
+		MAKE_SINGLE_DIMENSIONAL_IF_ARRAY = input -> input.replaceAll("\\[+", "[");
+			
+	private static final Mapper<String, String> 
+		REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE = input -> input.startsWith("[L") ? input.replace("[L", "") : input;
+	
+	private static final Mapper<String, String> 
+		REMOVE_CLASS_EXTENSION = input -> input.endsWith(".class") ? input.replace(".class", "") : input;
+	
+	private static final Mapper<String, String> 
+		REMOVE_TRAILING_SEMI_COLON = input -> input.replace(";", "");
+	
+	private static final Mapper<String, String> 
+		REPLACE_SLASHES_WITH_DOTS = input -> input.replace("/", ".");
 
 }

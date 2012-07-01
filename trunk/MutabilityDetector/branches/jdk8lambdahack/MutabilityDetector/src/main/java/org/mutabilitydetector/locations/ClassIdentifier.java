@@ -17,8 +17,6 @@
 
 package org.mutabilitydetector.locations;
 
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -38,10 +36,7 @@ public final class ClassIdentifier {
         return new ClassIdentifier(className);
     }
 
-    public static ClassIdentifier forClass(Slashed className) {
-        String slashed = className.asString();
-        String dottedString = new ClassNameConverter().dotted(slashed);
-
-        return forClass(dotted(dottedString));
+    public static ClassIdentifier forClass(Slashed slashed) {
+        return forClass(slashed.toDotted());
     }
 }
