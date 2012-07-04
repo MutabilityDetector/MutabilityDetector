@@ -36,6 +36,8 @@ usage: MutabilityDetector
 
 == Runtime use == 
 
+*The exact code listing here is out of date. It still gives a rough idea of how to use Mutability Detector at run time, but it CANNOT be copy/pasted.* I'm working on providing an up to date example.
+
 Create an instance of AnalysisSession using the default constructor. Classes can then be analysed on request, given the class name (this is the dotted class name, e.g. java.lang.String as opposed to java/lang/String.class). Like so:
 
 {{{
