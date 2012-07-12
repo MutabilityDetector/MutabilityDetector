@@ -83,6 +83,14 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>javax.time</groupId>
+			<artifactId>threeten</artifactId>
+			<version>0.7</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/threeten-0.7.0-alpha.jar</systemPath>
+		</dependency>
+		
+		<dependency>
 			<groupId>net.ttsui</groupId>
 			<artifactId>pending</artifactId>
 			<version>0.0.3</version>
