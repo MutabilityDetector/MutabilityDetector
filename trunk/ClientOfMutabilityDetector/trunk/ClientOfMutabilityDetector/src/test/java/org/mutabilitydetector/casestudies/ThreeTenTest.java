@@ -349,7 +349,7 @@ public class ThreeTenTest {
 				provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable());
 	}
 
-	@Test
+	@Test @Ignore
 	public void testjavax_time_zone_ZoneOffsetTransitionRule() {
 		/*
 		 *  Does not set a boolean field to be final. Doesn't reassign it, looks like it could be easily changed.
