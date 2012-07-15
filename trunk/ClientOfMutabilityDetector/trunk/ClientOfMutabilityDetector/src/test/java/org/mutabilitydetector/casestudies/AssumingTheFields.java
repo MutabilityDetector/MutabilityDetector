@@ -25,6 +25,10 @@ public final class AssumingTheFields  {
 	public static AssumingTheFields named(String first, String... rest) {
 		return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
 	}
+
+	public static AssumingTheFields assumingFieldsNamed(String first, String... rest) {
+		return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
+	}
 	
 	Matcher<MutableReasonDetail> areNotModifiedByCallers() {
 		return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {

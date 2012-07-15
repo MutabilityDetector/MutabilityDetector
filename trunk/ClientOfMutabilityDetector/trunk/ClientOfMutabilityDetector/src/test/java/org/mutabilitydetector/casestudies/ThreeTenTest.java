@@ -4,7 +4,6 @@ import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalF
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import java.util.Locale;
@@ -350,7 +349,7 @@ public class ThreeTenTest {
 				provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable());
 	}
 
-	@Test @Ignore
+	@Test
 	public void testjavax_time_zone_ZoneOffsetTransitionRule() {
 		/*
 		 *  Does not set a boolean field to be final. Doesn't reassign it, looks like it could be easily changed.
@@ -359,15 +358,17 @@ public class ThreeTenTest {
 				provided(ZoneOffset.class).isAlsoImmutable());
 	}
 
-	@Test @Ignore
+	@Test 
 	public void testjavax_time_zone_ZoneRulesGroup() {
 		/*
 		 *  Non-final field, of type AtomicReference, which is mutable. Never reassigned.
 		 *  Could be made final from the looks of it.
 		 */
-		assertInstancesOf(javax.time.zone.ZoneRulesGroup.class, areEffectivelyImmutable(),
-				provided(String.class).isAlsoImmutable(),
-				allowingNonFinalFields());
+		assertInstancesOf(javax.time.zone.ZoneRulesGroup.class,
+		          areImmutable(),
+		          provided(String.class).isAlsoImmutable(),
+		          AssumingTheFields.named("versions").areModifiedAsPartAsAnUnobservableCachingStrategy(),
+		          allowingNonFinalFields());
 	}
 
 }
