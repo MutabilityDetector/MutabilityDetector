@@ -349,13 +349,11 @@ public class ThreeTenTest {
 				provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable());
 	}
 
-	@Test @Ignore
+	@Test @Ignore("Contains a non-final boolean field which should be changed in source.")
 	public void testjavax_time_zone_ZoneOffsetTransitionRule() {
-		/*
-		 *  Does not set a boolean field to be final. Doesn't reassign it, looks like it could be easily changed.
-		 */
-		assertInstancesOf(javax.time.zone.ZoneOffsetTransitionRule.class, areImmutable(),
-				provided(ZoneOffset.class).isAlsoImmutable());
+		assertInstancesOf(javax.time.zone.ZoneOffsetTransitionRule.class, 
+				          areImmutable(),
+				          provided(ZoneOffset.class).isAlsoImmutable());
 	}
 
 	@Test 
