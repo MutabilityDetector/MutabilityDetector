@@ -1,5 +1,4 @@
 package org.mutabilitydetector.casestudies;
-import static org.junit.Assert.*;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
@@ -9,27 +8,16 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffective
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import java.util.Locale;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.time.LocalDateTime;
 import javax.time.OffsetDateTime;
 import javax.time.ZoneId;
 import javax.time.ZoneOffset;
 import javax.time.calendrical.PeriodUnit;
-import javax.time.format.DateTimeFormatStyleProvider;
-import javax.time.format.DateTimeFormatterBuilder;
 import javax.time.format.DateTimeFormatters;
 import javax.time.zone.ZoneOffsetTransition;
-import javax.time.zone.ZoneOffsetTransitionRule;
 
-import org.joda.time.format.DateTimePrinter;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mutabilitydetector.unittesting.AllowedReason;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
-import org.mutabilitydetector.unittesting.MutabilityMatchers;
-
-import com.sun.corba.se.impl.oa.poa.AOMEntry;
 
 public class ThreeTenTest {
 
@@ -83,8 +71,8 @@ public class ThreeTenTest {
 	}
 
 	@Test
-	public void testjavax_time_chrono_CopticDate() {
-//		assertImmutable(javax.time.chrono.CopticDate.class);
+	public void testjavax_time_chrono_CopticDate() throws ClassNotFoundException {
+		assertImmutable(Class.forName("javax.time.chrono.CopticDate"));
 	}
 
 	@Test
@@ -98,8 +86,8 @@ public class ThreeTenTest {
 	}
 
 	@Test
-	public void testjavax_time_chrono_ISODate() {
-//		assertImmutable(javax.time.chrono.ISODate.class);
+	public void testjavax_time_chrono_ISODate() throws ClassNotFoundException {
+		assertImmutable(Class.forName("javax.time.chrono.ISODate"));
 	}
 
 	@Test
@@ -113,8 +101,8 @@ public class ThreeTenTest {
 	}
 
 	@Test
-	public void testjavax_time_chrono_MinguoDate() {
-//		assertImmutable(javax.time.chrono.MinguoDate.class);
+	public void testjavax_time_chrono_MinguoDate() throws ClassNotFoundException {
+		assertImmutable(Class.forName("javax.time.chrono.MinguoDate"));
 	}
 
 	@Test
@@ -183,24 +171,9 @@ public class ThreeTenTest {
 
 	@Test
 	public void testjavax_time_format_DateTimeFormatter() {
-		// May actually be a problem
-		assertInstancesOf(javax.time.format.DateTimeFormatter.class, areImmutable(), 
+		assertInstancesOf(javax.time.format.DateTimeFormatter.class, areImmutable(),
 				provided(Locale.class).isAlsoImmutable(),
 				provided("javax.time.format.DateTimeFormatterBuilder$CompositePrinterParser").isAlsoImmutable());
-	}
-
-	
-	@Test @Ignore
-	public void testjavax_time_format_DateTimeFormatterBuilder$CompositePrinterParser() throws ClassNotFoundException {
-		/* Has two constructors, one which takes a list and copies it into an array. The second takes an array, but
-		 * is only called from within the same class, passing the same array, which is never modified.
-		 * 
-		 * Would be nice to have actual array mutation checking right about now, rather than just panicking at
-		 * the sight of a primitive array.
-		 */
-		
-		assertInstancesOf(Class.forName("javax.time.format.DateTimeFormatterBuilder$CompositePrinterParser"), areImmutable(), 
-				provided(Locale.class).isAlsoImmutable());
 	}
 
 	@Test
@@ -299,6 +272,33 @@ public class ThreeTenTest {
 		assertInstancesOf(javax.time.ZoneOffset.class, areImmutable(),
 				provided(String.class).isAlsoImmutable());
 	}
+	
+	@Test
+	public void testjavax_time_zone_ZoneOffsetInfo() {
+		assertInstancesOf(javax.time.zone.ZoneOffsetInfo.class, areImmutable(),
+				provided(ZoneOffset.class).isAlsoImmutable(),
+				provided(ZoneOffsetTransition.class).isAlsoImmutable());
+	}
+
+	@Test
+	public void testjavax_time_zone_ZoneOffsetTransition() {
+		assertInstancesOf(javax.time.zone.ZoneOffsetTransition.class, areImmutable(),
+				provided(OffsetDateTime.class).isAlsoImmutable());
+	}
+	
+	
+	@Test @Ignore
+	public void testjavax_time_format_DateTimeFormatterBuilder$CompositePrinterParser() throws ClassNotFoundException {
+		/* Has two constructors, one which takes a list and copies it into an array. The second takes an array, but
+		 * is only called from within the same class, passing the same array, which is never modified.
+		 * 
+		 * Would be nice to have actual array mutation checking right about now, rather than just panicking at
+		 * the sight of a primitive array.
+		 */
+		
+		assertInstancesOf(Class.forName("javax.time.format.DateTimeFormatterBuilder$CompositePrinterParser"), areImmutable(), 
+				provided(Locale.class).isAlsoImmutable());
+	}
 
 	@Test @Ignore
 	public void testjavax_time_zone_ResourceZoneRulesDataProvider() throws ClassNotFoundException {
@@ -345,19 +345,6 @@ public class ThreeTenTest {
 		assertInstancesOf(Class.forName("javax.time.zone.ResourceZoneRulesDataProvider$ResourceZoneRulesVersion"), areImmutable(),
 				provided(String.class).isAlsoImmutable(),
 				provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable());
-	}
-
-	@Test
-	public void testjavax_time_zone_ZoneOffsetInfo() {
-		assertInstancesOf(javax.time.zone.ZoneOffsetInfo.class, areImmutable(),
-				provided(ZoneOffset.class).isAlsoImmutable(),
-				provided(ZoneOffsetTransition.class).isAlsoImmutable());
-	}
-
-	@Test
-	public void testjavax_time_zone_ZoneOffsetTransition() {
-		assertInstancesOf(javax.time.zone.ZoneOffsetTransition.class, areImmutable(),
-				provided(OffsetDateTime.class).isAlsoImmutable());
 	}
 
 	@Test @Ignore
