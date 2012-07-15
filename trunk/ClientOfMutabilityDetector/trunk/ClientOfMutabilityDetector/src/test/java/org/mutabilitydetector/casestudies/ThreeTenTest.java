@@ -19,6 +19,7 @@ import javax.time.zone.ZoneOffsetTransition;
 import org.junit.Ignore;
 import org.junit.Test;
 
+
 public class ThreeTenTest {
 
 	@Test
@@ -293,14 +294,13 @@ public class ThreeTenTest {
 		 * is only called from within the same class, passing the same array, which is never modified.
 		 * 
 		 * Would be nice to have actual array mutation checking right about now, rather than just panicking at
-		 * the sight of a primitive array.
+		 * the sight of an array.
 		 */
-		
 		assertInstancesOf(Class.forName("javax.time.format.DateTimeFormatterBuilder$CompositePrinterParser"), areImmutable(), 
 				provided(Locale.class).isAlsoImmutable());
 	}
 
-	@Test @Ignore
+	@Test
 	public void testjavax_time_zone_ResourceZoneRulesDataProvider() throws ClassNotFoundException {
 		/*
 		 * Has two fields of type HashSet. Both are constructed safely, from local variables that don't escape.
@@ -309,8 +309,11 @@ public class ThreeTenTest {
 		 * 
 		 * Also has an AtomicReferenceArray of type Object. 
 		 */
-		assertInstancesOf(Class.forName("javax.time.zone.ResourceZoneRulesDataProvider"), areImmutable(),
-				provided(String.class).isAlsoImmutable());
+		assertInstancesOf(Class.forName("javax.time.zone.ResourceZoneRulesDataProvider"), 
+						  areImmutable(),
+						  provided(String.class).isAlsoImmutable(),
+						  AssumingTheFields.named("regions", "versions").areNotModifiedByCallers(),
+						  AssumingTheFields.named("rules").areModifiedAsPartAsAnUnobservableCachingStrategy());
 	}
 	
 	@Test @Ignore
