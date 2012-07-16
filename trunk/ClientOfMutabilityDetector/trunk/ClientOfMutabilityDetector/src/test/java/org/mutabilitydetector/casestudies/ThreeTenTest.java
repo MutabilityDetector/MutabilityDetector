@@ -1,4 +1,5 @@
 package org.mutabilitydetector.casestudies;
+import static org.mutabilitydetector.casestudies.AssumingTheFields.assumingFieldsNamed;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
@@ -17,6 +18,7 @@ import javax.time.zone.ZoneOffsetTransition;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
 
 
 public class ThreeTenTest {
@@ -287,7 +289,7 @@ public class ThreeTenTest {
 	}
 	
 	
-	@Test @Ignore
+	@Test
 	public void testjavax_time_format_DateTimeFormatterBuilder$CompositePrinterParser() throws ClassNotFoundException {
 		/* Has two constructors, one which takes a list and copies it into an array. The second takes an array, but
 		 * is only called from within the same class, passing the same array, which is never modified.
@@ -296,7 +298,8 @@ public class ThreeTenTest {
 		 * the sight of an array.
 		 */
 		assertInstancesOf(Class.forName("javax.time.format.DateTimeFormatterBuilder$CompositePrinterParser"), areImmutable(), 
-				provided(Locale.class).isAlsoImmutable());
+				provided(Locale.class).isAlsoImmutable(),
+				AssumingArrayFields.named("printerParsers").areNotModifiedAndDoNotEscape());
 	}
 
 	@Test
@@ -315,7 +318,7 @@ public class ThreeTenTest {
 						  AssumingTheFields.named("rules").areModifiedAsPartAsAnUnobservableCachingStrategy());
 	}
 	
-	@Test @Ignore
+	@Test
 	public void testjavax_time_zone_StandardZoneRules() throws ClassNotFoundException {
 		/*
 		 * Has several mutable fields, both arrays and maps.
@@ -332,10 +335,20 @@ public class ThreeTenTest {
 		 * like Arrays.{equal, hashCode, binarySearch}, but if analysis were improved to detect this potential problem it would have to 
 		 * take account of such 'safe' methods.
 		 */
-		assertImmutable(Class.forName("javax.time.zone.StandardZoneRules"));
+		assertInstancesOf(Class.forName("javax.time.zone.StandardZoneRules"),
+					      areImmutable(),
+					      AssumingTheFields.named("lastRulesCache").areModifiedAsPartAsAnUnobservableCachingStrategy(),
+					      AssumingArrayFields.named("standardTransitions", 
+					    		                    "standardOffsets", 
+					    		                    "savingsLocalTransitions",
+					    		                    "wallOffsets", 
+					    		                    "savingsInstantTransitions", 
+					    		                    "lastRules")
+				    		  .areNotModifiedAndDoNotEscape());
 	}
 
-	@Test @Ignore
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testjavax_time_zone_ResourceZoneRulesVersion() throws ClassNotFoundException {
 		/*
 		 * Can be subclassed, though there's a limited (default) scope for that.
@@ -344,11 +357,15 @@ public class ThreeTenTest {
 		 * The array fields passed in are the same as those which are safely contained in the constructor
 		 * of ResourceZoneRulesDataProvider.
 		 */
-		assertInstancesOf(Class.forName("javax.time.zone.ResourceZoneRulesDataProvider$ResourceZoneRulesVersion"), areImmutable(),
-				provided(String.class).isAlsoImmutable(),
-				provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable());
+		assertInstancesOf(Class.forName("javax.time.zone.ResourceZoneRulesDataProvider$ResourceZoneRulesVersion"),
+				          areImmutable(),
+				          provided(String.class).isAlsoImmutable(),
+				          provided("javax.time.zone.ResourceZoneRulesDataProvider").isAlsoImmutable(),
+				          allowingForSubclassing(),
+				          AssumingArrayFields.named("regionArray", "ruleIndices").areNotModifiedAndDoNotEscape());
 	}
 
+	// Fixed in master
 	@Test @Ignore("Contains a non-final boolean field which should be changed in source.")
 	public void testjavax_time_zone_ZoneOffsetTransitionRule() {
 		assertInstancesOf(javax.time.zone.ZoneOffsetTransitionRule.class, 
@@ -356,6 +373,7 @@ public class ThreeTenTest {
 				          provided(ZoneOffset.class).isAlsoImmutable());
 	}
 
+	// Fixed in master
 	@Test 
 	public void testjavax_time_zone_ZoneRulesGroup() {
 		/*
@@ -365,7 +383,7 @@ public class ThreeTenTest {
 		assertInstancesOf(javax.time.zone.ZoneRulesGroup.class,
 		          areImmutable(),
 		          provided(String.class).isAlsoImmutable(),
-		          AssumingTheFields.named("versions").areModifiedAsPartAsAnUnobservableCachingStrategy(),
+		          assumingFieldsNamed("versions").areModifiedAsPartAsAnUnobservableCachingStrategy(),
 		          allowingNonFinalFields());
 	}
 
