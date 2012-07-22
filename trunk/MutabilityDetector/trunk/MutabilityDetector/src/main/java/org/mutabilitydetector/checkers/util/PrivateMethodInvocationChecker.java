@@ -32,9 +32,19 @@ import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.MethodNode;
 
-public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
+public final class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
-    private Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
+    private final Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
+
+    public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {
+        MethodIdentifier identifier = makeMethodIdentifier(methodDescriptor);
+        if (privateMethodCalledFromConstructorMap.containsKey(identifier)) { return privateMethodCalledFromConstructorMap.get(identifier); }
+        
+        String message = format("Could not find method descriptor %s. Available descriptors are: %n%s",
+                identifier,
+                privateMethodCalledFromConstructorMap.keySet().toString());
+        throw new MutabilityAnalysisException(message);
+    }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
@@ -53,16 +63,6 @@ public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
     private MethodIdentifier makeMethodIdentifier(String desc) {
         return forMethod(slashed(ownerClass), desc);
-    }
-
-    public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {
-        MethodIdentifier identifier = makeMethodIdentifier(methodDescriptor);
-        if (privateMethodCalledFromConstructorMap.containsKey(identifier)) { return privateMethodCalledFromConstructorMap.get(identifier); }
-
-        String message = format("Could not find method descriptor %s. Available descriptors are: %n%s",
-                identifier,
-                privateMethodCalledFromConstructorMap.keySet().toString());
-        throw new MutabilityAnalysisException(message);
     }
 
     private class MethodInvocationVisitor extends MethodNode {
