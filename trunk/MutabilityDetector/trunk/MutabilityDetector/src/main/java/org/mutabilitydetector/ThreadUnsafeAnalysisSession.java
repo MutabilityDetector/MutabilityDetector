@@ -27,7 +27,6 @@ import java.util.List;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.TypeHierarchyReader;

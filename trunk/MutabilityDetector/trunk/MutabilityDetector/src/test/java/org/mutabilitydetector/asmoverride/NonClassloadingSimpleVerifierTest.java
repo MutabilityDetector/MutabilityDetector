@@ -21,6 +21,7 @@ public class NonClassloadingSimpleVerifierTest {
 
     private static class InvokesMethodWithSeveralImplementingClasses {
         
+        @SuppressWarnings("unused")
         public void method() {
             MyInterface myInterface = new FirstImplementation();
             if (System.currentTimeMillis() % 2 == 0) {
