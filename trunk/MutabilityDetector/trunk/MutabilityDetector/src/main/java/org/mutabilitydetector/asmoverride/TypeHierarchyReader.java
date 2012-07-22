@@ -216,8 +216,8 @@ public class TypeHierarchyReader {
     public static class TypeHierarchy {
 
         private static final List<Type> IMPLEMENTS_NO_INTERFACES = Collections.emptyList();
-        private static final List<Type> IMPLICIT_ARRAY_INTERFACES = unmodifiableList(asList(getType(Cloneable.class),
-                getType(Serializable.class)));
+        private static final List<Type> IMPLICIT_ARRAY_INTERFACES = unmodifiableList(
+                asList(getType(Cloneable.class), getType(Serializable.class)));
         public static final TypeHierarchy JAVA_LANG_OBJECT = new TypeHierarchy(Type.getType(Object.class),
                 null,
                 IMPLEMENTS_NO_INTERFACES,
@@ -238,7 +238,7 @@ public class TypeHierarchyReader {
         }
 
 
-        private static TypeHierarchy typeHierarchyForPrimitiveType( Type primitiveType) {
+        private static TypeHierarchy typeHierarchyForPrimitiveType(Type primitiveType) {
             return new TypeHierarchy(primitiveType, null, IMPLEMENTS_NO_INTERFACES, false);
         }
 
@@ -309,9 +309,7 @@ public class TypeHierarchyReader {
                             typeHierarchyReader))
             {
                 return true;
-            } else if (isInterface()) {
-                return JAVA_LANG_OBJECT.isAssignableFrom(u, typeHierarchyReader);
-            }
+            } 
 
             return false;
         }

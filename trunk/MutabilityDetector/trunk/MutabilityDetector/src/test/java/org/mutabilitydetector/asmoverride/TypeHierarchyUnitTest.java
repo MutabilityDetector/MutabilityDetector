@@ -148,6 +148,7 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertIsAssignableFrom(Object.class, Interface[].class);
         assertIsAssignableFrom(Object[].class, Interface[][].class);
         assertIsAssignableFrom(Object[][].class, Interface[][].class);
+        assertIsNotAssignableFrom(Interface.class, Interface[].class);
         assertIsNotAssignableFrom(Interface[].class, Interface.class);
         assertIsNotAssignableFrom(Interface[].class, Interface[][].class);
         assertIsNotAssignableFrom(Interface[][].class, Interface[].class);
@@ -156,18 +157,6 @@ public class TypeHierarchyUnitTest extends TestCase {
     public void testAnonymousInnerClasses() throws Exception {
         assertIsAssignableFrom(Interface.class, new Interface() { }.getClass());
         assertIsNotAssignableFrom(new Interface() { }.getClass(), Interface.class);
-    }
-
-    public void testAssignmentOfPrimitiveTypes() throws Exception {
-        assertIsAssignableFrom(boolean.class, boolean.class);
-        assertIsAssignableFrom(byte.class, byte.class);
-        assertIsAssignableFrom(char.class, char.class);
-        assertIsAssignableFrom(short.class, short.class);
-        assertIsAssignableFrom(int.class, int.class);
-        assertIsAssignableFrom(long.class, long.class);
-        assertIsAssignableFrom(float.class, float.class);
-        assertIsAssignableFrom(double.class, double.class);
-        assertIsAssignableFrom(void.class, void.class);
     }
 
     public void testAssignmentOfPrimitiveArrayTypes() throws Exception {
@@ -180,7 +169,7 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertIsAssignableFrom(float[].class, float[].class);
         assertIsAssignableFrom(double[].class, double[].class);
     }
-    
+
     public void testGetCommonSuperClass_shouldBeObjectForUnrelatedClasses() throws Exception {
         assertCommonSuperclass(Object.class, Superclass.class, UnrelatedType.class);
     }
@@ -205,6 +194,10 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertCommonSuperclass(SubInterface.class, ImplementsSeveralInterfaces.class, AlsoImplementsSubInterface.class);
     }
 
+    public void testGetCommonSuperClass_shouldBeObjectForTwoInterfacesWhoShareCommonSuperInterface() throws Exception {
+        assertCommonSuperclass(Object.class, SubInterface.class, OtherSubInterface.class);
+    }
+    
     private void assertIsAssignableFrom(Class<?> to, Class<?> from) {
         assertTrue("Assertion is not consistent with Class.isAssignableFrom", to.isAssignableFrom(from));
         Type toType = Type.getType(to);

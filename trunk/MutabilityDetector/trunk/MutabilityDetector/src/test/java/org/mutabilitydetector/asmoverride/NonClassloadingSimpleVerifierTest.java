@@ -1,5 +1,6 @@
 package org.mutabilitydetector.asmoverride;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.asmoverride.NonClassloadingSimpleVerifier;
 import org.objectweb.asm.ClassReader;
@@ -13,7 +14,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 
 public class NonClassloadingSimpleVerifierTest {
 
-    @Test
+    @Test @Ignore
     public void testDoesntThrowExceptionOnAnalyzing() throws Exception {
         ClassReader classReader = new ClassReader(InvokesMethodWithSeveralImplementingClasses.class.getName());
         classReader.accept(new VerifyEachMethodClassVisitor(), 0);

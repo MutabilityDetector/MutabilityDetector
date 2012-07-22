@@ -29,11 +29,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.CachingAnalysisClassLoader;
+import org.mutabilitydetector.ClassForNameWrapper;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.FileBasedTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
@@ -83,7 +86,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
-        AsmVerifierFactory verifierFactory = createVerifierFactory(findResources);
+        AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory();
         AnalysisSession session = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
@@ -106,11 +109,16 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                         new GuavaCachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
                                                             findResources.length)));
     }
+    @SuppressWarnings("unused")
     private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
         return new NonClassLoadingVerifierFactory(
                 new IsAssignableFromCachingTypeHierarchyReader(
                         new CachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
                                 findResources.length)));
+    }
+    
+    private ClassLoadingVerifierFactory createClassLoadingVerifierFactory() {
+        return new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
     }
     
     private Map<Dotted, InputSupplier<InputStream>> getClassPathFileSuppliers(String[] findResources) {
