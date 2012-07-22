@@ -88,13 +88,12 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             boolean isAbstract = typeStructureInformation.isTypeAbstract(className);
             
             if (isAbstract) {
-                CollectionTypeWrappedInUmodifiableIdiomChecker collectionTypeWrappedInUmodifiableIdiomChecker = new CollectionTypeWrappedInUmodifiableIdiomChecker(className, fieldInsnNode);
-                UnmodifiableWrapperIdiom checkWrappedInUnmodifiable = collectionTypeWrappedInUmodifiableIdiomChecker.checkWrappedInUnmodifiable();
+                UnmodifiableWrapperIdiom unmodifiableWrapperIdiom = new CollectionTypeWrappedInUmodifiableIdiomChecker(className, fieldInsnNode).checkWrappedInUnmodifiable();
                 
                 
-                if (checkWrappedInUnmodifiable.canBeWrapped) {
-                    if (checkWrappedInUnmodifiable.isWrapped) {
-                        if (checkWrappedInUnmodifiable.safelyCopiesBeforeWrapping) {
+                if (unmodifiableWrapperIdiom.canBeWrapped) {
+                    if (unmodifiableWrapperIdiom.isWrapped) {
+                        if (unmodifiableWrapperIdiom.safelyCopiesBeforeWrapping) {
                             return;
                         } else {
                             addResult("Attempts to wrap mutable collection type without perfoming a copy first.",
@@ -103,10 +102,11 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
                             return;
                         }
                     }
-                }
-                addResult(format("Field can have an abstract type (%s) assigned to it.", className),
+                } else {
+                    addResult(format("Field can have an abstract type (%s) assigned to it.", className),
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+                }
             }
         }
 
