@@ -22,13 +22,13 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapperIdiom;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -88,9 +88,13 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             boolean isAbstract = typeStructureInformation.isTypeAbstract(className);
             
             if (isAbstract) {
-                if (new CollectionTypeWrappedInUmodifiableIdiomChecker().isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(className)) {
-                    if (wrapsInUnmodifiable(fieldInsnNode)) {
-                        if (safelyCopiesBeforeWrapping((MethodInsnNode) fieldInsnNode.getPrevious())) {
+                CollectionTypeWrappedInUmodifiableIdiomChecker collectionTypeWrappedInUmodifiableIdiomChecker = new CollectionTypeWrappedInUmodifiableIdiomChecker(className, fieldInsnNode);
+                UnmodifiableWrapperIdiom checkWrappedInUnmodifiable = collectionTypeWrappedInUmodifiableIdiomChecker.checkWrappedInUnmodifiable();
+                
+                
+                if (checkWrappedInUnmodifiable.canBeWrapped) {
+                    if (checkWrappedInUnmodifiable.isWrapped) {
+                        if (checkWrappedInUnmodifiable.safelyCopiesBeforeWrapping) {
                             return;
                         } else {
                             addResult("Attempts to wrap mutable collection type without perfoming a copy first.",
@@ -104,29 +108,6 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
             }
-        }
-
-        private boolean safelyCopiesBeforeWrapping(MethodInsnNode unmodifiableMethodCall) {
-            if (!(unmodifiableMethodCall.getPrevious() instanceof MethodInsnNode)) {
-                return false;
-            }
-            
-            MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) unmodifiableMethodCall.getPrevious();
-            
-            return MethodIs.aConstructor(shouldBeCopyConstructor.name) &&
-                    shouldBeCopyConstructor.owner.equals("java/util/ArrayList");
-        }
-
-        private boolean wrapsInUnmodifiable(FieldInsnNode fieldInsnNode) {
-            if (!(fieldInsnNode.getPrevious() instanceof MethodInsnNode)) {
-                return false;
-            }
-            
-            MethodInsnNode previousInvocation = (MethodInsnNode) fieldInsnNode.getPrevious();
-            String methodName = previousInvocation.name;
-            String onClass = previousInvocation.owner;
-            
-            return onClass.equals("java/util/Collections") && methodName.equals("unmodifiableList");
         }
 
     }
