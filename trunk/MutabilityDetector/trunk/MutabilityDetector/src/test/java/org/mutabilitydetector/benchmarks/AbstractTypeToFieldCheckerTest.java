@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.AbstractTypeToFieldChecker.newAbstractTypeToFieldChecker;
@@ -28,7 +29,6 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -108,7 +108,6 @@ public class AbstractTypeToFieldCheckerTest {
         assertThat(fieldLocation.fieldName(), is("nameContainer"));
     }
     
-    @Ignore
     @Test
     public void allowsCopyingAndWrappingInUmodifiableCollectionTypeIdiom() throws Exception {
         assertThat(runChecker(checker, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class), 
@@ -117,8 +116,13 @@ public class AbstractTypeToFieldCheckerTest {
 
     @Test
     public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeButIsNotCopiedFirst() throws Exception {
-        assertThat(runChecker(checker, WrapWithUnmodifiableListWithoutCopyingFirst.class), 
-                areNotImmutable());
+        result = runChecker(checker, WrapWithUnmodifiableListWithoutCopyingFirst.class);
+        
+        assertThat(result, areNotImmutable());
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
+        
+        assertEquals(reasonDetail.reason(), ABSTRACT_TYPE_TO_FIELD);
+        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without perfoming a copy first."));
     }
 
 }

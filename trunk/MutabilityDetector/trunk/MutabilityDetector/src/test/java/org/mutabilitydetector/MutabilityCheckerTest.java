@@ -86,7 +86,6 @@ public class MutabilityCheckerTest {
     }
 
     @Test
-    @FalsePositive("Safely copies list into unmodifiable list.")
     public void immutableByCopyingMutableListIntoNewArrayListAndUnmodifiableList() throws Exception {
         assertImmutable(CopyListIntoNewArrayListAndUnmodifiableListIdiom.class);
     }

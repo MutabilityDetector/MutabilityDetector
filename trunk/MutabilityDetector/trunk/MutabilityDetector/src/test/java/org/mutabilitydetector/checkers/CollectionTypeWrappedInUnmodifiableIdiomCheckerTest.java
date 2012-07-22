@@ -22,5 +22,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertFalse(checker.isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(dotted("java.lang.Object")));
         assertFalse(checker.isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(dotted("some.other.codebase.specific.Thingy")));
     }
+
+    
     
 }

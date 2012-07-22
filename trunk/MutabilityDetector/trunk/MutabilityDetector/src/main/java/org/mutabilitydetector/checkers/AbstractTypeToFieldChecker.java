@@ -28,6 +28,7 @@ import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -73,24 +74,59 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
                 FieldInsnNode fieldInsnNode,
                 BasicValue stackValue) {
             if (isInvalidStackValue(stackValue)) { return; }
-            checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType());
+            if (!isReferenceType(stackValue.getType())) { return; }
+            
+            checkIfClassIsAbstract(fieldInsnNode.name, stackValue.getType(), fieldInsnNode);
         }
 
-        void checkIfClassIsAbstract(String fieldName, Type objectType) {
-            int sort = objectType.getSort();
-            if (sort != Type.OBJECT) { return; }
+        private boolean isReferenceType(Type objectType) {
+            return objectType.getSort() == Type.OBJECT;
+        }
+
+        void checkIfClassIsAbstract(String fieldName, Type objectType, FieldInsnNode fieldInsnNode) {
             Dotted className = dotted(objectType.getInternalName());
             boolean isAbstract = typeStructureInformation.isTypeAbstract(className);
-
-            if (new CollectionTypeWrappedInUmodifiableIdiomChecker().isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(className)) {
-                
-            }
             
             if (isAbstract) {
+                if (new CollectionTypeWrappedInUmodifiableIdiomChecker().isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(className)) {
+                    if (wrapsInUnmodifiable(fieldInsnNode)) {
+                        if (safelyCopiesBeforeWrapping((MethodInsnNode) fieldInsnNode.getPrevious())) {
+                            return;
+                        } else {
+                            addResult("Attempts to wrap mutable collection type without perfoming a copy first.",
+                                    fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                    MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+                            return;
+                        }
+                    }
+                }
                 addResult(format("Field can have an abstract type (%s) assigned to it.", className),
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
             }
+        }
+
+        private boolean safelyCopiesBeforeWrapping(MethodInsnNode unmodifiableMethodCall) {
+            if (!(unmodifiableMethodCall.getPrevious() instanceof MethodInsnNode)) {
+                return false;
+            }
+            
+            MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) unmodifiableMethodCall.getPrevious();
+            
+            return MethodIs.aConstructor(shouldBeCopyConstructor.name) &&
+                    shouldBeCopyConstructor.owner.equals("java/util/ArrayList");
+        }
+
+        private boolean wrapsInUnmodifiable(FieldInsnNode fieldInsnNode) {
+            if (!(fieldInsnNode.getPrevious() instanceof MethodInsnNode)) {
+                return false;
+            }
+            
+            MethodInsnNode previousInvocation = (MethodInsnNode) fieldInsnNode.getPrevious();
+            String methodName = previousInvocation.name;
+            String onClass = previousInvocation.owner;
+            
+            return onClass.equals("java/util/Collections") && methodName.equals("unmodifiableList");
         }
 
     }

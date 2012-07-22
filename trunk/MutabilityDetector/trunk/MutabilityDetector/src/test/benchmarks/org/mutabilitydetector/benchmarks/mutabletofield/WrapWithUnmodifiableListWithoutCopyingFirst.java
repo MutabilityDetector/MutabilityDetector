@@ -25,7 +25,7 @@ public final class WrapWithUnmodifiableListWithoutCopyingFirst {
     private final List<String> unmodifiable;
     
     public WrapWithUnmodifiableListWithoutCopyingFirst(List<String> potentiallyMutatable) {
-        this.unmodifiable = Collections.unmodifiableList(new ArrayList<String>(potentiallyMutatable));
+        this.unmodifiable = Collections.unmodifiableList(potentiallyMutatable);
     }
     
     public List<String> getUnmodifiable() {
