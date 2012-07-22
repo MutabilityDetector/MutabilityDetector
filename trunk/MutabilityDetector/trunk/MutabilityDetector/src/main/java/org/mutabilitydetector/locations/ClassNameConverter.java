@@ -40,6 +40,7 @@ public final class ClassNameConverter {
 	    return from(singleton(givenClassName))
 	            .transform(SINGLE_DIMENSIONAL_IF_ARRAY)
 	            .transform(REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE)
+	            .transform(REMOVE_REFERENCE_DESCRIPTOR_IF_REFERENCE_TYPE)
 	            .transform(REMOVE_CLASS_EXTENSION)
 	            .transform(REMOVE_TRAILING_SEMICOLON)
 	            .transform(REPLACE_SLASHES_WITH_DOTS)
@@ -52,6 +53,10 @@ public final class ClassNameConverter {
 
 	private static final Function<String, String> REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE = new Function<String, String>() {
 	    @Override public String apply(String input) { return input.startsWith("[L") ? input.replace("[L", "") : input; }
+	};
+
+	private static final Function<String, String> REMOVE_REFERENCE_DESCRIPTOR_IF_REFERENCE_TYPE = new Function<String, String>() {
+	    @Override public String apply(String input) { return input.startsWith("L") ? input.substring(1) : input; }
 	};
 	
 	private static final Function<String, String> REMOVE_CLASS_EXTENSION = new Function<String, String>() {

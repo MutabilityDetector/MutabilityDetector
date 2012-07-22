@@ -55,4 +55,9 @@ public class ClassNameConverterTest {
         assertEquals("[B", CONVERTER.dotted(multidimensionalPrimitiveArray));
     }
     
+    @Test
+    public void convertsInternalReferenceType() throws Exception {
+        assertEquals("java.util.List", CONVERTER.dotted("Ljava/util/List;"));
+    }
+    
 }
