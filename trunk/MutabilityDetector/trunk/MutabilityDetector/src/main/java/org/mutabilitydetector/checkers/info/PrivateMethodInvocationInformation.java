@@ -40,7 +40,7 @@ public final class PrivateMethodInvocationInformation implements AnalysisInforma
         if (checkerCache.containsKey(forMethod.dottedClassName())) {
             checker = checkerCache.get(forMethod.dottedClassName());
         } else {
-            checker = PrivateMethodInvocationChecker.newChecker();
+            checker = new PrivateMethodInvocationChecker();
             sessionCheckerRunner.run(checker, forClass(forMethod.dottedClassName()));
             checkerCache.put(forMethod.dottedClassName(), checker);
         }

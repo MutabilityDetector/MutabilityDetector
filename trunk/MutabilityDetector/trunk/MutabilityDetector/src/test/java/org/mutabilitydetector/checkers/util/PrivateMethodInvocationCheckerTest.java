@@ -27,7 +27,7 @@ public class PrivateMethodInvocationCheckerTest {
 
     @Test
     public void testCanQueryIfAMethodIsOnlyCalledFromTheConstructor() throws Exception {
-        PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
+        PrivateMethodInvocationChecker checker = new PrivateMethodInvocationChecker();
         TestUtil.runChecker(checker, PrivateMethodsCalledOnlyInConstructor.class);
 
         String methodDescriptor = "privateMethod:()V";
@@ -38,7 +38,7 @@ public class PrivateMethodInvocationCheckerTest {
     @Test
     public void isPrivateMethodCalledOnlyFromConstructorReturnsFalseWhenPrivateMethodIsInvokedInPublicMethod()
             throws Exception {
-        PrivateMethodInvocationChecker checker = PrivateMethodInvocationChecker.newChecker();
+        PrivateMethodInvocationChecker checker = new PrivateMethodInvocationChecker();
         TestUtil.runChecker(checker, PrivateMethodsCalledOutsideConstructor.class);
 
         String methodDescriptor = "privateMethod:()V";

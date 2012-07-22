@@ -34,16 +34,6 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
 
-    /**
-     * @see #newChecker()
-     */
-    private PrivateMethodInvocationChecker() {
-    }
-
-    public static PrivateMethodInvocationChecker newChecker() {
-        return new PrivateMethodInvocationChecker();
-    }
-
     private Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
 
     @Override
