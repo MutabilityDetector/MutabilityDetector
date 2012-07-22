@@ -22,7 +22,7 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapperIdiom;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -88,24 +88,21 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             boolean isAbstract = typeStructureInformation.isTypeAbstract(className);
             
             if (isAbstract) {
-                UnmodifiableWrapperIdiom unmodifiableWrapperIdiom = new CollectionTypeWrappedInUmodifiableIdiomChecker(className, fieldInsnNode).checkWrappedInUnmodifiable();
+                UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode).checkWrappedInUnmodifiable();
                 
-                
-                if (unmodifiableWrapperIdiom.canBeWrapped) {
-                    if (unmodifiableWrapperIdiom.isWrapped) {
-                        if (unmodifiableWrapperIdiom.safelyCopiesBeforeWrapping) {
-                            return;
-                        } else {
-                            addResult("Attempts to wrap mutable collection type without perfoming a copy first.",
-                                    fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
-                                    MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
-                            return;
-                        }
+                if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.isWrapped) {
+                    if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
+                        return;
+                    } else {
+                        addResult("Attempts to wrap mutable collection type without perfoming a copy first.",
+                                fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+                        return;
                     }
                 } else {
                     addResult(format("Field can have an abstract type (%s) assigned to it.", className),
-                        fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
-                        MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+                            fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                            MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
                 }
             }
         }
