@@ -1,13 +1,13 @@
 package org.mutabilitydetector.checkers;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.sun.xml.internal.ws.org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_TRY_TO_WRAP;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
 
 import org.mutabilitydetector.locations.ClassNameConverter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
@@ -44,7 +44,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
     }
     
     public CollectionTypeWrappedInUmodifiableIdiomChecker(FieldInsnNode fieldInsnNode) {
-        checkArgument(fieldInsnNode.getOpcode() == PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
+        checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         
         this.fieldInsnNode = fieldInsnNode;
     }
