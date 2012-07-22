@@ -82,11 +82,16 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             Dotted className = dotted(objectType.getInternalName());
             boolean isAbstract = typeStructureInformation.isTypeAbstract(className);
 
+            if (new CollectionTypeWrappedInUmodifiableIdiomChecker().isCollectionTypeWhichCanBeWrappedInUmodifiableVersion(className)) {
+                
+            }
+            
             if (isAbstract) {
                 addResult(format("Field can have an abstract type (%s) assigned to it.", className),
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
             }
         }
+
     }
 }

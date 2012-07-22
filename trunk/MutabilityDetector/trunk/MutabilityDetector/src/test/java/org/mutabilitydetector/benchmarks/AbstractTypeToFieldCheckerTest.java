@@ -28,13 +28,16 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
+import org.mutabilitydetector.benchmarks.mutabletofield.WrapWithUnmodifiableListWithoutCopyingFirst;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -103,6 +106,19 @@ public class AbstractTypeToFieldCheckerTest {
 
         assertThat(fieldLocation.typeName(), is(MutableByAssigningAbstractTypeToField.class.getName()));
         assertThat(fieldLocation.fieldName(), is("nameContainer"));
+    }
+    
+    @Ignore
+    @Test
+    public void allowsCopyingAndWrappingInUmodifiableCollectionTypeIdiom() throws Exception {
+        assertThat(runChecker(checker, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class), 
+                   areImmutable());
+    }
+
+    @Test
+    public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeButIsNotCopiedFirst() throws Exception {
+        assertThat(runChecker(checker, WrapWithUnmodifiableListWithoutCopyingFirst.class), 
+                areNotImmutable());
     }
 
 }
