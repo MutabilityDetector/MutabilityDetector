@@ -31,7 +31,7 @@ import com.google.common.base.Function;
 @Immutable
 public final class ClassNameConverter {
 
-	private static final ClassNameConverter CONVERTER = new ClassNameConverter();
+	public static final ClassNameConverter CONVERTER = new ClassNameConverter();
     public static final Function<String, String> TO_DOTTED_STRING = new Function<String, String>() {
 		@Override public String apply(String input) { return CONVERTER.dotted(input); }
     };

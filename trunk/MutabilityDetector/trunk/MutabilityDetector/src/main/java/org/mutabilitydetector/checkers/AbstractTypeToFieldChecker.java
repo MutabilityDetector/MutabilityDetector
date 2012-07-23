@@ -90,7 +90,7 @@ public class AbstractTypeToFieldChecker extends AbstractMutabilityChecker {
             if (isAbstract) {
                 UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode).checkWrappedInUnmodifiable();
                 
-                if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.isWrapped) {
+                if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
                     if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
                         return;
                     } else {
