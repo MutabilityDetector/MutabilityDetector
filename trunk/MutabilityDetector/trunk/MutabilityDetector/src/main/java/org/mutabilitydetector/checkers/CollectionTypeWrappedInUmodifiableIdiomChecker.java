@@ -77,7 +77,6 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
             return desc.equals(other.desc) && name.equals(other.name) && owner.equals(other.owner);
         }
         
-        
     }
     
     private static final ImmutableMultimap<String, CopyMethod> FIELD_TYPE_TO_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>builder()
@@ -85,9 +84,23 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
                     new CopyMethod(dotted("java.util.ArrayList"), "<init>", "(Ljava/util/Collection;)V"),
                     new CopyMethod(dotted("java.util.LinkedList"), "<init>", "(Ljava/util/Collection;)V"),
                     new CopyMethod(dotted("java.util.Vector"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArrayList"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.Collections"), "checkedList", "(Ljava/util/List;Ljava/lang/Class;)Ljava/util/List;"),
-                    new CopyMethod(dotted("java.util.Collections"), "synchronizedList", "(Ljava/util/List;)Ljava/util/List;"))
+                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArrayList"), "<init>", "(Ljava/util/Collection;)V"))
+            .putAll("java.util.Set",
+                    new CopyMethod(dotted("java.util.HashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.LinkedHashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArraySet"), "<init>", "(Ljava/util/Collection;)V"))
+            .putAll("java.util.Map",
+                    new CopyMethod(dotted("java.util.HashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.WeakHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.Hashtable"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.LinkedHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/Map;)V"))
             .build();
     
     
