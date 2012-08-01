@@ -18,6 +18,7 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -61,6 +62,21 @@ public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
         
         public String first() {
             return unmodifiable.first();
+        }
+    }
+
+    @SuppressWarnings({"unused", "unchecked"})
+    public final static class StoresCopiedCollectionAsObjectAndIterable {
+        private final Object unmodifiableReferencedAsObject;
+        private final Iterable<String> unmodifiableReferencedAsIterable;
+        
+        public StoresCopiedCollectionAsObjectAndIterable(List<String> potentiallyMutatable) {
+            this.unmodifiableReferencedAsObject = Collections.unmodifiableList(new LinkedList<String>(potentiallyMutatable));
+            this.unmodifiableReferencedAsIterable = Collections.unmodifiableList(new LinkedList<String>(potentiallyMutatable));
+        }
+        
+        public String first() {
+            return ((List<String>)unmodifiableReferencedAsObject).get(0);
         }
     }
     

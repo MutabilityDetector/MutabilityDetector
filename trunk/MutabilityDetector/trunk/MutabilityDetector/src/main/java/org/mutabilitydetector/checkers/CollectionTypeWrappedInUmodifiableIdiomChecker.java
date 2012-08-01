@@ -10,6 +10,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
@@ -145,6 +146,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
     }
 
     private FieldInsnNode fieldInsnNode;
+    private Type typeAssignedToField;
     
     public static enum UnmodifiableWrapResult {
         FIELD_TYPE_CANNOT_BE_WRAPPED(false, false, false),
@@ -163,14 +165,15 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         }
     }
     
-    public CollectionTypeWrappedInUmodifiableIdiomChecker(FieldInsnNode fieldInsnNode) {
+    public CollectionTypeWrappedInUmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
         checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         
         this.fieldInsnNode = fieldInsnNode;
+        this.typeAssignedToField = typeAssignedToField;
     }
 
     public UnmodifiableWrapResult checkWrappedInUnmodifiable() {
-        if (!CAN_BE_WRAPPED.contains(typeOfField())) {
+        if (!CAN_BE_WRAPPED.contains(typeAssignedToField())) {
             return FIELD_TYPE_CANNOT_BE_WRAPPED;
         }
         
@@ -186,8 +189,8 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
     }
     
     
-    private String typeOfField() {
-        return CLASS_NAME_CONVERTER.dotted(fieldInsnNode.desc);
+    private String typeAssignedToField() {
+        return CLASS_NAME_CONVERTER.dotted(typeAssignedToField.getInternalName());
     }
 
     private boolean wrapsInUnmodifiable() {
@@ -200,7 +203,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         String onClass = previousInvocation.owner;
         
         return UNMODIFIABLE_METHOD_OWNER.equals(CLASS_NAME_CONVERTER.dotted(onClass)) 
-                && FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeOfField()).equals(methodName);
+                && FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField()).equals(methodName);
     }
 
     private boolean safelyCopiesBeforeWrapping(MethodInsnNode unmodifiableMethodCall) {
@@ -210,7 +213,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         
         MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) unmodifiableMethodCall.getPrevious();
         
-        return FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeOfField(), CopyMethod.from(shouldBeCopyConstructor));
+        return FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
     }
 
 }

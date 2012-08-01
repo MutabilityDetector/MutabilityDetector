@@ -48,6 +48,7 @@ import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionAsObjectAndIterable;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionIntoLocalVariableBeforeWrapping;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
@@ -180,17 +181,17 @@ public class MutableTypeToFieldCheckerTest {
     
     @Test
     public void allowsCopyingAndWrappingInUmodifiableCollectionTypeIdiom() throws Exception {
-        checkerWithMockedSession = checkerWithRealAnalysisSession();
+        checkerWithRealSession = checkerWithRealAnalysisSession();
         
-        assertThat(runChecker(checkerWithMockedSession, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class), 
+        assertThat(runChecker(checkerWithRealSession, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class), 
                    areImmutable());
     }
 
     @Test
     public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeButIsNotCopiedFirst() throws Exception {
-        checkerWithMockedSession = checkerWithRealAnalysisSession();
+        checkerWithRealSession = checkerWithRealAnalysisSession();
         
-        result = runChecker(checkerWithMockedSession, WrapWithUnmodifiableListWithoutCopyingFirst.class);
+        result = runChecker(checkerWithRealSession, WrapWithUnmodifiableListWithoutCopyingFirst.class);
         
         assertThat(result, areNotImmutable());
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
@@ -201,15 +202,23 @@ public class MutableTypeToFieldCheckerTest {
     
     @Test
     public void doesNotAllowStoringCopiedCollectionIntoLocalVariableThatCouldEscape() throws Exception {
-        checkerWithMockedSession = checkerWithRealAnalysisSession();
+        checkerWithRealSession = checkerWithRealAnalysisSession();
         
-        result = runChecker(checkerWithMockedSession, StoresCopiedCollectionIntoLocalVariableBeforeWrapping.class);
+        result = runChecker(checkerWithRealSession, StoresCopiedCollectionIntoLocalVariableBeforeWrapping.class);
         
         assertThat(result, areNotImmutable());
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
         
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely perfoming a copy first."));
+    }
+
+    @Test
+    public void allowsStoringASafelyCopiedAndWrappedCollectionIntoFieldOfMoreAbstractType() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+        
+        assertThat(runChecker(checkerWithRealSession, StoresCopiedCollectionAsObjectAndIterable.class), 
+                areImmutable());
     }
 
     @Test

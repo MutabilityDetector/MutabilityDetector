@@ -83,13 +83,13 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         }
         
 
-        private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type type) {
-            int sort = type.getSort();
+        private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
+            int sort = typeAssignedToField.getSort();
             String fieldName = fieldInsnNode.name;
 
             switch (sort) {
             case Type.OBJECT:
-                Dotted className = dotted(type.getInternalName());
+                Dotted className = dotted(typeAssignedToField.getInternalName());
                 RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className);
                 
                 if (!requestedAnalysis.analysisComplete) {
@@ -103,7 +103,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 } else if(!isConcreteType(className)) {
                 
                     UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(
-                            fieldInsnNode).checkWrappedInUnmodifiable();
+                            fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
                         addResult(format("Field can have an abstract type (%s) assigned to it.", className),
