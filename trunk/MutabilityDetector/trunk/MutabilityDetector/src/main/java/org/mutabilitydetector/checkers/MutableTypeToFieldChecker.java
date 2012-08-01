@@ -16,6 +16,7 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static java.lang.String.format;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
@@ -23,6 +24,7 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
@@ -76,11 +78,15 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         @Override
         protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
             if (isInvalidStackValue(stackValue)) { return; }
-            checkIfClassIsMutable(fieldInsnNode.name, stackValue.getType());
+            
+            checkIfClassIsMutable(fieldInsnNode, stackValue.getType());
         }
+        
 
-        private void checkIfClassIsMutable(String fieldName, Type type) {
+        private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type type) {
             int sort = type.getSort();
+            String fieldName = fieldInsnNode.name;
+
             switch (sort) {
             case Type.OBJECT:
                 Dotted className = dotted(type.getInternalName());
@@ -94,6 +100,28 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     addResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
                             fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
+                } else if(!isConcreteType(className)) {
+                
+                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(
+                            fieldInsnNode).checkWrappedInUnmodifiable();
+
+                    if (!unmodifiableWrapResult.canBeWrapped) {
+                        addResult(format("Field can have an abstract type (%s) assigned to it.", className),
+                                fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
+                        return;
+                    }
+                    
+                    if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
+                        if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
+                            break;
+                        } else {
+                            addResult("Attempts to wrap mutable collection type without safely perfoming a copy first.",
+                                    fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                    MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
+                            break;
+                        }
+                    }
                 }
                 break;
             case Type.ARRAY:

@@ -19,6 +19,8 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
 
@@ -47,6 +49,19 @@ public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
             return unmodifiable;
         }
         
+    }
+    
+    public final static class StoresCopiedCollectionIntoLocalVariableBeforeWrapping {
+        private final SortedSet<String> unmodifiable;
+        
+        public StoresCopiedCollectionIntoLocalVariableBeforeWrapping(SortedSet<String> potentiallyMutatable) {
+            ConcurrentSkipListSet<String> iCouldEscapeAndBeModified = new ConcurrentSkipListSet<String>(potentiallyMutatable);
+            this.unmodifiable = Collections.unmodifiableSortedSet(iCouldEscapeAndBeModified);
+        }
+        
+        public String first() {
+            return unmodifiable.first();
+        }
     }
     
 }

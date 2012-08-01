@@ -17,6 +17,10 @@
 
 package org.mutabilitydetector;
 
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -36,6 +40,11 @@ public class AnalysisResultTest {
     @Test
     public void doesntThrowExceptionWhenImmutableAndNoReasonGiven() throws Exception {
         AnalysisResult.analysisResult("someclass", IsImmutable.IMMUTABLE);
+    }
+    
+    @Test
+    public void isImmutable() throws Exception {
+        assertInstancesOf(AnalysisResult.class, areImmutable(), provided(String.class).isAlsoImmutable());
     }
 
 }

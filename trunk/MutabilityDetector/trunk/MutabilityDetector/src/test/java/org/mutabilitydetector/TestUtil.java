@@ -20,7 +20,6 @@ import static java.util.Arrays.asList;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -41,12 +40,16 @@ import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = ThreadUnsafeAnalysisSession.createWithCurrentClassPath().resultFor(Dotted.fromClass(toAnalyse)).result.isImmutable;
+        IsImmutable result = testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result.isImmutable;
         return result;
     }
-
+    
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath().resultFor(Dotted.fromClass(toAnalyse)).result;
+        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result;
+    }
+
+    public static AnalysisSession testAnalysisSession() {
+        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {
@@ -64,12 +67,12 @@ public class TestUtil {
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
-        CheckerRunner.createWithCurrentClasspath().run(createWithCurrentClassPath(), checker, fromClass(toAnalyse));
+        CheckerRunner.createWithCurrentClasspath().run(testAnalysisSession(), checker, fromClass(toAnalyse));
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 
     public static SessionCheckerRunner sessionCheckerRunner() {
-        return new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
+        return new SessionCheckerRunner(testAnalysisSession(), createWithCurrentClasspath());
     }
 
     public static AnalysisDatabase analysisDatabase() {

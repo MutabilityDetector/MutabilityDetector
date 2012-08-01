@@ -6,7 +6,6 @@ import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiable
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
@@ -138,12 +137,64 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
     }
 
     @Test
+    public void copyMethodsOfJdkCollectionImplementingClassesAreWhitelistedCopyMethods() throws Exception {
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/CopyOnWriteArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/LinkedList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/Vector", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/HashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/LinkedHashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/CopyOnWriteArraySet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentLinkedQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/DelayQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/LinkedBlockingDeque", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/LinkedBlockingQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/LinkedTransferQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/PriorityBlockingQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/PriorityQueue", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/PriorityQueue", "<init>", "(Ljava/util/concurrent/PriorityQueue;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/PriorityQueue", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentLinkedDeque", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/ArrayDeque", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ArrayBlockingQueue", "<init>", "(IZLjava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+    }
+
+    @Test
     public void copyMethodsOfJdkSetImplementingClassesAreWhitelistedCopyMethods() throws Exception {
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/HashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/LinkedHashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableSet", "java/util/Set")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
@@ -159,6 +210,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableMap", "java/util/Map")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/WeakHashMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/Hashtable", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map")
@@ -170,6 +223,32 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentHashMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableMap", "java/util/Map")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+    }
+
+    @Test
+    public void copyMethodsOfJdkSortedMapImplementingClassesAreWhitelistedCopyMethods() throws Exception {
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableSortedMap", "java/util/SortedMap")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableSortedMap", "java/util/SortedMap")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableSortedMap", "java/util/SortedMap")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableSortedMap", "java/util/SortedMap")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+    }
+
+    @Test
+    public void copyMethodsOfJdkSortedSetImplementingClassesAreWhitelistedCopyMethods() throws Exception {
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSortedSet", "java/util/SortedSet")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableSortedSet", "java/util/SortedSet")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSortedSet", "java/util/SortedSet")
+                .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checkerForPutfieldPrecededByCopyAndWrapMethods("java/util/TreeSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableSortedSet", "java/util/SortedSet")
                 .checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
 
@@ -191,8 +270,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode);
-        return checker;
+        return new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode);
     }
 
     private CollectionTypeWrappedInUmodifiableIdiomChecker checkerForAssigningToFieldOfType(String fieldType) {

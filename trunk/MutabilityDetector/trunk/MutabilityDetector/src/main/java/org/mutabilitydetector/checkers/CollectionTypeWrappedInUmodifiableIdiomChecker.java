@@ -27,7 +27,9 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
                                                                                "java.util.List",
                                                                                "java.util.Map",
                                                                                "java.util.SortedMap");
+    
     private static final String UNMODIFIABLE_METHOD_OWNER = "java.util.Collections";
+    
     private static final ImmutableMap<String, String> FIELD_TYPE_TO_UNMODIFIABLE_METHOD = ImmutableMap.<String, String>builder()
             .put("java.util.Collection", "unmodifiableCollection")
             .put("java.util.Set", "unmodifiableSet")
@@ -37,6 +39,69 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
             .put("java.util.SortedMap", "unmodifiableSortedMap")
             .build();
 
+    private static final ImmutableMultimap<String, CopyMethod> FIELD_TYPE_TO_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>builder()
+            .putAll("java.util.List", 
+                    new CopyMethod(dotted("java.util.ArrayList"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.LinkedList"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.Vector"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArrayList"), "<init>", "(Ljava/util/Collection;)V"))
+            .putAll("java.util.Set",
+                    new CopyMethod(dotted("java.util.HashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.LinkedHashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArraySet"), "<init>", "(Ljava/util/Collection;)V"))
+            .putAll("java.util.Map",
+                    new CopyMethod(dotted("java.util.HashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/SortedMap;)V"),
+                    new CopyMethod(dotted("java.util.WeakHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.Hashtable"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.LinkedHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentHashMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/SortedMap;)V"))
+            .putAll("java.util.SortedMap",
+                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/SortedMap;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/Map;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/SortedMap;)V"))
+            .putAll("java.util.SortedSet",
+                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/SortedSet;)V"))
+            .putAll("java.util.Collection",
+                    new CopyMethod(dotted("java/util/ArrayList"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/CopyOnWriteArrayList"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/LinkedList"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/Vector"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/HashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/LinkedHashSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/TreeSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/TreeSet"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/ConcurrentSkipListSet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/ConcurrentSkipListSet"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/CopyOnWriteArraySet"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/ConcurrentLinkedQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/DelayQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/LinkedBlockingDeque"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/LinkedBlockingQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/LinkedTransferQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/PriorityBlockingQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/PriorityQueue"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/PriorityQueue"), "<init>", "(Ljava/util/concurrent/PriorityQueue;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/PriorityQueue"), "<init>", "(Ljava/util/SortedSet;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/ConcurrentLinkedDeque"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/ArrayDeque"), "<init>", "(Ljava/util/Collection;)V"),
+                    new CopyMethod(dotted("java/util/concurrent/ArrayBlockingQueue"), "<init>", "(IZLjava/util/Collection;)V"))
+            .build();
+    
+    
     private static class CopyMethod {
         private final Dotted owner;
         private final String name;
@@ -51,7 +116,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         public static CopyMethod from(MethodInsnNode methodNode) {
             return new CopyMethod(Dotted.dotted(methodNode.owner), methodNode.name, methodNode.desc);
         }
-
+    
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -61,7 +126,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
             result = prime * owner.hashCode();
             return result;
         }
-
+    
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -78,32 +143,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         }
         
     }
-    
-    private static final ImmutableMultimap<String, CopyMethod> FIELD_TYPE_TO_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>builder()
-            .putAll("java.util.List", 
-                    new CopyMethod(dotted("java.util.ArrayList"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.LinkedList"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.Vector"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArrayList"), "<init>", "(Ljava/util/Collection;)V"))
-            .putAll("java.util.Set",
-                    new CopyMethod(dotted("java.util.HashSet"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.LinkedHashSet"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.TreeSet"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListSet"), "<init>", "(Ljava/util/Collection;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.CopyOnWriteArraySet"), "<init>", "(Ljava/util/Collection;)V"))
-            .putAll("java.util.Map",
-                    new CopyMethod(dotted("java.util.HashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.TreeMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.WeakHashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.Hashtable"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.IdentityHashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.LinkedHashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.ConcurrentHashMap"), "<init>", "(Ljava/util/Map;)V"),
-                    new CopyMethod(dotted("java.util.concurrent.ConcurrentSkipListMap"), "<init>", "(Ljava/util/Map;)V"))
-            .build();
-    
-    
+
     private FieldInsnNode fieldInsnNode;
     
     public static enum UnmodifiableWrapResult {

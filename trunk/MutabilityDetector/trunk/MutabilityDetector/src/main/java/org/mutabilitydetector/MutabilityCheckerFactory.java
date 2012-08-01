@@ -16,7 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.checkers.AbstractTypeToFieldChecker.newAbstractTypeToFieldChecker;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
@@ -42,7 +41,6 @@ public final class MutabilityCheckerFactory {
     public Iterable<AsmMutabilityChecker> createInstances(AnalysisSession analysisSession, AnalysisDatabase database, AsmVerifierFactory verifierFactory) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
-        checkers.add(newAbstractTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), verifierFactory));
         checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
         checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION), verifierFactory));

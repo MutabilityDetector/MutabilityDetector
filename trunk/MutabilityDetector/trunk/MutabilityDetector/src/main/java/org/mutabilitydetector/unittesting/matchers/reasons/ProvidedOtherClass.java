@@ -24,7 +24,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.checkers.AbstractTypeToFieldChecker;
+import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.locations.Dotted;
 
 public class ProvidedOtherClass {
@@ -64,7 +64,7 @@ public class ProvidedOtherClass {
         
         /**
          * This matcher has to check against string created by the checker, which may change.
-         * @see AbstractTypeToFieldChecker
+         * @see MutableTypeToFieldChecker
          */
         private String classNameAsItAppearsInDescription() {
             return "(" + className.asString() + ")";
