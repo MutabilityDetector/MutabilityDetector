@@ -88,7 +88,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 	    ClassPath classpath = new ClassPathFactory().createFromJVM();
 	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
 	            new IsAssignableFromCachingTypeHierarchyReader(
-	                    new CachingTypeHierarchyReader(new TypeHierarchyReader(), 1)));
+	                    new CachingTypeHierarchyReader(new TypeHierarchyReader())));
 	    return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
 	    
 	}

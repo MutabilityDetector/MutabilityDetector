@@ -42,11 +42,14 @@ import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy;
 import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.Type;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
+import com.google.common.collect.MapMaker;
 import com.google.common.io.InputSupplier;
 
 /**
@@ -113,8 +116,9 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
         return new NonClassLoadingVerifierFactory(
                 new IsAssignableFromCachingTypeHierarchyReader(
-                        new CachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
-                                findResources.length)));
+                        new CachingTypeHierarchyReader(
+                                new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
+                                new MapMaker().initialCapacity(findResources.length).<Type, TypeHierarchy>makeMap())));
     }
     
     private ClassLoadingVerifierFactory createClassLoadingVerifierFactory() {
