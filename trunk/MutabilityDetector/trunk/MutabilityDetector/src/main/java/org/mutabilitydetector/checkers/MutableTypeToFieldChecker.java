@@ -116,7 +116,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                         if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
                             break;
                         } else {
-                            addResult("Attempts to wrap mutable collection type without safely perfoming a copy first.",
+                            addResult("Attempts to wrap mutable collection type without safely performing a copy first.",
                                     fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                     MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                             break;
