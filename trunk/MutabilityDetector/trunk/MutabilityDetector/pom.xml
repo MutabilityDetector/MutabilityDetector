@@ -297,8 +297,7 @@
 			<groupId>org.mutabilitydetector</groupId>
 			<artifactId>asm-nonclassloadingsimpleverifier</artifactId>
 			<version>1.0-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/vendor/lib/main/asm-nonclassloadingsimpleverifier-1.0-SNAPSHOT.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>
 
 
