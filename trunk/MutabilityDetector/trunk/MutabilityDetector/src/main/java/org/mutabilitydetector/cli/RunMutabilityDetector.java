@@ -42,9 +42,9 @@ import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -101,6 +101,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         session.runAnalysis(filtered);
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
+        
         return new SessionResultsFormatter(options, readerFactory)
                        .format(session.getResults(), session.getErrors());
     }

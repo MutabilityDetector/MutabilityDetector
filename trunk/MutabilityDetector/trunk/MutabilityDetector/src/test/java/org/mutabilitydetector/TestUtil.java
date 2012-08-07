@@ -28,7 +28,6 @@ import java.util.Collection;
 import org.junit.Ignore;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
@@ -36,6 +35,7 @@ import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 @Ignore
 public class TestUtil {

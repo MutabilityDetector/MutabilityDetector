@@ -1,6 +1,7 @@
 package org.mutabilitydetector.asmoverride;
 
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 import com.google.common.base.Objects;
 import com.google.common.cache.CacheBuilder;

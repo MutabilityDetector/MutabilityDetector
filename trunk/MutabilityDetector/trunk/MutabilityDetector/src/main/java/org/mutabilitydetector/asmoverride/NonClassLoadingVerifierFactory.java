@@ -2,6 +2,8 @@ package org.mutabilitydetector.asmoverride;
 
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Interpreter;
+import org.objectweb.asm.tree.analysis.NonClassloadingSimpleVerifier;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 public class NonClassLoadingVerifierFactory implements AsmVerifierFactory {
 

@@ -29,11 +29,11 @@ import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;

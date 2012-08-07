@@ -9,6 +9,7 @@ import java.util.Map;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 import com.google.common.io.InputSupplier;
 
