@@ -17,6 +17,7 @@
 package org.mutabilitydetector.benchmarks.mutabletofield;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,4 +81,14 @@ public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
         }
     }
     
+    public final static class ListFieldFromUnmodifiableArrayAsList {
+        private List<Object> unmodifiableList;
+        public ListFieldFromUnmodifiableArrayAsList(Object[] potentiallyMutatable) {
+            this.unmodifiableList = Collections.unmodifiableList(Arrays.asList(potentiallyMutatable));
+        }
+        
+        public List<Object> safelyReturned() {
+            return unmodifiableList;
+        }
+    }
 }
