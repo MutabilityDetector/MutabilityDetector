@@ -1,16 +1,10 @@
 package org.mutabilitydetector.issues;
 
-import static java.util.Arrays.asList;
-import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
-import java.util.List;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetail> {
@@ -20,7 +14,7 @@ public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetai
         public Assuming(String fieldName) {
             this.fieldName = fieldName;
         }
-        public Matcher<MutableReasonDetail> hasCollectionsUnmodifiableTypeAssignedToIt() {
+        public Matcher<MutableReasonDetail> isSafelyCopiedUnmodifiableCollectionWithImmutableTypes() {
             return new AssumeCopiedIntoUnmodifiable(fieldName);
         }
         
@@ -29,13 +23,6 @@ public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetai
     public static AssumeCopiedIntoUnmodifiable.Assuming assuming(String fieldName) {
         return new Assuming(fieldName);
     }
-
-    private static final List<Dotted> unmodifiableTypes = asList(dotted("java.util.List"), 
-                                                                 dotted("java.util.Map"), 
-                                                                 dotted("java.util.Set"),
-                                                                 dotted("java.util.Collection"),
-                                                                 dotted("java.util.SortedSet"),
-                                                                 dotted("java.util.SortedMap"));
 
     private final String fieldName;
     
@@ -46,19 +33,12 @@ public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetai
     @Override
     public void describeTo(Description description) { }
 
-
-    private Dotted sniffOutAssignedTypeFromMessage(String message) {
-        return dotted(message.substring(message.lastIndexOf("(") + 1, message.lastIndexOf(")")));
-    }
-
-
     @Override
     public boolean matches(Object arg0) {
         MutableReasonDetail reasonDetail = (MutableReasonDetail) arg0;
-        if (reasonDetail.reason().isOneOf(ABSTRACT_TYPE_TO_FIELD)) {
+        if (reasonDetail.reason().isOneOf(MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)) {
             String potentiallyAbstractField = ((FieldLocation) reasonDetail.codeLocation()).fieldName();
-            Dotted assignedType = sniffOutAssignedTypeFromMessage(reasonDetail.message());
-            if (potentiallyAbstractField.equals(fieldName) && unmodifiableTypes.contains(assignedType)) {
+            if (potentiallyAbstractField.equals(fieldName)) {
                 return true;
             }
         }

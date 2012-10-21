@@ -48,14 +48,14 @@ public final class ImmutableConfiguration {
         public void immutableConfiguration_assumeAnyMapIsImmutable() throws Exception {
             assertInstancesOf(ImmutableConfiguration.class, 
                               areImmutable(),
-                              provided(Map.class).isAlsoImmutable());
+                              provided(String.class, Object.class).isAlsoImmutable());
         }
         
         @Test
         public void immutableConfiguration_assumeACopyFromUnmodifiableCollection() throws Exception {
             assertInstancesOf(ImmutableConfiguration.class, 
                               areImmutable(),
-                              assuming("propMap").hasCollectionsUnmodifiableTypeAssignedToIt());
+                              assuming("propMap").isSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
         }
 
     }

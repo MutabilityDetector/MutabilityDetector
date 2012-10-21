@@ -1,5 +1,6 @@
 package org.mutabilitydetector;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
@@ -66,6 +67,12 @@ public class VanillaJUnitMatcherCompatibility {
     
     public static class IsEitherImmutableOrEffectivelyImmutable extends BaseMatcher<AnalysisResult> {
 
+    	@Override
+    	public void describeMismatch(Object item, Description description) {
+    		AnalysisResult result = (AnalysisResult) item;
+    		description.appendText(format("%s is actually %s%n", result.dottedClassName, result.isImmutable));
+    	}
+    	
         @Override
         public boolean matches(Object item) {
             AnalysisResult result = (AnalysisResult) item;
@@ -73,8 +80,8 @@ public class VanillaJUnitMatcherCompatibility {
         }
 
         @Override
-        public void describeTo(Description arg0) {
-            arg0.appendText("either Immutable or Effectively Immutable");
+        public void describeTo(Description description) {
+            description.appendText("either Immutable or Effectively Immutable");
         }
         
     }
