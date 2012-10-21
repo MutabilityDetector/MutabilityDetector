@@ -20,7 +20,7 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static com.google.common.collect.Iterables.transform;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.core.AnyOf.anyOf;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;

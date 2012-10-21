@@ -6,7 +6,6 @@ import static java.util.Collections.unmodifiableList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
@@ -14,6 +13,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 
 public abstract class CollectionField {
     public final Dotted collectionType;
@@ -145,7 +145,7 @@ public abstract class CollectionField {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, wildcard);
+            return Objects.hashCode(type, wildcard);
         }
 
         @Override
