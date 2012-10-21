@@ -17,6 +17,9 @@
 
 package org.mutabilitydetector.unittesting;
 
+import static com.google.common.collect.Iterables.transform;
+import static java.util.Arrays.asList;
+import static org.mutabilitydetector.locations.Dotted.CLASS_TO_DOTTED;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -37,6 +40,10 @@ public final class AllowedReason {
 
     public static ProvidedOtherClass provided(Class<?> clazz) {
         return ProvidedOtherClass.provided(fromClass(clazz));
+    }
+
+    public static ProvidedOtherClass provided(Class<?>... classes) {
+        return ProvidedOtherClass.provided(transform(asList(classes), CLASS_TO_DOTTED));
     }
 
     public static AllowingForSubclassing allowingForSubclassing() {

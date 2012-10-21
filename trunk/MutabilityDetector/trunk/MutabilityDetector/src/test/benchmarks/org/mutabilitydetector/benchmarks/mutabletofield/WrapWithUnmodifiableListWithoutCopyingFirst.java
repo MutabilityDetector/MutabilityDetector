@@ -20,15 +20,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.mutabilitydetector.benchmarks.ImmutableExample;
+
 public final class WrapWithUnmodifiableListWithoutCopyingFirst {
 
-    private final List<String> unmodifiable;
+    private final List<ImmutableExample> unmodifiable;
     
-    public WrapWithUnmodifiableListWithoutCopyingFirst(List<String> potentiallyMutatable) {
+    public WrapWithUnmodifiableListWithoutCopyingFirst(List<ImmutableExample> potentiallyMutatable) {
         this.unmodifiable = Collections.unmodifiableList(potentiallyMutatable);
     }
     
-    public List<String> getUnmodifiable() {
+    public List<ImmutableExample> getUnmodifiable() {
         return unmodifiable;
     }
     

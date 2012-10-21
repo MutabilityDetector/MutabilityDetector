@@ -154,6 +154,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
         WRAPS_BUT_DOES_NOT_COPY(true, true, false),
         WRAPS_AND_COPIES_SAFELY(true, true, true);
         
+        
         public final boolean canBeWrapped;
         public final boolean invokesWhitelistedWrapperMethod;
         public final boolean safelyCopiesBeforeWrapping;
@@ -175,7 +176,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
     public UnmodifiableWrapResult checkWrappedInUnmodifiable() {
         if (!CAN_BE_WRAPPED.contains(typeAssignedToField())) {
             return FIELD_TYPE_CANNOT_BE_WRAPPED;
-        }
+        } 
         
         if (wrapsInUnmodifiable()) {
             if (safelyCopiesBeforeWrapping((MethodInsnNode) fieldInsnNode.getPrevious())) {

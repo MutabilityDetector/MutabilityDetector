@@ -19,76 +19,112 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.mutabilitydetector.benchmarks.ImmutableExample;
+
+@SuppressWarnings("unused")
 public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
 
-    private final List<String> unmodifiable;
+    private final List<ImmutableExample> unmodifiable;
     
-    public CopyListIntoNewArrayListAndUnmodifiableListIdiom(List<String> potentiallyMutatable) {
-        this.unmodifiable = Collections.unmodifiableList(new ArrayList<String>(potentiallyMutatable));
+    public CopyListIntoNewArrayListAndUnmodifiableListIdiom(List<ImmutableExample> potentiallyMutatable) {
+        this.unmodifiable = Collections.unmodifiableList(new ArrayList<ImmutableExample>(potentiallyMutatable));
     }
     
-    public List<String> getUnmodifiable() {
+    public List<ImmutableExample> getUnmodifiable() {
         return unmodifiable;
     }
     
     public final static class StaticMethodDoesTheCopying {
-        private final List<String> unmodifiable;
+        private final List<ImmutableExample> unmodifiable;
 
-        private StaticMethodDoesTheCopying(List<String> unmodifiable) {
+        private StaticMethodDoesTheCopying(List<ImmutableExample> unmodifiable) {
             this.unmodifiable = unmodifiable;
         }
         
-        public static StaticMethodDoesTheCopying create(List<String> potentiallyMutatable) {
-            return new StaticMethodDoesTheCopying(Collections.unmodifiableList(new ArrayList<String>(potentiallyMutatable)));
+        public static StaticMethodDoesTheCopying create(List<ImmutableExample> potentiallyMutatable) {
+            return new StaticMethodDoesTheCopying(Collections.unmodifiableList(new ArrayList<ImmutableExample>(potentiallyMutatable)));
         }
          
-        public List<String> getUnmodifiable() {
+        public List<ImmutableExample> getUnmodifiable() {
             return unmodifiable;
         }
         
     }
     
     public final static class StoresCopiedCollectionIntoLocalVariableBeforeWrapping {
-        private final SortedSet<String> unmodifiable;
+        private final SortedSet<ImmutableExample> unmodifiable;
         
-        public StoresCopiedCollectionIntoLocalVariableBeforeWrapping(SortedSet<String> potentiallyMutatable) {
-            ConcurrentSkipListSet<String> iCouldEscapeAndBeModified = new ConcurrentSkipListSet<String>(potentiallyMutatable);
+        public StoresCopiedCollectionIntoLocalVariableBeforeWrapping(SortedSet<ImmutableExample> potentiallyMutatable) {
+            ConcurrentSkipListSet<ImmutableExample> iCouldEscapeAndBeModified = new ConcurrentSkipListSet<ImmutableExample>(potentiallyMutatable);
             this.unmodifiable = Collections.unmodifiableSortedSet(iCouldEscapeAndBeModified);
         }
         
-        public String first() {
+        public ImmutableExample first() {
             return unmodifiable.first();
         }
     }
 
-    @SuppressWarnings({"unused", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     public final static class StoresCopiedCollectionAsObjectAndIterable {
-        private final Object unmodifiableReferencedAsObject;
-        private final Iterable<String> unmodifiableReferencedAsIterable;
+        private final Iterable<ImmutableExample> unmodifiableReferencedAsIterable;
         
-        public StoresCopiedCollectionAsObjectAndIterable(List<String> potentiallyMutatable) {
-            this.unmodifiableReferencedAsObject = Collections.unmodifiableList(new LinkedList<String>(potentiallyMutatable));
-            this.unmodifiableReferencedAsIterable = Collections.unmodifiableList(new LinkedList<String>(potentiallyMutatable));
+        public StoresCopiedCollectionAsObjectAndIterable(List<ImmutableExample> potentiallyMutatable) {
+            this.unmodifiableReferencedAsIterable = Collections.unmodifiableList(new LinkedList<ImmutableExample>(potentiallyMutatable));
         }
         
-        public String first() {
-            return ((List<String>)unmodifiableReferencedAsObject).get(0);
+        public ImmutableExample first() {
+            return ((List<ImmutableExample>)unmodifiableReferencedAsIterable).get(0);
         }
     }
     
     public final static class ListFieldFromUnmodifiableArrayAsList {
-        private List<Object> unmodifiableList;
-        public ListFieldFromUnmodifiableArrayAsList(Object[] potentiallyMutatable) {
-            this.unmodifiableList = Collections.unmodifiableList(Arrays.asList(potentiallyMutatable));
+        private List<ImmutableExample> listOfImmutableThings;
+        public ListFieldFromUnmodifiableArrayAsList(ImmutableExample[] potentiallyMutatable) {
+            this.listOfImmutableThings = Collections.unmodifiableList(Arrays.asList(potentiallyMutatable));
         }
         
-        public List<Object> safelyReturned() {
+        public List<ImmutableExample> safelyReturned() {
+            return listOfImmutableThings;
+        }
+    }
+    
+    public final static class SafelyCopiedListGenericOnMutableType {
+        private List<Date> unmodifiableList;
+        
+        public SafelyCopiedListGenericOnMutableType(List<Date> listOfMutatableType) {
+            this.unmodifiableList = Collections.unmodifiableList(new ArrayList<Date>(listOfMutatableType));
+        }
+        
+        public List<Date> safelyReturned() {
             return unmodifiableList;
+        }
+    }
+
+    public final static class SafelyCopiedMapGenericOnMutableTypeForKey {
+        private Map<Date, ImmutableExample> unmodifiableMap;
+        
+        public SafelyCopiedMapGenericOnMutableTypeForKey(Map<Date, ImmutableExample> listOfMutatableType) {
+            this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<Date, ImmutableExample>(listOfMutatableType));
+        }
+    }
+
+    public final static class SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields {
+        private ImmutableExample field1;
+        private Map<ImmutableExample, ImmutableExample> unmodifiableMap;
+        private ImmutableExample field2;
+        
+        public SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields(ImmutableExample field1, Map<ImmutableExample, ImmutableExample> listOfImmutableType, ImmutableExample field2) {
+            this.field1 = field1;
+            this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<ImmutableExample, ImmutableExample>(listOfImmutableType));
+            this.field2 = field2;
         }
     }
 }

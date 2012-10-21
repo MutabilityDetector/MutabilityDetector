@@ -28,8 +28,12 @@ public final class Dotted extends ClassName {
         super(className);
     }
     
-    public static final Function<String, Dotted> TO_DOTTED = new Function<String, Dotted>() {
+    public static final Function<String, Dotted> STRING_NAME_TO_DOTTED = new Function<String, Dotted>() {
 		@Override public Dotted apply(String className) { return dotted(className); }
+    };
+
+    public static final Function<Class<?>, Dotted> CLASS_TO_DOTTED = new Function<Class<?>, Dotted>() {
+        @Override public Dotted apply(Class<?> clazz) { return fromClass(clazz); }
     };
 
     public static Dotted dotted(String className) {

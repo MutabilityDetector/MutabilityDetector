@@ -16,9 +16,11 @@
  */
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.Dotted.dotted;
@@ -27,6 +29,7 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.checkers.CollectionField;
 import org.mutabilitydetector.locations.CodeLocation;
 
 public class ProvidedOtherClassTest {
@@ -57,22 +60,50 @@ public class ProvidedOtherClassTest {
 
     @Test
     public void doesNotMatchWhenThereDifferentAbstractTypeAssignedToField() {
-        MutableReasonDetail notAllowed = newMutableReasonDetail("Field can have an abstract type (some.othermutable.class) assigned to it.",
+        MutableReasonDetail notAllowed = newMutableReasonDetail("Field can have an abstract type (some.othermutable.Clazz) assigned to it.",
                                                                  unusedClassLocation,
                                                                  ABSTRACT_TYPE_TO_FIELD);
-        matcher = ProvidedOtherClass.provided(dotted("some.mutable.class")).isAlsoImmutable();
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.Clazz")).isAlsoImmutable();
 
         assertFalse(matcher.matches(notAllowed));
     }
     
     @Test
     public void doesNotMatchesWhenNameOfOtherTypeAssignedIsNotExactlyEqual() {
-        MutableReasonDetail notAllowed = newMutableReasonDetail("Field can have an abstract type (some.mutable.class.with.similar.but.different.name) assigned to it.",
+        MutableReasonDetail notAllowed = newMutableReasonDetail("Field can have an abstract type (some.mutable.clazz.with.similar.but.different.name) assigned to it.",
                                                                  unusedClassLocation,
                                                                  ABSTRACT_TYPE_TO_FIELD);
-        matcher = ProvidedOtherClass.provided(dotted("some.mutable.class")).isAlsoImmutable();
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.clazz")).isAlsoImmutable();
 
         assertFalse(matcher.matches(notAllowed));
+    }
+
+    @Test
+    public void matchesWhenReasonIsCollectionWithMutableElementType() {
+        CollectionField collectionField = CollectionField.from("Ljava/util/List;", "Ljava/util/List<Lsome/mutable/Clazz;>;");
+        
+        MutableReasonDetail reason = newMutableReasonDetail(
+                format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                unusedClassLocation,
+                COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+        
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.Clazz")).isAlsoImmutable();
+        
+        assertTrue(matcher.matches(reason));
+    }
+
+    @Test
+    public void matchesWhenReasonIsMapWithMutableElementTypes() {
+        CollectionField collectionField = CollectionField.from("Ljava/util/Map;", "Ljava/util/Map<Lsome/mutable/Clazz;Lsome/mutable/OtherClazz;>;");
+        
+        MutableReasonDetail reason = newMutableReasonDetail(
+                format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                unusedClassLocation,
+                COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+        
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.Clazz"), dotted("some.mutable.OtherClazz")).isAlsoImmutable();
+        
+        assertTrue(matcher.matches(reason));
     }
 
 

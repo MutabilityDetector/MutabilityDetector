@@ -3,7 +3,7 @@ package org.mutabilitydetector.cli;
 import static com.google.common.base.Predicates.containsPattern;
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.locations.ClassNameConverter.TO_DOTTED_STRING;
-import static org.mutabilitydetector.locations.Dotted.TO_DOTTED;
+import static org.mutabilitydetector.locations.Dotted.STRING_NAME_TO_DOTTED;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public final class NamesFromClassResources {
 		return FluentIterable.from(asList(findResources))
 				.transform(TO_DOTTED_STRING)
 				.filter(containsPattern(classNameRegex))
-				.transform(TO_DOTTED).toImmutableList();
+				.transform(STRING_NAME_TO_DOTTED).toImmutableList();
 	}
 
 }

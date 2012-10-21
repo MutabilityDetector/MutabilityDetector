@@ -34,7 +34,6 @@ import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 
 public class CheckerRunnerTest {
 
-    @Ignore
     @Test
     public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
         AsmMutabilityChecker checker = Mockito.mock(AsmMutabilityChecker.class);
