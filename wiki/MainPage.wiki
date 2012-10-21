@@ -36,30 +36,9 @@ usage: MutabilityDetector
 
 == Runtime use == 
 
-*The exact code listing here is out of date. It still gives a rough idea of how to use Mutability Detector at run time, but it CANNOT be copy/pasted.* I'm working on providing an up to date example.
+It is possible to use Mutability Detector at runtime. For example, consider if you have a library which requires that objects passed to it are immutable. On receiving such an object, you can ask Mutability Detector if it is actually immutable.
 
-Create an instance of AnalysisSession using the default constructor. Classes can then be analysed on request, given the class name (this is the dotted class name, e.g. java.lang.String as opposed to java/lang/String.class). Like so:
-
-{{{
-// Initialise AnalysisSession
-// This should be done only once per run, as each instance caches the result
-IAnalysisSession analysisSession = new AnalysisSession(); 
-
-...
-
-// If you want to then test if a class is immutable, call the following:
-// IAnalysisSession#isImmutable(String className)
-// This does not return a boolean, but rather an enum type, as there is currently an immutability spectrum
-// A more meaningful use is:
-String dottedClassName = someObject.getClass().getName();
-IsImmutable result = analysisSession.isImmutable(dottedClassName);
-if(result.equals(IsImmutable.DEFINITELY)) {
-    // rest safe in the knowledge the class is immutable, share across threads with joyful abandon
-} else if(result.equals(IsImmutable.DEFINITELY_NOT)) {
-    // be careful here: make defensive copies, don't publish the reference, read Java Concurrency In Practice right away!
-}
-
-}}}
+Check out the code snippet in [http://code.google.com/p/mutability-detector/source/browse/trunk/ClientOfMutabilityDetector/trunk/ClientOfMutabilityDetector/src/main/java/org/mutabilitydetector/runtime/RuntimeAnalysisExample.java this example], which shows correct usage against trunk code.
 
 = Contact =
 Contact can be made either by leaving comments or by [mailto:Grundlefleck+md@gmail.com email]
