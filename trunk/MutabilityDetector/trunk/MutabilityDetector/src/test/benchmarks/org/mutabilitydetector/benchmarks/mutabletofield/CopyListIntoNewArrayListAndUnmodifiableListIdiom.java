@@ -72,7 +72,6 @@ public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     public final static class StoresCopiedCollectionAsObjectAndIterable {
         private final Iterable<ImmutableExample> unmodifiableReferencedAsIterable;
         

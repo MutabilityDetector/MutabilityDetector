@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
