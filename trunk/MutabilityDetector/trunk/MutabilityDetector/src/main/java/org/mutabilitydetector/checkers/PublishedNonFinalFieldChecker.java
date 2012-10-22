@@ -28,7 +28,7 @@ public final class PublishedNonFinalFieldChecker extends AbstractMutabilityCheck
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (field(access).isNotPrivate() && field(access).isNotFinal()) {
-            addResult("Field is visible outwith this class, and is not declared final.",
+            setResult("Field is visible outwith this class, and is not declared final.",
                     fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
                     MutabilityReason.PUBLISHED_NON_FINAL_FIELD);
         }

@@ -41,7 +41,7 @@ public final class InherentTypeMutabilityChecker extends AbstractMutabilityCheck
         super.visit(version, access, name, signature, superName, interfaces);
 
         if (type(access).isAbstract() || type(access).isInterface()) {
-            addResult("Is inherently mutable, as declared as an abstract type.",
+            setResult("Is inherently mutable, as declared as an abstract type.",
                     ClassLocation.fromInternalName(name),
                     MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE);
         }

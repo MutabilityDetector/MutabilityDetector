@@ -24,7 +24,7 @@ import org.mutabilitydetector.MutabilityReason;
 public final class NullMutabilityChecker extends AbstractMutabilityChecker {
 
     public NullMutabilityChecker() {
-        addResult("This checker is a placeholder for a proper checker.",
+        setResult("This checker is a placeholder for a proper checker.",
                 from(fromClass(NullMutabilityChecker.class)),
                 MutabilityReason.CANNOT_ANALYSE);
     }

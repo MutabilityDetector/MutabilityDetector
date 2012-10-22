@@ -143,7 +143,7 @@ public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker
         }
 
         private void thisReferencesEscapes() {
-            addResult("The 'this' reference is passed outwith the constructor.",
+            setResult("The 'this' reference is passed outwith the constructor.",
                     ClassLocation.fromInternalName(ownerClass),
                     MutabilityReason.ESCAPED_THIS_REFERENCE);
         }

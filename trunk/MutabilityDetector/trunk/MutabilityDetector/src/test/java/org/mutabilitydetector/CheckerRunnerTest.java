@@ -22,12 +22,14 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
+import java.util.Collections;
+
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 
@@ -35,7 +37,7 @@ public class CheckerRunnerTest {
 
     @Test
     public void willVisitAnalysisExceptionWhenAnUnhandledExceptionIsThrown() {
-        AsmMutabilityChecker checker = Mockito.mock(AsmMutabilityChecker.class);
+        AsmMutabilityChecker checker = mock(AsmMutabilityChecker.class);
 
         Throwable toBeThrown = new NoSuchMethodError();
         doThrow(toBeThrown).when(checker).visit(anyInt(),
@@ -49,7 +51,7 @@ public class CheckerRunnerTest {
 
         try {
             AnalysisSession analysisSession = createWithCurrentClassPath();
-            checkerRunner.run(analysisSession, analysisSession.errorReporter(), checker, fromClass(CheckerRunner.class));
+            checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
             assertSame(toBeThrown, expected.getCause());

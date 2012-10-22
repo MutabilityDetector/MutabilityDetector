@@ -38,7 +38,7 @@ public class SessionCheckerRunner implements AsmSessionCheckerRunner {
 
     @Override
     public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier) {
-        checkerRunner.run(analysisSession, analysisErrorReporter, checker, classIdentifier.asDotted());
+        checkerRunner.run(checker, classIdentifier.asDotted(), analysisErrorReporter, analysisSession.getResults());
     }
 
 }

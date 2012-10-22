@@ -16,6 +16,7 @@
  */
 package org.mutabilitydetector;
 
+import static com.google.common.collect.Iterables.addAll;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
 import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.locations.Dotted;
@@ -52,10 +54,9 @@ public final class AllChecksRunner {
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, verifierFactory);
 
         for (AsmMutabilityChecker checker : checkers) {
-            checkerRunnerFactory.createRunner().run(analysisSession, errorReporter, checker, toAnalyse);
-            IsImmutable result = checker.result();
-            results.put(result, getNewCount(results, result));
-            reasons.addAll(checker.reasons());
+            CheckerResult checkerResult = checkerRunnerFactory.createRunner().run(checker, toAnalyse, errorReporter, analysisSession.getResults());
+            results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
+            addAll(reasons, checkerResult.reasons);
         }
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);

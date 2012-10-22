@@ -164,7 +164,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
         private void setIsImmutableResult(String fieldName) {
             String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
-            addResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+            setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
 
     }

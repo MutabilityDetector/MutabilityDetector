@@ -103,11 +103,11 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className);
                 
                 if (!requestedAnalysis.analysisComplete) {
-                    addResult("There is a field assigned which creates a circular reference.", 
+                    setResult("There is a field assigned which creates a circular reference.", 
                               fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                               MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 } else if (!requestedAnalysis.result.isImmutable.equals(IMMUTABLE) && isConcreteType(className)) {
-                    addResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
+                    setResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
                             fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 } else if(!isConcreteType(className)) {
@@ -116,7 +116,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                             fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
-                        addResult(format("Field can have an abstract type (%s) assigned to it.", className),
+                        setResult(format("Field can have an abstract type (%s) assigned to it.", className),
                                 fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                 MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
                         return;
@@ -127,7 +127,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                         Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;
                         
                         if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
-                            addResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                            setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
                                     fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                     MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
                             break;
@@ -138,7 +138,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                         if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
                             break;
                         } else {
-                            addResult("Attempts to wrap mutable collection type without safely performing a copy first.",
+                            setResult("Attempts to wrap mutable collection type without safely performing a copy first.",
                                     fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                     MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                             break;
@@ -147,7 +147,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 }
                 break;
             case Type.ARRAY:
-                addResult("Field can have a mutable type (an array) assigned to it.",
+                setResult("Field can have a mutable type (an array) assigned to it.",
                         fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 break;

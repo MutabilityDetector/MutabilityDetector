@@ -35,13 +35,13 @@ import org.objectweb.asm.MethodVisitor;
 public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
 
     protected Collection<MutableReasonDetail> reasons = newArrayList();
-    private IsImmutable result = IsImmutable.IMMUTABLE;
+    private IsImmutable isImmutable = IsImmutable.IMMUTABLE;
 
     protected String ownerClass;
 
     @Override
     public IsImmutable result() {
-        return result;
+        return isImmutable;
     }
 
     @Override
@@ -96,7 +96,7 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
 
     @Override
     public final void visitAnalysisException(Throwable toBeThrown) {
-        addResult(errorReasonDescription(toBeThrown), getCodeLocationForException(), MutabilityReason.CANNOT_ANALYSE);
+        setResult(errorReasonDescription(toBeThrown), getCodeLocationForException(), MutabilityReason.CANNOT_ANALYSE);
     }
 
     private String errorReasonDescription(Throwable toBeThrown) {
@@ -118,9 +118,14 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
         return MutableReasonDetail.newMutableReasonDetail(message, location, reason);
     }
 
-    protected void addResult(String message, CodeLocation<?> location, Reason reason) {
+    protected void setResult(String message, CodeLocation<?> location, Reason reason) {
         reasons.add(createResult(message, location, reason));
-        result = reason.createsResult();
+        isImmutable = reason.createsResult();
+    }
+    
+    @Override
+    public CheckerResult checkerResult() {
+        return new CheckerResult(isImmutable, reasons);
     }
 
 }

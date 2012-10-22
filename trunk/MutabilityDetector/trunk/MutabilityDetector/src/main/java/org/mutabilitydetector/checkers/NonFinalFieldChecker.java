@@ -28,7 +28,7 @@ public final class NonFinalFieldChecker extends AbstractMutabilityChecker {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (field(access).isNotFinal() && field(access).isNotStatic()) {
-            addResult("Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read.",
+            setResult("Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read.",
                     fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
                     MutabilityReason.NON_FINAL_FIELD);
         }

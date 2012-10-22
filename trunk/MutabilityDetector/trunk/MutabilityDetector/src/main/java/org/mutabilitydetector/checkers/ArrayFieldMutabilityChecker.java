@@ -22,7 +22,7 @@ public class ArrayFieldMutabilityChecker extends AbstractMutabilityChecker {
              * having a mutable field which it doesn't mutate is a bit rubbish.
              */
             if (isPrimitiveArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
-                addResult("Field is an array.",
+                setResult("Field is an array.",
                         fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
             }

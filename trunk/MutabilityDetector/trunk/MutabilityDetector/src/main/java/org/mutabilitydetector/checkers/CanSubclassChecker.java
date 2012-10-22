@@ -48,7 +48,7 @@ public final class CanSubclassChecker extends AbstractMutabilityChecker {
     @Override
     public void visitEnd() {
         if (!(isFinal || hasOnlyPrivateConstructors)) {
-            addResult("Can be subclassed, therefore parameters declared to be this type " + "could be mutable subclasses at runtime.",
+            setResult("Can be subclassed, therefore parameters declared to be this type " + "could be mutable subclasses at runtime.",
                       ClassLocation.fromInternalName(ownerClass),
                       MutabilityReason.CAN_BE_SUBCLASSED);
         }

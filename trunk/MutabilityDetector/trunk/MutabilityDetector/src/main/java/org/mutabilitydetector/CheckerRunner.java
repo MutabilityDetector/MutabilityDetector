@@ -21,7 +21,10 @@ import static java.lang.String.format;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
@@ -47,7 +50,7 @@ public final class CheckerRunner {
         return createWithClasspath(new ClassPathFactory().createFromJVM());
     }
 
-    public void run(AnalysisSession analysisSession, AnalysisErrorReporter errorReporter, AsmMutabilityChecker checker, Dotted className) {
+    public CheckerResult run(AsmMutabilityChecker checker, Dotted className, AnalysisErrorReporter errorReporter, Iterable<AnalysisResult> resultsSoFar) {
         try {
             try {
                 cr = new ClassReader(className.asString());
@@ -60,13 +63,14 @@ public final class CheckerRunner {
             } catch (IOException e) {
                 analyseAsStream(checker, className.asString());
             }
+            return checker.checkerResult();
         } catch (Throwable e) {
             handleException(errorReporter, checker, className.asString(), e);
             checker.visitAnalysisException(e);
-            throw unhandledExceptionBuilder.unhandledException(e, analysisSession, checker, className);
+            throw unhandledExceptionBuilder.unhandledException(e, resultsSoFar, checker, className);
         }
     }
-
+    
     private void analyseAsStream(AsmMutabilityChecker checker, String dottedClassPath) throws IOException {
         String slashedClassPath = dottedClassPath.replace(".", "/").concat(".class");
         InputStream classStream = classpath.getResourceAsStream(slashedClassPath);
@@ -74,14 +78,14 @@ public final class CheckerRunner {
         cr.accept(checker, 0);
     }
 
-    private void handleException(AnalysisErrorReporter analysisSession,
+    private void handleException(AnalysisErrorReporter errorReporter,
             AsmMutabilityChecker checker,
             String dottedClassPath,
             Throwable e) {
         String errorDescription = createErrorDescription(dottedClassPath);
         checker.visitAnalysisException(e);
-        AnalysisErrorReporter.AnalysisError error = new AnalysisErrorReporter.AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
-        analysisSession.addAnalysisError(error);
+        AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
+        errorReporter.addAnalysisError(error);
     }
 
     public String createErrorDescription(String dottedClassPath) {
