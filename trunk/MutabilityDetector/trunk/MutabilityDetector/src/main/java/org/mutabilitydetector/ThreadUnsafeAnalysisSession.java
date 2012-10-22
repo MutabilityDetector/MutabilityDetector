@@ -41,11 +41,11 @@ import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
+public final class ThreadUnsafeAnalysisSession implements AnalysisSession, AnalysisErrorReporter {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
     private final List<Dotted> requestedAnalysis = newArrayList();
-    private final List<AnalysisError> analysisErrors = newArrayList();
+    private final List<AnalysisErrorReporter.AnalysisError> analysisErrors = newArrayList();
 
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
@@ -66,7 +66,7 @@ public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
         this.configuration = configuration;
     }
 
-    public static BulkAnalysisSession createWithGivenClassPath(ClassPath classpath, 
+    public static AnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               CheckerRunnerFactory checkerRunnerFactory,
                                                               MutabilityCheckerFactory checkerFactory, 
                                                               AsmVerifierFactory verifierFactory,
@@ -74,17 +74,17 @@ public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
-    public static BulkAnalysisSession createWithCurrentClassPath() {
+    public static AnalysisSession createWithCurrentClassPath() {
         return createWithCurrentClassPath(Configuration.NO_CONFIGURATION);
     }
     
-    public static BulkAnalysisSession createWithCurrentClassPath(Configuration configuration) {
+    public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
         ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
     
-    public static BulkAnalysisSession tempCreateWithVerifier() {
+    public static AnalysisSession tempCreateWithVerifier() {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
         AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
                 new IsAssignableFromCachingTypeHierarchyReader(
@@ -93,7 +93,7 @@ public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
         
     }
 
-    private static BulkAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
+    private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
         return new ThreadUnsafeAnalysisSession(classpath, 
                                     new ClassPathBasedCheckerRunnerFactory(classpath), 
                                     new MutabilityCheckerFactory(), 
@@ -131,19 +131,11 @@ public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
                                                               verifierFactory, 
                                                               className);
         
-        return addAnalysisResult(allChecksRunner.runCheckers(this, database));
+        return addAnalysisResult(allChecksRunner.runCheckers(this, this, database));
     }
 
     private boolean isRepeatedRequestFor(Dotted className) {
         return requestedAnalysis.contains(className);
-    }
-
-    @Override
-    public void runAnalysis(Iterable<Dotted> classNames) {
-        for (Dotted className : classNames) {
-            requestAnalysis(className);
-        }
-        System.out.println(analysedClasses.stats());
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
@@ -166,6 +158,11 @@ public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
     @Override
     public Collection<AnalysisError> getErrors() {
         return Collections.unmodifiableCollection(analysisErrors);
+    }
+
+    @Override
+    public AnalysisErrorReporter errorReporter() {
+        return this;
     }
 
 }

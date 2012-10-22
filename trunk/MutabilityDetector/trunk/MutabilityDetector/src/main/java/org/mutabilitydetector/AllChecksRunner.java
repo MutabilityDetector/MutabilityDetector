@@ -45,14 +45,14 @@ public final class AllChecksRunner {
         this.toAnalyse = toAnalyse;
     }
 
-    public AnalysisResult runCheckers(BulkAnalysisSession analysisSession, AnalysisDatabase database) {
+    public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisErrorReporter errorReporter, AnalysisDatabase database) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, verifierFactory);
 
         for (AsmMutabilityChecker checker : checkers) {
-            checkerRunnerFactory.createRunner().run(analysisSession, checker, toAnalyse);
+            checkerRunnerFactory.createRunner().run(analysisSession, errorReporter, checker, toAnalyse);
             IsImmutable result = checker.result();
             results.put(result, getNewCount(results, result));
             reasons.addAll(checker.reasons());

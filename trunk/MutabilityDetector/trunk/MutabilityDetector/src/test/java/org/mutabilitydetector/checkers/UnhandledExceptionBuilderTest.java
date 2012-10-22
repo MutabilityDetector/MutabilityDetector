@@ -13,7 +13,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.BulkAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -25,7 +25,7 @@ public class UnhandledExceptionBuilderTest {
     private final AsmMutabilityChecker unusedChecker = mock(AsmMutabilityChecker.class);
     private final Dotted unusedClass = Dotted.dotted("unus.ed");
     
-    private BulkAnalysisSession analysisSession = mock(BulkAnalysisSession.class);
+    private AnalysisSession analysisSession = mock(AnalysisSession.class);
 
     @Before public void setUp() {
         when(analysisSession.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
@@ -73,7 +73,7 @@ public class UnhandledExceptionBuilderTest {
     
     @Test
     public void messageOfExceptionContainsUsefulInformationForDeveloper_fromAnalysisSession() throws Exception {
-        analysisSession = mock(BulkAnalysisSession.class);
+        analysisSession = mock(AnalysisSession.class);
         
         AnalysisResult first = AnalysisResult.definitelyImmutable("a.b.c");
         AnalysisResult second = AnalysisResult.definitelyImmutable("e.f.g");

@@ -35,7 +35,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.BulkAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
@@ -51,7 +51,7 @@ public class SessionResultsFormatterTest {
         when(options.reportMode()).thenReturn(ReportMode.ALL);
         when(options.isUsingClassList()).thenReturn(false);
 
-        BulkAnalysisSession analysisSession = mock(BulkAnalysisSession.class);
+        AnalysisSession analysisSession = mock(AnalysisSession.class);
         Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c",
                                                                                   IsImmutable.IMMUTABLE,
                                                                                   unusedMutableReasonDetails()),
@@ -88,7 +88,7 @@ public class SessionResultsFormatterTest {
         when(options.isUsingClassList()).thenReturn(false);
         when(options.verbose()).thenReturn(true);
 
-        BulkAnalysisSession analysisSession = mock(BulkAnalysisSession.class);
+        AnalysisSession analysisSession = mock(AnalysisSession.class);
         Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasons));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 

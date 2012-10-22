@@ -48,7 +48,7 @@ public class TestUtil {
         return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result;
     }
 
-    public static BulkAnalysisSession testAnalysisSession() {
+    public static AnalysisSession testAnalysisSession() {
         return ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
     }
 
@@ -67,7 +67,8 @@ public class TestUtil {
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
-        CheckerRunner.createWithCurrentClasspath().run(testAnalysisSession(), checker, fromClass(toAnalyse));
+        AnalysisSession analysisSession = testAnalysisSession();
+        CheckerRunner.createWithCurrentClasspath().run(analysisSession, analysisSession.errorReporter(), checker, fromClass(toAnalyse));
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 

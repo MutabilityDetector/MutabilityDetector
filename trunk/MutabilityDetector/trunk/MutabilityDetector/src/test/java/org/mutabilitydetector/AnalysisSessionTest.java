@@ -36,12 +36,13 @@ public class AnalysisSessionTest {
     
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
-        BulkAnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, testingVerifierFactory(), immutableClass);
 
-        checker.runCheckers(analysisSession, analysisDatabase());
+        checker.runCheckers(analysisSession, errorReporter, analysisDatabase());
 
         AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
@@ -49,20 +50,20 @@ public class AnalysisSessionTest {
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-        BulkAnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
     }
     
     @Test
-	public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
-    	Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
-    	
-    	Configuration configuration = new Configuration(predefinedResults);
-		BulkAnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration);
-		AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
-		
-		assertThat(result, areImmutable());
-	}
+    public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
+        Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
+        
+        Configuration configuration = new Configuration(predefinedResults);
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration);
+        AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
+        
+        assertThat(result, areImmutable());
+    }
     
 }

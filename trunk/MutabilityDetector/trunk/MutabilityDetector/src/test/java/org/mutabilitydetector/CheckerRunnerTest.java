@@ -48,7 +48,8 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath();
 
         try {
-            checkerRunner.run(createWithCurrentClassPath(), checker, fromClass(CheckerRunner.class));
+            AnalysisSession analysisSession = createWithCurrentClassPath();
+            checkerRunner.run(analysisSession, analysisSession.errorReporter(), checker, fromClass(CheckerRunner.class));
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
             assertSame(toBeThrown, expected.getCause());

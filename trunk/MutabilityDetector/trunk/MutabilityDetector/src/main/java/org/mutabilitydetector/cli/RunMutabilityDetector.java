@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.BulkAnalysisSession;
 import org.mutabilitydetector.CachingAnalysisClassLoader;
 import org.mutabilitydetector.ClassForNameWrapper;
@@ -90,7 +91,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         String[] findResources = classpath.findResources("", regExpResourceFilter);
 
         AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory();
-        BulkAnalysisSession session = createWithGivenClassPath(classpath, 
+        AnalysisSession newSession = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
                                                             verifierFactory,
@@ -98,12 +99,12 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
-        session.runAnalysis(filtered);
+        AnalysisSession completedSession = new BulkAnalysisSession(newSession).runAnalysis(filtered);
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         
         return new SessionResultsFormatter(options, readerFactory)
-                       .format(session.getResults(), session.getErrors());
+                       .format(completedSession.getResults(), completedSession.getErrors());
     }
 
     @SuppressWarnings("unused")

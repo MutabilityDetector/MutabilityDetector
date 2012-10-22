@@ -23,7 +23,7 @@ import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurre
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Test;
-import org.mutabilitydetector.BulkAnalysisSession;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -34,19 +34,19 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 
     @Test
     public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        BulkAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(ImmutableClassA.class));
     }
 
     @Test
     public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        BulkAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(CircularReferenceClasses.class));
     }
 
     @Test
     public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
-        BulkAnalysisSession session = createWithCurrentClassPath();
+        AnalysisSession session = createWithCurrentClassPath();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(information, new MutableTypeInformation(session), testingVerifierFactory());
 

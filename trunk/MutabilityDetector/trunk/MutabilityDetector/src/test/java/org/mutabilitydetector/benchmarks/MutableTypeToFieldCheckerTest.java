@@ -44,8 +44,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
-import org.mutabilitydetector.BulkAnalysisSession;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
@@ -74,7 +74,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
     
-    private BulkAnalysisSession session;
+    private AnalysisSession session;
     private AsmMutabilityChecker checkerWithMockedSession;
     private AsmMutabilityChecker checkerWithRealSession;
     
@@ -91,7 +91,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Before
     public void setUpWithMockSession() {
-        session = mock(BulkAnalysisSession.class);
+        session = mock(AnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checkerWithMockedSession = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session), testingVerifierFactory());
     }

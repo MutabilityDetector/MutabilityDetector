@@ -18,24 +18,17 @@ package org.mutabilitydetector;
 
 import org.mutabilitydetector.locations.Dotted;
 
-public interface BulkAnalysisSession extends AnalysisSession {
+public class BulkAnalysisSession {
+    private final AnalysisSession session;
 
-    void runAnalysis(Iterable<Dotted> filtered);
-    void addAnalysisError(AnalysisError error);
-
-    Iterable<AnalysisResult> getResults();
-    Iterable<AnalysisError> getErrors();
-
-    public static final class AnalysisError {
-        public final String checkerName;
-        public final String description;
-        public final String onClass;
-
-        public AnalysisError(String onClass, String checkerName, String errorDescription) {
-            this.onClass = onClass;
-            this.checkerName = checkerName;
-            this.description = errorDescription;
-        }
+    public BulkAnalysisSession(AnalysisSession session) {
+        this.session = session;
     }
 
+    public AnalysisSession runAnalysis(Iterable<Dotted> classNames) {
+        for (Dotted className : classNames) {
+            session.resultFor(className);
+        }
+        return session;
+    }
 }
