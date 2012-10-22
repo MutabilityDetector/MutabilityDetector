@@ -14,8 +14,9 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.cli;
 
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
 public class BulkAnalysisSession {

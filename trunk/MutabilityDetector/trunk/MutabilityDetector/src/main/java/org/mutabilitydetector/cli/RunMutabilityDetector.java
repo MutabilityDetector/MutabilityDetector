@@ -29,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.BulkAnalysisSession;
 import org.mutabilitydetector.CachingAnalysisClassLoader;
 import org.mutabilitydetector.ClassForNameWrapper;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
