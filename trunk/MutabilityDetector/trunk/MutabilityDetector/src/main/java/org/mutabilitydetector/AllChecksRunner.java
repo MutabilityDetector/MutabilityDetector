@@ -45,7 +45,7 @@ public final class AllChecksRunner {
         this.toAnalyse = toAnalyse;
     }
 
-    public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisDatabase database) {
+    public AnalysisResult runCheckers(BulkAnalysisSession analysisSession, AnalysisDatabase database) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 

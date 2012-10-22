@@ -41,7 +41,7 @@ import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
+public final class ThreadUnsafeAnalysisSession implements BulkAnalysisSession {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
     private final List<Dotted> requestedAnalysis = newArrayList();
@@ -50,9 +50,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisDatabase database;
-	private final Configuration configuration;
+    private final Configuration configuration;
     private final AsmVerifierFactory verifierFactory;
-	
+    
     private ThreadUnsafeAnalysisSession(ClassPath classpath, 
                              CheckerRunnerFactory checkerRunnerFactory,
                              MutabilityCheckerFactory checkerFactory, 
@@ -66,7 +66,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         this.configuration = configuration;
     }
 
-    public static AnalysisSession createWithGivenClassPath(ClassPath classpath, 
+    public static BulkAnalysisSession createWithGivenClassPath(ClassPath classpath, 
                                                               CheckerRunnerFactory checkerRunnerFactory,
                                                               MutabilityCheckerFactory checkerFactory, 
                                                               AsmVerifierFactory verifierFactory,
@@ -74,32 +74,32 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
-    public static AnalysisSession createWithCurrentClassPath() {
+    public static BulkAnalysisSession createWithCurrentClassPath() {
         return createWithCurrentClassPath(Configuration.NO_CONFIGURATION);
     }
     
-	public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
-		ClassPath classpath = new ClassPathFactory().createFromJVM();
+    public static BulkAnalysisSession createWithCurrentClassPath(Configuration configuration) {
+        ClassPath classpath = new ClassPathFactory().createFromJVM();
         ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
-	}
-	
-	public static AnalysisSession tempCreateWithVerifier() {
-	    ClassPath classpath = new ClassPathFactory().createFromJVM();
-	    AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
-	            new IsAssignableFromCachingTypeHierarchyReader(
-	                    new CachingTypeHierarchyReader(new TypeHierarchyReader())));
-	    return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
-	    
-	}
+    }
+    
+    public static BulkAnalysisSession tempCreateWithVerifier() {
+        ClassPath classpath = new ClassPathFactory().createFromJVM();
+        AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
+                new IsAssignableFromCachingTypeHierarchyReader(
+                        new CachingTypeHierarchyReader(new TypeHierarchyReader())));
+        return createWithGivenClassPath(classpath, Configuration.NO_CONFIGURATION, verifierFactory);
+        
+    }
 
-	private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
-		return new ThreadUnsafeAnalysisSession(classpath, 
+    private static BulkAnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
+        return new ThreadUnsafeAnalysisSession(classpath, 
                                     new ClassPathBasedCheckerRunnerFactory(classpath), 
                                     new MutabilityCheckerFactory(), 
                                     verifierFactory,
                                     configuration);
-	}
+    }
 
     @Override
     public RequestedAnalysis resultFor(Dotted className) {
@@ -110,12 +110,12 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     }
 
     private AnalysisResult requestAnalysis(Dotted className) {
-    	
-    	Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
-    	if (hardcodedResult.isPresent()) {
-    		return hardcodedResult.get();
-    	}
-    	
+        
+        Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
+        if (hardcodedResult.isPresent()) {
+            return hardcodedResult.get();
+        }
+        
         if (isRepeatedRequestFor(className)) {
             return null;
         }
@@ -134,7 +134,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         return addAnalysisResult(allChecksRunner.runCheckers(this, database));
     }
 
-	private boolean isRepeatedRequestFor(Dotted className) {
+    private boolean isRepeatedRequestFor(Dotted className) {
         return requestedAnalysis.contains(className);
     }
 

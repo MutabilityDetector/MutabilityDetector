@@ -28,7 +28,7 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession.AnalysisError;
+import org.mutabilitydetector.BulkAnalysisSession.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;

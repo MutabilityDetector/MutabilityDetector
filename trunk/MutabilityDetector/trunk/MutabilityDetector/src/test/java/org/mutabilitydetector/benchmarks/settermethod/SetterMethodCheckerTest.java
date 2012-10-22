@@ -37,7 +37,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.BulkAnalysisSession;
 import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -66,7 +66,7 @@ public class SetterMethodCheckerTest {
 
     private SetterMethodChecker checker;
     private CheckerRunner checkerRunner;
-    private AnalysisSession analysisSession;
+    private BulkAnalysisSession analysisSession;
     private PrivateMethodInvocationInformation info;
 
     @Before

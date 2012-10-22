@@ -14,19 +14,28 @@
  *   limitations under the License.
  *
  */
+package org.mutabilitydetector;
 
-package org.mutabilitydetector.unittesting.internal;
-
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
-public final class AnalysisSessionHolder {
-//    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
-    private static final AnalysisSession assertionAnalysisSession = ThreadUnsafeAnalysisSession.tempCreateWithVerifier();
+public interface BulkAnalysisSession extends AnalysisSession {
 
-    public static AnalysisResult analysisResultFor(Class<?> from) {
-        return assertionAnalysisSession.resultFor(Dotted.fromClass(from)).result;
+    void runAnalysis(Iterable<Dotted> filtered);
+    void addAnalysisError(AnalysisError error);
+
+    Iterable<AnalysisResult> getResults();
+    Iterable<AnalysisError> getErrors();
+
+    public static final class AnalysisError {
+        public final String checkerName;
+        public final String description;
+        public final String onClass;
+
+        public AnalysisError(String onClass, String checkerName, String errorDescription) {
+            this.onClass = onClass;
+            this.checkerName = checkerName;
+            this.description = errorDescription;
+        }
     }
+
 }

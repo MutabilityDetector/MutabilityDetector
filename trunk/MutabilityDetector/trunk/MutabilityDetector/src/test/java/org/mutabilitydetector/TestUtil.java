@@ -48,7 +48,7 @@ public class TestUtil {
         return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result;
     }
 
-    public static AnalysisSession testAnalysisSession() {
+    public static BulkAnalysisSession testAnalysisSession() {
         return ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
     }
 

@@ -23,7 +23,7 @@ public final class UnhandledExceptionBuilder {
         "Apologies, and thank you for using Mutability Detector.%n%n");
     
     public MutabilityAnalysisException unhandledException(Throwable cause, 
-                                                           AnalysisSession analysisSession,
+                                                           BulkAnalysisSession analysisSession,
                                                            AsmMutabilityChecker checker, 
                                                            Dotted className) {
         
@@ -39,7 +39,7 @@ public final class UnhandledExceptionBuilder {
         return new MutabilityAnalysisException(errorMessage.toString(), cause);
     }
 
-    private void appendClassesAnalysed(StringBuilder errorMessage, AnalysisSession analysisSession) {
+    private void appendClassesAnalysed(StringBuilder errorMessage, BulkAnalysisSession analysisSession) {
         for (AnalysisResult result : analysisSession.getResults()) {
             errorMessage.append(format("    %s%n", result.dottedClassName));
         }

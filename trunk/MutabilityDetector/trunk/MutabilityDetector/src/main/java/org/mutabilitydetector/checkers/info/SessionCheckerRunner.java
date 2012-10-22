@@ -18,7 +18,7 @@
 package org.mutabilitydetector.checkers.info;
 
 import org.mutabilitydetector.CheckerRunner;
-import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.BulkAnalysisSession;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.locations.ClassIdentifier;
@@ -26,9 +26,9 @@ import org.mutabilitydetector.locations.ClassIdentifier;
 public class SessionCheckerRunner implements AsmSessionCheckerRunner {
 
     private final CheckerRunner checkerRunner;
-    private final AnalysisSession analysisSession;
+    private final BulkAnalysisSession analysisSession;
 
-    public SessionCheckerRunner(AnalysisSession analysisSession, CheckerRunner checkerRunner) {
+    public SessionCheckerRunner(BulkAnalysisSession analysisSession, CheckerRunner checkerRunner) {
         this.analysisSession = analysisSession;
         this.checkerRunner = checkerRunner;
     }
