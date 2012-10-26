@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -265,25 +264,23 @@ public final class MutabilityAssert {
     
     private MutabilityAssert() { }
     
-    private static final AnalysisSession defaultAnalysisSession = ThreadUnsafeAnalysisSession.tempCreateWithVerifier();
-
-    private final static MutabilityAsserter asserter = new MutabilityAsserter(
-            new AssertionReporter(), 
-            defaultAnalysisSession);
+    private final static MutabilityAsserter defaultAsserter 
+        = new MutabilityAsserter(new AssertionReporter(), 
+                                 ThreadUnsafeAnalysisSession.tempCreateWithVerifier());
     
     public static void assertImmutable(Class<?> expectedImmutableClass) {
-        asserter.assertImmutable(expectedImmutableClass);
+        defaultAsserter.assertImmutable(expectedImmutableClass);
     }
 
     
     public static void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher) {
-        asserter.assertInstancesOf(clazz, mutabilityMatcher);
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher);
     }
 
     public static void assertInstancesOf(Class<?> clazz,
             Matcher<AnalysisResult> mutabilityMatcher,
             Matcher<MutableReasonDetail> allowing) {
-        asserter.assertInstancesOf(clazz, mutabilityMatcher, allowing);
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowing);
     }
 
     public static void assertInstancesOf(Class<?> clazz,
@@ -291,7 +288,7 @@ public final class MutabilityAssert {
             Matcher<MutableReasonDetail> allowingFirst,
             Matcher<MutableReasonDetail> allowingSecond) {
 
-        asserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond);
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond);
     }
 
     public static void assertInstancesOf(Class<?> clazz,
@@ -300,7 +297,7 @@ public final class MutabilityAssert {
             Matcher<MutableReasonDetail> allowingSecond,
             Matcher<MutableReasonDetail> allowingThird) {
 
-        asserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond, allowingThird);
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond, allowingThird);
     }
 
     public static void assertInstancesOf(Class<?> clazz,
@@ -310,7 +307,7 @@ public final class MutabilityAssert {
             Matcher<MutableReasonDetail> allowingThird,
             Matcher<MutableReasonDetail>... allowingRest) {
 
-        asserter.assertInstancesOf(clazz, mutabilityMatcher, 
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, 
                 allowingFirst, allowingSecond, allowingThird, allowingRest);
     }
 

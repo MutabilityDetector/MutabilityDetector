@@ -13,8 +13,8 @@ public class ConfigurationTest {
 
 	@Test
 	public void hasHardcodedResultForClass() throws Exception {
-		Configuration hasIt = new Configuration(ImmutableSet.of(AnalysisResult.definitelyImmutable("i.am.hardcoded")));
-		Configuration doesNotHaveIt = new Configuration(ImmutableSet.of(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class")));
+		Configuration hasIt = new DefaultConfiguration(ImmutableSet.of(AnalysisResult.definitelyImmutable("i.am.hardcoded")));
+		Configuration doesNotHaveIt = new DefaultConfiguration(ImmutableSet.of(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class")));
 		Dotted isHardcoded = dotted("i.am.hardcoded");
 		Dotted notHardcoded = dotted("i.am.not.hardcoded");
 		

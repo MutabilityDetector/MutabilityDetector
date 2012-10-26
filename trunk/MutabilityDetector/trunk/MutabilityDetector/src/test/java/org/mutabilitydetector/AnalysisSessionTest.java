@@ -59,11 +59,12 @@ public class AnalysisSessionTest {
     public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
         Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
         
-        Configuration configuration = new Configuration(predefinedResults);
+        Configuration configuration = new DefaultConfiguration(predefinedResults);
         AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration);
         AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
         
         assertThat(result, areImmutable());
     }
+    
     
 }

@@ -41,6 +41,8 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
+import java.util.Collections;
+
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -71,6 +73,17 @@ public class WithAllowedReasonsMatcherTest {
 
     @Test
     public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
+        IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(NOT_IMMUTABLE);
+        AnalysisResult analysisResult = AnalysisResult.definitelyImmutable("some class");
+        
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, 
+                Collections.<Matcher<MutableReasonDetail>>emptyList());
+        
+        assertThat(withReasonsMatcher.matches(analysisResult), is(false));
+    }
+
+    @Test
+    public void failsWhenExpectingNotImmutableAndRealResultIsImmutableWithNoReasons() throws Exception {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
         AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedMutableReasonDetails());
         

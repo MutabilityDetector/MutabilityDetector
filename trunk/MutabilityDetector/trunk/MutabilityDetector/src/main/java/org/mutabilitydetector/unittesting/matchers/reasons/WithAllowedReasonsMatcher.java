@@ -95,18 +95,20 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     }
     
     private boolean mutabilityReasonsHaveBeenAllowed(Collection<MutableReasonDetail> reasons, Description mismatchDescription) {
-        Collection<MutableReasonDetail> unmatchedReasons = new ArrayList<MutableReasonDetail>(reasons);
         Collection<MutableReasonDetail> allowedReasons = collectAllowedReasons(reasons);
+        Collection<MutableReasonDetail> unmatchedReasons = new ArrayList<MutableReasonDetail>(reasons);
         
         unmatchedReasons.removeAll(allowedReasons);
         
+        boolean noAllowedReasonsProvided = allowedReasons.isEmpty();
         boolean allReasonsAllowed = unmatchedReasons.isEmpty();
         
-        if (!allReasonsAllowed) {
+        if (noAllowedReasonsProvided || !allReasonsAllowed) {
             describeMismatchedReasons(mismatchDescription, unmatchedReasons, allowedReasons);
+            return false;
         }
         
-        return allReasonsAllowed;
+        return true;
     }
 
     private Collection<MutableReasonDetail> collectAllowedReasons(Collection<MutableReasonDetail> reasons) {

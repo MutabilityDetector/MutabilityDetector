@@ -32,7 +32,7 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CachingAnalysisClassLoader;
 import org.mutabilitydetector.ClassForNameWrapper;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
-import org.mutabilitydetector.Configuration;
+import org.mutabilitydetector.DefaultConfiguration;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
@@ -94,7 +94,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                                                             new ClassPathBasedCheckerRunnerFactory(classpath), 
                                                             new MutabilityCheckerFactory(), 
                                                             verifierFactory,
-                                                            Configuration.NO_CONFIGURATION);
+                                                            DefaultConfiguration.NO_CONFIGURATION);
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
