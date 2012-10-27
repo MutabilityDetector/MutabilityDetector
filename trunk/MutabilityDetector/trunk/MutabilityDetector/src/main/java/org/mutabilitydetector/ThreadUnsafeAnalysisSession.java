@@ -37,7 +37,6 @@ import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -110,12 +109,6 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     }
 
     private AnalysisResult requestAnalysis(Dotted className) {
-        
-        Optional<AnalysisResult> hardcodedResult = configuration.hardcodedResultFor(className);
-        if (hardcodedResult.isPresent()) {
-            return hardcodedResult.get();
-        }
-        
         if (isRepeatedRequestFor(className)) {
             return null;
         }
@@ -129,7 +122,8 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
                                                               verifierFactory, 
-                                                              className);
+                                                              className,
+                                                              configuration);
         
         return addAnalysisResult(allChecksRunner.runCheckers(this, this, database));
     }

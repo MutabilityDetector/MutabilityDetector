@@ -10,7 +10,6 @@ import java.util.Set;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -42,9 +41,10 @@ public final class DefaultConfiguration implements Configuration {
             .build()
     );
 
+
     @Override
-    public Optional<AnalysisResult> hardcodedResultFor(Dotted className) {
-        return Optional.fromNullable(resultsByClassname.get(className));
+    public Map<Dotted, AnalysisResult> hardcodedResults() {
+        return resultsByClassname;
     }
     
 }

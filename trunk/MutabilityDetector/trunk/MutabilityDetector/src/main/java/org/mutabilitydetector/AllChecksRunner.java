@@ -36,22 +36,25 @@ public final class AllChecksRunner {
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AsmVerifierFactory verifierFactory;
     private final Dotted toAnalyse;
+    private Configuration configuration;
 
     public AllChecksRunner(MutabilityCheckerFactory checkerFactory,
             CheckerRunnerFactory checkerRunnerFactory,
             AsmVerifierFactory verifierFactory,
-            Dotted toAnalyse) {
+            Dotted toAnalyse, 
+            Configuration configuration) {
         this.factory = checkerFactory;
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.verifierFactory = verifierFactory;
         this.toAnalyse = toAnalyse;
+        this.configuration = configuration;
     }
 
     public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisErrorReporter errorReporter, AnalysisDatabase database) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 
-        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, verifierFactory);
+        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, verifierFactory, configuration);
 
         for (AsmMutabilityChecker checker : checkers) {
             CheckerResult checkerResult = checkerRunnerFactory.createRunner().run(checker, toAnalyse, errorReporter, analysisSession.getResults());

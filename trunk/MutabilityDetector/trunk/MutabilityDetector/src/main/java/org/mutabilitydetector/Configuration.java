@@ -1,11 +1,9 @@
 package org.mutabilitydetector;
 
+import java.util.Map;
+
 import org.mutabilitydetector.locations.Dotted;
 
-import com.google.common.base.Optional;
-
 public interface Configuration {
-
-    Optional<AnalysisResult> hardcodedResultFor(Dotted className);
-
+    Map<Dotted, AnalysisResult> hardcodedResults();
 }

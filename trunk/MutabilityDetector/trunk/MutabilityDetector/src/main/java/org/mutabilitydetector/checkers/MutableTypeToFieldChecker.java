@@ -60,7 +60,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
     }
-
+    
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         fieldSignatures.put(name, Optional.fromNullable(signature));
@@ -93,6 +93,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         }
         
 
+        
         private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
             int sort = typeAssignedToField.getSort();
             String fieldName = fieldInsnNode.name;

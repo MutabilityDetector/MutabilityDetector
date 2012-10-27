@@ -19,16 +19,11 @@ package org.mutabilitydetector;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-
-import java.util.Set;
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.locations.Dotted;
-
-import com.google.common.collect.Sets;
 
 public class AnalysisSessionTest {
 
@@ -40,7 +35,11 @@ public class AnalysisSessionTest {
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
-        AllChecksRunner checker = new AllChecksRunner(checkerFactory, checkerRunnerFactory, testingVerifierFactory(), immutableClass);
+        AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
+                checkerRunnerFactory, 
+                testingVerifierFactory(), 
+                immutableClass, 
+                DefaultConfiguration.NO_CONFIGURATION);
 
         checker.runCheckers(analysisSession, errorReporter, analysisDatabase());
 
@@ -54,17 +53,6 @@ public class AnalysisSessionTest {
         AnalysisResult result = analysisSession.resultFor(immutableClass).result;
         assertThat(result, areImmutable());
     }
-    
-    @Test
-    public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
-        Set<AnalysisResult> predefinedResults = Sets.newHashSet(AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE));
-        
-        Configuration configuration = new DefaultConfiguration(predefinedResults);
-        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration);
-        AnalysisResult result = analysisSession.resultFor(dotted("some.type.i.say.is.Immutable")).result;
-        
-        assertThat(result, areImmutable());
-    }
-    
+
     
 }

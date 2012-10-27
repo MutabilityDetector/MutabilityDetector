@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisSession.RequestedAnalysis.complete;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
@@ -85,7 +86,10 @@ public class MutableTypeToFieldCheckerTest {
 
     private MutableTypeToFieldChecker checkerWithRealAnalysisSession() {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        return new MutableTypeToFieldChecker(info, new MutableTypeInformation(testAnalysisSession()), testingVerifierFactory());
+        return new MutableTypeToFieldChecker(
+                info, 
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                testingVerifierFactory());
     }
 
 
@@ -93,7 +97,10 @@ public class MutableTypeToFieldCheckerTest {
     public void setUpWithMockSession() {
         session = mock(AnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        checkerWithMockedSession = new MutableTypeToFieldChecker(info, new MutableTypeInformation(session), testingVerifierFactory());
+        checkerWithMockedSession = new MutableTypeToFieldChecker(
+                info, 
+                new MutableTypeInformation(session, NO_CONFIGURATION), 
+                testingVerifierFactory());
     }
     
 
@@ -101,7 +108,10 @@ public class MutableTypeToFieldCheckerTest {
     public void setUpWithRealSession() {
         SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath());
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
-        checkerWithRealSession = new MutableTypeToFieldChecker(typeInfo, new MutableTypeInformation(testAnalysisSession()), testingVerifierFactory());
+        checkerWithRealSession = new MutableTypeToFieldChecker(
+                typeInfo, 
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                testingVerifierFactory());
     }
 
     @Test
@@ -136,7 +146,7 @@ public class MutableTypeToFieldCheckerTest {
     public void isMutableWhenCircularReferenceCheckingForFieldBeingMutable() throws Exception {
         when(session.resultFor(mutableExample)).thenReturn(RequestedAnalysis.incomplete());
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session);
+        MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session, NO_CONFIGURATION);
         checkerWithMockedSession = new MutableTypeToFieldChecker(info, mutableTypeInfo, testingVerifierFactory());
         
 
