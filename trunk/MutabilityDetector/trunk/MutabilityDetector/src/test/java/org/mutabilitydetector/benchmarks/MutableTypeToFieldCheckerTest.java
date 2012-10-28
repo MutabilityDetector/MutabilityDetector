@@ -28,12 +28,15 @@ import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
+import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.testAnalysisSession;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
+import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -126,13 +129,19 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
+        String unusedMessage = "";
+        AnalysisResult mutableResult = AnalysisResult.analysisResult(
+                "", 
+                NOT_IMMUTABLE, 
+                newMutableReasonDetail(unusedMessage, unusedCodeLocation(), ABSTRACT_COLLECTION_TYPE_TO_FIELD));
+
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        when(session.resultFor(mutableExample)).thenReturn(mutableResult);
         
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
-        assertThat(checkerWithMockedSession, hasReasons());
         assertThat(result, areNotImmutable());
+        assertThat(checkerWithMockedSession, hasReasons(MUTABLE_TYPE_TO_FIELD));
     }
 
     @Test
@@ -142,9 +151,8 @@ public class MutableTypeToFieldCheckerTest {
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
-        assertThat(checkerWithMockedSession, hasReasons());
         assertThat(result, areNotImmutable());
-        
+        assertThat(checkerWithMockedSession, hasReasons(MUTABLE_TYPE_TO_FIELD));
     }
     
     @Test
@@ -158,7 +166,9 @@ public class MutableTypeToFieldCheckerTest {
         
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
+
         assertThat(result, areNotImmutable());
+        assertThat(checkerWithMockedSession, hasReasons(MUTABLE_TYPE_TO_FIELD));
     }
     
     @Test

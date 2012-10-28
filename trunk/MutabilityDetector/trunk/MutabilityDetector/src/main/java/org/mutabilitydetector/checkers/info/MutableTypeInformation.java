@@ -1,8 +1,9 @@
 package org.mutabilitydetector.checkers.info;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.newSetFromMap;
 
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -18,62 +19,51 @@ public final class MutableTypeInformation {
 
     private final AnalysisSession analysisSession;
     private final Configuration configuration;
-    private final List<Dotted> inProgressAnalysis = newArrayList();
+    private final Set<Dotted> inProgressAnalysis = newSetFromMap(new ConcurrentHashMap<Dotted, Boolean>());
 
     public MutableTypeInformation(AnalysisSession analysisSession, Configuration configuration) {
         this.analysisSession = analysisSession;
         this.configuration = configuration;
     }
 
-    public MutabilityLookup resultOf(final Dotted dotted, Dotted askedOnBehalfOf) {
-        AnalysisResult hardcodedResult = configuration.hardcodedResults().get(dotted);
+    public MutabilityLookup resultOf(final Dotted fieldClass, Dotted ownerClass) {
+        AnalysisResult hardcodedResult = configuration.hardcodedResults().get(fieldClass);
         if (hardcodedResult != null) {
             return MutabilityLookup.complete(hardcodedResult);
         }
         
-        AnalysisResult alreadyComputedResult = Iterables.find(analysisSession.getResults(), new Predicate<AnalysisResult>() {
-            @Override
-            public boolean apply(AnalysisResult input) {
-                return input.dottedClassName.equals(dotted.asString());
-            }
-            
-        }, null);
+        AnalysisResult alreadyComputedResult = existingResult(fieldClass);
         
         if (alreadyComputedResult != null) {
             return MutabilityLookup.complete(alreadyComputedResult);
         }
         
-        if (dotted.equals(askedOnBehalfOf)) {
-            removeInProgressAnalysisOf(askedOnBehalfOf);
+        if (fieldClass.equals(ownerClass)) {
+            inProgressAnalysis.remove(ownerClass);
             return MutabilityLookup.foundCyclicReference();
         }
         
-        if (isAnalysisInProgress(askedOnBehalfOf)) {
-            removeInProgressAnalysisOf(askedOnBehalfOf);
+        if (inProgressAnalysis.contains(ownerClass)) {
+            inProgressAnalysis.remove(ownerClass);
             return MutabilityLookup.foundCyclicReference();
         }
         
-        addInProgressAnalysisOf(askedOnBehalfOf);
+        inProgressAnalysis.add(ownerClass);
         
-        AnalysisResult result = analysisSession.resultFor(dotted);
+        AnalysisResult result = analysisSession.resultFor(fieldClass);
         
         if (result != null) {
-            removeInProgressAnalysisOf(askedOnBehalfOf);
+            inProgressAnalysis.remove(ownerClass);
             return MutabilityLookup.complete(result);
         }
         return MutabilityLookup.foundCyclicReference();
     }
-    
-    private boolean isAnalysisInProgress(Dotted className) {
-        return inProgressAnalysis.contains(className);
-    }
 
-    private boolean addInProgressAnalysisOf(Dotted className) {
-        return inProgressAnalysis.add(className);
-    }
-
-    private boolean removeInProgressAnalysisOf(Dotted className) {
-        return inProgressAnalysis.remove(className);
+    private AnalysisResult existingResult(final Dotted fieldClass) {
+        return Iterables.find(analysisSession.getResults(), new Predicate<AnalysisResult>() {
+            @Override public boolean apply(AnalysisResult input) {
+                return input.dottedClassName.equals(fieldClass.asString());
+            }}, null);
     }
     
     @Immutable
