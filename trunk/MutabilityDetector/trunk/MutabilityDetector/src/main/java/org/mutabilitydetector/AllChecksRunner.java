@@ -28,6 +28,7 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
 import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class AllChecksRunner {
@@ -36,25 +37,22 @@ public final class AllChecksRunner {
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AsmVerifierFactory verifierFactory;
     private final Dotted toAnalyse;
-    private Configuration configuration;
 
     public AllChecksRunner(MutabilityCheckerFactory checkerFactory,
             CheckerRunnerFactory checkerRunnerFactory,
             AsmVerifierFactory verifierFactory,
-            Dotted toAnalyse, 
-            Configuration configuration) {
+            Dotted toAnalyse) {
         this.factory = checkerFactory;
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.verifierFactory = verifierFactory;
         this.toAnalyse = toAnalyse;
-        this.configuration = configuration;
     }
 
-    public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisErrorReporter errorReporter, AnalysisDatabase database) {
+    public AnalysisResult runCheckers(AnalysisSession analysisSession, AnalysisErrorReporter errorReporter, AnalysisDatabase database, MutableTypeInformation mutableTypeInformation) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 
-        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(analysisSession, database, verifierFactory, configuration);
+        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(database, verifierFactory, mutableTypeInformation);
 
         for (AsmMutabilityChecker checker : checkers) {
             CheckerResult checkerResult = checkerRunnerFactory.createRunner().run(checker, toAnalyse, errorReporter, analysisSession.getResults());

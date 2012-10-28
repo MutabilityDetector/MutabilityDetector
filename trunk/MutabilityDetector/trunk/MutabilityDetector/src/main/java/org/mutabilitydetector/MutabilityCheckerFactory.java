@@ -38,14 +38,14 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 
 public final class MutabilityCheckerFactory {
 
-    public Iterable<AsmMutabilityChecker> createInstances(AnalysisSession analysisSession, AnalysisDatabase database, AsmVerifierFactory verifierFactory, Configuration configuration) {
+    public Iterable<AsmMutabilityChecker> createInstances(AnalysisDatabase database, AsmVerifierFactory verifierFactory, MutableTypeInformation mutableTypeInformation) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
         checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION), verifierFactory));
         checkers.add(new MutableTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), 
-                                                   new MutableTypeInformation(analysisSession, configuration), 
+                                                   mutableTypeInformation, 
                                                    verifierFactory));
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());

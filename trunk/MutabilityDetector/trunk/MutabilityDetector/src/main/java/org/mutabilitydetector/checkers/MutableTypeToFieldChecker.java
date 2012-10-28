@@ -24,12 +24,12 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import java.util.Map;
 
-import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.RequestedAnalysis;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -101,7 +101,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             switch (sort) {
             case Type.OBJECT:
                 Dotted className = dotted(typeAssignedToField.getInternalName());
-                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className);
+                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className, dotted(ownerClass));
                 
                 if (!requestedAnalysis.analysisComplete) {
                     setResult("There is a field assigned which creates a circular reference.", 
@@ -163,7 +163,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     return true;
                 } 
                 
-                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(genericType.type);
+                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(genericType.type, dotted(ownerClass));
                 
                 if (!requestedAnalysis.analysisComplete) {
                     // go ape

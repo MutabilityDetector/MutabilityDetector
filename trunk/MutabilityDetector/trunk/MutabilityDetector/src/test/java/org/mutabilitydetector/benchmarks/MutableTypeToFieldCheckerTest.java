@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.AnalysisSession.RequestedAnalysis.complete;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
@@ -40,13 +39,14 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTU
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
@@ -116,7 +116,9 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void requestsMutableStatusOfPublishedField() throws Exception {
-        when(session.resultFor(mutableExample)).thenReturn(complete(unusedAnalysisResult));
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
         verify(session).resultFor(mutableExample);
@@ -124,7 +126,9 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
-        when(session.resultFor(mutableExample)).thenReturn(complete(unusedAnalysisResult));
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(checkerWithMockedSession, hasReasons());
@@ -133,7 +137,8 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
-        when(session.resultFor(mutableExample)).thenReturn(complete(unusedAnalysisResult));
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
@@ -144,7 +149,9 @@ public class MutableTypeToFieldCheckerTest {
     
     @Test
     public void isMutableWhenCircularReferenceCheckingForFieldBeingMutable() throws Exception {
-        when(session.resultFor(mutableExample)).thenReturn(RequestedAnalysis.incomplete());
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(mutableExample)).thenReturn(null);
+        
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session, NO_CONFIGURATION);
         checkerWithMockedSession = new MutableTypeToFieldChecker(info, mutableTypeInfo, testingVerifierFactory());
@@ -175,7 +182,9 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void codeLocationIsFieldLocation() throws Exception {
-        when(session.resultFor(mutableExample)).thenReturn(complete(unusedAnalysisResult));
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
         FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.reasons().iterator().next().codeLocation();
 

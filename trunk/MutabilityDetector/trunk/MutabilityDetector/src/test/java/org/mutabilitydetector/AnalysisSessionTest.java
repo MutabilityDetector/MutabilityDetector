@@ -17,12 +17,14 @@
 package org.mutabilitydetector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
 public class AnalysisSessionTest {
@@ -35,22 +37,23 @@ public class AnalysisSessionTest {
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
+        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, NO_CONFIGURATION);
+
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
                 checkerRunnerFactory, 
                 testingVerifierFactory(), 
-                immutableClass, 
-                DefaultConfiguration.NO_CONFIGURATION);
+                immutableClass);
 
-        checker.runCheckers(analysisSession, errorReporter, analysisDatabase());
+        checker.runCheckers(analysisSession, errorReporter, analysisDatabase(), mutableTypeInformation);
 
-        AnalysisResult result = analysisSession.resultFor(immutableClass).result;
+        AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());
     }
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
         AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
-        AnalysisResult result = analysisSession.resultFor(immutableClass).result;
+        AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());
     }
 

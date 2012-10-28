@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.AnalysisSession.RequestedAnalysis.complete;
 import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
@@ -16,13 +15,15 @@ import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.AnalysisSession.RequestedAnalysis;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.DefaultConfiguration;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.RequestedAnalysis;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -30,8 +31,10 @@ import com.google.common.collect.Sets;
 
 public class MutableTypeInformationTest {
 
-    private final Dotted className = dotted("a.b.c.D");
-	private final CodeLocation<?> unusedCodeLocation = from(className);
+    private final Dotted mutabilityAskedOnBehalfOf = dotted("something.with.PotentiallyMutableField");
+
+    private final Dotted needToKnowMutabilityOf = dotted("a.b.c.D");
+	private final CodeLocation<?> unusedCodeLocation = from(needToKnowMutabilityOf);
     private final AnalysisSession session = mock(AnalysisSession.class);
     
     @Test
@@ -41,22 +44,39 @@ public class MutableTypeInformationTest {
         AnalysisResult result = analysisResult("a.b.c.D", 
                                                isImmutableResult, 
                                                asList(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
-        when(session.resultFor(className)).thenReturn(complete(result));
+
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(result);
         
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
-        assertThat(information.resultOf(className).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(className).analysisComplete, is(true));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result.isImmutable, is(isImmutableResult));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).analysisComplete, is(true));
     }
     
     @Test
     public void isNotImmutableWithCircularReferenceReasonWhenResultIsRequestedMultipleTimesAndAnalysisSessionHasNoResult() {
-        when(session.resultFor(className)).thenReturn(RequestedAnalysis.incomplete());
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(null);
         
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
-        assertThat(information.resultOf(className).analysisComplete, is(false));
-        assertThat(information.resultOf(className).result, is(nullValue()));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).analysisComplete, is(false));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result, is(nullValue()));
+    }
+    
+    @Test
+    public void returnCyclicReferenceErrorWhenRequestingAnalysisAgainBeforeFirstAnalysisIsComplete() throws Exception {
+        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
+        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(null);
+        
+        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
+        
+        RequestedAnalysis firstResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
+        RequestedAnalysis secondResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
+
+        assertThat(firstResult.analysisComplete, is(false));
+        assertThat(secondResult.result, is(nullValue()));
     }
     
     @Test
@@ -65,7 +85,8 @@ public class MutableTypeInformationTest {
         Configuration configuration = new DefaultConfiguration(Sets.newHashSet(harcodedResult));
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);
         
-        assertThat(information.resultOf(dotted("some.type.i.say.is.Immutable")).result, sameInstance(harcodedResult));
+        assertThat(information.resultOf(dotted("some.type.i.say.is.Immutable"), mutabilityAskedOnBehalfOf).result, 
+                sameInstance(harcodedResult));
     }
     
 }

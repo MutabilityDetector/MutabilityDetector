@@ -86,7 +86,7 @@ public class MutabilityAsserter {
     }
 
     private AnalysisResult getResultFor(Class<?> clazz) {
-        return analysisSession.resultFor(Dotted.fromClass(clazz)).result;
+        return analysisSession.resultFor(Dotted.fromClass(clazz));
     }
 
 }

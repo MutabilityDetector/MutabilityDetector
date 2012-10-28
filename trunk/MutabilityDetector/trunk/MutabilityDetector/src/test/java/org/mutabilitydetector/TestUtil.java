@@ -40,12 +40,12 @@ import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result.isImmutable;
+        IsImmutable result = testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).isImmutable;
         return result;
     }
     
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).result;
+        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse));
     }
 
     public static AnalysisSession testAnalysisSession() {
