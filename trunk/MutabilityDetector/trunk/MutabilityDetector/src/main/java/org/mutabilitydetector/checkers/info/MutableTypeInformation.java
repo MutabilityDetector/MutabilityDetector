@@ -17,7 +17,7 @@ import com.google.common.collect.Iterables;
 public final class MutableTypeInformation {
 
     private final AnalysisSession analysisSession;
-    private Configuration configuration;
+    private final Configuration configuration;
     private final List<Dotted> inProgressAnalysis = newArrayList();
 
     public MutableTypeInformation(AnalysisSession analysisSession, Configuration configuration) {
@@ -25,10 +25,10 @@ public final class MutableTypeInformation {
         this.configuration = configuration;
     }
 
-    public RequestedAnalysis resultOf(final Dotted dotted, Dotted askedOnBehalfOf) {
+    public MutabilityLookup resultOf(final Dotted dotted, Dotted askedOnBehalfOf) {
         AnalysisResult hardcodedResult = configuration.hardcodedResults().get(dotted);
         if (hardcodedResult != null) {
-            return RequestedAnalysis.complete(hardcodedResult);
+            return MutabilityLookup.complete(hardcodedResult);
         }
         
         AnalysisResult alreadyComputedResult = Iterables.find(analysisSession.getResults(), new Predicate<AnalysisResult>() {
@@ -38,18 +38,19 @@ public final class MutableTypeInformation {
             }
             
         }, null);
+        
         if (alreadyComputedResult != null) {
-            return RequestedAnalysis.complete(alreadyComputedResult);
+            return MutabilityLookup.complete(alreadyComputedResult);
         }
         
         if (dotted.equals(askedOnBehalfOf)) {
             removeInProgressAnalysisOf(askedOnBehalfOf);
-            return RequestedAnalysis.incomplete();
+            return MutabilityLookup.foundCyclicReference();
         }
         
         if (isAnalysisInProgress(askedOnBehalfOf)) {
             removeInProgressAnalysisOf(askedOnBehalfOf);
-            return RequestedAnalysis.incomplete();
+            return MutabilityLookup.foundCyclicReference();
         }
         
         addInProgressAnalysisOf(askedOnBehalfOf);
@@ -58,9 +59,9 @@ public final class MutableTypeInformation {
         
         if (result != null) {
             removeInProgressAnalysisOf(askedOnBehalfOf);
-            return RequestedAnalysis.complete(result);
+            return MutabilityLookup.complete(result);
         }
-        return RequestedAnalysis.incomplete();
+        return MutabilityLookup.foundCyclicReference();
     }
     
     private boolean isAnalysisInProgress(Dotted className) {
@@ -76,21 +77,21 @@ public final class MutableTypeInformation {
     }
     
     @Immutable
-    public static final class RequestedAnalysis {
+    public static final class MutabilityLookup {
         public final AnalysisResult result;
-        public final boolean analysisComplete;
+        public final boolean foundCyclicReference;
         
-        private RequestedAnalysis(AnalysisResult result) {
+        private MutabilityLookup(AnalysisResult result) {
             this.result = result;
-            this.analysisComplete = result != null;
+            this.foundCyclicReference = result == null;
         }
         
-        public static RequestedAnalysis incomplete() {
-            return new RequestedAnalysis(null);
+        public static MutabilityLookup foundCyclicReference() {
+            return new MutabilityLookup(null);
         }
         
-        public static RequestedAnalysis complete(AnalysisResult result) {
-            return new RequestedAnalysis(result);
+        public static MutabilityLookup complete(AnalysisResult result) {
+            return new MutabilityLookup(result);
         }
     }
 }

@@ -23,7 +23,7 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.DefaultConfiguration;
 import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation.RequestedAnalysis;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -51,7 +51,7 @@ public class MutableTypeInformationTest {
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
         assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).analysisComplete, is(true));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).foundCyclicReference, is(false));
     }
     
     @Test
@@ -61,21 +61,23 @@ public class MutableTypeInformationTest {
         
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).analysisComplete, is(false));
+        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).foundCyclicReference, is(true));
         assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result, is(nullValue()));
     }
     
     @Test
-    public void returnCyclicReferenceErrorWhenRequestingAnalysisAgainBeforeFirstAnalysisIsComplete() throws Exception {
+    public void returnCyclicReferenceErrorWhenLookingUpMutabilityAgainBeforeFirstAnalysisIsComplete() throws Exception {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(needToKnowMutabilityOf)).thenReturn(null);
         
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
-        RequestedAnalysis firstResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
-        RequestedAnalysis secondResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
+        MutabilityLookup firstResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
+        MutabilityLookup secondResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
 
-        assertThat(firstResult.analysisComplete, is(false));
+        assertThat(firstResult.foundCyclicReference, is(true));
+        assertThat(secondResult.foundCyclicReference, is(true));
+        assertThat(firstResult.result, is(nullValue()));
         assertThat(secondResult.result, is(nullValue()));
     }
     

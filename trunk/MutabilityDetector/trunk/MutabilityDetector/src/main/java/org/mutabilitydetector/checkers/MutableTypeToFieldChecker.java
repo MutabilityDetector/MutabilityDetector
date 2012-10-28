@@ -29,7 +29,7 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation.RequestedAnalysis;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -101,13 +101,13 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             switch (sort) {
             case Type.OBJECT:
                 Dotted className = dotted(typeAssignedToField.getInternalName());
-                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(className, dotted(ownerClass));
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(className, dotted(ownerClass));
                 
-                if (!requestedAnalysis.analysisComplete) {
+                if (mutabilityLookup.foundCyclicReference) {
                     setResult("There is a field assigned which creates a circular reference.", 
                               fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                               MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-                } else if (!requestedAnalysis.result.isImmutable.equals(IMMUTABLE) && isConcreteType(className)) {
+                } else if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE) && isConcreteType(className)) {
                     setResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
                             fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
@@ -163,12 +163,12 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     return true;
                 } 
                 
-                RequestedAnalysis requestedAnalysis = mutableTypeInfo.resultOf(genericType.type, dotted(ownerClass));
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(genericType.type, dotted(ownerClass));
                 
-                if (!requestedAnalysis.analysisComplete) {
+                if (mutabilityLookup.foundCyclicReference) {
                     // go ape
                 } else {
-                    if (!requestedAnalysis.result.isImmutable.equals(IMMUTABLE)) {
+                    if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
                         return true;
                     }
                 }
