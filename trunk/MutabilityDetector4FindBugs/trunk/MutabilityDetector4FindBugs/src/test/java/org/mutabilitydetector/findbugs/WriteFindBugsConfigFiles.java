@@ -78,12 +78,12 @@ public class WriteFindBugsConfigFiles {
         
         content
         .append("<FindbugsPlugin xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        		"pluginid=\"org.mutabilitydetector.findbugs\"\n" +
-        		"website=\"http://www.mutabilitydetector.org\"\n" +
-        		"defaultenabled=\"true\" >\n")
+                "pluginid=\"org.mutabilitydetector.findbugs\"\n" +
+                "website=\"http://www.mutabilitydetector.org\"\n" +
+                "defaultenabled=\"true\" >\n")
         .append("<Detector class=\"" + ThisPluginDetector.class.getName() + "\" speed=\"fast\"\n" +
-        		"\treports=\"" + reasonsAsCsvList(includedReasons) + "\"" +
-        		"/>\n\n")
+                "\treports=\"" + reasonsAsCsvList(includedReasons) + "\"" +
+                "/>\n\n")
         .append("<!-- Each bug pattern -->\n");
         
         
@@ -101,30 +101,30 @@ public class WriteFindBugsConfigFiles {
     }
 
     private static String reasonsAsCsvList(List<MutabilityReason> includedReasons) {
-		StringBuilder csvList = new StringBuilder();
-		
-		csvList.append("MUTDEC_" + includedReasons.get(0) + ",\n");
-		
-		for (MutabilityReason mutabilityReason : includedReasons.subList(1, includedReasons.size())) {
-			csvList.append("\t\tMUTDEC_" + mutabilityReason + ",\n");
-		}
-		
-		String csvString = csvList.toString();
-		
-		return csvString.substring(0, csvString.length() - ",\n".length());
-	}
+        StringBuilder csvList = new StringBuilder();
+        
+        csvList.append("MUTDEC_" + includedReasons.get(0) + ",\n");
+        
+        for (MutabilityReason mutabilityReason : includedReasons.subList(1, includedReasons.size())) {
+            csvList.append("\t\tMUTDEC_" + mutabilityReason + ",\n");
+        }
+        
+        String csvString = csvList.toString();
+        
+        return csvString.substring(0, csvString.length() - ",\n".length());
+    }
 
-	private static List<MutabilityReason> includedReasons() {
-    	List<MutabilityReason> includedReasons = new ArrayList<MutabilityReason>();
-    	for (MutabilityReason reason : MutabilityReason.values()) {
+    private static List<MutabilityReason> includedReasons() {
+        List<MutabilityReason> includedReasons = new ArrayList<MutabilityReason>();
+        for (MutabilityReason reason : MutabilityReason.values()) {
             if (!isReasonToExclude(reason)) { 
-            	includedReasons.add(reason);
+                includedReasons.add(reason);
             }
-    	}
-    	return includedReasons;
-	}
+        }
+        return includedReasons;
+    }
 
-	private static StringBuilder writeEmptyDetailsNode(StringBuilder content) {
+    private static StringBuilder writeEmptyDetailsNode(StringBuilder content) {
         content.append("<Details>\n")
                .append("<![CDATA[]]>\n")
                .append("</Details>\n");
@@ -147,6 +147,7 @@ public class WriteFindBugsConfigFiles {
         return reason.isOneOf(NULL_REASON, CANNOT_ANALYSE, NOT_DECLARED_FINAL);
     }
 
+    @SuppressWarnings("resource")
     private static void writeFile(String fileName, StringBuilder content) throws IOException {
         System.out.println(content);
         new BufferedWriter(new FileWriter(fileName)).append(content).close();

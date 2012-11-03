@@ -37,23 +37,23 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.AnnotationDetector;
 
-public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector implements Detector {
+public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector {
 
-	private static final int PRIORITY_TO_REPORT = Priorities.NORMAL_PRIORITY;
-	private final BugReporter bugReporter;
+    private static final int PRIORITY_TO_REPORT = Priorities.NORMAL_PRIORITY;
+    private final BugReporter bugReporter;
     private final Detector pluginToRegisterBugsWith;
     private final AnalysisSessionHolder analysisSessionHolder;
     
     private boolean doMutabilityDetectionOnCurrentClass;
 
-	public MutabilityDetectorFindBugsPlugin(Detector pluginToRegisterBugsWith, BugReporter bugReporter, AnalysisSessionHolder analysisSessionHolder) {
-		this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
+    public MutabilityDetectorFindBugsPlugin(Detector pluginToRegisterBugsWith, BugReporter bugReporter, AnalysisSessionHolder analysisSessionHolder) {
+        this.pluginToRegisterBugsWith = pluginToRegisterBugsWith;
         this.bugReporter = bugReporter;
         this.analysisSessionHolder = analysisSessionHolder;
-	}
+    }
 
-	
-	@Override
+    
+    @Override
     public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
         super.visitAnnotation(annotationClass, map, runtimeVisible);
         
@@ -87,7 +87,7 @@ public class MutabilityDetectorFindBugsPlugin extends AnnotationDetector impleme
         }
     }
    
-	
-	public void report() { }
-	
+    
+    public void report() { }
+    
 }
