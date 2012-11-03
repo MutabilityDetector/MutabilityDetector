@@ -100,24 +100,25 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
             switch (sort) {
             case Type.OBJECT:
-                Dotted className = dotted(typeAssignedToField.getInternalName());
-                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(className, dotted(ownerClass));
+                Dotted fieldClass = dotted(typeAssignedToField.getInternalName());
+                
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), fieldClass);
                 
                 if (mutabilityLookup.foundCyclicReference) {
                     setResult("There is a field assigned which creates a circular reference.", 
                               fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                               MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-                } else if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE) && isConcreteType(className)) {
-                    setResult("Field can have a mutable type (" + className + ") " + "assigned to it.",
+                } else if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE) && isConcreteType(fieldClass)) {
+                    setResult("Field can have a mutable type (" + fieldClass + ") " + "assigned to it.",
                             fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
-                } else if(!isConcreteType(className)) {
+                } else if(!isConcreteType(fieldClass)) {
                 
                     UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(
                             fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
-                        setResult(format("Field can have an abstract type (%s) assigned to it.", className),
+                        setResult(format("Field can have an abstract type (%s) assigned to it.", fieldClass),
                                 fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                 MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
                         return;
@@ -163,7 +164,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     return true;
                 } 
                 
-                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(genericType.type, dotted(ownerClass));
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type);
                 
                 if (mutabilityLookup.foundCyclicReference) {
                     // go ape

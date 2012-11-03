@@ -26,6 +26,10 @@ import java.util.Collections;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.mutabilitydetector.locations.Dotted;
+
+import com.google.common.base.Predicate;
+
 @Immutable
 public final class AnalysisResult {
     public final String dottedClassName;
@@ -57,4 +61,11 @@ public final class AnalysisResult {
     public static AnalysisResult definitelyImmutable(String dottedClassName) {
         return analysisResult(dottedClassName, IsImmutable.IMMUTABLE);
     }
+    
+    public static final Predicate<AnalysisResult> forClass(final Dotted className) {
+        return new Predicate<AnalysisResult>() { @Override public boolean apply(AnalysisResult input) {
+            return input.dottedClassName.equals(className.asString());
+        }};
+    }
+    
 }

@@ -156,22 +156,6 @@ public class MutableTypeToFieldCheckerTest {
     }
     
     @Test
-    public void isMutableWhenCircularReferenceCheckingForFieldBeingMutable() throws Exception {
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(null);
-        
-        TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
-        MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(session, NO_CONFIGURATION);
-        checkerWithMockedSession = new MutableTypeToFieldChecker(info, mutableTypeInfo, testingVerifierFactory());
-        
-
-        result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
-
-        assertThat(result, areNotImmutable());
-        assertThat(checkerWithMockedSession, hasReasons(MUTABLE_TYPE_TO_FIELD));
-    }
-    
-    @Test
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checkerWithMockedSession, MutableByHavingArrayTypeAsField.class);
         assertThat(result, areNotImmutable());
@@ -331,7 +315,7 @@ public class MutableTypeToFieldCheckerTest {
         String typeName = reasonDetail.codeLocation().typeName();
         assertThat(typeName, is(MutableByAssigningAbstractTypeToField.class.getName()));
     }
-
+    
     @Test
     public void reasonCreatedByCheckerIncludesMessagePointingToAbstractType() throws Exception {
         result = runChecker(checkerWithRealSession, MutableByAssigningAbstractTypeToField.class);
@@ -352,7 +336,5 @@ public class MutableTypeToFieldCheckerTest {
         assertThat(fieldLocation.typeName(), is(MutableByAssigningAbstractTypeToField.class.getName()));
         assertThat(fieldLocation.fieldName(), is("nameContainer"));
     }
-
-
 
 }

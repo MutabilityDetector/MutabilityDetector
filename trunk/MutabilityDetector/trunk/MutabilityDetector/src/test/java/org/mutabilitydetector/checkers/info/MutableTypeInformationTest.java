@@ -3,8 +3,9 @@ package org.mutabilitydetector.checkers.info;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
@@ -23,7 +24,7 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.DefaultConfiguration;
 import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.CircularReference;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -50,35 +51,8 @@ public class MutableTypeInformationTest {
         
         MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
         
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).foundCyclicReference, is(false));
-    }
-    
-    @Test
-    public void isNotImmutableWithCircularReferenceReasonWhenResultIsRequestedMultipleTimesAndAnalysisSessionHasNoResult() {
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(null);
-        
-        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
-        
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).foundCyclicReference, is(true));
-        assertThat(information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf).result, is(nullValue()));
-    }
-    
-    @Test
-    public void returnCyclicReferenceErrorWhenLookingUpMutabilityAgainBeforeFirstAnalysisIsComplete() throws Exception {
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(null);
-        
-        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
-        
-        MutabilityLookup firstResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
-        MutabilityLookup secondResult = information.resultOf(needToKnowMutabilityOf, mutabilityAskedOnBehalfOf);
-
-        assertThat(firstResult.foundCyclicReference, is(true));
-        assertThat(secondResult.foundCyclicReference, is(true));
-        assertThat(firstResult.result, is(nullValue()));
-        assertThat(secondResult.result, is(nullValue()));
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).result.isImmutable, is(isImmutableResult));
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).foundCyclicReference, is(false));
     }
     
     @Test
@@ -87,8 +61,15 @@ public class MutableTypeInformationTest {
         Configuration configuration = new DefaultConfiguration(Sets.newHashSet(harcodedResult));
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);
         
-        assertThat(information.resultOf(dotted("some.type.i.say.is.Immutable"), mutabilityAskedOnBehalfOf).result, 
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable")).result, 
                 sameInstance(harcodedResult));
+    }
+    
+    @Test
+    public void circularReferenceIsEqualsWhenBothTypesAreIncluded() throws Exception {
+        assertEquals(new CircularReference(dotted("a.b.C"), dotted("d.e.F")), new CircularReference(dotted("a.b.C"), dotted("d.e.F")));
+        assertEquals(new CircularReference(dotted("a.b.C"), dotted("d.e.F")), new CircularReference(dotted("d.e.F"), dotted("a.b.C")));
+        assertFalse(new CircularReference(dotted("a.b.C"), dotted("d.e.F")).equals(new CircularReference(dotted("d.e.F"), dotted("g.h.I"))));
     }
     
 }
