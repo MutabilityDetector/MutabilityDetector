@@ -37,7 +37,7 @@ public final class RuntimeAnalysisExample {
          * Request an analysis of the runtime class, to discover if this
          * instance will be immutable or not. 
          */
-        AnalysisResult result = analysisSession.resultFor(dottedClassName).result;
+        AnalysisResult result = analysisSession.resultFor(dottedClassName);
 
         if (result.isImmutable.equals(IsImmutable.IMMUTABLE)) {
             /*
