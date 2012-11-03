@@ -55,19 +55,19 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
     }
 
-	/**
-	 * 
-	 * At the end of a method, the frames are analysed to be able to inspect
-	 * the state of the stack when the field is assigned. This method is
-	 * called, giving the frame at the time of the assignment, as well as
-	 * the instruction node.
-	 * 
-	 * @param assignmentFrame
-	 * @param fieldInsnNode
-	 */
-	abstract protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue);
+    /**
+     * 
+     * At the end of a method, the frames are analysed to be able to inspect
+     * the state of the stack when the field is assigned. This method is
+     * called, giving the frame at the time of the assignment, as well as
+     * the instruction node.
+     * 
+     * @param assignmentFrame
+     * @param fieldInsnNode
+     */
+    abstract protected void visitFieldAssignmentFrame(Frame<BasicValue> assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue);
 
-	@Override
+    @Override
     public void visitEnd() {
         super.visitEnd();
 

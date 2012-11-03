@@ -194,9 +194,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
 
     }
 
-	private boolean unreadableClassFileListExists() {
-		return classListFile.exists() && !classListFile.canRead();
-	}
+    private boolean unreadableClassFileListExists() {
+        return classListFile.exists() && !classListFile.canRead();
+    }
 
     private void extractShowErrorsOption(CommandLine line) {
         this.reportErrors = line.hasOption("e") || line.hasOption("showErrors");

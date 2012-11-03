@@ -140,7 +140,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         return classFileInputMap;
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         BatchAnalysisOptions options = createOptionsFromArgs(args);
         ClassPath classpath = new ClassPathFactory().createFromPath(options.classpath());
 

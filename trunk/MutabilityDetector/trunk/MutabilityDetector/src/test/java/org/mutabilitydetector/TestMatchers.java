@@ -39,7 +39,7 @@ import com.google.common.collect.Collections2;
  * you may not use this file except in compliance with the License.
  *
  * Further licensing information for this project can be found in 
- * 		license/LICENSE.txt
+ *         license/LICENSE.txt
  */
 
 @Ignore

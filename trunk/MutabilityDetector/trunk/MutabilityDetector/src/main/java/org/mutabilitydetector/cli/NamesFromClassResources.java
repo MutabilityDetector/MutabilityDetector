@@ -13,17 +13,17 @@ import com.google.common.collect.FluentIterable;
 
 public final class NamesFromClassResources {
 
-	private final String classNameRegex;
+    private final String classNameRegex;
 
     public NamesFromClassResources(String toAnalyseRegex) {
         this.classNameRegex = toAnalyseRegex;
     }
 
     public List<Dotted> asDotted(String[] findResources) {
-		return FluentIterable.from(asList(findResources))
-				.transform(TO_DOTTED_STRING)
-				.filter(containsPattern(classNameRegex))
-				.transform(STRING_NAME_TO_DOTTED).toImmutableList();
-	}
+        return FluentIterable.from(asList(findResources))
+                .transform(TO_DOTTED_STRING)
+                .filter(containsPattern(classNameRegex))
+                .transform(STRING_NAME_TO_DOTTED).toImmutableList();
+    }
 
 }

@@ -35,7 +35,7 @@ public class MutableTypeInformationTest {
     private final Dotted mutabilityAskedOnBehalfOf = dotted("something.with.PotentiallyMutableField");
 
     private final Dotted needToKnowMutabilityOf = dotted("a.b.c.D");
-	private final CodeLocation<?> unusedCodeLocation = from(needToKnowMutabilityOf);
+    private final CodeLocation<?> unusedCodeLocation = from(needToKnowMutabilityOf);
     private final AnalysisSession session = mock(AnalysisSession.class);
     
     @Test

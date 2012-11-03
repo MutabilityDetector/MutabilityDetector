@@ -29,7 +29,7 @@ public final class Dotted extends ClassName {
     }
     
     public static final Function<String, Dotted> STRING_NAME_TO_DOTTED = new Function<String, Dotted>() {
-		@Override public Dotted apply(String className) { return dotted(className); }
+        @Override public Dotted apply(String className) { return dotted(className); }
     };
 
     public static final Function<Class<?>, Dotted> CLASS_TO_DOTTED = new Function<Class<?>, Dotted>() {
