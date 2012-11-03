@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  *
  * Further licensing information for this project can be found in 
- * 		license/LICENSE.txt
+ *         license/LICENSE.txt
  */
 
 package org.mutabilitydetector.unittesting.assertionbenchmarks;
@@ -21,17 +21,17 @@ import org.mutabilitydetector.repackaged.com.google.classpath.ClassPathFactory;
 
 public class CheckSomeClass {
 
-	public static void main(String[] args) {
-		//checkClass(TestIllegalFieldValueException.class);
-//		checkClass(DurationField.class);
-		checkClass(BigDecimal.class);
-	}
+    public static void main(String[] args) {
+        //checkClass(TestIllegalFieldValueException.class);
+//        checkClass(DurationField.class);
+        checkClass(BigDecimal.class);
+    }
 
-	private static void checkClass(Class<?> toAnalyse) {
-		ClassPath cp = new ClassPathFactory().createFromJVM();
-		String match = toAnalyse.getName().replace("$", "\\$");
-		CommandLineOptions options = new CommandLineOptions(System.out, "-v", "-match", match);
-		new RunMutabilityDetector(cp, options, new NamesFromClassResources(options.match())).run();
-	}
+    private static void checkClass(Class<?> toAnalyse) {
+        ClassPath cp = new ClassPathFactory().createFromJVM();
+        String match = toAnalyse.getName().replace("$", "\\$");
+        CommandLineOptions options = new CommandLineOptions(System.out, "-v", "-match", match);
+        new RunMutabilityDetector(cp, options, new NamesFromClassResources(options.match())).run();
+    }
 
 }

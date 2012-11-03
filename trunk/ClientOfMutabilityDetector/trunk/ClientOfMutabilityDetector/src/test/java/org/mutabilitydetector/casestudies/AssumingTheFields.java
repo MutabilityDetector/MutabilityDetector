@@ -15,51 +15,51 @@ import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public final class AssumingTheFields  {
-	
-	private final Set<String> fieldNames;
+    
+    private final Set<String> fieldNames;
 
-	private AssumingTheFields(Set<String> fieldNames) {
-		this.fieldNames = fieldNames;
-	}
-	
-	public static AssumingTheFields named(String first, String... rest) {
-		return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
-	}
+    private AssumingTheFields(Set<String> fieldNames) {
+        this.fieldNames = fieldNames;
+    }
+    
+    public static AssumingTheFields named(String first, String... rest) {
+        return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
+    }
 
-	public static AssumingTheFields assumingFieldsNamed(String first, String... rest) {
-		return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
-	}
-	
-	Matcher<MutableReasonDetail> areNotModifiedByCallers() {
-		return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
-			@Override public void describeTo(Description description) { }
+    public static AssumingTheFields assumingFieldsNamed(String first, String... rest) {
+        return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
+    }
+    
+    Matcher<MutableReasonDetail> areNotModifiedByCallers() {
+        return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
+            @Override public void describeTo(Description description) { }
 
-			@Override
-			protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
-				return isMutableFieldWithName(item);
-			}
-		};
-	}
-	
-	Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
-		return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
-			@Override public void describeTo(Description description) { }
+            @Override
+            protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
+                return isMutableFieldWithName(item);
+            }
+        };
+    }
+    
+    Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
+        return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
+            @Override public void describeTo(Description description) { }
 
-			@Override
-			protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
-				return isMutableFieldWithName(item);
-			}
+            @Override
+            protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
+                return isMutableFieldWithName(item);
+            }
 
-		};
-	}
+        };
+    }
 
-	private boolean isMutableFieldWithName(MutableReasonDetail reasonDetail) {
-		CodeLocation<?> locationOfMutability = reasonDetail.codeLocation();
-		if (locationOfMutability instanceof FieldLocation) {
-			return reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD)
-					&& fieldNames.contains(((FieldLocation)locationOfMutability).fieldName());
-		} else {
-			return false;
-		}
-	}
+    private boolean isMutableFieldWithName(MutableReasonDetail reasonDetail) {
+        CodeLocation<?> locationOfMutability = reasonDetail.codeLocation();
+        if (locationOfMutability instanceof FieldLocation) {
+            return reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD)
+                    && fieldNames.contains(((FieldLocation)locationOfMutability).fieldName());
+        } else {
+            return false;
+        }
+    }
 }

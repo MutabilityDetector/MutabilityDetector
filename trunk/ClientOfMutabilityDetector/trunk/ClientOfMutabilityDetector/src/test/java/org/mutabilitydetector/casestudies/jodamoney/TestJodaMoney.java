@@ -14,10 +14,10 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 
 public class TestJodaMoney {
-	
-	@Rule public MethodRule pendingRule = new PendingRule();
+    
+    @Rule public MethodRule pendingRule = new PendingRule();
 
-	
+    
     @Test @PendingImplementation
     public void testorg_joda_money_format_MoneyPrintContext() {
         assertImmutable(MoneyPrintContext.class);

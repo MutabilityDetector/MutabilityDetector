@@ -14,31 +14,31 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
 public class AssumingArrayFields {
-	private ImmutableSet<String> fieldNames;
+    private ImmutableSet<String> fieldNames;
 
-	public AssumingArrayFields(ImmutableSet<String> fieldNames) {
-		this.fieldNames = fieldNames;
-	}
+    public AssumingArrayFields(ImmutableSet<String> fieldNames) {
+        this.fieldNames = fieldNames;
+    }
 
-	public static AssumingArrayFields named(String first, String... rest) {
-		return new AssumingArrayFields(ImmutableSet.copyOf(Iterables.concat(asList(first), asList(rest))));
-	}
-	
-	public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
-		return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
+    public static AssumingArrayFields named(String first, String... rest) {
+        return new AssumingArrayFields(ImmutableSet.copyOf(Iterables.concat(asList(first), asList(rest))));
+    }
+    
+    public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
+        return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
 
-			@Override public void describeTo(Description description) { }
+            @Override public void describeTo(Description description) { }
 
-			@Override
-			protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
-				if (reasonDetail.codeLocation() instanceof FieldLocation) {
-					return reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, ARRAY_TYPE_INHERENTLY_MUTABLE)
-							&& fieldNames.contains(((FieldLocation)reasonDetail.codeLocation()).fieldName());
-				} else {
-					return false;
-				}
-			}
-			
-		};
-	}
+            @Override
+            protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
+                if (reasonDetail.codeLocation() instanceof FieldLocation) {
+                    return reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, ARRAY_TYPE_INHERENTLY_MUTABLE)
+                            && fieldNames.contains(((FieldLocation)reasonDetail.codeLocation()).fieldName());
+                } else {
+                    return false;
+                }
+            }
+            
+        };
+    }
 }
