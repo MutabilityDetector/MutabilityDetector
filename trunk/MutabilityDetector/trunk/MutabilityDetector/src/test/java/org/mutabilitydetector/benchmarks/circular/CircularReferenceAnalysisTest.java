@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.circular;
 
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.MutabilityAsserter.configured;
@@ -6,7 +6,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Test;
-import org.mutabilitydetector.DefaultConfiguration;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.benchmarks.circular.MimicAwtCircularDependencies;
 import org.mutabilitydetector.benchmarks.circular.MultipleCircularAssignments.B;
 import org.mutabilitydetector.benchmarks.circular.OuterClassWithInnerClassAsField.Inner;
@@ -17,7 +17,7 @@ import org.mutabilitydetector.unittesting.MutabilityAsserter;
 public class CircularReferenceAnalysisTest {
     
     
-    private static final MutabilityAsserter asserter = configured(DefaultConfiguration.NO_CONFIGURATION);
+    private static final MutabilityAsserter asserter = configured(ConfigurationBuilder.NO_CONFIGURATION);
     
     private boolean classExistsInHostJdk(String className) {
         try {

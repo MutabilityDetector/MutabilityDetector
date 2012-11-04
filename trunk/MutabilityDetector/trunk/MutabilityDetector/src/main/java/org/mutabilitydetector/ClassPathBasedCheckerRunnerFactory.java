@@ -18,20 +18,24 @@ package org.mutabilitydetector;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
+
 import com.google.classpath.ClassPath;
 
 @Immutable
 public final class ClassPathBasedCheckerRunnerFactory implements CheckerRunnerFactory {
 
     private final ClassPath classpath;
+    private final ExceptionPolicy exceptionPolicy;
 
-    public ClassPathBasedCheckerRunnerFactory(ClassPath classpath) {
+    public ClassPathBasedCheckerRunnerFactory(ClassPath classpath, ExceptionPolicy exceptionPolicy) {
         this.classpath = classpath;
+        this.exceptionPolicy = exceptionPolicy;
     }
 
     @Override
     public CheckerRunner createRunner() {
-        return CheckerRunner.createWithClasspath(classpath);
+        return CheckerRunner.createWithClasspath(classpath, exceptionPolicy);
     }
 
 }

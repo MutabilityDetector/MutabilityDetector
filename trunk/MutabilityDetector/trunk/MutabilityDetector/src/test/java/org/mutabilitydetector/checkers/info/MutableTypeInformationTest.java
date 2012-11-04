@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
@@ -22,13 +21,11 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
-import org.mutabilitydetector.DefaultConfiguration;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.CircularReference;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
-
-import com.google.common.collect.Sets;
 
 public class MutableTypeInformationTest {
 
@@ -49,7 +46,7 @@ public class MutableTypeInformationTest {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(needToKnowMutabilityOf)).thenReturn(result);
         
-        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION);
         
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).result.isImmutable, is(isImmutableResult));
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).foundCyclicReference, is(false));
@@ -57,8 +54,12 @@ public class MutableTypeInformationTest {
     
     @Test
     public void canConfigureAnalysisSessionToHardcodeResultForClass() throws Exception {
-        AnalysisResult harcodedResult = AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE);
-        Configuration configuration = new DefaultConfiguration(Sets.newHashSet(harcodedResult));
+        final AnalysisResult harcodedResult = AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE);
+        Configuration configuration = new ConfigurationBuilder() {
+            @Override public void configure() {
+                overrideResult(harcodedResult);
+            }
+        }.build();
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);
         
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable")).result, 

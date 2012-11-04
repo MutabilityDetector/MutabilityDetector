@@ -9,16 +9,21 @@ import java.util.Map;
 import org.junit.Test;
 import org.mutabilitydetector.locations.Dotted;
 
-import com.google.common.collect.ImmutableSet;
-
 public class ConfigurationTest {
 
     @Test
     public void hasHardcodedResultForClass() throws Exception {
-        Configuration hasIt = new DefaultConfiguration(ImmutableSet.of(AnalysisResult
-                .definitelyImmutable("i.am.hardcoded")));
-        Configuration doesNotHaveIt = new DefaultConfiguration(ImmutableSet.of(AnalysisResult
-                .definitelyImmutable("i.am.not.the.same.hardcoded.class")));
+        Configuration hasIt = new ConfigurationBuilder() {
+            @Override public void configure() {
+                overrideResult(AnalysisResult.definitelyImmutable("i.am.hardcoded"));
+            }
+        }.build();
+        Configuration doesNotHaveIt = new ConfigurationBuilder() {
+            @Override public void configure() {
+                overrideResult(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class"));
+            }
+        }.build();
+
         Dotted isHardcoded = dotted("i.am.hardcoded");
         Dotted notHardcoded = dotted("i.am.not.hardcoded");
 

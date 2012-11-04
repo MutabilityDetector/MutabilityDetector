@@ -17,7 +17,6 @@
 package org.mutabilitydetector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mutabilitydetector.DefaultConfiguration.NO_CONFIGURATION;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -36,8 +35,8 @@ public class AnalysisSessionTest {
         AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
-        CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null);
-        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, NO_CONFIGURATION);
+        CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
+        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, ConfigurationBuilder.NO_CONFIGURATION);
 
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
                 checkerRunnerFactory, 

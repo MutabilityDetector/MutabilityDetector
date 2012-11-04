@@ -37,6 +37,8 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private File classListFile;
     private boolean isUsingClassList;
     private boolean reportErrors;
+    private boolean failFast = false;
+    
     private final PrintStream errorStream;
 
     private final class ParsingActionImplementation implements ParsingAction {
@@ -49,6 +51,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
             extractReportMode(line);
             extractClassListFile(line);
             extractShowErrorsOption(line);
+            extractFailFastOption(line);
             printHelpIfNoOptionsGiven(line);
         }
 
@@ -103,6 +106,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
                         + ". If not specified, or doesn't match an available mode, defaults to 'ALL'");
         opts.addOption("h", "help", false, "print this message");
         opts.addOption("e", "reportErrors", false, "Reports on errors in the analysis. Defaults to false.");
+        opts.addOption("f", "failFast", false, "When true, encountering an unhandled exception will cause analysis to abort immediately. " +
+                   "When false, exceptions during analysis of a particular class will be reflected in the result assigned to " +
+                   "that class. Defaults to false.");
         return opts;
     }
 
@@ -202,6 +208,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         this.reportErrors = line.hasOption("e") || line.hasOption("showErrors");
     }
 
+    private void extractFailFastOption(CommandLine line) {
+        this.failFast = line.hasOption("failFast");
+    }
+
     private void printHelpIfRequired(CommandLine line) {
         if (line.hasOption("help")) {
             printHelpAndExit();
@@ -258,5 +268,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     @Override
     public boolean reportErrors() {
         return reportErrors;
+    }
+    
+    @Override
+    public boolean failFast() {
+        return failFast;
     }
 }

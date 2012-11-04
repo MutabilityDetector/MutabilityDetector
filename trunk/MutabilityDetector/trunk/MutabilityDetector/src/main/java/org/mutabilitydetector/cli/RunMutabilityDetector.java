@@ -18,6 +18,8 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.CARRY_ON;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
@@ -32,7 +34,8 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.CachingAnalysisClassLoader;
 import org.mutabilitydetector.ClassForNameWrapper;
 import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
-import org.mutabilitydetector.DefaultConfiguration;
+import org.mutabilitydetector.Configuration;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
@@ -88,13 +91,21 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     private StringBuilder getResultString() {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
+        
+        Configuration configuration = new ConfigurationBuilder() {
+            @Override
+            public void configure() {
+                setExceptionPolicy(options.failFast() ? FAIL_FAST : CARRY_ON);
+            }
+        }.build(); 
+        
 
         AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory();
         AnalysisSession newSession = createWithGivenClassPath(classpath, 
-                                                            new ClassPathBasedCheckerRunnerFactory(classpath), 
+                                                            new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
                                                             new MutabilityCheckerFactory(), 
                                                             verifierFactory,
-                                                            DefaultConfiguration.NO_CONFIGURATION);
+                                                            configuration);
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         

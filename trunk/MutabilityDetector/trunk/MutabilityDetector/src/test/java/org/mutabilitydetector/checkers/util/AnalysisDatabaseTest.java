@@ -18,8 +18,9 @@
 package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertSame;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
@@ -40,7 +41,7 @@ public class AnalysisDatabaseTest {
     @Before
     public void setUp() {
         AsmSessionCheckerRunner sessionRunner = new SessionCheckerRunner(createWithCurrentClassPath(),
-                createWithCurrentClasspath());
+                createWithCurrentClasspath(FAIL_FAST));
         db = newAnalysisDatabase(sessionRunner);
     }
 

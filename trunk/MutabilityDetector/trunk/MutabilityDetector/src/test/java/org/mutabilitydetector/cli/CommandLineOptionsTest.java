@@ -116,6 +116,15 @@ public class CommandLineOptionsTest {
         options = createOptions("-cp", ".", "-e");
         assertTrue("With the '-e' flag, errors should be shown.", options.reportErrors());
     }
+    
+    @Test
+    public void canSpecifyFailFastOption() throws Exception {
+        options = createOptions("-cp", ".");
+        assertFalse("By default, analysis should not fail fast.", options.failFast());
+
+        options = createOptions("-cp", ".", "-failFast");
+        assertTrue(options.failFast());
+    }
 
     @After
     public void tearDown() {

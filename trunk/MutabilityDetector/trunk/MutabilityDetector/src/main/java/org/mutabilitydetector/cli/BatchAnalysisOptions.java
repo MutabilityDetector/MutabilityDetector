@@ -35,5 +35,7 @@ public interface BatchAnalysisOptions {
     public abstract boolean isUsingClassList();
 
     public abstract boolean reportErrors();
+    
+    public abstract boolean failFast();
 
 }

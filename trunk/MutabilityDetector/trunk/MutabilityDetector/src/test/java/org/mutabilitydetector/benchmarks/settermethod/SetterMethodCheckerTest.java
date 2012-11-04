@@ -19,6 +19,7 @@ package org.mutabilitydetector.benchmarks.settermethod;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
@@ -71,7 +72,7 @@ public class SetterMethodCheckerTest {
 
     @Before
     public void setUp() {
-        checkerRunner = CheckerRunner.createWithCurrentClasspath();
+        checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
         analysisSession = createWithCurrentClassPath();
         info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
         checker = newSetterMethodChecker(info, testingVerifierFactory());

@@ -18,6 +18,7 @@ package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
@@ -68,12 +69,12 @@ public class TestUtil {
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
         AnalysisSession analysisSession = testAnalysisSession();
-        CheckerRunner.createWithCurrentClasspath().run(checker, fromClass(toAnalyse), analysisSession.errorReporter(), analysisSession.getResults());
+        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.errorReporter(), analysisSession.getResults());
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 
     public static SessionCheckerRunner sessionCheckerRunner() {
-        return new SessionCheckerRunner(testAnalysisSession(), createWithCurrentClasspath());
+        return new SessionCheckerRunner(testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
     }
 
     public static AnalysisDatabase analysisDatabase() {

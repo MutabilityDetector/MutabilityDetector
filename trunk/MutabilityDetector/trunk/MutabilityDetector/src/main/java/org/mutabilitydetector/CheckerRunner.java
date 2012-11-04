@@ -17,6 +17,7 @@
 package org.mutabilitydetector;
 
 import static java.lang.String.format;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,18 +37,24 @@ public final class CheckerRunner {
     private ClassReader cr;
     private final ClassPath classpath;
     private final UnhandledExceptionBuilder unhandledExceptionBuilder;
+    private ExceptionPolicy exceptionPolicy;
 
-    private CheckerRunner(ClassPath classpath, UnhandledExceptionBuilder unhandledExceptionBuilder) {
+    private CheckerRunner(ClassPath classpath, UnhandledExceptionBuilder unhandledExceptionBuilder, ExceptionPolicy exceptionPolicy) {
         this.classpath = classpath;
         this.unhandledExceptionBuilder = unhandledExceptionBuilder;
+        this.exceptionPolicy = exceptionPolicy;
     }
 
-    public static CheckerRunner createWithClasspath(ClassPath classpath) {
-        return new CheckerRunner(classpath, new UnhandledExceptionBuilder());
+    public static CheckerRunner createWithClasspath(ClassPath classpath, ExceptionPolicy exceptionPolicy) {
+        return new CheckerRunner(classpath, new UnhandledExceptionBuilder(), exceptionPolicy);
     }
 
-    public static CheckerRunner createWithCurrentClasspath() {
-        return createWithClasspath(new ClassPathFactory().createFromJVM());
+    public static CheckerRunner createWithCurrentClasspath(ExceptionPolicy exceptionPolicy) {
+        return createWithClasspath(new ClassPathFactory().createFromJVM(), exceptionPolicy);
+    }
+    
+    public static enum ExceptionPolicy {
+        FAIL_FAST, CARRY_ON
     }
 
     public CheckerResult run(AsmMutabilityChecker checker, Dotted className, AnalysisErrorReporter errorReporter, Iterable<AnalysisResult> resultsSoFar) {
@@ -63,12 +70,15 @@ public final class CheckerRunner {
             } catch (IOException e) {
                 analyseAsStream(checker, className.asString());
             }
-            return checker.checkerResult();
         } catch (Throwable e) {
             handleException(errorReporter, checker, className.asString(), e);
             checker.visitAnalysisException(e);
-            throw unhandledExceptionBuilder.unhandledException(e, resultsSoFar, checker, className);
+            
+            if (exceptionPolicy == FAIL_FAST) {
+                throw unhandledExceptionBuilder.unhandledException(e, resultsSoFar, checker, className);
+            }
         }
+        return checker.checkerResult();
     }
     
     private void analyseAsStream(AsmMutabilityChecker checker, String dottedClassPath) throws IOException {

@@ -40,15 +40,13 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-import com.google.common.base.Optional;
-
 public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final TypeStructureInformation typeStructureInformation;
     private final MutableTypeInformation mutableTypeInfo;
     private final AsmVerifierFactory verifierFactory;
     
-    private final Map<String, Optional<String>> fieldSignatures = newHashMap();
+    private final Map<String, String> fieldSignatures = newHashMap();
     
     public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo, AsmVerifierFactory verifierFactory) {
         this.typeStructureInformation = info;
@@ -63,11 +61,10 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
     
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        fieldSignatures.put(name, Optional.fromNullable(signature));
+        fieldSignatures.put(name, signature);
         return super.visitField(access, name, desc, signature, value);
     }
     
-
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions, verifierFactory);
@@ -123,7 +120,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                                 MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
                         return;
                     } else if (unmodifiableWrapResult.canBeWrapped) {
-                        String fieldSignature = fieldSignatures.get(fieldInsnNode.name).orNull();
+                        String fieldSignature = fieldSignatures.get(fieldInsnNode.name);
                         CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);
                         
                         Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;

@@ -74,7 +74,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     }
 
     public static AnalysisSession createWithCurrentClassPath() {
-        return createWithCurrentClassPath(DefaultConfiguration.NO_CONFIGURATION);
+        return createWithCurrentClassPath(ConfigurationBuilder.NO_CONFIGURATION);
     }
     
     public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
@@ -88,13 +88,13 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
                 new IsAssignableFromCachingTypeHierarchyReader(
                         new CachingTypeHierarchyReader(new TypeHierarchyReader())));
-        return createWithGivenClassPath(classpath, DefaultConfiguration.NO_CONFIGURATION, verifierFactory);
+        return createWithGivenClassPath(classpath, ConfigurationBuilder.NO_CONFIGURATION, verifierFactory);
         
     }
 
     private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
         return new ThreadUnsafeAnalysisSession(classpath, 
-                                    new ClassPathBasedCheckerRunnerFactory(classpath), 
+                                    new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
                                     new MutabilityCheckerFactory(), 
                                     verifierFactory,
                                     configuration);
