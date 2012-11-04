@@ -23,5 +23,5 @@ $COMMAND
 END=`date`
 
 echo "Started:    ${START}"
-echo "Ended:     ${END}"
+echo "Ended:      ${END}"
 exit 0
