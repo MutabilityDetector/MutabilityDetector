@@ -19,6 +19,8 @@ import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
 
+import com.google.common.collect.Lists;
+
 public class MutabilityAsserter {
 
     private final AssertionReporter reporter;
@@ -49,13 +51,16 @@ public class MutabilityAsserter {
     }
 
     @SuppressWarnings("unchecked")
-    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, Matcher<MutableReasonDetail> allowing) {
+    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
+                                  Matcher<MutableReasonDetail> allowing) {
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(mutabilityMatcher, asList((allowing)));
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
     @SuppressWarnings("unchecked")
-    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, Matcher<MutableReasonDetail> allowingFirst, Matcher<MutableReasonDetail> allowingSecond) {
+    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
+                                  Matcher<MutableReasonDetail> allowingFirst, 
+                                  Matcher<MutableReasonDetail> allowingSecond) {
     
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(mutabilityMatcher,
                                                                                 asList(allowingFirst, allowingSecond));
@@ -63,7 +68,10 @@ public class MutabilityAsserter {
     }
 
     @SuppressWarnings("unchecked")
-    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, Matcher<MutableReasonDetail> allowingFirst, Matcher<MutableReasonDetail> allowingSecond, Matcher<MutableReasonDetail> allowingThird) {
+    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
+                                  Matcher<MutableReasonDetail> allowingFirst, 
+                                  Matcher<MutableReasonDetail> allowingSecond, 
+                                  Matcher<MutableReasonDetail> allowingThird) {
     
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(mutabilityMatcher,
                                                                                 asList(allowingFirst,
@@ -73,7 +81,11 @@ public class MutabilityAsserter {
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
-    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, Matcher<MutableReasonDetail> allowingFirst, Matcher<MutableReasonDetail> allowingSecond, Matcher<MutableReasonDetail> allowingThird, Matcher<MutableReasonDetail>... allowingRest) {
+    public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
+                                  Matcher<MutableReasonDetail> allowingFirst, 
+                                  Matcher<MutableReasonDetail> allowingSecond, 
+                                  Matcher<MutableReasonDetail> allowingThird, 
+                                  Matcher<MutableReasonDetail>... allowingRest) {
     
         List<Matcher<MutableReasonDetail>> allowedReasonMatchers = new ArrayList<Matcher<MutableReasonDetail>>();
         allowedReasonMatchers.add(allowingFirst);
@@ -81,6 +93,15 @@ public class MutabilityAsserter {
         allowedReasonMatchers.add(allowingThird);
         allowedReasonMatchers.addAll(asList(allowingRest));
     
+        WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(mutabilityMatcher, allowedReasonMatchers);
+        reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
+    }
+
+    public void assertInstancesOf(Class<?> clazz,
+                                  Matcher<AnalysisResult> mutabilityMatcher,
+                                  Iterable<Matcher<MutableReasonDetail>> allowingAll) {
+        Iterable<Matcher<MutableReasonDetail>> allowedReasonMatchers = Lists.newArrayList(allowingAll);
+        
         WithAllowedReasonsMatcher areImmutable_withReasons = withAllowedReasons(mutabilityMatcher, allowedReasonMatchers);
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }

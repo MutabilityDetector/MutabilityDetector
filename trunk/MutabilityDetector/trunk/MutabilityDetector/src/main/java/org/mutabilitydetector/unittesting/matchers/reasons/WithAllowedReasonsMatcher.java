@@ -32,11 +32,13 @@ import org.hamcrest.StringDescription;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 
+import com.google.common.collect.ImmutableList;
+
 public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult> {
     
     public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
                                                                Iterable<Matcher<MutableReasonDetail>> allowing) {
-        return new WithAllowedReasonsMatcher(areImmutable, allowing);
+        return new WithAllowedReasonsMatcher(areImmutable, ImmutableList.copyOf(allowing));
     }
     
     public static WithAllowedReasonsMatcher withNoAllowedReasons(Matcher<AnalysisResult> areImmutable) {

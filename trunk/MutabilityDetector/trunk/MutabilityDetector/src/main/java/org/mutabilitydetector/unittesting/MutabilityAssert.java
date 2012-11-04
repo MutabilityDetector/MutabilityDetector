@@ -266,7 +266,7 @@ public final class MutabilityAssert {
     
     private final static MutabilityAsserter defaultAsserter 
         = new MutabilityAsserter(new AssertionReporter(), 
-                                 ThreadUnsafeAnalysisSession.tempCreateWithVerifier());
+                                 ThreadUnsafeAnalysisSession.createWithCurrentClassPath());
     
     public static void assertImmutable(Class<?> expectedImmutableClass) {
         defaultAsserter.assertImmutable(expectedImmutableClass);
@@ -301,14 +301,21 @@ public final class MutabilityAssert {
     }
 
     public static void assertInstancesOf(Class<?> clazz,
-            Matcher<AnalysisResult> mutabilityMatcher,
-            Matcher<MutableReasonDetail> allowingFirst,
-            Matcher<MutableReasonDetail> allowingSecond,
-            Matcher<MutableReasonDetail> allowingThird,
-            Matcher<MutableReasonDetail>... allowingRest) {
-
+                                         Matcher<AnalysisResult> mutabilityMatcher,
+                                         Matcher<MutableReasonDetail> allowingFirst,
+                                         Matcher<MutableReasonDetail> allowingSecond,
+                                         Matcher<MutableReasonDetail> allowingThird,
+                                         Matcher<MutableReasonDetail>... allowingRest) {
+        
         defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, 
-                allowingFirst, allowingSecond, allowingThird, allowingRest);
+                                          allowingFirst, allowingSecond, allowingThird, allowingRest);
+    }
+    
+    public static void assertInstancesOf(Class<?> clazz,
+                                         Matcher<AnalysisResult> mutabilityMatcher,
+                                         Iterable<Matcher<MutableReasonDetail>> allowingAll) {
+        
+        defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowingAll);
     }
 
 }

@@ -42,6 +42,8 @@ import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
+import com.google.common.collect.Lists;
+
 public class MutabilityAssertTest {
 
     private final Class<?> immutableClass = ImmutableExample.class;
@@ -126,6 +128,18 @@ public class MutabilityAssertTest {
                           allowingForSubclassing());
                           
    }
+
+    @SuppressWarnings("unchecked")
+    @Test public void iterableArgumentCompilesAndExecutes() {
+        assertInstancesOf(IsSubclassableAndDependsOnParameterBeingImmutable.class,
+                          areImmutable(),
+                          Lists.newArrayList(allowingForSubclassing(),
+                                             provided(ThisHasToBeImmutable.class).isAlsoImmutable(),
+                                             allowingForSubclassing(),
+                                             allowingForSubclassing(), 
+                                             allowingForSubclassing()));
+        
+    }
 
     @Test
     public void canSpecifyIsImmutableAsLongAsOtherClassIsImmutable() throws Exception {
