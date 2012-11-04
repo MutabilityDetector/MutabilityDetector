@@ -14,6 +14,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -120,12 +121,7 @@ class CollectionTypeWrappedInUmodifiableIdiomChecker {
     
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * desc.hashCode();
-            result = prime * name.hashCode();
-            result = prime * owner.hashCode();
-            return result;
+            return Objects.hashCode(desc, name, owner);
         }
     
         @Override
