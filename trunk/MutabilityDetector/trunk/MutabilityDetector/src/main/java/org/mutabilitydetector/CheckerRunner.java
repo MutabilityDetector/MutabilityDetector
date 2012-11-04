@@ -58,18 +58,16 @@ public final class CheckerRunner {
     public CheckerResult run(AsmMutabilityChecker checker, Dotted className, AnalysisErrorReporter errorReporter, Iterable<AnalysisResult> resultsSoFar) {
         try {
             try {
-                ClassReader cr = new ClassReader(className.asString());
-                cr.accept(checker, 0);
-            } catch (NoClassDefFoundError e) {
                 analyseAsStream(checker, className.asString());
-            } catch (IOException e) {
-                analyseAsStream(checker, className.asString());
+            } catch (Exception e) {
+                analyseFromDefaultClassLoader(checker, className.asString());
             }
         } catch (Throwable e) {
             attemptRecovery(checker, className, errorReporter, resultsSoFar, e);
         }
         return checker.checkerResult();
     }
+
 
     private void attemptRecovery(AsmMutabilityChecker checker,
                                  Dotted className,
@@ -95,6 +93,11 @@ public final class CheckerRunner {
             rootCause = rootCause.getCause();
         }
         return rootCause;
+    }
+
+    private void analyseFromDefaultClassLoader(AsmMutabilityChecker checker, String className) throws IOException {
+        ClassReader cr = new ClassReader(className);
+        cr.accept(checker, 0);
     }
 
     private void analyseAsStream(AsmMutabilityChecker checker, String dottedClassPath) throws IOException {
