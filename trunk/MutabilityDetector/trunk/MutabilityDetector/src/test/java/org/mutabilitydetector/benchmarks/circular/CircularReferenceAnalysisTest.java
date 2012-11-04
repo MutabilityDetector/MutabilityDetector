@@ -7,10 +7,8 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmuta
 
 import org.junit.Test;
 import org.mutabilitydetector.ConfigurationBuilder;
-import org.mutabilitydetector.benchmarks.circular.MimicAwtCircularDependencies;
 import org.mutabilitydetector.benchmarks.circular.MultipleCircularAssignments.B;
 import org.mutabilitydetector.benchmarks.circular.OuterClassWithInnerClassAsField.Inner;
-import org.mutabilitydetector.benchmarks.circular.SeveralHopsCircularDependency;
 import org.mutabilitydetector.benchmarks.inheritance.ImmutableSupertype;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
@@ -66,5 +64,10 @@ public class CircularReferenceAnalysisTest {
     @Test
     public void immutableExampleIsNotIncorrectlyAnalysedAsHavingACircularDependency() throws Exception {
         asserter.assertInstancesOf(ImmutableSupertype.class, areImmutable(), allowingForSubclassing());
+    }
+    
+    @Test
+    public void classWhichAssignsSelfTypeToFieldHasACircularReference() throws Exception {
+        asserter.assertInstancesOf(HasCircularReference.class, areNotImmutable());
     }
 }

@@ -4,8 +4,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
@@ -23,7 +21,6 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation.CircularReference;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -64,13 +61,6 @@ public class MutableTypeInformationTest {
         
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable")).result, 
                 sameInstance(harcodedResult));
-    }
-    
-    @Test
-    public void circularReferenceIsEqualsWhenBothTypesAreIncluded() throws Exception {
-        assertEquals(new CircularReference(dotted("a.b.C"), dotted("d.e.F")), new CircularReference(dotted("a.b.C"), dotted("d.e.F")));
-        assertEquals(new CircularReference(dotted("a.b.C"), dotted("d.e.F")), new CircularReference(dotted("d.e.F"), dotted("a.b.C")));
-        assertFalse(new CircularReference(dotted("a.b.C"), dotted("d.e.F")).equals(new CircularReference(dotted("d.e.F"), dotted("g.h.I"))));
     }
     
 }

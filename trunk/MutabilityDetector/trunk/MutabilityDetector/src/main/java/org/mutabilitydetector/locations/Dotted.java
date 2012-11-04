@@ -28,6 +28,15 @@ public final class Dotted extends ClassName {
         super(className);
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { return true; }
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        Dotted other = (Dotted) obj;
+        return asString().equals(other.asString());
+    }
+    
     public static final Function<String, Dotted> STRING_NAME_TO_DOTTED = new Function<String, Dotted>() {
         @Override public Dotted apply(String className) { return dotted(className); }
     };

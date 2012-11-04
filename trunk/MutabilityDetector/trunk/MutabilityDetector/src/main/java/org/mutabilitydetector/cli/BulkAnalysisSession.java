@@ -19,7 +19,7 @@ package org.mutabilitydetector.cli;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
-public class BulkAnalysisSession {
+public final class BulkAnalysisSession {
     private final AnalysisSession session;
 
     public BulkAnalysisSession(AnalysisSession session) {

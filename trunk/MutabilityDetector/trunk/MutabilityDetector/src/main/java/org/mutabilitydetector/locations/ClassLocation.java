@@ -41,10 +41,7 @@ public final class ClassLocation implements CodeLocation<ClassLocation> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + dottedClassName.hashCode();
-        return result;
+        return dottedClassName.hashCode();
     }
 
     @Override

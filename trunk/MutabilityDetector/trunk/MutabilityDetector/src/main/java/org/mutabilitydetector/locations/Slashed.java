@@ -25,6 +25,15 @@ public final class Slashed extends ClassName {
     private Slashed(String slashedClassName) {
         super(slashedClassName);
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { return true; }
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        Slashed other = (Slashed) obj;
+        return asString().equals(other.asString());
+    }
 
     public Dotted toDotted() {
         return Dotted.fromSlashed(this);

@@ -23,6 +23,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
@@ -135,6 +136,11 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     }
 
     @Override
+    public Map<Dotted, AnalysisResult> resultsByClass() {
+        return Collections.unmodifiableMap(analysedClasses.asMap());
+    }
+
+    @Override
     public Collection<AnalysisError> getErrors() {
         return Collections.unmodifiableCollection(analysisErrors);
     }
@@ -143,5 +149,4 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     public AnalysisErrorReporter errorReporter() {
         return this;
     }
-
 }

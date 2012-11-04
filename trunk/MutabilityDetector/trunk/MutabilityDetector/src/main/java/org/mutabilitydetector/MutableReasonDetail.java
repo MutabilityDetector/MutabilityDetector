@@ -25,17 +25,22 @@ import javax.annotation.concurrent.Immutable;
 
 import org.mutabilitydetector.locations.CodeLocation;
 
+import com.google.common.base.Objects;
+
 @Immutable
 public final class MutableReasonDetail {
 
     private final String message;
     private final CodeLocation<?> location;
     private final Reason reason;
+    private final int hashCode;
 
     private MutableReasonDetail(String message, CodeLocation<?> location, Reason reason) {
         this.message = message;
         this.location = location;
         this.reason = reason;
+        
+        this.hashCode = Objects.hashCode(message, location, reason);
     }
     
     public static MutableReasonDetail newMutableReasonDetail(@Nonnull String message, 
@@ -69,12 +74,7 @@ public final class MutableReasonDetail {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + location.hashCode();
-        result = prime * result + message.hashCode();
-        result = prime * result + reason.hashCode();
-        return result;
+        return hashCode;
     }
 
     @Override

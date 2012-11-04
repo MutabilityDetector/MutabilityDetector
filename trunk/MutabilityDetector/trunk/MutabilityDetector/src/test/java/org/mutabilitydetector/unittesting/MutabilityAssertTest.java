@@ -29,7 +29,7 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstance
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
@@ -39,6 +39,8 @@ import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParame
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 public class MutabilityAssertTest {
 
@@ -181,11 +183,13 @@ public class MutabilityAssertTest {
                           allowingNonFinalFields(),
                           allowingForSubclassing());
     }
+
+    @Rule public IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
     
     /**
      * @see #canMatchEffectivelyImmutableAllowingAnotherReason() for a workaround
      */
-    @Ignore("Issue 21: can't think of an elegant solution to this,")
+    @FalsePositive("Issue 21: can't think of an elegant solution to this,")
     @Test
     public void canMatchEffectivelyImmutableAllowingAnotherReasonWithoutExplicitlyAllowingNonFinalFields() throws Exception {
         assertInstancesOf(AlmostEffectivelyImmutable.class,

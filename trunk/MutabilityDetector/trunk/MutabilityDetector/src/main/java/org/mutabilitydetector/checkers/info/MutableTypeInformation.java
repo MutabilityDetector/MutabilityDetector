@@ -1,7 +1,6 @@
 package org.mutabilitydetector.checkers.info;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.find;
 import static java.util.Collections.newSetFromMap;
 
 import java.util.Set;
@@ -14,7 +13,6 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.locations.Dotted;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 public final class MutableTypeInformation {
@@ -62,7 +60,7 @@ public final class MutableTypeInformation {
             return Optional.of(hardcodedResult);
         }
         
-        return Optional.fromNullable(find(analysisSession.getResults(), AnalysisResult.forClass(fieldClass), null));
+        return Optional.fromNullable(analysisSession.resultsByClass().get(fieldClass));
     }
     
     public int levelsDeep() {
@@ -101,48 +99,4 @@ public final class MutableTypeInformation {
             return new MutabilityLookup(checkNotNull(result));
         }
     }
-    
-    @Immutable
-    static final class CircularReference {
-        private final Dotted first;
-        private final Dotted second;
-        private final int hashCode;
-        private final String toString;
-        
-        public CircularReference(Dotted first, Dotted second) {
-            this.first = first;
-            this.second = second;
-            
-            this.hashCode = Objects.hashCode(first, second);
-            this.toString = "[" + first + "]->[" + second + "]";
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            
-            CircularReference other = (CircularReference) obj;
-            return (Objects.equal(first, other.first) && Objects.equal(second, other.second)) ||
-                   (Objects.equal(first, other.second) && Objects.equal(second, other.first));
-        }
-        
-        @Override
-        public String toString() {
-            return toString;
-        }
-    }
-
 }

@@ -19,6 +19,7 @@ package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,8 @@ import javax.annotation.concurrent.Immutable;
 
 import org.mutabilitydetector.locations.Dotted;
 
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 
 @Immutable
@@ -35,13 +38,37 @@ public final class AnalysisResult {
     public final String dottedClassName;
     public final IsImmutable isImmutable;
     public final Collection<MutableReasonDetail> reasons;
+    private final int hashCode;
 
     private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         this.dottedClassName = dottedClassName;
         this.isImmutable = isImmutable;
         this.reasons = Collections.unmodifiableCollection(new ArrayList<MutableReasonDetail>(reasons));
+        
+        this.hashCode = Objects.hashCode(dottedClassName, isImmutable, reasons);
     }
 
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AnalysisResult other = (AnalysisResult) obj;
+        return dottedClassName.equals(other.dottedClassName)
+                && isImmutable.equals(other.isImmutable)
+                && reasons.equals(other.reasons);
+    }
 
     public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, MutableReasonDetail... reasons) {
         return analysisResult(dottedClassName, isImmutable, asList(reasons));
@@ -67,5 +94,11 @@ public final class AnalysisResult {
             return input.dottedClassName.equals(className.asString());
         }};
     }
+
+    public static final Function<AnalysisResult, Dotted> TO_CLASS_NAME = new Function<AnalysisResult, Dotted>() {
+        @Override public Dotted apply(AnalysisResult input) {
+            return dotted(input.dottedClassName);
+        }
+    };
     
 }
