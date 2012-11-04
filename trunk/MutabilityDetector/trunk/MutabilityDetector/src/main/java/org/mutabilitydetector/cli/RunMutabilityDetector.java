@@ -23,8 +23,13 @@ import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -98,9 +103,10 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                 setExceptionPolicy(options.failFast() ? FAIL_FAST : CARRY_ON);
             }
         }.build(); 
-        
 
-        AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory();
+        String[] classPathFiles = new ClassPathFactory().parseClasspath(options.classpath());
+        AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory(classPathFiles);
+
         AnalysisSession newSession = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
                                                             new MutabilityCheckerFactory(), 
@@ -133,10 +139,27 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                                 new MapMaker().initialCapacity(findResources.length).<Type, TypeHierarchy>makeMap())));
     }
     
-    private ClassLoadingVerifierFactory createClassLoadingVerifierFactory() {
-        return new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
+    
+    private ClassLoadingVerifierFactory createClassLoadingVerifierFactory(String[] classPathFiles) {
+        return new ClassLoadingVerifierFactory(
+                new CachingAnalysisClassLoader(
+                        new URLFallbackClassLoader(getCustomClassLoader(classPathFiles), new ClassForNameWrapper())));
     }
     
+    private URLClassLoader getCustomClassLoader(String[] classPathFiles) {
+        List<URL> urlList = new ArrayList<URL>(classPathFiles.length);
+        
+        for (String classPathUrl : classPathFiles) {
+            try {
+                URL toAdd = new File(classPathUrl).toURI().toURL();
+                urlList.add(toAdd);
+            } catch (MalformedURLException e) {
+                System.err.printf("Classpath option %s is invalid.", classPathUrl);
+            }
+        }
+        return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
+    }
+
     private Map<Dotted, InputSupplier<InputStream>> getClassPathFileSuppliers(String[] findResources) {
         Map<Dotted, InputSupplier<InputStream>> classFileInputMap = new ConcurrentHashMap<Dotted, InputSupplier<InputStream>>(findResources.length);
 
@@ -168,5 +191,4 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
             return null; // impossible statement
         }
     }
-
 }
