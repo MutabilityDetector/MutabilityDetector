@@ -15,11 +15,6 @@ fi
 COMMAND="java -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
 
 echo "Running command: ${COMMAND}"
-START=`date`
-$COMMAND
-END=`date`
-
-echo "Started:		${START}"
-echo "Ended:			${END}"
+time $COMMAND
 
 exit 0
