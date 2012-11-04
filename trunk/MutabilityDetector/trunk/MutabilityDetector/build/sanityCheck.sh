@@ -14,7 +14,7 @@ fi
 
 # -Xshare:off is to workaround problem using jvisualvm
 
-COMMAND="java -Xshare:off -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
+COMMAND="java -XX:MaxPermSize=512m -Xshare:off -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
 
 echo "Running command: ${COMMAND}"
 

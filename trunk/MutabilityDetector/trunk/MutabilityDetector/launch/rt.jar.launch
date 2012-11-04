@@ -13,4 +13,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.mutabilitydetector.cli.RunMutabilityDetector"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-cp /home/graham/dev/jdks/jdk1.6.0_25/jre/lib/rt.jar&#10;-verbose"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MutabilityDetector"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:MaxPermSize=512m"/>
 </launchConfiguration>
