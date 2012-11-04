@@ -53,10 +53,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     private final AsmVerifierFactory verifierFactory;
     private final MutableTypeInformation mutableTypeInformation;
     
-    private ThreadUnsafeAnalysisSession(ClassPath classpath, 
-                             CheckerRunnerFactory checkerRunnerFactory,
-                             MutabilityCheckerFactory checkerFactory, 
-                             AsmVerifierFactory verifierFactory,
+    private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory, 
+                             MutabilityCheckerFactory checkerFactory,
+                             AsmVerifierFactory verifierFactory, 
                              Configuration configuration) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
@@ -66,11 +65,11 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         this.database = newAnalysisDatabase(sessionCheckerRunner);
     }
 
-    public static AnalysisSession createWithGivenClassPath(ClassPath classpath, 
-                                                              CheckerRunnerFactory checkerRunnerFactory,
-                                                              MutabilityCheckerFactory checkerFactory, 
-                                                              AsmVerifierFactory verifierFactory,
-                                                              Configuration configuration) {
+    public static AnalysisSession createWithGivenClassPath(ClassPath classpath,
+                                                           CheckerRunnerFactory checkerRunnerFactory,
+                                                           MutabilityCheckerFactory checkerFactory,
+                                                           AsmVerifierFactory verifierFactory,
+                                                           Configuration configuration) {
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
@@ -90,15 +89,16 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
                 new IsAssignableFromCachingTypeHierarchyReader(
                         new CachingTypeHierarchyReader(new TypeHierarchyReader())));
         return createWithGivenClassPath(classpath, ConfigurationBuilder.NO_CONFIGURATION, verifierFactory);
-        
+
     }
 
-    private static AnalysisSession createWithGivenClassPath(ClassPath classpath, Configuration configuration, AsmVerifierFactory verifierFactory) {
-        return new ThreadUnsafeAnalysisSession(classpath, 
-                                    new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
-                                    new MutabilityCheckerFactory(), 
-                                    verifierFactory,
-                                    configuration);
+    private static AnalysisSession createWithGivenClassPath(ClassPath classpath,
+                                                            Configuration configuration,
+                                                            AsmVerifierFactory verifierFactory) {
+        return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
+                                               new MutabilityCheckerFactory(), 
+                                               verifierFactory, 
+                                               configuration);
     }
 
     @Override
