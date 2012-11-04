@@ -12,9 +12,16 @@ if [ -z "$JAR_TO_ANALYSE" ]; then
   JAR_TO_ANALYSE=$JAVA_HOME/jre/lib/rt.jar
 fi
 
-COMMAND="java -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
+# -Xshare:off is to workaround problem using jvisualvm
+
+COMMAND="java -Xshare:off -jar ${MD_JAR} --verbose -cp $JAR_TO_ANALYSE"
 
 echo "Running command: ${COMMAND}"
-time $COMMAND
 
+START=`date`
+$COMMAND
+END=`date`
+
+echo "Started:    ${START}"
+echo "Ended:     ${END}"
 exit 0
