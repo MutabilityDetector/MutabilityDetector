@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class NaiveAliasAnalysis {
-
+    
     @Test @Ignore
     public void escapedThisReference() throws Exception {
         assertImmutable(LetYourThisReferenceEscape.class);
