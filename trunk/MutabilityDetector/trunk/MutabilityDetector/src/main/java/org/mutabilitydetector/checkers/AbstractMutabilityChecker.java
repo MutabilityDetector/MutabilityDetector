@@ -100,9 +100,6 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
     }
 
     private String errorReasonDescription(Throwable toBeThrown) {
-        if (toBeThrown instanceof StackOverflowError) {
-            return "It appears a circular dependency between classes is causing an error in analysing this class.";
-        }
         return "Encountered an unhandled error in analysis.";
     }
     
