@@ -18,6 +18,7 @@ package org.mutabilitydetector;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.TestUtil.formatReasons;
 import static org.mutabilitydetector.TestUtil.getAnalysisResult;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
@@ -37,6 +38,7 @@ import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedF
 import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethodCall;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
+import org.mutabilitydetector.benchmarks.mutabletofield.UnsafelyCopedCollectionFieldWithAllowedGenericType;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.benchmarks.types.EnumType;
@@ -109,7 +111,11 @@ public class MutabilityCheckerTest {
     public void enumTypesAreImmutable() throws Exception {
         assertImmutable(EnumType.class);
     }
-
+    
+    @Test
+    public void unsafelyCopiedCollectionsAreStillMutableEvenIfElementTypeIsAllowed() throws Exception {
+        assertInstancesOf(UnsafelyCopedCollectionFieldWithAllowedGenericType.class, areNotImmutable());
+    }
 
     @Test
     public void onlyOneReasonIsRaisedForAssigningAbstractTypeToField() throws Exception {
@@ -118,7 +124,7 @@ public class MutabilityCheckerTest {
         assertThat(formatReasons(reasons), reasons.size(), is(1));
 
         Reason reason = reasons.iterator().next().reason();
-        assertThat(reason, CoreMatchers.<Reason> is(MutabilityReason.ABSTRACT_TYPE_TO_FIELD));
+        assertThat(reason, CoreMatchers.<Reason> is(ABSTRACT_TYPE_TO_FIELD));
     }
 
 }

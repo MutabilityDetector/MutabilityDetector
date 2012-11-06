@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
-class CollectionTypeWrappedInUmodifiableIdiomChecker {
+public class CollectionTypeWrappedInUmodifiableIdiomChecker {
     
     private static final ClassNameConverter CLASS_NAME_CONVERTER = new ClassNameConverter();
 

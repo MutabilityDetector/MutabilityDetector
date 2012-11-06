@@ -27,7 +27,6 @@ import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -55,8 +54,6 @@ import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.ListFieldFromUnmodifiableArrayAsList;
-import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
-import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnMutableTypeForKey;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionAsObjectAndIterable;
 import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionIntoLocalVariableBeforeWrapping;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
@@ -250,40 +247,6 @@ public class MutableTypeToFieldCheckerTest {
         
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
-    }
-    
-    @Test
-    public void safelyWrappedListsAreStillMutableIfTheTypeOfListElementsIsMutable() throws Exception {
-        checkerWithRealSession = checkerWithRealAnalysisSession();
-        
-        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnMutableTypeForKey.class);
-        assertThat(result, areNotImmutable());
-        
-        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
-        assertEquals(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE, reasonDetail.reason());
-    }
-    
-    @Test
-    public void descriptionOfCollectionWithMutableElementType() throws Exception {
-        checkerWithRealSession = checkerWithRealAnalysisSession();
-        
-        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnMutableTypeForKey.class);
-        assertThat(result, areNotImmutable());
-        
-        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
-        assertThat(reasonDetail.message(), 
-                is("Field can have collection with mutable element type " +
-                        "(java.util.Map<java.util.Date, org.mutabilitydetector.benchmarks.ImmutableExample>) assigned to it."));
-    }
-
-    @Test
-    public void safelyWrappedListsAreStillMutableIfTheTypeOfListElementsIsMutable_worksWhenCollectionFieldIsOneOfMany() throws Exception {
-        checkerWithRealSession = checkerWithRealAnalysisSession();
-        
-        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields.class);
-        assertThat(result, areImmutable());
     }
 
     @Test

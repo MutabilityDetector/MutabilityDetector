@@ -108,10 +108,18 @@ public final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
     }
 
     public final static class SafelyCopiedMapGenericOnMutableTypeForKey {
-        private Map<Date, ImmutableExample> unmodifiableMap;
+        private final Map<Date, ImmutableExample> unmodifiableMap;
         
         public SafelyCopiedMapGenericOnMutableTypeForKey(Map<Date, ImmutableExample> listOfMutatableType) {
             this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<Date, ImmutableExample>(listOfMutatableType));
+        }
+    }
+
+    public final static class UnsafelyCopyingMapIsNotSuppressedByAllowingMutableElementTypes {
+        private final Map<Date, ImmutableExample> unmodifiableMap;
+        
+        public UnsafelyCopyingMapIsNotSuppressedByAllowingMutableElementTypes(Map<Date, ImmutableExample> mapOfMutatableType) {
+            this.unmodifiableMap = Collections.unmodifiableMap(mapOfMutatableType);
         }
     }
 

@@ -21,7 +21,6 @@ import static org.mutabilitydetector.TestUtil.formatReasons;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -76,7 +75,7 @@ public class TestMatchers {
                 
                 Collection<Reason> actualReasons = Collections2.transform(item.checkerResult().reasons, TO_REASON);
                 
-                if (Collections.disjoint(actualReasons, Arrays.asList(reasons))) {
+                if (!actualReasons.containsAll(Arrays.asList(reasons))) {
                     mismatchDescription.appendText(" got a checker containing reasons: ")
                                        .appendValueList("[", " ", "]", actualReasons);
                     return false;
@@ -91,7 +90,6 @@ public class TestMatchers {
             
         };
     }
-    
     
 
     public static Matcher<? super AsmMutabilityChecker> hasNoReasons() {
