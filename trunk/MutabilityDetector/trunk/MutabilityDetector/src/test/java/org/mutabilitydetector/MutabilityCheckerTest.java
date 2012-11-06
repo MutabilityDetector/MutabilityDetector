@@ -36,7 +36,8 @@ import org.mutabilitydetector.benchmarks.MutableByHavingMutableFieldAssigned;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.MutableByNoCopyOfIndirectlyConstructedField;
 import org.mutabilitydetector.benchmarks.escapedthis.PassesThisReferenceToMethodCall;
-import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StaticMethodDoesTheCopying;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.UnsafelyCopedCollectionFieldWithAllowedGenericType;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
@@ -94,7 +95,7 @@ public class MutabilityCheckerTest {
 
     @Test
     public void immutableByCopyingMutableListIntoNewArrayListAndUnmodifiableListInStaticMethod() throws Exception {
-        assertImmutable(CopyListIntoNewArrayListAndUnmodifiableListIdiom.StaticMethodDoesTheCopying.class);
+        assertImmutable(StaticMethodDoesTheCopying.class);
     }
 
     @Test

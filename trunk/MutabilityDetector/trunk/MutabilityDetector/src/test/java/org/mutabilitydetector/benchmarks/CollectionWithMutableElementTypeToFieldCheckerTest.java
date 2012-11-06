@@ -15,8 +15,9 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
-import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnMutableTypeForKey;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.NestedGenericTypes;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMapGenericOnMutableTypeForKey;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -41,6 +42,13 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         AnalysisResult result = runChecker(checker, SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields.class);
         assertThat(result, areImmutable());
         assertThat(checker.reasons(), Matchers.<MutableReasonDetail>empty());
+    }
+
+    @Test
+    public void supportsNestedGenericTypes() throws Exception {
+        AnalysisResult result = runChecker(checker, NestedGenericTypes.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
     }
     
     @Test

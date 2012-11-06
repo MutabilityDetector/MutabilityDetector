@@ -25,7 +25,6 @@ import org.objectweb.asm.tree.VarInsnNode;
 
 @RunWith(Theories.class)
 public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
-    
 
     @Test(expected=IllegalArgumentException.class)
     public void requiresTheFieldInstructionNodeToBeAPutFieldInstruction() throws Exception {
