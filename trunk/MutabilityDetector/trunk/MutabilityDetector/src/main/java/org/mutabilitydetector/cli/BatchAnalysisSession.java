@@ -19,10 +19,10 @@ package org.mutabilitydetector.cli;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 
-public final class BulkAnalysisSession {
+public final class BatchAnalysisSession {
     private final AnalysisSession session;
 
-    public BulkAnalysisSession(AnalysisSession session) {
+    public BatchAnalysisSession(AnalysisSession session) {
         this.session = session;
     }
 

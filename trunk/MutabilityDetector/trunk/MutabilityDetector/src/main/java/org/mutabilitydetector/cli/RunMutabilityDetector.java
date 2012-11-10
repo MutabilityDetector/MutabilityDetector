@@ -115,7 +115,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
-        AnalysisSession completedSession = new BulkAnalysisSession(newSession).runAnalysis(filtered);
+        AnalysisSession completedSession = new BatchAnalysisSession(newSession).runAnalysis(filtered);
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         
