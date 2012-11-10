@@ -54,7 +54,7 @@ public class MutableTypeInformationTest {
         final AnalysisResult harcodedResult = AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE);
         Configuration configuration = new ConfigurationBuilder() {
             @Override public void configure() {
-                overrideResult(harcodedResult);
+                hardcodeResult(harcodedResult);
             }
         }.build();
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);

@@ -7,6 +7,5 @@ import org.mutabilitydetector.locations.Dotted;
 
 public interface Configuration {
     Map<Dotted, AnalysisResult> hardcodedResults();
-
     ExceptionPolicy exceptionPolicy();
 }

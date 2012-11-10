@@ -19,7 +19,7 @@ public final class DefaultConfiguration implements Configuration {
     public DefaultConfiguration(Set<AnalysisResult> predefinedResults, ExceptionPolicy exceptionPolicy) {
         this.exceptionPolicy = exceptionPolicy;
         this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
-        this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_CLASS_NAME);
+        this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
     }
 
     @Override
