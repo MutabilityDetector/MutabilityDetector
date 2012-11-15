@@ -27,6 +27,7 @@
     <modules>
         <module>test-subjects</module>
         <module>requirements</module>
+        <module>md-client</module>
     </modules>
 
     <build>

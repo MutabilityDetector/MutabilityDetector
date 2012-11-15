@@ -13,8 +13,15 @@
     <REQ-IF-CONTENT>
       <DATATYPES>
         <DATATYPE-DEFINITION-STRING IDENTIFIER="rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56" LONG-NAME="T_String32k" MAX-LENGTH="32000"/>
-        <DATATYPE-DEFINITION-STRING IDENTIFIER="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" LONG-NAME="T_ID" MAX-LENGTH="32000"/>
+        <DATATYPE-DEFINITION-STRING IDENTIFIER="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" LONG-NAME="T_REQ_ID" MAX-LENGTH="10"/>
         <DATATYPE-DEFINITION-STRING IDENTIFIER="rmf-556277bb-0bda-407f-88e3-253e3703a333" LONG-NAME="T_Headline" MAX-LENGTH="32000"/>
+        <DATATYPE-DEFINITION-STRING IDENTIFIER="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" LONG-NAME="T_TST_ID" MAX-LENGTH="10"/>
+        <DATATYPE-DEFINITION-ENUMERATION DESC="Indicates the status of a test case" IDENTIFIER="rmf-9e1ed584-9d75-4b3a-9d3c-a5be26725df2" LONG-NAME="Status">
+          <SPECIFIED-VALUES>
+            <ENUM-VALUE DESC="Indicates that the test case passed successfully" IDENTIFIER="rmf-77df122e-2a17-4947-a30a-73641b95306c" LONG-NAME="passed"/>
+            <ENUM-VALUE DESC="Indicates that the test case failed" IDENTIFIER="rmf-4390fd23-00ed-4d49-8bec-f8a23bdfef7a" LONG-NAME="failed"/>
+          </SPECIFIED-VALUES>
+        </DATATYPE-DEFINITION-ENUMERATION>
       </DATATYPES>
       <SPEC-TYPES>
         <SPEC-OBJECT-TYPE IDENTIFIER="rmf-c00f6276-eb52-4264-96f6-35d681a64dfc" LONG-NAME="Requirement Type">
@@ -49,20 +56,42 @@
             </ATTRIBUTE-DEFINITION-STRING>
           </SPEC-ATTRIBUTES>
         </SPEC-OBJECT-TYPE>
+        <SPEC-OBJECT-TYPE IDENTIFIER="rmf-c00f6276-eb52-4264-96f6-35d681a64dfc" LONG-NAME="Test Case Type">
+          <SPEC-ATTRIBUTES>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="rmf-1b03f3ec-9d1c-4820-9048-823d4d362412" LONG-NAME="Description">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f" LONG-NAME="ID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa" LONG-NAME="Expected">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8" LONG-NAME="Testklasse">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6" LONG-NAME="Note">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-ENUMERATION IDENTIFIER="rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c" LONG-NAME="0.8.0">
+              <TYPE>
+                <DATATYPE-DEFINITION-ENUMERATION-REF>rmf-9e1ed584-9d75-4b3a-9d3c-a5be26725df2</DATATYPE-DEFINITION-ENUMERATION-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-ENUMERATION>
+          </SPEC-ATTRIBUTES>
+        </SPEC-OBJECT-TYPE>
       </SPEC-TYPES>
       <SPEC-OBJECTS>
-        <SPEC-OBJECT IDENTIFIER="rmf-24c35627-b5fe-4626-9902-870ceac2e9e8">
-          <VALUES>
-            <ATTRIBUTE-VALUE-STRING THE-VALUE="Anforderungen zur Erfüllung der Immutability-Eigenschaft">
-              <DEFINITION>
-                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-988a20d5-83d6-48a0-979f-56341498c69f</ATTRIBUTE-DEFINITION-STRING-REF>
-              </DEFINITION>
-            </ATTRIBUTE-VALUE-STRING>
-          </VALUES>
-          <TYPE>
-            <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
-          </TYPE>
-        </SPEC-OBJECT>
         <SPEC-OBJECT IDENTIFIER="rmf-b62619b3-6bad-4b84-90e4-b2796e511618">
           <VALUES>
             <ATTRIBUTE-VALUE-STRING THE-VALUE="Variablen">
@@ -75,7 +104,6 @@
             <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
           </TYPE>
         </SPEC-OBJECT>
-        <SPEC-OBJECT IDENTIFIER="rmf-ad88f551-5292-49d2-824d-7a4fba8a707f"/>
         <SPEC-OBJECT IDENTIFIER="rmf-91a69360-aa9f-4021-8a6b-80b5c71e4baf">
           <VALUES>
             <ATTRIBUTE-VALUE-STRING THE-VALUE="Alle Variablen, die direkt oder indirekt Teil des sichtbaren Zustands eines Objektes sind, müssen als final deklariert werden.">
@@ -110,12 +138,162 @@
             <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
           </TYPE>
         </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-24c35627-b5fe-4626-9902-870ceac2e9e8">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Anforderungen zur Erfüllung der Immutability-Eigenschaft">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-988a20d5-83d6-48a0-979f-56341498c69f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-1a83ba34-ad74-4522-b0a6-74f242a6c37e">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Variablen">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-988a20d5-83d6-48a0-979f-56341498c69f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-2475a7bf-9938-44c5-b8cd-036e0cd9b95f">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-1">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Sichtbare Variablen mit primitiven und Referenzdatentypen, die nicht als `final` deklariert sind.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-77df122e-2a17-4947-a30a-73641b95306c</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Jede Variable wird als Verletzung der Immutability-Eigenschaft erkannt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="`NON_FINAL_FIELD`, `PUBLISHED_NON_FINAL_FIELD`">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-bd40df8e-dadd-4432-b756-faa0e0f53d46">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-4">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Variablen, die nicht `private` sind, müssen `final` sein.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-13d05a14-e857-42bc-b416-800b0db8b9c6">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-7">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-7f17147d-9be0-4c6f-80f3-dc20401d5531">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-2">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Private Variablen mit primitiven und Referenzdatentypen, die nicht als `final` deklariert sind.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="MD verlangt, dass die Variablen als `final` deklariert werden.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="PrivateNonFinalVariablesTest">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Keine der Variablen wird als Verletzung der Immutability-Eigenschaft erkannt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-4390fd23-00ed-4d49-8bec-f8a23bdfef7a</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
       </SPEC-OBJECTS>
-      <SPEC-RELATIONS/>
+      <SPEC-RELATIONS>
+        <SPEC-RELATION IDENTIFIER="rmf-cd313ca5-5f2d-467e-b317-4b05b7d5ab2a">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-2475a7bf-9938-44c5-b8cd-036e0cd9b95f</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-bd40df8e-dadd-4432-b756-faa0e0f53d46</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-55e4023a-5ade-4f66-84f5-c1c567388e54">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-7f17147d-9be0-4c6f-80f3-dc20401d5531</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-bd40df8e-dadd-4432-b756-faa0e0f53d46</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+      </SPEC-RELATIONS>
       <SPECIFICATIONS>
         <SPECIFICATION IDENTIFIER="rmf-ede0203c-42f9-4851-846d-ca38a6170bdf" LONG-NAME="Specification Document">
           <VALUES>
-            <ATTRIBUTE-VALUE-STRING THE-VALUE="Requirements Document">
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Anforderungen">
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-8378b9db-7334-4e0a-ae02-a0e7be5dcdf9</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
@@ -134,10 +312,53 @@
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-91a69360-aa9f-4021-8a6b-80b5c71e4baf</SPEC-OBJECT-REF>
                   </OBJECT>
+                  <CHILDREN>
+                    <SPEC-HIERARCHY IDENTIFIER="rmf-aefdb3af-0656-411d-a2b1-77241bc3752a">
+                      <OBJECT>
+                        <SPEC-OBJECT-REF>rmf-bd40df8e-dadd-4432-b756-faa0e0f53d46</SPEC-OBJECT-REF>
+                      </OBJECT>
+                    </SPEC-HIERARCHY>
+                    <SPEC-HIERARCHY IDENTIFIER="rmf-09eb853c-474f-4c09-b819-749e6e63d5d8">
+                      <OBJECT>
+                        <SPEC-OBJECT-REF>rmf-13d05a14-e857-42bc-b416-800b0db8b9c6</SPEC-OBJECT-REF>
+                      </OBJECT>
+                    </SPEC-HIERARCHY>
+                  </CHILDREN>
                 </SPEC-HIERARCHY>
                 <SPEC-HIERARCHY IDENTIFIER="rmf-5501b7bb-c4d6-4b56-ab02-ee91026f60bf">
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-ed19b04b-7c36-4ce4-a27e-5d1f0fb0eba6</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+              </CHILDREN>
+            </SPEC-HIERARCHY>
+          </CHILDREN>
+        </SPECIFICATION>
+        <SPECIFICATION IDENTIFIER="rmf-a088f7ca-a21e-4314-a5de-d2e52aa0f707">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Tests">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-8378b9db-7334-4e0a-ae02-a0e7be5dcdf9</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPECIFICATION-TYPE-REF>rmf-6014fec6-ed54-4ca6-ab91-6a3bbdb47cbe</SPECIFICATION-TYPE-REF>
+          </TYPE>
+          <CHILDREN>
+            <SPEC-HIERARCHY IDENTIFIER="rmf-869ff347-9ff9-4557-8258-df8c50c6419a">
+              <OBJECT>
+                <SPEC-OBJECT-REF>rmf-1a83ba34-ad74-4522-b0a6-74f242a6c37e</SPEC-OBJECT-REF>
+              </OBJECT>
+              <CHILDREN>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-e13c70b6-a32c-47f4-a287-f7141a3b09ca">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-2475a7bf-9938-44c5-b8cd-036e0cd9b95f</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-6b45ae4a-3913-4826-bb9d-6ca2d8c72e53">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-7f17147d-9be0-4c6f-80f3-dc20401d5531</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
               </CHILDREN>
@@ -160,6 +381,39 @@
               <configuration:Column configuration:label="Lead Header Column" configuration:width="30"/>
             </configuration:leftHeaderColumn>
           </configuration:ProrSpecViewConfiguration>
+          <configuration:ProrSpecViewConfiguration>
+            <configuration:leftHeaderColumn>
+              <configuration:Column configuration:label="Lead Header Column" configuration:width="30"/>
+            </configuration:leftHeaderColumn>
+          </configuration:ProrSpecViewConfiguration>
+          <configuration:ProrSpecViewConfiguration>
+            <configuration:columns>
+              <configuration:Column configuration:label="Description"/>
+              <configuration:Column configuration:label="ID"/>
+            </configuration:columns>
+          </configuration:ProrSpecViewConfiguration>
+          <configuration:ProrSpecViewConfiguration>
+            <configuration:columns>
+              <configuration:Column configuration:label="ID"/>
+              <configuration:Column configuration:label="Description"/>
+            </configuration:columns>
+            <configuration:leftHeaderColumn>
+              <configuration:Column configuration:label="Lead Header Column" configuration:width="30"/>
+            </configuration:leftHeaderColumn>
+          </configuration:ProrSpecViewConfiguration>
+          <configuration:ProrSpecViewConfiguration configuration:specification="rmf-a088f7ca-a21e-4314-a5de-d2e52aa0f707">
+            <configuration:columns>
+              <configuration:Column configuration:label="ID"/>
+              <configuration:Column configuration:label="Description" configuration:width="333"/>
+              <configuration:Column configuration:label="Expected" configuration:width="179"/>
+              <configuration:Column configuration:label="Note" configuration:width="133"/>
+              <configuration:Column configuration:label="0.8.0" configuration:width="60"/>
+              <configuration:Column configuration:label="Testklasse"/>
+            </configuration:columns>
+            <configuration:leftHeaderColumn>
+              <configuration:Column configuration:label="Lead Header Column" configuration:width="30"/>
+            </configuration:leftHeaderColumn>
+          </configuration:ProrSpecViewConfiguration>
         </configuration:specViewConfigurations>
         <configuration:generalConfiguration>
           <configuration:ProrGeneralConfiguration>
@@ -174,8 +428,9 @@
           <configuration:ProrPresentationConfigurations>
             <configuration:presentationConfigurations>
               <linewrap:LinewrapConfiguration configuration:datatype="rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56"/>
-              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="3"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="8"/>
               <headline:HeadlineConfiguration configuration:datatype="rmf-556277bb-0bda-407f-88e3-253e3703a333" headline:size="12"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:prefix="TST-" id:count="1"/>
             </configuration:presentationConfigurations>
           </configuration:ProrPresentationConfigurations>
         </configuration:presentationConfigurations>
