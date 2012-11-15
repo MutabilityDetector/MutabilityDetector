@@ -32,7 +32,12 @@ public final class EscapedThisReferenceCheckerTest {
     }
 
     private static final class ReturnThisFromMethod {
-        @SuppressWarnings("unused")
+        public static ReturnThisFromMethod rtfm;
+
+        public ReturnThisFromMethod() {
+            rtfm = doIt();
+        }
+
         public ReturnThisFromMethod doIt() {
             return this;
         }
@@ -40,7 +45,7 @@ public final class EscapedThisReferenceCheckerTest {
 
     private static final class AssignThisToVisibleVariable {
         @SuppressWarnings("unused")
-        final Object obj = this;
+        public final Object obj = this;
     }
 
     private static class InvokeOverridableInstanceMethod {
