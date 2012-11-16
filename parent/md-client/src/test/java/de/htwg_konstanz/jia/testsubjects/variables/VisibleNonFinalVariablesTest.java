@@ -1,4 +1,4 @@
-package de.htwg_konstanz.jia.testsubjects;
+package de.htwg_konstanz.jia.testsubjects.variables;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
