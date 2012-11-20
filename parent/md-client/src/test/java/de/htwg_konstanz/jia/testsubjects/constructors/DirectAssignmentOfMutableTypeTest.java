@@ -8,10 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.ClassLocation;
-import org.mutabilitydetector.unittesting.internal.AnalysisSessionHolder;
 
 import de.htwg_konstanz.jia.testsubjects.MutabilityAsserter;
 
@@ -21,16 +19,17 @@ import de.htwg_konstanz.jia.testsubjects.MutabilityAsserter;
  */
 public final class DirectAssignmentOfMutableTypeTest extends MutabilityAsserter {
 
-    private final Class<DirectAssignmentOfMutableType> classToAnalyse = DirectAssignmentOfMutableType.class;
+    public DirectAssignmentOfMutableTypeTest() {
+        super(DirectAssignmentOfMutableType.class);
+    }
 
     @Test
     public void directAssignmentOfMutableTypeLeadsToMutableClass() {
-        final AnalysisResult analysisResult = AnalysisSessionHolder.analysisResultFor(classToAnalyse);
-        assertMutable(analysisResult);
-        assertAppropriateReason(analysisResult);
+        assertIsMutable();
+        assertAppropriateReason();
     }
 
-    private void assertAppropriateReason(final AnalysisResult analysisResult) {
+    private void assertAppropriateReason() {
         final Collection<MutableReasonDetail> reasons = analysisResult.reasons;
         boolean assertionsRun = false;
         for (final MutableReasonDetail mutableReasonDetail : reasons) {
