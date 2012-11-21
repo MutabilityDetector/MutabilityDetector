@@ -4,9 +4,9 @@
 package de.htwg_konstanz.jia.testsubjects;
 
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -33,11 +32,11 @@ import org.mutabilitydetector.unittesting.internal.AnalysisSessionHolder;
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 19.11.2012
  */
-public abstract class MutabilityAsserter {
+public abstract class AbstractMutabilityAsserter {
 
     protected final AnalysisResult analysisResult;
 
-    public MutabilityAsserter(final Class<?> classToAnalyse) {
+    public AbstractMutabilityAsserter(final Class<?> classToAnalyse) {
         super();
         analysisResult = AnalysisSessionHolder.analysisResultFor(classToAnalyse);
     }
@@ -50,27 +49,24 @@ public abstract class MutabilityAsserter {
         assertEquals(IsImmutable.NOT_IMMUTABLE, analysisResult.isImmutable);
     }
 
-    public void assertOneReasonIsThat(final Matcher<MutableReasonDetail> firstMatcher,
-            final Matcher<?>... furtherMatchers) {
-        @SuppressWarnings("unchecked")
-        final Matcher<MutableReasonDetail>[] allMatchers = (Matcher<MutableReasonDetail>[]) ArrayUtils.add(
-                furtherMatchers, firstMatcher);
-        assertThat(analysisResult.reasons, hasItem(allOf(allMatchers)));
+    public void assertOneReasonIsThat(final Matcher<MutableReasonDetail> reasonMatcher) {
+        assertThat(analysisResult.reasons, hasItem(reasonMatcher));
     }
 
-    public <T> void assertTheReasonIsThat(final Matcher<MutableReasonDetail> firstMatcher,
-            final Matcher<?>... furtherMatchers) {
-        @SuppressWarnings("unchecked")
-        final Matcher<MutableReasonDetail>[] allMatchers = (Matcher<MutableReasonDetail>[]) ArrayUtils.add(
-                furtherMatchers, firstMatcher);
-        assertThat(analysisResult.reasons, everyItem(allOf(allMatchers)));
+    public void assertNoReasonIsThat(final Matcher<MutableReasonDetail> reasonMatcher) {
+        assertThat(analysisResult.reasons, not(hasItem(reasonMatcher)));
+    }
+
+    public void assertTheReasonIsThat(final Matcher<MutableReasonDetail> reasonMatcher) {
+        assertThat(analysisResult.reasons, everyItem(reasonMatcher));
     }
 
     public Matcher<MutableReasonDetail> fieldCanBeReassigned(final String fieldName, final String methodName) {
         return defaultFieldCanBeReassigned(fieldName, methodName);
     }
 
-    protected final Matcher<MutableReasonDetail> defaultFieldCanBeReassigned(String fieldName, String methodName) {
+    protected final Matcher<MutableReasonDetail> defaultFieldCanBeReassigned(final String fieldName,
+            final String methodName) {
         final String expectedMessage = format("Field [%s] can be reassigned within method [%s]", fieldName, methodName);
         final Matcher<MutableReasonDetail> result = new TypeSafeMatcher<MutableReasonDetail>() {
             @Override
@@ -79,7 +75,7 @@ public abstract class MutabilityAsserter {
                 description.appendText("  reason 'FIELD_CAN_BE_REASSIGNED'\n");
                 description.appendText("  and message: '").appendText(expectedMessage).appendText("'.");
             }
-    
+
             @Override
             protected boolean matchesSafely(final MutableReasonDetail mutableReasonDetail) {
                 return MutabilityReason.FIELD_CAN_BE_REASSIGNED == mutableReasonDetail.reason()
@@ -89,59 +85,30 @@ public abstract class MutabilityAsserter {
         return result;
     }
 
-    public Matcher<MutableReasonDetail> field(final String fieldName) {
-        return new TypeSafeMatcher<MutableReasonDetail>() {
-            @Override
-            public void describeTo(final Description desc) {
-                desc.appendText("a field with name '").appendValue(fieldName).appendText("'");
-            }
-
-            @Override
-            protected boolean matchesSafely(final MutableReasonDetail mutableReasonDetail) {
-                return fieldNameIsExpected(mutableReasonDetail.codeLocation());
-            }
-
-            private boolean fieldNameIsExpected(final CodeLocation<?> codeLocation) {
-                final FieldLocation fieldLocation = (FieldLocation) codeLocation;
-                return fieldName.equals(fieldLocation.fieldName());
-            }
-        };
+    public Matcher<MutableReasonDetail> fieldHasMutableType(final String fieldName, final Class<?> mutableFieldType) {
+        return defaultFieldHasMutableType(fieldName, mutableFieldType);
     }
 
-    public Matcher<MutableReasonDetail> analysedClass() {
-        return new TypeSafeMatcher<MutableReasonDetail>() {
-            @Override
-            public void describeTo(final Description desc) {
-                desc.appendText("a class with name '").appendValue(analysisResult.dottedClassName).appendText("'");
-            }
-
-            @Override
-            protected boolean matchesSafely(final MutableReasonDetail mutableReasonDetail) {
-                return classNameIsExpected(mutableReasonDetail.codeLocation());
-            }
-
-            private boolean classNameIsExpected(final CodeLocation<?> codeLocation) {
-                final String expectedTypeName = analysisResult.dottedClassName;
-                final ClassLocation classLocation = (ClassLocation) codeLocation;
-                return expectedTypeName.equals(classLocation.typeName());
-            }
-        };
-    }
-
-    public Matcher<MutableReasonDetail> hasMutableType(final Class<?> mutableFieldType) {
+    protected Matcher<MutableReasonDetail> defaultFieldHasMutableType(final String fieldName,
+            final Class<?> mutableFieldType) {
         return new TypeSafeMatcher<MutableReasonDetail>() {
             @Override
             public void describeTo(final Description description) {
-                description.appendText(" a 'MutableReasonDetail' with");
-                description.appendText(" reason 'MUTABLE_TYPE_TO_FIELD'");
-                description.appendText(" because the field is of type '");
-                description.appendValue(mutableFieldType.getName()).appendText("'.");
+                description.appendText(" a 'MutableReasonDetail' with").appendText(" reason 'MUTABLE_TYPE_TO_FIELD'");
+                description.appendText(" because the field ").appendValue(fieldName).appendText(" is of type ");
+                description.appendValue(mutableFieldType.getName()).appendText(".");
             }
 
             @Override
             protected boolean matchesSafely(final MutableReasonDetail mutableReasonDetail) {
-                return isExpectedReason(mutableReasonDetail.reason())
+                return isExpectedFieldName(mutableReasonDetail.codeLocation())
+                        && isExpectedReason(mutableReasonDetail.reason())
                         && isExpectedMessage(mutableReasonDetail.message());
+            }
+
+            private boolean isExpectedFieldName(final CodeLocation<?> codeLocation) {
+                final FieldLocation fieldLocation = (FieldLocation) codeLocation;
+                return fieldName.equals(fieldLocation.fieldName());
             }
 
             private boolean isExpectedReason(final Reason reason) {
@@ -150,25 +117,27 @@ public abstract class MutabilityAsserter {
 
             private boolean isExpectedMessage(final String actualMessage) {
                 final String messageTemplate = "Field can have a mutable type (%s) assigned to it.";
-                final String expectedMessage = format(messageTemplate, mutableFieldType.getName());                
+                final String expectedMessage = format(messageTemplate, mutableFieldType.getName());
                 return expectedMessage.equals(actualMessage);
             }
         };
     }
 
-    public Matcher<MutableReasonDetail> leaksItsThisReference() {
-        return new TypeSafeMatcher<MutableReasonDetail>() {
+    public Matcher<MutableReasonDetail> classLeaksItsThisReference() {
+        final Matcher<MutableReasonDetail> result = new TypeSafeMatcher<MutableReasonDetail>() {
             @Override
             public void describeTo(final Description desc) {
                 desc.appendText(" a 'MutableReasonDetail' with");
                 desc.appendText(" reason 'ESCAPED_THIS_REFERENCE'");
-                desc.appendText(" because the 'this'-reference escapes the constructor.");
+                desc.appendText(" because the 'this'-reference escapes the constructor of class '");
+                desc.appendValue(analysisResult.dottedClassName).appendText("'.");
             }
 
             @Override
             protected boolean matchesSafely(final MutableReasonDetail mutableReasonDetail) {
                 return isExpectedReason(mutableReasonDetail.reason())
-                        && isExpectedMessage(mutableReasonDetail.message());
+                        && isExpectedMessage(mutableReasonDetail.message())
+                        && isExpectedClassName(mutableReasonDetail.codeLocation());
             }
 
             private boolean isExpectedReason(final Reason reason) {
@@ -178,7 +147,14 @@ public abstract class MutabilityAsserter {
             private boolean isExpectedMessage(final String actualMessage) {
                 return "The 'this' reference is passed outwith the constructor.".equals(actualMessage);
             }
+
+            private boolean isExpectedClassName(final CodeLocation<?> codeLocation) {
+                final String expectedTypeName = analysisResult.dottedClassName;
+                final ClassLocation classLocation = (ClassLocation) codeLocation;
+                return expectedTypeName.equals(classLocation.typeName());
+            }
         };
+        return result;
     }
 
     public void assertNumberOfReasonsIs(final int numberOfReasons) {
@@ -208,7 +184,8 @@ public abstract class MutabilityAsserter {
     }
 
     protected void defaultAssertAppropriateReasons(final AnalysisResult analysisResult,
-            final Reason firstReason, final Reason... furtherReasons) {
+            final Reason firstReason,
+            final Reason... furtherReasons) {
         final int numberOfExpectedReasons = 1 + furtherReasons.length;
         assertNumberOfReasonsIs(numberOfExpectedReasons);
         final List<Reason> expectedReasons = joinReasons(firstReason, numberOfExpectedReasons, furtherReasons);
@@ -216,7 +193,8 @@ public abstract class MutabilityAsserter {
         assertTrue("Only the expected reasons should have occurred.", actualReasons.containsAll(expectedReasons));
     }
 
-    private List<Reason> joinReasons(final Reason firstReason, final int numberOfExpectedReasons,
+    private List<Reason> joinReasons(final Reason firstReason,
+            final int numberOfExpectedReasons,
             final Reason... furtherReasons) {
         final List<Reason> result = new ArrayList<Reason>(numberOfExpectedReasons);
         result.add(firstReason);
@@ -230,8 +208,13 @@ public abstract class MutabilityAsserter {
         final List<Reason> result = new ArrayList<Reason>(reasons.size());
         for (final MutableReasonDetail mutableReasonDetail : reasons) {
             result.add(mutableReasonDetail.reason());
-        }        
+        }
         return result;
+    }
+
+    public void printReasonsIfNotEmpty() {
+        final ReasonPrinter reasonPrinter = DefaultReasonPrinter.getInstance();
+        reasonPrinter.printReasonsIfNotEmpty(analysisResult.dottedClassName, analysisResult.reasons);
     }
 
 }

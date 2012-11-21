@@ -5,16 +5,16 @@ package de.htwg_konstanz.jia.testsubjects.escape;
 
 import org.junit.Test;
 
-import de.htwg_konstanz.jia.testsubjects.MutabilityAsserter;
+import de.htwg_konstanz.jia.testsubjects.AbstractMutabilityAsserter;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 20.11.2012
  */
-public final class DirectAssignmentOfThisToVisibleVariableTest extends MutabilityAsserter {
+public final class DirectAssignmentOfThisToVisibleInstanceVariableTest extends AbstractMutabilityAsserter {
 
-    public DirectAssignmentOfThisToVisibleVariableTest() {
-        super(DirectAssignmentOfThisToVisibleVariable.class);
+    public DirectAssignmentOfThisToVisibleInstanceVariableTest() {
+        super(DirectAssignmentOfThisToVisibleInstanceVariable.class);
     }
 
     @Test
@@ -24,7 +24,7 @@ public final class DirectAssignmentOfThisToVisibleVariableTest extends Mutabilit
 
     @Test
     public void reasonForMutabilityIsEscapingThisReference() {
-        assertOneReasonIsThat(analysedClass(), leaksItsThisReference());
+        assertOneReasonIsThat(classLeaksItsThisReference());
     }
 
 }

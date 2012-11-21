@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.htwg_konstanz.jia.testsubjects.escape;
 
 import org.junit.Test;
@@ -9,21 +6,21 @@ import de.htwg_konstanz.jia.testsubjects.AbstractMutabilityAsserter;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
- * @version 20.11.2012
+ * @version 21.11.2012
  */
-public final class InvokeAlienMethodWithThisTest extends AbstractMutabilityAsserter {
+public final class CallingConstructorWithThisTest extends AbstractMutabilityAsserter {
 
-    public InvokeAlienMethodWithThisTest() {
-        super(InvokeAlienMethodWithThis.class);
+    public CallingConstructorWithThisTest() {
+        super(CallingConstructorWithThis.class);
     }
 
     @Test
-    public void invokingAnAlienMethodWithThisLeadsToMutableClass() {
+    public void callingAnAlienConstructorWithThisCausesMutability() {
         assertIsMutable();
     }
 
     @Test
-    public void onlyExpectedReasonsOccurred() {
+    public void reasonForMutabilityIsEscapingThisReference() {
         assertTheReasonIsThat(classLeaksItsThisReference());
     }
 
