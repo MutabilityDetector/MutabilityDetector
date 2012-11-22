@@ -13,7 +13,7 @@ public class InvokeOverridableInstanceMethod {
     }
 
     public Object overridable() {
-        return "Hello";
+        return this;
     }
 
 }

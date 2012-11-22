@@ -1,27 +1,25 @@
 package de.htwg_konstanz.jia.testsubjects.escape;
 
-import org.junit.Test;
+import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.classAllowsInheritance;
+import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.classLeaksItsThisReference;
+import static de.htwg_konstanz.jia.mdclient.MutabilityAsserter.assertIsMutable;
 
-import de.htwg_konstanz.jia.testsubjects.AbstractMutabilityAsserter;
+import org.junit.Test;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 21.11.2012
  */
-public final class InvokeOverridableInstanceMethodTest extends AbstractMutabilityAsserter {
+public final class InvokeOverridableInstanceMethodTest {
 
-    public InvokeOverridableInstanceMethodTest() {
-        super(InvokeOverridableInstanceMethod.class);
-    }
-
+    /**
+     * 
+     */
     @Test
     public void invokingAnOverridableInstanceMethodFromWithinAConstructorBreaksImmutability() {
-        assertIsMutable();
-    }
-
-    @Test
-    public void reasonForMutabilityIsEscapingThisReference() {
-        assertTheReasonIsThat(classLeaksItsThisReference());
+        assertIsMutable(InvokeOverridableInstanceMethod.class)
+            .andTheReasonIsThat(classLeaksItsThisReference())
+            .andNoReasonIsThat(classAllowsInheritance());
     }
 
 }

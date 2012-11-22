@@ -1348,7 +1348,7 @@
         </SPEC-OBJECT>
         <SPEC-OBJECT IDENTIFIER="rmf-29aac5be-0548-4286-a34f-01cc98ec83ef">
           <VALUES>
-            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die this-Referenz darf keiner sichtbaren Variable zugewiesen werden.">
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die this-Referenz darf keiner sichtbaren Variable direkt oder indirekt zugewiesen werden.">
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
@@ -1599,7 +1599,7 @@
         </SPEC-OBJECT>
         <SPEC-OBJECT IDENTIFIER="rmf-bb9f9dc8-1c84-4edb-8100-5a52001b0d2f">
           <VALUES>
-            <ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die Klasse wird zwar als *mutable* erkannt, jedoch nur deshalb, weil diese nicht `final` ist.">
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
@@ -1626,7 +1626,7 @@
             </ATTRIBUTE-VALUE-STRING>
             <ATTRIBUTE-VALUE-ENUMERATION>
               <VALUES>
-                <ENUM-VALUE-REF>rmf-77df122e-2a17-4947-a30a-73641b95306c</ENUM-VALUE-REF>
+                <ENUM-VALUE-REF>rmf-4390fd23-00ed-4d49-8bec-f8a23bdfef7a</ENUM-VALUE-REF>
               </VALUES>
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
@@ -1819,7 +1819,7 @@
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
             </ATTRIBUTE-VALUE-STRING>
-            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit einer Klassenmethode, die die This-Referenz indirekt zurückgibt, welche ">
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit einer Klassenmethode, die die `this`-Referenz indirekt zurückgibt, welche ">
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
@@ -1881,6 +1881,195 @@
             <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-19">
               <DEFINITION>
                 <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-24cdab63-56c7-4e72-ae08-4c31b69a9dde">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Methoden">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-988a20d5-83d6-48a0-979f-56341498c69f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Methoden dürfen keine Seiteneffekte verursachen, welche sich auf den sichtbaren Zustand eines Objektes auswirken.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-20">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-6c12710c-28bf-447e-93db-40097c68033c">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="MD bemängelt auch, dass die Variable `counter` nicht `final` ist.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse wird als *mutable* erkannt, da die Methode einen Seiteneffekt auslöst, welcher den sichtbaren Zustand des Objektes ändert.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-77df122e-2a17-4947-a30a-73641b95306c</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-29">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit einer Methode, welche absichtlich und offensichtlich einen Seiteneffekt auslöst.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="WithObviousSideEffect">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-f7f114ee-0b17-4298-92fd-361bece69cde">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="MD bemängelt auch, dass die Variable `invokationCounter` nicht `final` ist.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse wird als *mutable* erkannt, da die Methode einen Seiteneffekt auslöst, welcher den sichtbaren Zustand des Objektes ändert.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-77df122e-2a17-4947-a30a-73641b95306c</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-30">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit einer Methode, welche den Wert einer Instanzvariable ändert, die indirekt zum sichtbaren Objektzustand gehört.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="WithObliqueSideEffect">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-57d0edcd-8ac2-4f6b-98fc-5f7d61ef14ef">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="MD erkennt die Klasse als *mutable*, da die Variable `invokationCounter` nicht `final` ist (`NON_FINAL_FIELD`) und der Wert der Variablen in Methode `getValue` neu zugewiesen wird (`FIELD_CAN_BE_REASSIGNED`).">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse wird als *immutable* erkannt, da das Ändern des verborgenen Objektzustands die Immutability-Eigenschaft nicht verletzt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-4390fd23-00ed-4d49-8bec-f8a23bdfef7a</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-31">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit einer Methode, die den Wert einer Instanzmethode ändert, welche zum verborgenen Objektzustand gehört.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="WithSideEffectOnHiddenObjectState">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-55673626-4cab-4a49-b605-4ec937a44a1a">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die Klasse wird als *mutable* erkannt, da die this-Referenz entweicht.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-77df122e-2a17-4947-a30a-73641b95306c</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-32">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse, welche im Konstruktor die `this`-Referenz einer sichtbaren Collection hinzufuegt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="AddingThisToVisibleCollection">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
               </DEFINITION>
             </ATTRIBUTE-VALUE-STRING>
           </VALUES>
@@ -1992,6 +2181,38 @@
             <SPEC-OBJECT-REF>rmf-3c6f34e5-ba8c-482f-bdce-7d3ac976b56d</SPEC-OBJECT-REF>
           </SOURCE>
         </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-022210ea-c527-46e0-a8a9-8b165fc36bd7">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-6c12710c-28bf-447e-93db-40097c68033c</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-6b6f2069-4e36-45ff-b70f-dc8b4f945e87">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-f7f114ee-0b17-4298-92fd-361bece69cde</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-97235779-6bf5-43c5-86ce-6a621095152e">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-57d0edcd-8ac2-4f6b-98fc-5f7d61ef14ef</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-ea96f5a6-ee72-42b1-b9cd-cbc6e0c09eb4">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-55673626-4cab-4a49-b605-4ec937a44a1a</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-29aac5be-0548-4286-a34f-01cc98ec83ef</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
       </SPEC-RELATIONS>
       <SPECIFICATIONS>
         <SPECIFICATION IDENTIFIER="rmf-ede0203c-42f9-4851-846d-ca38a6170bdf" LONG-NAME="Specification Document">
@@ -2097,6 +2318,18 @@
                 <SPEC-HIERARCHY IDENTIFIER="rmf-ec68013d-51b7-4f12-aa68-1dcaca18aacd">
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-3c6f34e5-ba8c-482f-bdce-7d3ac976b56d</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+              </CHILDREN>
+            </SPEC-HIERARCHY>
+            <SPEC-HIERARCHY IDENTIFIER="rmf-13e1608d-07fa-43d5-a46d-333f230bf221">
+              <OBJECT>
+                <SPEC-OBJECT-REF>rmf-24cdab63-56c7-4e72-ae08-4c31b69a9dde</SPEC-OBJECT-REF>
+              </OBJECT>
+              <CHILDREN>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-1ac1f54f-5a7b-4f1f-8adb-ca993fc17640">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
               </CHILDREN>
@@ -2258,6 +2491,21 @@
                     <SPEC-OBJECT-REF>rmf-96e330e8-d3e0-4787-b635-8bff00156aeb</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-368f2fa9-1f61-4fe7-86c9-f7fa36b2978a">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-6c12710c-28bf-447e-93db-40097c68033c</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-94645981-9a59-4e33-a672-164bb486c88a">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-f7f114ee-0b17-4298-92fd-361bece69cde</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-1e883259-89a1-4864-bacb-6b54cd45a66a">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-57d0edcd-8ac2-4f6b-98fc-5f7d61ef14ef</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
               </CHILDREN>
             </SPEC-HIERARCHY>
             <SPEC-HIERARCHY IDENTIFIER="rmf-332ad044-620e-4fd4-b2fc-2a613517ad20">
@@ -2295,15 +2543,22 @@
                     <SPEC-OBJECT-REF>rmf-e572694b-7dc0-41b6-9069-2e068140ae1b</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
-                <SPEC-HIERARCHY IDENTIFIER="rmf-8b32ef32-ba0c-4961-8d91-68ec50df20bc">
-                  <OBJECT>
-                    <SPEC-OBJECT-REF>rmf-8eb712ee-f365-4a15-957c-7bc255993042</SPEC-OBJECT-REF>
-                  </OBJECT>
-                </SPEC-HIERARCHY>
                 <SPEC-HIERARCHY IDENTIFIER="rmf-12e2c9b3-ac98-4729-8820-dc348780f1ef">
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-7ce70f6a-c4ad-4884-9527-fd7a10404ec0</SPEC-OBJECT-REF>
                   </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-a3e5012c-64ed-4f05-92e3-c9c5c1059f96">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-55673626-4cab-4a49-b605-4ec937a44a1a</SPEC-OBJECT-REF>
+                  </OBJECT>
+                  <CHILDREN>
+                    <SPEC-HIERARCHY IDENTIFIER="rmf-8b32ef32-ba0c-4961-8d91-68ec50df20bc">
+                      <OBJECT>
+                        <SPEC-OBJECT-REF>rmf-8eb712ee-f365-4a15-957c-7bc255993042</SPEC-OBJECT-REF>
+                      </OBJECT>
+                    </SPEC-HIERARCHY>
+                  </CHILDREN>
                 </SPEC-HIERARCHY>
               </CHILDREN>
             </SPEC-HIERARCHY>
@@ -2373,8 +2628,8 @@
             <configuration:presentationConfigurations>
               <linewrap:LinewrapConfiguration configuration:datatype="rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56"/>
               <headline:HeadlineConfiguration configuration:datatype="rmf-556277bb-0bda-407f-88e3-253e3703a333" headline:size="12"/>
-              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="19"/>
-              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:prefix="TST-" id:count="28"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="20"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:prefix="TST-" id:count="32"/>
             </configuration:presentationConfigurations>
           </configuration:ProrPresentationConfigurations>
         </configuration:presentationConfigurations>
