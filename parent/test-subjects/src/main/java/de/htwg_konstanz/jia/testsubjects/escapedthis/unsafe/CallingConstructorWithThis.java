@@ -1,4 +1,4 @@
-package de.htwg_konstanz.jia.testsubjects.escape;
+package de.htwg_konstanz.jia.testsubjects.escapedthis.unsafe;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -7,6 +7,7 @@ package de.htwg_konstanz.jia.testsubjects.escape;
 public final class CallingConstructorWithThis {
 
     private static final class Nonsense {
+        @SuppressWarnings("unused")
         private final CallingConstructorWithThis value;
         
         public Nonsense(final CallingConstructorWithThis aValue) {
@@ -15,6 +16,7 @@ public final class CallingConstructorWithThis {
     }
 
     public CallingConstructorWithThis() {
+        @SuppressWarnings("unused")
         final Nonsense nonsense = new Nonsense(this);
     }
 

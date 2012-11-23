@@ -3,41 +3,24 @@
  */
 package de.htwg_konstanz.jia.mdclient;
 
-import static org.hamcrest.CoreMatchers.everyItem;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.Collection;
-
 import org.hamcrest.Matcher;
-import org.mutabilitydetector.AnalysisResult;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
- * @version 22.11.2012
+ * @version 23.11.2012
  */
-public final class AnalysisResultAsserter {
+public interface AnalysisResultAsserter {
 
-    private final Collection<ParentAwareMutableReasonDetail> reasons;
+    /**
+     * 
+     * 
+     * @param reasonMatcher 
+     * @return an instance of this interface to enable method chaining.
+     */
+    AnalysisResultAsserter andOneReasonIsThat(Matcher<ParentAwareMutableReasonDetail> reasonMatcher);
 
-    public AnalysisResultAsserter(final AnalysisResult analysisResult) {
-        this.reasons = DefaultParentAwareMutableReasonDetail.getInstancesFor(analysisResult);
-    }
+    AnalysisResultAsserter andNoReasonIsThat(Matcher<ParentAwareMutableReasonDetail> reasonMatcher);
 
-    public AnalysisResultAsserter andOneReasonIsThat(final Matcher<ParentAwareMutableReasonDetail> reasonMatcher) {
-        assertThat(reasons, hasItem(reasonMatcher));
-        return this;
-    }
-
-    public AnalysisResultAsserter andNoReasonIsThat(final Matcher<ParentAwareMutableReasonDetail> reasonMatcher) {
-        assertThat(reasons, not(hasItem(reasonMatcher)));
-        return this;
-    }
-
-    public AnalysisResultAsserter andTheReasonIsThat(final Matcher<ParentAwareMutableReasonDetail> reasonMatcher) {
-        assertThat(reasons, everyItem(reasonMatcher));
-        return this;
-    }
+    AnalysisResultAsserter andTheReasonIsThat(Matcher<ParentAwareMutableReasonDetail> reasonMatcher);
 
 }

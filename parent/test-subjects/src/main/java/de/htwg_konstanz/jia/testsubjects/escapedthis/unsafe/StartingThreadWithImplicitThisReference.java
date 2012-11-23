@@ -1,12 +1,12 @@
-package de.htwg_konstanz.jia.testsubjects.escape;
+package de.htwg_konstanz.jia.testsubjects.escapedthis.unsafe;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 21.11.2012
  */
-public final class StartingBenignThread {
+public final class StartingThreadWithImplicitThisReference {
 
-    private static final class HelloPrinter implements Runnable {
+    private final class HelloPrinter implements Runnable {
 
         @Override
         public void run() {
@@ -26,7 +26,7 @@ public final class StartingBenignThread {
 
     }
 
-    public StartingBenignThread() {
+    public StartingThreadWithImplicitThisReference() {
         final Thread thread = new Thread(new HelloPrinter());
         thread.start();
     }

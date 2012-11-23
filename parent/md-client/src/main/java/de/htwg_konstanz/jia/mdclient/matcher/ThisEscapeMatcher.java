@@ -1,5 +1,6 @@
 package de.htwg_konstanz.jia.mdclient.matcher;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.mutabilitydetector.MutabilityReason;
@@ -13,7 +14,7 @@ import de.htwg_konstanz.jia.mdclient.ParentAwareMutableReasonDetail;
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 22.11.2012
  */
-public final class ThisEscapeMatcher extends TypeSafeMatcher<ParentAwareMutableReasonDetail> {
+final class ThisEscapeMatcher extends TypeSafeMatcher<ParentAwareMutableReasonDetail> {
 
     private ParentAwareMutableReasonDetail reason = NullParentAwareMutableReasonDetail.INSTANCE;
 
@@ -33,8 +34,8 @@ public final class ThisEscapeMatcher extends TypeSafeMatcher<ParentAwareMutableR
                 && isExpectedClassName(mutableReasonDetail);
     }
 
-    private boolean isExpectedReason(final Reason reason) {
-        return MutabilityReason.ESCAPED_THIS_REFERENCE == reason;
+    private boolean isExpectedReason(final Reason actualReason) {
+        return MutabilityReason.ESCAPED_THIS_REFERENCE == actualReason;
     }
 
     private boolean isExpectedMessage(final String actualMessage) {
@@ -45,6 +46,13 @@ public final class ThisEscapeMatcher extends TypeSafeMatcher<ParentAwareMutableR
         final String expectedTypeName = mutableReasonDetail.dottedClassName();
         final ClassLocation classLocation = (ClassLocation) mutableReasonDetail.codeLocation();
         return expectedTypeName.equals(classLocation.typeName());
+    }
+
+    @Override
+    public String toString() {
+        final ToStringBuilder builder = new ToStringBuilder(this);
+        builder.append("reason", reason);
+        return builder.toString();
     }
 
 }

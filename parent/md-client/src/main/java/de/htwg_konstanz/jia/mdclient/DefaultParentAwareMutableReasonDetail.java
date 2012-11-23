@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -113,9 +114,8 @@ public final class DefaultParentAwareMutableReasonDetail implements ParentAwareM
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("DefaultParentAwareMutableReasonDetail [parent=").append(parent)
-                .append(", mutableReasonDetail=").append(mutableReasonDetail).append("]");
+        final ToStringBuilder builder = new ToStringBuilder(this);
+        builder.append("parent", parent).append("mutableReasonDetail", mutableReasonDetail);
         return builder.toString();
     }
 

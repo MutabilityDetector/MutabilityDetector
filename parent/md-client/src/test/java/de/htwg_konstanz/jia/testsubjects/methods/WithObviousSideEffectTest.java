@@ -3,7 +3,7 @@
  */
 package de.htwg_konstanz.jia.testsubjects.methods;
 
-import static de.htwg_konstanz.jia.mdclient.AnalysisResultAsserter.methodCausesSideEffect;
+import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.methodCausesSideEffect;
 import static de.htwg_konstanz.jia.mdclient.MutabilityAsserter.assertIsMutable;
 
 import org.junit.Test;

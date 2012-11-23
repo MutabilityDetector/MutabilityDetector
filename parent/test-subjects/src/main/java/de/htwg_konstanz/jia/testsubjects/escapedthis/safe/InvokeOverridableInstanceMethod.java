@@ -1,4 +1,4 @@
-package de.htwg_konstanz.jia.testsubjects.escape;
+package de.htwg_konstanz.jia.testsubjects.escapedthis.safe;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)

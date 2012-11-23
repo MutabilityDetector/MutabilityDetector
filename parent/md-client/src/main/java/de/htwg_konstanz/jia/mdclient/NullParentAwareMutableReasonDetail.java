@@ -6,7 +6,15 @@ import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.CodeLocation.UnknownCodeLocation;
 
+/**
+ * @author Juergen Fickel (jufickel@htwg-konstanz.de)
+ * @version 22.11.2012
+ */
 public enum NullParentAwareMutableReasonDetail implements ParentAwareMutableReasonDetail {
+
+    /**
+     * The sole instance of this implementation.
+     */
     INSTANCE;
 
     @Override

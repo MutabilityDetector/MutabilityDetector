@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.htwg_konstanz.jia.testsubjects.escape;
+package de.htwg_konstanz.jia.testsubjects.escapedthis.unsafe;
 
 import java.util.ArrayList;
 import java.util.List;

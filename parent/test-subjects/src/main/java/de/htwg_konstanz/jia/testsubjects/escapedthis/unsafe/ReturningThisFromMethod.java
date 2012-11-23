@@ -1,4 +1,4 @@
-package de.htwg_konstanz.jia.testsubjects.escape;
+package de.htwg_konstanz.jia.testsubjects.escapedthis.unsafe;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -6,7 +6,7 @@ package de.htwg_konstanz.jia.testsubjects.escape;
  */
 public final class ReturningThisFromMethod {
 
-    public static ReturningThisFromMethod instance;
+    private static ReturningThisFromMethod instance;
     
     public ReturningThisFromMethod() {
         instance = this;
