@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.htwg_konstanz.jia.testsubjects.misc;
+package de.htwg_konstanz.jia.testsubjects.types;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)

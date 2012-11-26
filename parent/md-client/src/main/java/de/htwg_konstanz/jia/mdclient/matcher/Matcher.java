@@ -80,4 +80,20 @@ public final class Matcher {
         return new MethodCausesSideEffectMatcher(nameOfAffectedField, nameOfCausingMethod);
     }
 
+    /**
+     * @return a matcher which checks if the reason for mutability is that the
+     *         analysed type is abstract (e. g. abstract class or interface) and
+     *         thus is inherently mutable.
+     */
+    public static org.hamcrest.Matcher<ParentAwareMutableReasonDetail> abstractTypeIsInherentlyMutable() {
+        return new ClassIsAbstractTypeMatcher();
+    }
+
+//    /**
+//     * @return a matcher which checks if the reason for mutability is that the analysed class uses a co
+//     */
+//    public static org.hamcrest.Matcher<ParentAwareMutableReasonDetail> classUsesCollectionWithMutableElementType() {
+//        return new CollectionWithMutableElementTypeMatcher();
+//    }
+
 }
