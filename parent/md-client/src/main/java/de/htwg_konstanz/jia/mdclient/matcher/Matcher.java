@@ -89,11 +89,16 @@ public final class Matcher {
         return new ClassIsAbstractTypeMatcher();
     }
 
-//    /**
-//     * @return a matcher which checks if the reason for mutability is that the analysed class uses a co
-//     */
-//    public static org.hamcrest.Matcher<ParentAwareMutableReasonDetail> classUsesCollectionWithMutableElementType() {
-//        return new CollectionWithMutableElementTypeMatcher();
-//    }
+    /**
+     * @param fieldName
+     *            expected name of the field which is not {@code final} but
+     *            published. Must be neither {@code null} nor empty.
+     * @return a matcher which checks if the reason for mutability is that the
+     *         analysed class publishes a non-{@code final} field.
+     */
+    public static org.hamcrest.Matcher<ParentAwareMutableReasonDetail> classPublishesNonFinalField(
+            final String fieldName) {
+        return PublishedNonFinalFieldMatcher.getInstance(fieldName);
+    }
 
 }

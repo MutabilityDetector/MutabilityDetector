@@ -10,7 +10,7 @@ package de.htwg_konstanz.jia.testsubjects.methods;
 public final class WithSideEffectOnHiddenObjectState {
 
     private final int value;
-    private volatile int invokationCounter;
+    @SuppressWarnings("unused") private volatile int invokationCounter;
 
     public WithSideEffectOnHiddenObjectState(final int value) {
         super();

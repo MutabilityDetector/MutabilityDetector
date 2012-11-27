@@ -5,7 +5,6 @@ package de.htwg_konstanz.jia.testsubjects.tests;
 
 import static de.htwg_konstanz.jia.mdclient.MutabilityAsserter.assertIsMutable;
 import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.abstractTypeIsInherentlyMutable;
-
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 

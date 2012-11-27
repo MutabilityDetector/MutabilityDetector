@@ -7,6 +7,8 @@ import static de.htwg_konstanz.jia.mdclient.MutabilityAsserter.assertIsMutable;
 import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.methodCausesSideEffect;
 import static de.htwg_konstanz.jia.mdclient.matcher.Matcher.abstractTypeIsInherentlyMutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public final class InheritanceTest {
 
     @Test
     public void doesNotRenderMutableForWeakImmutableSuperclass() {
-        assertImmutable(WeakImmutableSuperclass.class);
+        assertInstancesOf(WeakImmutableSuperclass.class, areEffectivelyImmutable());
     }
 
     @Test

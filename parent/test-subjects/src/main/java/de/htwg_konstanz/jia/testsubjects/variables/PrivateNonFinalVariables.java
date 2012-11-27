@@ -11,18 +11,18 @@ package de.htwg_konstanz.jia.testsubjects.variables;
 public final class PrivateNonFinalVariables {
 
     // static variables
-    private static byte staticByteValue;
-    private static char staticCharacter;
-    private static String staticString;
+    @SuppressWarnings("unused") private static byte staticByteValue;
+    @SuppressWarnings("unused") private static char staticCharacter;
+    @SuppressWarnings("unused") private static String staticString;
 
     // instance variables with primitive type
-    private int number;
-    private char character;
-    private long longNumber;
+    @SuppressWarnings("unused") private int number;
+    @SuppressWarnings("unused") private char character;
+    @SuppressWarnings("unused") private long longNumber;
 
     // instance variables with reference type
-    private String someString;
-    private StringBuilder mutableString;
-    private Integer numberObject;
+    @SuppressWarnings("unused") private String someString;
+    @SuppressWarnings("unused") private StringBuilder mutableString;
+    @SuppressWarnings("unused") private Integer numberObject;
 
 }

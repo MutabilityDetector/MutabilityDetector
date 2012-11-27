@@ -8,17 +8,17 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffective
 
 import org.junit.Test;
 
-import de.htwg_konstanz.jia.testsubjects.misc.ImmutableUsingPrivateFieldSettingMethod;
+import de.htwg_konstanz.jia.testsubjects.lazy.BasicLazyInitialisation;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
- * @version 26.11.2012
+ * @version 27.11.2012
  */
-public final class MiscellaneousTest {
+public final class LazyInitialisationTest {
 
     @Test
-    public void foo() {
-        assertInstancesOf(ImmutableUsingPrivateFieldSettingMethod.class, areEffectivelyImmutable());
+    public void doesNotRenderMutableForBasicLazyInitialisation() {
+        assertInstancesOf(BasicLazyInitialisation.class, areEffectivelyImmutable());
     }
 
 }
