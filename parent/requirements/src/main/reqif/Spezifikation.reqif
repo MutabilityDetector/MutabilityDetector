@@ -3134,6 +3134,183 @@
             <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
           </TYPE>
         </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-bb7b1273-c41e-47fa-8611-0407ec08d1b4">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die Klasse darf keine Setter-Methoden anbieten.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-25">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-c8487464-847b-4d81-93d7-8c54325b900b">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Von Konstruktorparametern mit veränderlichem Referenzdatentyp dürfen nur defensive Kopien Variablen zugewiesen werden.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-26">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-5caac42a-d075-47bf-9fef-06a4ab213aa6">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-27">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-15dd14c8-9d6f-4b68-acaa-22f74b0cf503">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-988a20d5-83d6-48a0-979f-56341498c69f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-a37c3a06-274a-4f07-a913-be2db6082a2a</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-e066544d-3256-4d74-a08b-42e728ea9dcc">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Native Methoden zerstören die Immutability-Eigenschaft einer Klasse.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-28">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-0e37db2a-6bca-4c19-9c75-11f4ca4c9e5a">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="REQ-29">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="rmf-4d68a037-a79c-46fb-9376-aaea2ffcd473">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="TST-56">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-9f1f35d0-91a6-49f8-a228-0cc14703e62f</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="System">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-2d8df2d5-a6ab-46e1-aeae-b4a5b4c0ded8</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Klasse mit nativen Methoden.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1b03f3ec-9d1c-4820-9048-823d4d362412</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-ENUMERATION>
+              <VALUES>
+                <ENUM-VALUE-REF>rmf-4390fd23-00ed-4d49-8bec-f8a23bdfef7a</ENUM-VALUE-REF>
+              </VALUES>
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-ENUMERATION-REF>rmf-88b7db2b-900d-41c3-814d-4ca18b158a1c</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-ENUMERATION>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die Klasse wird als *mutable* erkannt, da nicht festgestellt werden kann, ob die native Implementierung die Immutability-Eigenschaft verletzt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-366cd2ba-ea2a-4a7c-b325-7418f2d599fa</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Die Klasse wird als *immutable* erkannt.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>rmf-1837e4fe-ebde-4f9f-b0dd-77505caacce6</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>rmf-c00f6276-eb52-4264-96f6-35d681a64dfc</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
       </SPEC-OBJECTS>
       <SPEC-RELATIONS>
         <SPEC-RELATION IDENTIFIER="rmf-55e4023a-5ade-4f66-84f5-c1c567388e54">
@@ -3318,6 +3495,62 @@
             <SPEC-OBJECT-REF>rmf-ace3679e-4662-44d5-8064-ecf35c9278a9</SPEC-OBJECT-REF>
           </SOURCE>
         </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-63d27277-5168-41ba-a129-4205eae86a0b">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-96e330e8-d3e0-4787-b635-8bff00156aeb</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-bb7b1273-c41e-47fa-8611-0407ec08d1b4</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-d962a182-ed45-4e23-b37d-16c6112b93cd">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-9fdb6745-6dd7-45df-a504-67716f128792</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-bb7b1273-c41e-47fa-8611-0407ec08d1b4</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-6ad90e1a-7daa-4915-80ba-a15ce0caea96">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-46eab95d-d319-4dd2-9b4c-bfd340537d20</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-41258b60-9f86-49e2-83d8-0963a4919ff7</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-e43e0edd-b877-4833-8377-672a442d24a4">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-b56945f5-2e8a-43ee-8407-097d272b34d7</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-29aac5be-0548-4286-a34f-01cc98ec83ef</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-9cc211de-c051-4c24-8b74-5b67041d998a">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-7b03e987-8378-4e8c-96ef-ce4dc3b0c16f</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-a0605670-4280-4138-a255-9597edf4ad1c</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-e1fe5458-d9d7-48e4-b249-3dcd6f9546af">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-69b95fc3-ab34-403a-9e3c-f0f0c9f572af</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-c8487464-847b-4d81-93d7-8c54325b900b</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
+        <SPEC-RELATION IDENTIFIER="rmf-804ebbed-c243-45af-8e66-8692494a6059">
+          <TARGET>
+            <SPEC-OBJECT-REF>rmf-6c8dd18a-8ea8-406a-8589-9b068f0a1436</SPEC-OBJECT-REF>
+          </TARGET>
+          <SOURCE>
+            <SPEC-OBJECT-REF>rmf-c8487464-847b-4d81-93d7-8c54325b900b</SPEC-OBJECT-REF>
+          </SOURCE>
+        </SPEC-RELATION>
       </SPEC-RELATIONS>
       <SPECIFICATIONS>
         <SPECIFICATION IDENTIFIER="rmf-ede0203c-42f9-4851-846d-ca38a6170bdf" LONG-NAME="Specification Document">
@@ -3393,6 +3626,11 @@
                     <SPEC-OBJECT-REF>rmf-a0605670-4280-4138-a255-9597edf4ad1c</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-2a044db3-9ce6-45d4-aed6-0c18b162fe81">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-c8487464-847b-4d81-93d7-8c54325b900b</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
               </CHILDREN>
             </SPEC-HIERARCHY>
             <SPEC-HIERARCHY IDENTIFIER="rmf-60053be6-88cd-4bd1-b387-2787c727c480">
@@ -3440,6 +3678,16 @@
                 <SPEC-HIERARCHY IDENTIFIER="rmf-1ac1f54f-5a7b-4f1f-8adb-ca993fc17640">
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-0216a390-b3d5-45a9-ad3c-bb4dc25253ed</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-5bbd794b-3f4f-41ae-8dea-bdaf8d6f291b">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-bb7b1273-c41e-47fa-8611-0407ec08d1b4</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-9bc4dd44-4c41-482b-b8df-b421043bc48d">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-e066544d-3256-4d74-a08b-42e728ea9dcc</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
               </CHILDREN>
@@ -3502,11 +3750,6 @@
                     <SPEC-HIERARCHY IDENTIFIER="rmf-53c2975e-2af8-48dc-8e2d-8e02c72561f4">
                       <OBJECT>
                         <SPEC-OBJECT-REF>rmf-240244df-6ded-4cbe-8b88-382d24280db2</SPEC-OBJECT-REF>
-                      </OBJECT>
-                    </SPEC-HIERARCHY>
-                    <SPEC-HIERARCHY IDENTIFIER="rmf-50bf2919-0b94-4efe-b7d2-ca9fc4346154">
-                      <OBJECT>
-                        <SPEC-OBJECT-REF>rmf-0f3308ec-ee25-4c97-9d61-d54bdc467d57</SPEC-OBJECT-REF>
                       </OBJECT>
                     </SPEC-HIERARCHY>
                   </CHILDREN>
@@ -3651,6 +3894,11 @@
                 <SPEC-HIERARCHY IDENTIFIER="rmf-1e883259-89a1-4864-bacb-6b54cd45a66a">
                   <OBJECT>
                     <SPEC-OBJECT-REF>rmf-57d0edcd-8ac2-4f6b-98fc-5f7d61ef14ef</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="rmf-e63cd532-f413-40e6-b862-d8e97b7f8e02">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>rmf-4d68a037-a79c-46fb-9376-aaea2ffcd473</SPEC-OBJECT-REF>
                   </OBJECT>
                 </SPEC-HIERARCHY>
               </CHILDREN>
@@ -3856,8 +4104,8 @@
             <configuration:presentationConfigurations>
               <linewrap:LinewrapConfiguration configuration:datatype="rmf-fb13da43-238a-4aa0-b64a-2e5fde252b56"/>
               <headline:HeadlineConfiguration configuration:datatype="rmf-556277bb-0bda-407f-88e3-253e3703a333" headline:size="12"/>
-              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="24"/>
-              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:prefix="TST-" id:count="55"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:count="29"/>
+              <id:IdConfiguration configuration:datatype="rmf-140fc17e-18db-42e9-9ade-83d8eb455d3c" id:prefix="TST-" id:count="56"/>
             </configuration:presentationConfigurations>
           </configuration:ProrPresentationConfigurations>
         </configuration:presentationConfigurations>

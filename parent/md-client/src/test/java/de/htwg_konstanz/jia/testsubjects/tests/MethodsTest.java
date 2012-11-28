@@ -50,4 +50,9 @@ public final class MethodsTest {
         assertInstancesOf(WithSideEffectOnHiddenObjectState.class, areImmutable());
     }
 
+    @Test
+    public void rendersMutableForNativeMethods() {
+        assertIsMutable(System.class);
+    }
+
 }
