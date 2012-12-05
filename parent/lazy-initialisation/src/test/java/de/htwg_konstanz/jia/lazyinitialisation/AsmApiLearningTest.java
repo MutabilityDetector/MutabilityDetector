@@ -7,7 +7,6 @@ import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
 
 import java.io.IOException;
-import java.security.KeyStore.Builder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
 
 import de.htwg_konstanz.jia.testsubjects.lazy.BasicLazyInitialisation;
 
@@ -179,6 +179,13 @@ public final class AsmApiLearningTest {
     public void classHasExpectedVersion() {
         final Integer expectedVersion = 50;
         assertThat(visitor.headerData().version, equalTo(expectedVersion));
+    }
+
+    @Test
+    public void treeClassNodeHasExpectedVersion() {
+        final ClassNode classNode = new ClassNode(Opcodes.ASM4);
+        classReader.accept(classNode, 0);
+        assertThat(classNode.version, equalTo(50));
     }
 
     @Test
