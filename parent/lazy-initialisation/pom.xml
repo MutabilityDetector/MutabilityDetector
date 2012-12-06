@@ -27,5 +27,10 @@
           <artifactId>asm-analysis</artifactId>
           <version>4.1</version>
       </dependency>
+      <dependency>
+          <groupId>org.mutabilitydetector</groupId>
+          <artifactId>MutabilityDetector</artifactId>
+          <version>0.8</version>
+      </dependency>
   </dependencies>
 </project>
