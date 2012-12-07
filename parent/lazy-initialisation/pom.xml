@@ -32,5 +32,13 @@
           <artifactId>MutabilityDetector</artifactId>
           <version>0.8</version>
       </dependency>
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava-collections</artifactId>
+      </dependency>
   </dependencies>
 </project>

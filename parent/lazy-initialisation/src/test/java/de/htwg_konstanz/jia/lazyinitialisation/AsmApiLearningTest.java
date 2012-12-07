@@ -1,12 +1,15 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -192,6 +195,14 @@ public final class AsmApiLearningTest {
     public void classHasExpectedAccessFlags() {
         final int expectedAccess = ACC_PUBLIC + ACC_FINAL + ACC_SUPER;
         assertThat(visitor.headerData().access, equalTo(expectedAccess));
+    }
+
+    @Test
+    public void classIsPublicFinal() {
+        final int access = visitor.headerData().access;
+        final boolean isPublic = Modifier.isPublic(access);
+        final boolean isFinal = Modifier.isFinal(access);
+        assertThat(true, allOf(is(isPublic), is(isFinal)));
     }
 
     @Test
