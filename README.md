@@ -6,8 +6,26 @@ Mutability Detector is designed to analyse Java classes and report on whether in
   * At runtime. Does your API require being given immutable objects?
   * As a FindBugs plugin. Those classes you annotated with `@Immutable`, are they actually?
   
+  
+## Why Try To Detect Mutability?
+
+Developing classes to be immutable has several benefits. An immutable object is one which cannot be changed once it is constructed. While writing concurrent programs, using immutable objects can greatly simplify complex systems, as sharing an object across threads is much safer. There are a few rules for what makes an object immutable, and it is easy to break the rules and render the object unsafe. This could lead to subtle, hard-to-detect bugs which could lower the integrity of the system. Using an automated tool to recognise mutability where it's not intended can reduce the complexity of writing immutable classes.
+
+Mutability Detector is in the very early stages of development. To give an idea of the performance, on a Thinkpad T61 the tool runs over the JVM's rt.jar (48MB, 17,000 classes) in under 2 minutes. The tool analyses on the strict side, very few classes are found to be perfectly immutable, for instance, java.lang.String and java.lang.Integer are not immutable because of a non-final field, and primitive array field, respectively. Mutability Detector will not be released under a 1.0 version until these cases can be correctly analysed.
+
+If this sounds like it may be interesting or useful to you, continue reading for more information on getting started. You may also want to take a look at the [Mutability Detector Blog](http://mutability-detector.blogspot.co.uk/). 
+  
+  
 ## Getting Started
-To use Mutability Detector directly, either from the command line, at runtime in your application, or as part of your unit tests, grab the jar available [here](https://github.com/MutabilityDetector/MutabilityDetector/downloads). For the FindBugs plugin, grab the MutabilityDetector4FindBugs jar, and configure it to be picked up by FindBugs during a normal analysis, as described [here](http://code.google.com/p/findbugs/wiki/DetectorPluginTutorial#Loading_Our_Plugin). 
+To use Mutability Detector directly, either from the command line, at runtime in your application, or as part of your unit tests, grab the jar available [here](https://github.com/MutabilityDetector/MutabilityDetector/downloads). Or you can declare it in your Maven-compatible build tool, with the following coordinates:
+
+    <dependency>
+        <groupId>org.mutabilitydetector</groupId>
+        <artifactId>MutabilityDetector</artifactId>
+        <version>0.8</version>
+        <scope>test</scope>
+    </dependency>
+
 
 ### Unit Testing
 Just add MutabilityDetector to your unit testing classpath. Adding your first assertion is as simple as:
@@ -76,6 +94,23 @@ The command line has the following usage:
 It is possible to use Mutability Detector at runtime. For example, consider if you have a library which requires that objects passed to it are immutable. On receiving such an object, you can ask Mutability Detector if it is actually immutable.
 
 Check out the code snippet in [this example](https://github.com/MutabilityDetector/ClientOfMutabilityDetector/blob/master/src/main/java/org/mutabilitydetector/runtime/RuntimeAnalysisExample.java), which shows correct usage against trunk code.
+
+### FindBugs Plugin
+
+To have Mutability Detector inspect your classes during a FindBugs analysis, grab the MutabilityDetector4FindBugs jar, and configure it to be picked up by FindBugs during a normal analysis, as described [here](http://code.google.com/p/findbugs/wiki/DetectorPluginTutorial#Loading_Our_Plugin). 
+
+Mutability Detector will perform it's analysis on any classes annotated with `@Immutable`.
+
+MutabilityDetector4FindBugs is also available from Maven Central, with the following coordinates:
+
+
+    <dependency>
+        <groupId>org.mutabilitydetector</groupId>
+        <artifactId>MutabilityDetector4FindBugs</artifactId>
+        <version>0.2.3</version>
+        <scope>test</scope>
+    </dependency>
+
 
 #### Contact
 Contact can be made either by leaving comments or by [email](mailto:Grundlefleck+md@gmail.com).
