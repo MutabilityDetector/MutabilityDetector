@@ -65,8 +65,8 @@ import org.mutabilitydetector.unittesting.internal.AssertionReporter;
  * 
  * <h4 id="AboutHelpGuide">About this help guide</h4>
  * <p>
- * The help contents here are also available on the project homepage, currently at <a
- * href=http://code.google.com/p/mutability-detector/>http://code.google.com/p/mutability-detector/</a>.
+ * The help contents here are also available on the <a
+ * href="http://mutabilitydetector.github.com/MutabilityDetector/mvn-site/apidocs/org/mutabilitydetector/unittesting/MutabilityAssert.html">project's JavaDoc</a>.
  * </p>
  * This style of documentation is used as it provides content suitable for a web page and for offline use in the JavaDoc
  * viewer of your favourite IDE. It has been <strike>shamelessly stolen from</strike> inspired by the Mockito project,
@@ -237,7 +237,7 @@ import org.mutabilitydetector.unittesting.internal.AssertionReporter;
  * </pre>
  * 
  * <h4 id="AllowingStringFields">Using {@link String} fields in immutable objects</h4>
- * Until <a href="http://code.google.com/p/mutability-detector/issues/detail?id=3">The String Problem</a> is resolved,
+ * Until <a href="https://github.com/MutabilityDetector/MutabilityDetector/issues/4">The String Problem</a> is resolved,
  * using <code>provided(String.class).isAlsoImmutable()</code> is the only practical solution for when your immutable
  * classes have {@link String} fields. This sucks, I know :-(
  * 

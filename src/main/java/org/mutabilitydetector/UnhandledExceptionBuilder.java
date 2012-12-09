@@ -11,7 +11,7 @@ public final class UnhandledExceptionBuilder {
     private static final String UNHANDLED_ERROR_MESSAGE = String.format(
         "%nAn unhandled error occurred. This is probably my fault, not yours, and I am sorry.%n" +
         "I'd love to get an opportunity to fix this, please report as an issue at:%n " +
-        "http://code.google.com/p/mutability-detector/issues/list %n" +
+        "https://github.com/MutabilityDetector/MutabilityDetector/issues/ %n" +
         "Pasting in this error message and stack trace, and if possible, %n" +
         "information about the code causing the error. %n" +
         "For example, one of: %n" +

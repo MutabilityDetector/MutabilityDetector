@@ -41,7 +41,7 @@ public class UnhandledExceptionBuilderTest {
         assertThat(unhandledException.getMessage(), 
                    allOf(containsString("sorry"),
                          containsString("An unhandled error occurred"), 
-                         containsString("http://code.google.com/p/mutability-detector/issues/list")));
+                         containsString("https://github.com/MutabilityDetector/MutabilityDetector/issues/")));
     }
     
     @Test
