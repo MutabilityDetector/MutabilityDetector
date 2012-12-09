@@ -10,7 +10,7 @@
   <name>MutabilityDetector</name>
   <description>Lightweight analysis tool for detecting mutability in Java
         classes.</description>
-  <url>http://code.google.com/p/mutability-detector</url>
+  <url>http://mutabilitydetector.org</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -21,9 +21,8 @@
 
   <distributionManagement>
     <site>
-      <id>google.code</id>
-      <url>scm:svn:https://mutability-detector.googlecode.com/svn/site
-            </url>
+      <id>github.home</id>
+      <url>http://mutabilitydetector.github.com/MutabilityDetector/</url>
     </site>
   </distributionManagement>
 
@@ -34,13 +33,13 @@
   </properties>
 
   <issueManagement>
-    <url>http://code.google.com/p/mutability-detector/issues/list</url>
+    <url>https://github.com/MutabilityDetector/MutabilityDetector/issues</url>
   </issueManagement>
 
   <scm>
-    <url>http://code.google.com/p/mutability-detector/source/browse/#svn/trunk/MutabilityDetector/trunk/MutabilityDetector</url>
-    <connection>scm:svn:http://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk/MutabilityDetector</connection>
-    <developerConnection>scm:svn:https://mutability-detector.googlecode.com/svn/trunk/MutabilityDetector/trunk/MutabilityDetector</developerConnection>
+    <url>https://github.com/MutabilityDetector/MutabilityDetector</url>
+    <connection>scm:git:ssh://git@github.com:MutabilityDetector/MutabilityDetector.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:MutabilityDetector/MutabilityDetector.git</developerConnection>
   </scm>
 
   <developers>
@@ -50,6 +49,13 @@
       <email>grundlefleck@gmail.com</email>
     </developer>
   </developers>
+  
+  <mailingLists>
+    <mailingList>
+      <name>General Discussion</name>
+      <archive>http://groups.google.com/group/mutability-detector</archive>
+    </mailingList>
+  </mailingLists>
 
   <organization>
   </organization>
@@ -63,6 +69,11 @@
 
   <reporting>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
