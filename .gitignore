@@ -1,10 +1,6 @@
-*.class
+# Maven generated
+target/
 
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# IDE #
+# IDE
 .classpath
 .project
