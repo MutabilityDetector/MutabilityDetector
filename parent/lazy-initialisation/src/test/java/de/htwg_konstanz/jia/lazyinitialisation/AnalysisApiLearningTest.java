@@ -3,6 +3,7 @@
  */
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.SortedSet;
 
 import org.apache.commons.lang3.Validate;
 import org.junit.Test;
@@ -404,6 +406,27 @@ public final class AnalysisApiLearningTest {
             exception.initCause(e);
             throw exception;
         }
+    }
+
+    @Test
+    public void printStackOpcodes() {
+        print(Category.NOP, Opcode.nop());
+        print(Category.LOCAL_VARIABLES, Opcode.localVariables());
+        print(Category.STACK, Opcode.stack());
+        print(Category.CONSTANTS, Opcode.constants());
+        print(Category.ARITHMETIC_AND_LOGIC, Opcode.arithmeticAndLogic());
+        print(Category.CASTS, Opcode.casts());
+        print(Category.OBJECTS, Opcode.objects());
+        print(Category.FIELDS, Opcode.fields());
+        print(Category.METHODS, Opcode.methods());
+        print(Category.ARRAYS, Opcode.arrays());
+        print(Category.JUMPS, Opcode.jumps());
+        print(Category.RETURN, Opcode.returns());
+    }
+
+    private void print(final Category category, SortedSet<Opcode> opcodes) {
+        final String template = "%s: %s";
+        System.out.println(format(template, category, opcodes));
     }
 
 }

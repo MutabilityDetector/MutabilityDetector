@@ -8,6 +8,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
  * @version 07.12.2012
  */
 public enum Category {
+    LOCAL_VARIABLES,
     STACK,
     CONSTANTS,
     ARITHMETIC_AND_LOGIC,
@@ -17,6 +18,6 @@ public enum Category {
     METHODS,
     ARRAYS,
     JUMPS,
-    RETURN; 
-
+    RETURN,
+    NOP;
 }
