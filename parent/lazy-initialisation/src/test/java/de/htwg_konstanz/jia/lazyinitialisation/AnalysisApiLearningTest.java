@@ -410,21 +410,21 @@ public final class AnalysisApiLearningTest {
 
     @Test
     public void printStackOpcodes() {
-        print(Category.NOP, Opcode.nop());
-        print(Category.LOCAL_VARIABLES, Opcode.localVariables());
-        print(Category.STACK, Opcode.stack());
-        print(Category.CONSTANTS, Opcode.constants());
-        print(Category.ARITHMETIC_AND_LOGIC, Opcode.arithmeticAndLogic());
-        print(Category.CASTS, Opcode.casts());
-        print(Category.OBJECTS, Opcode.objects());
-        print(Category.FIELDS, Opcode.fields());
-        print(Category.METHODS, Opcode.methods());
-        print(Category.ARRAYS, Opcode.arrays());
-        print(Category.JUMPS, Opcode.jumps());
-        print(Category.RETURN, Opcode.returns());
+        print("NOP", Opcode.nop());
+        print("LOCAL_VARIABLES", Opcode.localVariables());
+        print("STACK", Opcode.stack());
+        print("CONSTANTS", Opcode.constants());
+        print("ARITHMETIC_AND_LOGIC", Opcode.arithmeticAndLogic());
+        print("CASTS", Opcode.casts());
+        print("OBJECTS", Opcode.objects());
+        print("FIELDS", Opcode.fields());
+        print("METHODS", Opcode.methods());
+        print("ARRAYS", Opcode.arrays());
+        print("JUMPS", Opcode.jumps());
+        print("RETURN", Opcode.returns());
     }
 
-    private void print(final Category category, SortedSet<Opcode> opcodes) {
+    private void print(final String category, SortedSet<Opcode> opcodes) {
         final String template = "%s: %s";
         System.out.println(format(template, category, opcodes));
     }
