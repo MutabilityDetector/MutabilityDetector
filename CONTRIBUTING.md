@@ -8,7 +8,7 @@ If you use Mutability Detector in your own unit tests, you can help out in the f
   * reporting issues - if you find a bug, from getting false positives or false negatives, or the API not letting you do what you want to do, file an issue on the open [bug tracker](https://github.com/MutabilityDetector/MutabilityDetector/issues)
 
 ## For potential developers of Mutability Detector
-If you want to hack on the code, to fix a bug that's holding you back, or just to scratch an itch, you can get involved by sending a patch. If it's a feature or a bug fix, it should be accompanied by an issue in the bug tracker.
+If you want to hack on the code, to fix a bug that's holding you back, or just to scratch an itch, you can get involved by sending a patch, making a pull request, or any other esoteric way you want to throw your code at me. If it's a feature or a bug fix, it should be accompanied by an issue in the bug tracker.
 
 ### Checkout code from version control
 You can check out the code from GitHub. For the core analysis, you should clone both [Mutability Detector](https://github.com/MutabilityDetector/MutabilityDetector) and [ClientOfMutabilityDetector](https://github.com/MutabilityDetector/ClientOfMutabilityDetector). The former contains all the main code and test cases, the client project is used to help alert of breaking API changes, or any other regressions. 
