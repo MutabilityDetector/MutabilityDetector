@@ -22,6 +22,44 @@ import com.google.common.collect.Sets;
 
 @NotThreadSafe
 public abstract class ConfigurationBuilder {
+    
+    /**
+     * Non-exhaustive list of immutable classes from the standard JDK.
+     * 
+     * @see String
+     * @see Boolean
+     * @see Byte
+     * @see Character
+     * @see Short
+     * @see Integer
+     * @see Long
+     * @see Float
+     * @see Double
+     * @see Class
+     * @see BigDecimal
+     * @see BigInteger
+     */
+    public static final Configuration JDK = new ConfigurationBuilder() {
+        @Override
+        public void configure() {
+            hardcodeAsDefinitelyImmutable(String.class);
+            hardcodeAsDefinitelyImmutable(Boolean.class);
+            hardcodeAsDefinitelyImmutable(Byte.class);
+            hardcodeAsDefinitelyImmutable(Character.class);
+            hardcodeAsDefinitelyImmutable(Short.class);
+            hardcodeAsDefinitelyImmutable(Integer.class);
+            hardcodeAsDefinitelyImmutable(Long.class);
+            hardcodeAsDefinitelyImmutable(Float.class);
+            hardcodeAsDefinitelyImmutable(Double.class);
+            hardcodeAsDefinitelyImmutable(Class.class);
+            hardcodeAsDefinitelyImmutable(BigDecimal.class);
+            hardcodeAsDefinitelyImmutable(BigInteger.class);
+        }
+    }.build();
+    
+    public static final Configuration NO_CONFIGURATION = new ConfigurationBuilder() {
+        @Override public void configure() { }
+    }.build();
 
     private static final ExceptionPolicy DEFAULT_EXCEPTION_POLICY = ExceptionPolicy.FAIL_FAST;
 
@@ -51,7 +89,13 @@ public abstract class ConfigurationBuilder {
         hardcodeResult(AnalysisResult.definitelyImmutable(immutableClass.getName()));
     }
     
-    protected final Set<AnalysisResult> getCurrentlyOverriddenResults() {
+    /**
+     * Returns an immutable snapshot of the hardcoded results as at time of calling.
+     * 
+     * Note changes the returned Set will not allow modifications, and will not 
+     * reflect changes to the underlying configuration.
+     */
+    protected final Set<AnalysisResult> getCurrentlyHardcodedResults() {
         return hardcodedResults.build();
     }
 
@@ -81,21 +125,6 @@ public abstract class ConfigurationBuilder {
     protected final void setExceptionPolicy(ExceptionPolicy exceptionPolicy) {
         this.exceptionPolicy = exceptionPolicy;
     }
-    
-    public static final Configuration JDK = new ConfigurationBuilder() {
-        @Override
-        public void configure() {
-            hardcodeAsDefinitelyImmutable(String.class);
-            hardcodeAsDefinitelyImmutable(Integer.class);
-            hardcodeAsDefinitelyImmutable(Class.class);
-            hardcodeAsDefinitelyImmutable(BigDecimal.class);
-            hardcodeAsDefinitelyImmutable(BigInteger.class);
-        }
-    }.build();
-    
-    public static final Configuration NO_CONFIGURATION = new ConfigurationBuilder() {
-        @Override public void configure() { }
-    }.build();
     
 
 }
