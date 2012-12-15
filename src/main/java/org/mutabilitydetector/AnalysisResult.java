@@ -48,6 +48,15 @@ public final class AnalysisResult {
         this.hashCode = Objects.hashCode(dottedClassName, isImmutable, reasons);
     }
 
+    
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(getClass())
+                .add("class", dottedClassName)
+                .add("isImmutable", isImmutable)
+                .toString();
+    }
+
     @Override
     public int hashCode() {
         return hashCode;
