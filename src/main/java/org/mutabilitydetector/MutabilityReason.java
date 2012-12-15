@@ -51,7 +51,7 @@ public enum MutabilityReason implements Reason {
             IsImmutable.NOT_IMMUTABLE),
             
     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE("JDK collection types are defined to be mutable. While there is a very common idiom which " +
-            "makes these collections immutable, if the type of the collection elements is immutable, the collection itself also becomes mutable. " +
+            "makes these collections immutable, if the type of the collection elements is mutable, the collection itself also becomes mutable. " +
             "For example, List<Date> dates = Collections.unmodifiableList(new ArrayList<Date>(srcList)), is a mutable list, because its elements " +
             "can be mutated.",
             IsImmutable.NOT_IMMUTABLE),

@@ -1,0 +1,16 @@
+- Modify ProvidedOtherClass allowed reason to account for mutable element types of collections
+- Merge AssumingTheFields allowed reasons from ThreeTen test
+- Merge AssumeCopiedIntoUnmodifiable allowed reason from issue 25 
+- Javadoc for ConfigurationBuilder 
+- Set JDK as default configuration
+- Javadoc for standard JDK configuration
+- Blog post explaining: 
+    safely wrapping idiom; 
+    mutable element type; 
+    configuration choice; 
+    issues fixed since last release;
+    failFast flag on command line;
+- Write notes on how to get started developing
+- Update FindBugs plugin definition
+
+- Just release an rc1?
