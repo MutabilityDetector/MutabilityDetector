@@ -35,6 +35,7 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
+import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
@@ -56,7 +57,6 @@ public class MutabilityAssertTest {
             "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
             "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
             "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
-            "        Field can have a mutable type (java.lang.String) assigned to it. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
             "    Allowed reasons:\n" + 
             "        None.";
 
@@ -209,6 +209,11 @@ public class MutabilityAssertTest {
         assertInstancesOf(AlmostEffectivelyImmutable.class,
                           areEffectivelyImmutable(),
                           allowingForSubclassing());
+    }
+    
+    @Test
+    public void havingStringFieldsDoesNotCauseFalsePositivesInTheDefaultConfiguration() throws Exception {
+        assertImmutable(HasAStringField.class);
     }
     
 }

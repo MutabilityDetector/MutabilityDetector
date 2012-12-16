@@ -17,6 +17,8 @@
 
 package org.mutabilitydetector.unittesting;
 
+import static org.mutabilitydetector.ConfigurationBuilder.OUT_OF_THE_BOX_CONFIGURATION;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -27,8 +29,6 @@ import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
-import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 
 /**
  * 
@@ -300,7 +300,7 @@ import org.mutabilitydetector.unittesting.internal.AssertionReporter;
  * 
  * See also:
  * <ul>
- * <li>{@link ConfigurationBuilder#JDK}</li>
+ * <li>{@link ConfigurationBuilder#JDK_CONFIGURATION}</li>
  * </ul>
  * 
  * <p>
@@ -423,8 +423,7 @@ public final class MutabilityAssert {
     private MutabilityAssert() {
     }
 
-    private final static MutabilityAsserter defaultAsserter = new MutabilityAsserter(new AssertionReporter(),
-            ThreadUnsafeAnalysisSession.createWithCurrentClassPath());
+    private final static MutabilityAsserter defaultAsserter = MutabilityAsserter.configured(OUT_OF_THE_BOX_CONFIGURATION);
 
     public static void assertImmutable(Class<?> expectedImmutableClass) {
         defaultAsserter.assertImmutable(expectedImmutableClass);

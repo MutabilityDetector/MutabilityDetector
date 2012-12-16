@@ -26,7 +26,7 @@ public class MutabilityAsserter {
     private final AssertionReporter reporter;
     private final AnalysisSession analysisSession;
 
-    MutabilityAsserter(AssertionReporter reporter, AnalysisSession analysisSession) {
+    private MutabilityAsserter(AssertionReporter reporter, AnalysisSession analysisSession) {
         this.reporter = reporter;
         this.analysisSession = analysisSession;
     }
