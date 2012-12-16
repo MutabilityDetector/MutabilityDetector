@@ -21,7 +21,7 @@ public class ArrayFieldMutabilityChecker extends AbstractMutabilityChecker {
              * to check that an inherently mutable type was *actually mutated*. Calling an entire class mutable for
              * having a mutable field which it doesn't mutate is a bit rubbish.
              */
-            if (isPrimitiveArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
+            if (isArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
                 setResult("Field is an array.",
                         fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
@@ -35,7 +35,7 @@ public class ArrayFieldMutabilityChecker extends AbstractMutabilityChecker {
         return "ENUM$VALUES".equals(name);
     }
 
-    private boolean isPrimitiveArray(String desc) {
+    private boolean isArray(String desc) {
         return Type.ARRAY == Type.getType(desc).getSort();
     }
     
