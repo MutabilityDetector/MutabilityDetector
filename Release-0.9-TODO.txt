@@ -10,7 +10,7 @@
     configuration choice; 
     issues fixed since last release;
     failFast flag on command line;
-- Write notes on how to get started developing
+X Write notes on how to get started developing
 - Update FindBugs plugin definition
 
 - Just release an rc1?
