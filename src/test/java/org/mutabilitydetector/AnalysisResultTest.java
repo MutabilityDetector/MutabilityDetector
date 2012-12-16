@@ -17,6 +17,10 @@
 
 package org.mutabilitydetector;
 
+import static org.junit.Assert.assertEquals;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -24,6 +28,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.mutabilitydetector.locations.ClassLocation;
 
 public class AnalysisResultTest {
 
@@ -46,6 +51,26 @@ public class AnalysisResultTest {
     public void isImmutable() throws Exception {
         assertInstancesOf(AnalysisResult.class, areImmutable(), 
                 provided(String.class, MutableReasonDetail.class).isAlsoImmutable());
+    }
+    
+    @Test
+    public void equalityIsBasedOnClassNameResultAndReasons() throws Exception {
+        MutableReasonDetail reason = newMutableReasonDetail("my mutability reason", 
+                                                            ClassLocation.from(dotted("some.Class")), 
+                                                            MutabilityReason.CAN_BE_SUBCLASSED);
+        
+        AnalysisResult first = analysisResult("some.Class", IsImmutable.NOT_IMMUTABLE, reason);
+        AnalysisResult second = analysisResult("some.Class", IsImmutable.NOT_IMMUTABLE, reason);
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    public void definitelyImmutableResultsAreEqual() throws Exception {
+        AnalysisResult first = AnalysisResult.definitelyImmutable("some.Class");
+        AnalysisResult second = AnalysisResult.definitelyImmutable("some.Class");
+        
+        assertEquals(first, second);
     }
 
 
