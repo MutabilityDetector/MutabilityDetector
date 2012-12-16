@@ -25,7 +25,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
         
         try {
-            AnalysisSession analysisSession = createWithCurrentClassPath();
+            AnalysisSession analysisSession = TestUtil.testAnalysisSession();
             checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
@@ -60,7 +59,7 @@ public class CheckerRunnerTest {
 
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
 
-        AnalysisSession analysisSession = createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
 
         verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
@@ -74,7 +73,7 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
         
         try {
-            AnalysisSession analysisSession = createWithCurrentClassPath();
+            AnalysisSession analysisSession = TestUtil.testAnalysisSession();
             checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
@@ -88,7 +87,7 @@ public class CheckerRunnerTest {
         AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
         
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
             
         verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
@@ -103,7 +102,7 @@ public class CheckerRunnerTest {
         AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
         
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
         
         verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
@@ -118,7 +117,7 @@ public class CheckerRunnerTest {
         AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
         
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
         
         verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);

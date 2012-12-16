@@ -32,7 +32,7 @@ public class AnalysisSessionTest {
     
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
-        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
@@ -51,7 +51,7 @@ public class AnalysisSessionTest {
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());
     }

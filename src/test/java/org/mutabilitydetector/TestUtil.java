@@ -19,6 +19,7 @@ package org.mutabilitydetector;
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.ConfigurationBuilder.OUT_OF_THE_BOX_CONFIGURATION;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
@@ -50,7 +51,7 @@ public class TestUtil {
     }
 
     public static AnalysisSession testAnalysisSession() {
-        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
+        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath(OUT_OF_THE_BOX_CONFIGURATION);
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {

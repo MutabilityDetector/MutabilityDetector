@@ -36,7 +36,6 @@ import static org.mutabilitydetector.TestUtil.testAnalysisSession;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
@@ -51,6 +50,7 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.ListFieldFromUnmodifiableArrayAsList;
@@ -107,7 +107,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Before
     public void setUpWithRealSession() {
-        SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath(FAIL_FAST));
+        SessionCheckerRunner runner = new SessionCheckerRunner(TestUtil.testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo, 

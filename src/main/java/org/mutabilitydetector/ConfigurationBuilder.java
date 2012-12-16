@@ -15,7 +15,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
-import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
 import com.google.common.base.Equivalence;
 import com.google.common.base.Equivalence.Wrapper;
@@ -25,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
- * Allows configuring a custom {@link MutabilityAsserter} for unit testing.
+ * Builds a {@link Configuration} for customising Mutability Detector's analysis.
  * 
  * The most significant feature of {@link ConfigurationBuilder} is to allow
  * defining hardcoded results for particular classes, which should be respected
@@ -65,9 +64,11 @@ import com.google.common.collect.Sets;
 public abstract class ConfigurationBuilder {
     
     /**
-     * Subclasses should override this method to configure mutability assertions.
+     * Subclasses should override this method to configure analysis.
      * <p>
-     * It is recommended that any custom {@link Configuration}'s merge with the {@link #OUT_OF_THE_BOX_CONFIGURATION} in order to remain consistent with {@link MutabilityAssert}. For example:
+     * It is recommended that any custom {@link Configuration}'s merge with the
+     * {@link #OUT_OF_THE_BOX_CONFIGURATION} in order to remain consistent with
+     * {@link MutabilityAssert}, and the command line settings. For example:
      * 
      * <pre>
      * <code>
@@ -78,7 +79,8 @@ public abstract class ConfigurationBuilder {
      * });
      * </code>
      * </pre>
-     * 
+     * Similarly for {@link ThreadUnsafeAnalysisSession#createWithCurrentClassPath(Configuration)}
+     * <p>
      * The available configuration methods are listed below.
      * 
      * @see #hardcodeResult(AnalysisResult)
@@ -209,6 +211,7 @@ public abstract class ConfigurationBuilder {
      * homepage</a>.
      * 
      * 
+     * @see Configuration#exceptionPolicy()
      * @param exceptionPolicy
      *            - how to respond to exceptions during analysis. Defaults to
      *            {@link ExceptionPolicy#FAIL_FAST}
@@ -219,8 +222,19 @@ public abstract class ConfigurationBuilder {
 
     /**
      * Add a predefined result used during analysis.
-     *
+     * <p>
+     * Hardcoding a result means that information queried about a class will
+     * honour the result you have set. For example, if during analysis,
+     * Mutability Detector has to discover whether a field type is mutable or
+     * not. However, requesting the {@link AnalysisResult} of the class in
+     * question directly will return the real result from the actual analysis.
+     * This holds for unit tests, command line runs, and runtime analysis. As
+     * such, calling this method will have no effect when querying an
+     * AnalysisResult directly.
+     * 
+     * @see Configuration#hardcodedResults()
      * @see AnalysisResult
+     * @see AnalysisSession#resultFor(org.mutabilitydetector.locations.Dotted)
      */
     protected final void hardcodeResult(AnalysisResult result) {
         hardcodedResults.add(result);
