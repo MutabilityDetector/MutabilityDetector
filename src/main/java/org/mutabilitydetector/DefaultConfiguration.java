@@ -4,12 +4,15 @@ package org.mutabilitydetector;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
+@Immutable
 public final class DefaultConfiguration implements Configuration {
 
     private final Set<AnalysisResult> hardcodedResults;
