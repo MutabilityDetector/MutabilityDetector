@@ -28,6 +28,7 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
+import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
@@ -50,6 +51,7 @@ public final class MutabilityCheckerFactory {
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());
         checkers.add(new EscapedThisReferenceChecker());
+        checkers.add(new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInformation, verifierFactory));
         // checkers.add(new InheritedMutabilityChecker(analysisSession));
         // checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
         return Collections.unmodifiableCollection(checkers);

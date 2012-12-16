@@ -47,7 +47,7 @@ public class ProvidedOtherClass {
         return provided(singleton(className));
     }
     
-    public static ProvidedOtherClass provided(Dotted... className) {
+    public static ProvidedOtherClass provided(Dotted className, Dotted... moreClassNames) {
         return provided(asList(className));
     }
 

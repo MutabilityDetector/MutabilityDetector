@@ -20,7 +20,7 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static java.lang.String.format;
 import static java.util.Collections.singleton;
 import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.formatReasons;
-import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
+import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,8 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     }
     
     public static WithAllowedReasonsMatcher withNoAllowedReasons(Matcher<AnalysisResult> areImmutable) {
-        return withAllowedReasons(areImmutable, singleton(noReasonsAllowed()));
+        Matcher<MutableReasonDetail> noReasonsAllowed = noReasonsAllowed();
+        return withAllowedReasons(areImmutable, singleton(noReasonsAllowed));
     }
     
     private final Matcher<AnalysisResult> isImmutable;

@@ -22,12 +22,12 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
-import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher;
+import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 
 public class MutabilityMatchers {
 
     public static Matcher<MutableReasonDetail> noReasonsAllowed() {
-        return new NoReasonsAllowedMatcher();
+        return new NoReasonsAllowed();
     }
 
     public static Matcher<AnalysisResult> areImmutable() {

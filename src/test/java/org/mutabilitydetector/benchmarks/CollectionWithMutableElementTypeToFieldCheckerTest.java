@@ -62,4 +62,5 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
                 is("Field can have collection with mutable element type " +
                         "(java.util.Map<java.util.Date, org.mutabilitydetector.benchmarks.ImmutableExample>) assigned to it."));
     }
+    
 }

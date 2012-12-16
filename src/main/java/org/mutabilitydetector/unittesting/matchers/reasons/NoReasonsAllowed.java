@@ -24,20 +24,11 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 
-public class NoReasonsAllowedMatcher extends BaseMutableReasonDetailMatcher {
+public class NoReasonsAllowed extends BaseMutableReasonDetailMatcher {
     private final Matcher<Object> nothingEver = not(anything());
 
-    /**
-     * Prefer {@link #noReasonsAllowed()}
-     * Will be removed in release following 0.8
-     */
-    @Deprecated
-    public static Matcher<MutableReasonDetail> noWarningsAllowed() {
-        return new NoReasonsAllowedMatcher();
-    }
-
-    public static Matcher<MutableReasonDetail> noReasonsAllowed() {
-        return new NoReasonsAllowedMatcher();
+    public static NoReasonsAllowed noReasonsAllowed() {
+        return new NoReasonsAllowed();
     }
 
     @Override

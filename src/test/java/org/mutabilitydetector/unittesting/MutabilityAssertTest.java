@@ -35,10 +35,13 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
+import org.mutabilitydetector.benchmarks.mutabletofield.DependsOnManyTypesBeingImmutable;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
+import org.mutabilitydetector.benchmarks.types.AbstractType;
+import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
@@ -216,4 +219,20 @@ public class MutabilityAssertTest {
         assertImmutable(HasAStringField.class);
     }
     
+    @Test
+    public void allowSpecifyingThatMultipleTypesMustAlsoBeImmutable() throws Exception {
+        assertInstancesOf(DependsOnManyTypesBeingImmutable.class, 
+                          areImmutable(),
+                          provided(AbstractType.class, InterfaceType.class).isAlsoImmutable());
+    }
+
+    @FalsePositive("Does not work when specifying two different ProvidedOtherClass reasons.")
+    @Test
+    public void allowSpecifyingThatMultipleTypesMustAlsoBeImmutable_does_not_work_with_separate_provided_calls() throws Exception {
+        assertInstancesOf(DependsOnManyTypesBeingImmutable.class, 
+                          areImmutable(),
+                          provided(AbstractType.class).isAlsoImmutable(),
+                          provided(InterfaceType.class).isAlsoImmutable());
+    }
+
 }
