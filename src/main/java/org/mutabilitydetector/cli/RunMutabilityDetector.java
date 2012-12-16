@@ -100,6 +100,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         Configuration configuration = new ConfigurationBuilder() {
             @Override
             public void configure() {
+                mergeHardcodedResultsFrom(OUT_OF_THE_BOX_CONFIGURATION);
                 setExceptionPolicy(options.failFast() ? FAIL_FAST : CARRY_ON);
             }
         }.build(); 
