@@ -46,7 +46,7 @@ import com.google.common.collect.Sets;
  *     hardcodeAsDefinitelyImmutable(SomeClass.class);
  *     setExceptionPolicy(ExceptionPolicy.CARRY_ON);
  *     
- *     mergeHardcodedResultsFrom(ConfigurationBuilder.JDK);
+ *     mergeHardcodedResultsFrom(ConfigurationBuilder.DEFAULT_CONFIGURATION);
  *   }
  * });
  * </code>
@@ -58,12 +58,56 @@ import com.google.common.collect.Sets;
  * java.lang.Integer (and other primitive wrapper types) and
  * java.math.BigDecimal.
  * 
- * @see ConfigurationBuilder#JDK
+ * @see ConfigurationBuilder#JDK_CONFIGURATION
  * 
  */
 @NotThreadSafe
 public abstract class ConfigurationBuilder {
     
+    /**
+     * Subclasses should override this method to configure mutability assertions.
+     * <p>
+     * It is recommended that any custom {@link Configuration}'s merge with the {@link #OUT_OF_THE_BOX_CONFIGURATION} in order to remain consistent with {@link MutabilityAssert}. For example:
+     * 
+     * <pre>
+     * <code>
+     * MutabilityAsserter myAsserter = MutabilityAsserter.configured(new ConfigurationBuilder() {
+     *   &#064;Override public void configure() {
+     *     mergeHardcodedResultsFrom(ConfigurationBuilder.OUT_OF_THE_BOX_CONFIGURATION);
+     *   }
+     * });
+     * </code>
+     * </pre>
+     * 
+     * The available configuration methods are listed below.
+     * 
+     * @see #hardcodeResult(AnalysisResult)
+     * @see #hardcodeResults(AnalysisResult...)
+     * @see #hardcodeResults(Iterable)
+     * @see #hardcodeAsDefinitelyImmutable(Class)
+     * @see #hardcodeAsDefinitelyImmutable(String)
+     * 
+     * @see #mergeHardcodedResultsFrom(Configuration)
+     * 
+     * @see #setExceptionPolicy(ExceptionPolicy)
+     * 
+     * @see #OUT_OF_THE_BOX_CONFIGURATION
+     */
+    public abstract void configure();
+    
+    private static final Equivalence<AnalysisResult> CLASSNAME_EQUIVALENCE = Equivalences.equals().onResultOf(AnalysisResult.TO_CLASSNAME);
+
+    private static final Function<AnalysisResult, Wrapper<AnalysisResult>> TO_CLASSNAME_EQUIVALENCE_WRAPPER = 
+        new Function<AnalysisResult, Wrapper<AnalysisResult>>() {
+            @Override public Wrapper<AnalysisResult> apply(AnalysisResult input) {
+                return CLASSNAME_EQUIVALENCE.wrap(input);
+            }
+    };
+
+    private Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
+        @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
+    };
+
     /**
      * Non-exhaustive list of immutable classes from the standard JDK.
      * 
@@ -80,7 +124,7 @@ public abstract class ConfigurationBuilder {
      * @see BigDecimal
      * @see BigInteger
      */
-    public static final Configuration JDK = new ConfigurationBuilder() {
+    public static final Configuration JDK_CONFIGURATION = new ConfigurationBuilder() {
         @Override
         public void configure() {
             hardcodeAsDefinitelyImmutable(String.class);
@@ -106,26 +150,26 @@ public abstract class ConfigurationBuilder {
     }.build();
 
     private static final ExceptionPolicy DEFAULT_EXCEPTION_POLICY = ExceptionPolicy.FAIL_FAST;
-
-
     
     /**
-     * Subclasses should override this method to configure mutability assertions.
+     * Configuration with default settings and the standard hardcoded results.
+     * <p>
+     * As of version 0.9 the default configuration differs from
+     * {@link #NO_CONFIGURATION} only in that it merges in the hardcoded results
+     * from {@link #JDK_CONFIGURATION}.
+     * <p>
+     * It is recommended that this configuration is merged into any custom
+     * Configuration, in order to remain consistent with
+     * {@link MutabilityAssert}.
      * 
-     * The available configuration methods are listed below.
-     * 
-     * @see #hardcodeResult(AnalysisResult)
-     * @see #hardcodeResults(AnalysisResult...)
-     * @see #hardcodeResults(Iterable)
-     * @see #hardcodeAsDefinitelyImmutable(Class)
-     * @see #hardcodeAsDefinitelyImmutable(String)
-     * 
-     * @see #mergeHardcodedResultsFrom(Configuration)
-     * 
-     * @see #setExceptionPolicy(ExceptionPolicy)
+     * @since 0.9
      */
-    public abstract void configure();
-    
+    public static final Configuration OUT_OF_THE_BOX_CONFIGURATION = new ConfigurationBuilder() {
+        @Override public void configure() {
+            mergeHardcodedResultsFrom(JDK_CONFIGURATION);
+        }
+    }.build();
+
     public final Configuration build() {
         configure();
         return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy);
@@ -135,6 +179,44 @@ public abstract class ConfigurationBuilder {
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
     
     
+    /**
+     * Configures how Mutability Detector's analysis should respond to
+     * exceptions during analysis.
+     * <p>
+     * During analysis, an exception may occur which is recoverable. That is,
+     * Mutability Detector is able to continue it's analysis, and <b>may</b>
+     * produce valid results.
+     * <p>
+     * The default behaviour is to use {@link ExceptionPolicy#FAIL_FAST},
+     * meaning any unhandled exceptions will propogate up past the assertion,
+     * and cause a failing test.
+     * <p>
+     * Setting this configuration flag to {@link ExceptionPolicy#CARRY_ON} may
+     * allow unit tests to function where exceptions don't necessarily preclude
+     * a useful output. For example, consider a class which you wish to make
+     * immutable; a test for that class fails with an unhandled exception. If
+     * that test has, say 10 reasons for mutability, and 1 of those causes the
+     * test to abort with an exception, you have just lost out on 90% of the
+     * required information. {@link ExceptionPolicy#CARRY_ON} will allow the
+     * test to report 9 out of 10 reasons. The test may be useful, although it
+     * won't be comprehensive.
+     * <p>
+     * 
+     * If you are unlucky enough to have a test which results in an exception,
+     * please report it to the Mutability Detector project, at the <a
+     * href="https
+     * ://github.com/MutabilityDetector/MutabilityDetector/issues">project
+     * homepage</a>.
+     * 
+     * 
+     * @param exceptionPolicy
+     *            - how to respond to exceptions during analysis. Defaults to
+     *            {@link ExceptionPolicy#FAIL_FAST}
+     */
+    protected final void setExceptionPolicy(ExceptionPolicy exceptionPolicy) {
+        this.exceptionPolicy = exceptionPolicy;
+    }
+
     /**
      * Add a predefined result used during analysis.
      *
@@ -222,57 +304,6 @@ public abstract class ConfigurationBuilder {
         Set<AnalysisResult> result = copyOf(transform(union, UNWRAP));
         
         hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
-    }
-
-    private static final Equivalence<AnalysisResult> CLASSNAME_EQUIVALENCE = Equivalences.equals().onResultOf(AnalysisResult.TO_CLASSNAME);
-
-    private static final Function<AnalysisResult, Wrapper<AnalysisResult>> TO_CLASSNAME_EQUIVALENCE_WRAPPER = 
-        new Function<AnalysisResult, Wrapper<AnalysisResult>>() {
-            @Override public Wrapper<AnalysisResult> apply(AnalysisResult input) {
-                return CLASSNAME_EQUIVALENCE.wrap(input);
-            }
-    };
-    
-    private Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
-        @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
-    };
-    
-    /**
-     * Configures how Mutability Detector's analysis should respond to
-     * exceptions during analysis.
-     * <p>
-     * During analysis, an exception may occur which is recoverable. That is,
-     * Mutability Detector is able to continue it's analysis, and <b>may</b>
-     * produce valid results.
-     * <p>
-     * The default behaviour is to use {@link ExceptionPolicy#FAIL_FAST},
-     * meaning any unhandled exceptions will propogate up past the assertion,
-     * and cause a failing test.
-     * <p>
-     * Setting this configuration flag to {@link ExceptionPolicy#CARRY_ON} may
-     * allow unit tests to function where exceptions don't necessarily preclude
-     * a useful output. For example, consider a class which you wish to make
-     * immutable; a test for that class fails with an unhandled exception. If
-     * that test has, say 10 reasons for mutability, and 1 of those causes the
-     * test to abort with an exception, you have just lost out on 90% of the
-     * required information. {@link ExceptionPolicy#CARRY_ON} will allow the
-     * test to report 9 out of 10 reasons. The test may be useful, although it
-     * won't be comprehensive.
-     * <p>
-     * 
-     * If you are unlucky enough to have a test which results in an exception,
-     * please report it to the Mutability Detector project, at the <a
-     * href="https
-     * ://github.com/MutabilityDetector/MutabilityDetector/issues">project
-     * homepage</a>.
-     * 
-     * 
-     * @param exceptionPolicy
-     *            - how to respond to exceptions during analysis. Defaults to
-     *            {@link ExceptionPolicy#FAIL_FAST}
-     */
-    protected final void setExceptionPolicy(ExceptionPolicy exceptionPolicy) {
-        this.exceptionPolicy = exceptionPolicy;
     }
     
 
