@@ -32,7 +32,7 @@ import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @SuppressWarnings("unused")
-public class AssumingTheFieldsTest {
+public class AssumingFieldsTest {
 
     
     private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(testAnalysisSession(), OUT_OF_THE_BOX_CONFIGURATION);
@@ -47,35 +47,35 @@ public class AssumingTheFieldsTest {
     public void matchesWhenGivenFieldNameIsLinkedToMutableTypeToFieldReason() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableTypeToFieldChecker, MutableFieldUsedSafely.class);
         
-        assertThat(reason, AssumingTheFields.named("myPrivateMap").areNotModified());
+        assertThat(reason, AssumingFields.named("myPrivateMap").areNotModifiedAndDoNotEscape());
     }
 
     @Test
     public void doesNotMatchWhenGivenIncorrectFieldName() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableTypeToFieldChecker, MutableFieldUsedSafely.class);
         
-        assertThat(reason, not(AssumingTheFields.named("myPrivateMapNOTCALLEDTHIS").areNotModified()));
+        assertThat(reason, not(AssumingFields.named("myPrivateMapNOTCALLEDTHIS").areNotModifiedAndDoNotEscape()));
     }
     
     @Test
     public void matchesWhenFieldIsACollectionTypeWithAMutableElementType() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableElementTypeChecker, UsesMutableElementOfCollectionSafely.class);
         
-        assertThat(reason, AssumingTheFields.named("dates").areNotModified());
+        assertThat(reason, AssumingFields.named("dates").areNotModifiedAndDoNotEscape());
     }
 
     @Test
     public void doesNotMatchForReasonWhereUnsafeToAssumeNotModifyingTheFieldLocally() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(new PublishedNonFinalFieldChecker(), MutableForIrrelevantReason.class);
         
-        assertThat(reason, not(AssumingTheFields.named("reassignMe").areNotModified()));
+        assertThat(reason, not(AssumingFields.named("reassignMe").areNotModifiedAndDoNotEscape()));
     }
 
     @Test
     public void doesNotMatchForReasonWhichDoesNotOriginateFromAField() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(new CanSubclassChecker(), CanSubclass.class);
         
-        assertThat(reason, not(AssumingTheFields.named("mutabilityIsNothingToDoWithThisField").areNotModified()));
+        assertThat(reason, not(AssumingFields.named("mutabilityIsNothingToDoWithThisField").areNotModifiedAndDoNotEscape()));
     }
 
     private MutableReasonDetail getOnlyReasonFromRunningChecker(AsmMutabilityChecker mutabilityChecker, Class<?> toAnalyse) {

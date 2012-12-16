@@ -15,23 +15,23 @@ import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.FieldLocation;
 
-public final class AssumingTheFields  {
+public final class AssumingFields  {
     
     private final Set<String> fieldNames;
 
-    private AssumingTheFields(Set<String> fieldNames) {
+    private AssumingFields(Set<String> fieldNames) {
         this.fieldNames = fieldNames;
     }
     
-    public static AssumingTheFields named(String first, String... rest) {
-        return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
+    public static AssumingFields named(String first, String... rest) {
+        return new AssumingFields(copyOf(concat(asList(first), asList(rest))));
     }
 
-    public static AssumingTheFields assumingFieldsNamed(String first, String... rest) {
-        return new AssumingTheFields(copyOf(concat(asList(first), asList(rest))));
+    public static AssumingFields assumingFieldsNamed(String first, String... rest) {
+        return new AssumingFields(copyOf(concat(asList(first), asList(rest))));
     }
     
-    public Matcher<MutableReasonDetail> areNotModified() {
+    public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
         return isMutableFieldWithName();
     }
     
