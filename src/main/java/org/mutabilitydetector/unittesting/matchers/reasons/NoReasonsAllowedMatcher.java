@@ -17,15 +17,15 @@
 
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
+import static org.hamcrest.core.IsAnything.anything;
 import static org.hamcrest.core.IsNot.not;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.core.IsAnything;
 import org.mutabilitydetector.MutableReasonDetail;
 
 public class NoReasonsAllowedMatcher extends BaseMutableReasonDetailMatcher {
-    private final Matcher<MutableReasonDetail> nothingEver = not(IsAnything.<MutableReasonDetail> anything());
+    private final Matcher<Object> nothingEver = not(anything());
 
     /**
      * Prefer {@link #noReasonsAllowed()}
