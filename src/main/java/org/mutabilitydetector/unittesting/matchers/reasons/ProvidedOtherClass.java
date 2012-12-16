@@ -47,8 +47,8 @@ public class ProvidedOtherClass {
         return provided(singleton(className));
     }
     
-    public static ProvidedOtherClass provided(Dotted className, Dotted... moreClassNames) {
-        return provided(asList(className));
+    public static ProvidedOtherClass provided(Dotted... classNames) {
+        return provided(asList(classNames));
     }
 
     public static ProvidedOtherClass provided(Iterable<Dotted> classNames) {
@@ -59,6 +59,10 @@ public class ProvidedOtherClass {
         final Matcher<MutableReasonDetail> allowGenericTypes = new AllowedIfOtherClassIsGenericTypeOfCollectionField(dottedClassNames);
         
         return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, toMatcher())));
+    }
+
+    public Matcher<MutableReasonDetail> areAlsoImmutable() {
+        return isAlsoImmutable();
     }
 
     private static final Function<Dotted, Matcher<? super MutableReasonDetail>> toMatcher() {
