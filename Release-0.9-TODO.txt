@@ -1,5 +1,6 @@
 X Modify ProvidedOtherClass allowed reason to account for mutable element types of collections
-- Merge AssumingTheFields allowed reasons from ThreeTen test
+X Merge AssumingTheFields allowed reasons from ThreeTen test
+- Merge AssumingTheArrayFields allowed reasons from ThreeTen test
 - Merge AssumeCopiedIntoUnmodifiable allowed reason from issue 25 
 X Javadoc for ConfigurationBuilder 
 X Set JDK as default configuration

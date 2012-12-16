@@ -27,6 +27,7 @@ import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
+import org.mutabilitydetector.unittesting.matchers.reasons.AssumingTheFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
 
@@ -52,6 +53,7 @@ import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
  * @see ProvidedOtherClass
  * @see AllowingForSubclassing
  * @see AllowingNonFinalFields
+ * @see AssumingTheFields
  * @see NoReasonsAllowed
  * 
  */
@@ -77,6 +79,10 @@ public final class AllowedReason {
 
     public static AllowingNonFinalFields allowingNonFinalFields() {
         return new AllowingNonFinalFields();
+    }
+    
+    public static AssumingTheFields assumingTheFieldsNamed(String first, String... rest) {
+        return AssumingTheFields.named(first, rest);
     }
 
     public static NoReasonsAllowed noReasonsAllowed() {
