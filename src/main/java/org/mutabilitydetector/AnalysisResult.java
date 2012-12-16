@@ -43,7 +43,7 @@ public final class AnalysisResult {
     private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         this.dottedClassName = dottedClassName;
         this.isImmutable = isImmutable;
-        this.reasons = Collections.unmodifiableCollection(new ArrayList<MutableReasonDetail>(reasons));
+        this.reasons = Collections.unmodifiableList(new ArrayList<MutableReasonDetail>(reasons));
         
         this.hashCode = Objects.hashCode(dottedClassName, isImmutable, reasons);
     }
