@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
-import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 
 import org.junit.Test;
@@ -32,13 +31,6 @@ public class AllowingForSubclassingTest {
 
     private final CodeLocation<?> unusedCodeLocation = TestUtil.unusedCodeLocation();
     private final String unusedClassName = "";
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void matchesCheckerReasonDetailWithReasonOfNotDeclaredFinal() throws Exception {
-        AllowingForSubclassing matcher = new AllowingForSubclassing();
-        assertTrue(matcher.matches(newMutableReasonDetail(unusedClassName, unusedCodeLocation, NOT_DECLARED_FINAL)));
-    }
 
     @Test
     public void matchesCheckerReasonDetailWithReasonOfBeingSubclassable() throws Exception {

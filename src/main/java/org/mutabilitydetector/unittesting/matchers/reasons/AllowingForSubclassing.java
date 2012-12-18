@@ -18,7 +18,6 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
-import static org.mutabilitydetector.MutabilityReason.NOT_DECLARED_FINAL;
 
 import org.hamcrest.Description;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -30,11 +29,9 @@ public class AllowingForSubclassing extends BaseMutableReasonDetailMatcher {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected boolean matchesSafely(MutableReasonDetail checkerReasonDetail, Description mismatchDescription) {
         return checkerReasonDetail.reason().isOneOf(CAN_BE_SUBCLASSED, 
-                                                    NOT_DECLARED_FINAL, 
                                                     ABSTRACT_TYPE_INHERENTLY_MUTABLE);
     }
 
