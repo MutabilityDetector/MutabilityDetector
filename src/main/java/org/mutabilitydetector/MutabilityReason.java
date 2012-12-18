@@ -44,7 +44,7 @@ public enum MutabilityReason implements Reason {
     /**
      * 
      */
-    ABSTRACT_COLLECTION_TYPE_TO_FIELD("JDK collection types are defined to be mutable (they're interfaces declare mutation methods). Assigning a collection type to " +
+    ABSTRACT_COLLECTION_TYPE_TO_FIELD("JDK collection types are defined to be mutable (their interfaces declare mutation methods). Assigning a collection type to " +
             "a field is similar to assigning abstract type, except that there is a common idiom which can be used to guarantee the collection is not mutated. " +
             "That is to copy the collection and wrap in an unmodifiable collection, using one of wrapping methods on java.util.Collections, e.g. unmodifiableList. Unless that idiom is " +
             "used, the field is considered mutable.   ", 
