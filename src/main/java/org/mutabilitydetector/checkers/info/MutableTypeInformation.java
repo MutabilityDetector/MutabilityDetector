@@ -63,10 +63,6 @@ public final class MutableTypeInformation {
         return Optional.fromNullable(analysisSession.resultsByClass().get(fieldClass));
     }
     
-    public int levelsDeep() {
-        return visited.size();
-    }
-    
     private final static class KnownCircularReferences {
         private final Set<Dotted> knownCyclicReferenceClass = newSetFromMap(new ConcurrentHashMap<Dotted, Boolean>());
 
