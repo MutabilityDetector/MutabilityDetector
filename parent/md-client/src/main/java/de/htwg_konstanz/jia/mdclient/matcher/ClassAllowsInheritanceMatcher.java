@@ -26,11 +26,11 @@ final class ClassAllowsInheritanceMatcher extends TypeSafeMatcher<ParentAwareMut
                 && isExpectedMessage(mutableReasonDetail.message());
     }
 
-    private boolean isExpectedReason(final Reason reason) {
+    private static boolean isExpectedReason(final Reason reason) {
         return MutabilityReason.CAN_BE_SUBCLASSED == reason;
     }
 
-    private boolean isExpectedMessage(final String actualMessage) {
+    private static boolean isExpectedMessage(final String actualMessage) {
         final StringBuilder expectedMessage = new StringBuilder();
         expectedMessage.append("Can be subclassed, therefore parameters declared to be this type ");
         expectedMessage.append("could be mutable subclasses at runtime.");
