@@ -11,7 +11,6 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.locations.Dotted;
 
 public class UnhandledExceptionBuilderTest {

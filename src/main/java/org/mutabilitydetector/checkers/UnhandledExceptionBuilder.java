@@ -1,9 +1,8 @@
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import static java.lang.String.format;
 
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class UnhandledExceptionBuilder {

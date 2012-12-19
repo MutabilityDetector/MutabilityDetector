@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -30,6 +30,9 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;

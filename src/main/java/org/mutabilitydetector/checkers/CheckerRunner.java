@@ -24,7 +24,6 @@ import java.io.InputStream;
 
 import org.mutabilitydetector.AnalysisErrorReporter;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
