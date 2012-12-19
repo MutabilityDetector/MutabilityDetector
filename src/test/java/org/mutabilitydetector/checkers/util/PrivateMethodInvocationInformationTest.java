@@ -19,15 +19,15 @@ package org.mutabilitydetector.checkers.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
+import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 

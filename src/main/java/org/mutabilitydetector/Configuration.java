@@ -2,7 +2,7 @@ package org.mutabilitydetector;
 
 import java.util.Map;
 
-import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 

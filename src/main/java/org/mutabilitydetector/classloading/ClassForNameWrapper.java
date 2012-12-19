@@ -1,4 +1,5 @@
-package org.mutabilitydetector;
+package org.mutabilitydetector.classloading;
+
 
 public final class ClassForNameWrapper implements AnalysisClassLoader {
 

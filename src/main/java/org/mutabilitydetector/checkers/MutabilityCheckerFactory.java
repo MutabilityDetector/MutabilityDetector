@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
@@ -25,15 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.CanSubclassChecker;
-import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
-import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
-import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
-import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
-import org.mutabilitydetector.checkers.NonFinalFieldChecker;
-import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 

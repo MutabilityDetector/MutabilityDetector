@@ -14,11 +14,11 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
 import com.google.classpath.ClassPath;
 

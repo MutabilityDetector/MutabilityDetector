@@ -24,15 +24,16 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import java.util.Collections;
 
 import org.junit.Test;
-import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
 public class CheckerRunnerTest {
 

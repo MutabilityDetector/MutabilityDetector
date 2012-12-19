@@ -27,10 +27,16 @@ import java.util.Map;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.checkers.AllChecksRunner;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
+import org.mutabilitydetector.checkers.CheckerRunnerFactory;
+import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
+import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;

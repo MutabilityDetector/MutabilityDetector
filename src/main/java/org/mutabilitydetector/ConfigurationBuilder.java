@@ -12,7 +12,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 

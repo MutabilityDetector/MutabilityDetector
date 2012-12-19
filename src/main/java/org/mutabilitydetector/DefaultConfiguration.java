@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.mutabilitydetector.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.collect.ImmutableSet;

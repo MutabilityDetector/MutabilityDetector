@@ -19,9 +19,9 @@ package org.mutabilitydetector.checkers.info;
 
 import org.mutabilitydetector.AnalysisErrorReporter;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.CheckerRunner;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
+import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.locations.ClassIdentifier;
 
 public class SessionCheckerRunner implements AsmSessionCheckerRunner {

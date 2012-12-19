@@ -14,7 +14,7 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import static com.google.common.collect.Iterables.addAll;
 import static com.google.common.collect.Lists.newArrayList;
@@ -23,10 +23,12 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.util.Collection;
 import java.util.Map;
 
+import org.mutabilitydetector.AnalysisErrorReporter;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
-import org.mutabilitydetector.checkers.ResultCalculator;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;

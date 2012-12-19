@@ -14,17 +14,18 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
 
 import static java.lang.String.format;
-import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.mutabilitydetector.AnalysisErrorReporter;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 

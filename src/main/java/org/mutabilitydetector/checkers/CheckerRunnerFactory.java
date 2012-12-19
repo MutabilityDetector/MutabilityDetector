@@ -14,7 +14,8 @@
  *   limitations under the License.
  *
  */
-package org.mutabilitydetector;
+package org.mutabilitydetector.checkers;
+
 
 public interface CheckerRunnerFactory {
 

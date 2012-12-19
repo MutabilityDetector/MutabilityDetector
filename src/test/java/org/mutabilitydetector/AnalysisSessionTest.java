@@ -23,6 +23,10 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.checkers.AllChecksRunner;
+import org.mutabilitydetector.checkers.CheckerRunnerFactory;
+import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
