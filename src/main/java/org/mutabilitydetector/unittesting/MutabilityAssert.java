@@ -17,7 +17,7 @@
 
 package org.mutabilitydetector.unittesting;
 
-import static org.mutabilitydetector.ConfigurationBuilder.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
 
 import java.util.Collections;
 import java.util.List;

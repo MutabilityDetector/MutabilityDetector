@@ -3,7 +3,7 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mutabilitydetector.ConfigurationBuilder.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testAnalysisSession;

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
@@ -48,7 +49,6 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
@@ -89,7 +89,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         return new MutableTypeToFieldChecker(
                 info, 
-                new MutableTypeInformation(testAnalysisSession(), ConfigurationBuilder.NO_CONFIGURATION), 
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
 
@@ -100,7 +100,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checkerWithMockedSession = new MutableTypeToFieldChecker(
                 info, 
-                new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION), 
+                new MutableTypeInformation(session, NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
     
@@ -111,7 +111,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo, 
-                new MutableTypeInformation(testAnalysisSession(), ConfigurationBuilder.NO_CONFIGURATION), 
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
 

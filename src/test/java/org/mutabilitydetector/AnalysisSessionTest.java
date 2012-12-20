@@ -40,7 +40,7 @@ public class AnalysisSessionTest {
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
-        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, ConfigurationBuilder.NO_CONFIGURATION);
+        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, Configurations.NO_CONFIGURATION);
 
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
                 checkerRunnerFactory, 

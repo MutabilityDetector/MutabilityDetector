@@ -13,7 +13,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmuta
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.NestedGenericTypes;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
@@ -25,7 +25,7 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
     private MutableTypeInformation mutableTypeInfo = 
-            new MutableTypeInformation(testAnalysisSession(), ConfigurationBuilder.NO_CONFIGURATION);
+            new MutableTypeInformation(testAnalysisSession(), Configurations.NO_CONFIGURATION);
     
     private final AsmMutabilityChecker checker = 
             new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());

@@ -23,7 +23,7 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTU
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
@@ -51,7 +51,7 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(
                 information, 
-                new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION), 
+                new MutableTypeInformation(session, Configurations.NO_CONFIGURATION), 
                 testingVerifierFactory());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);

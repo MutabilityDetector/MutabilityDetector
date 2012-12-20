@@ -18,6 +18,7 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
+import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.CARRY_ON;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;

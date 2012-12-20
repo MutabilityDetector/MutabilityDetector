@@ -6,7 +6,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Test;
-import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.benchmarks.circular.MultipleCircularAssignments.B;
 import org.mutabilitydetector.benchmarks.circular.OuterClassWithInnerClassAsField.Inner;
 import org.mutabilitydetector.benchmarks.inheritance.ImmutableSupertype;
@@ -15,7 +15,7 @@ import org.mutabilitydetector.unittesting.MutabilityAsserter;
 public class CircularReferenceAnalysisTest {
     
     
-    private static final MutabilityAsserter asserter = configured(ConfigurationBuilder.NO_CONFIGURATION);
+    private static final MutabilityAsserter asserter = configured(Configurations.NO_CONFIGURATION);
     
     private boolean classExistsInHostJdk(String className) {
         try {
