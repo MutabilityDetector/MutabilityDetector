@@ -8,9 +8,7 @@ import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
 import java.util.Set;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.FieldLocation;
@@ -39,12 +37,10 @@ public final class AssumingFields  {
         return isMutableFieldWithName();
     }
 
-    private TypeSafeDiagnosingMatcher<MutableReasonDetail> isMutableFieldWithName() {
-        return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
-            @Override public void describeTo(Description description) { }
-
+    private Matcher<MutableReasonDetail> isMutableFieldWithName() {
+        return new BaseMutableReasonDetailMatcher() {
             @Override
-            protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
+            protected boolean matchesSafely(MutableReasonDetail item) {
                 CodeLocation<?> locationOfMutability = item.codeLocation();
                 if (locationOfMutability instanceof FieldLocation) {
                     return item.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)

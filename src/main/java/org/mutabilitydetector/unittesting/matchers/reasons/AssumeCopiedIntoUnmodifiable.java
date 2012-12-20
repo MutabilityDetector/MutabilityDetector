@@ -4,13 +4,11 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_T
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.FieldLocation;
 
-public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetail> {
+public class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
 
     public static class Assuming {
         private final String fieldName;
@@ -34,11 +32,7 @@ public class AssumeCopiedIntoUnmodifiable extends BaseMatcher<MutableReasonDetai
     }
     
     @Override
-    public void describeTo(Description description) { }
-
-    @Override
-    public boolean matches(Object arg0) {
-        MutableReasonDetail reasonDetail = (MutableReasonDetail) arg0;
+    public boolean matchesSafely(MutableReasonDetail reasonDetail) {
         if (reasonDetail.reason().isOneOf(ABSTRACT_COLLECTION_TYPE_TO_FIELD, 
                                           ABSTRACT_TYPE_TO_FIELD, 
                                           COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)) {

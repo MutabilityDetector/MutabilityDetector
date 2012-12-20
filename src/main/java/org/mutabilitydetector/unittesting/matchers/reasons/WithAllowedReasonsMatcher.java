@@ -63,8 +63,8 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     private AnalysisResult checkIsValidToMatchOn(Object item) {
         if (item == null || !(item instanceof AnalysisResult)) {
             throw new IllegalArgumentException(
-               "Trying to pass " + item + "where an " + AnalysisResult.class.getSimpleName() + "is required. " +
-               "This is probably a programmer error, not your fault. Please file an issue.");
+               "Trying to pass " + item + " where an " + AnalysisResult.class.getSimpleName() + " is required. " +
+               "This is probably a programmer error, not your fault. Please file an issue. ");
         } else {
             return (AnalysisResult) item;
         }

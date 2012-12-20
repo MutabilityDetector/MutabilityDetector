@@ -4,9 +4,7 @@ import static java.util.Arrays.asList;
 import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.FieldLocation;
 
@@ -25,12 +23,9 @@ public class AssumingArrayFields {
     }
     
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
-        return new TypeSafeDiagnosingMatcher<MutableReasonDetail>() {
-
-            @Override public void describeTo(Description description) { }
-
+        return new BaseMutableReasonDetailMatcher() {
             @Override
-            protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
+            protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
                 if (reasonDetail.codeLocation() instanceof FieldLocation) {
                     return reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, ARRAY_TYPE_INHERENTLY_MUTABLE)
                             && fieldNames.contains(((FieldLocation)reasonDetail.codeLocation()).fieldName());

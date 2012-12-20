@@ -20,7 +20,6 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static org.hamcrest.core.IsAnything.anything;
 import static org.hamcrest.core.IsNot.not;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 
@@ -32,12 +31,7 @@ public class NoReasonsAllowed extends BaseMutableReasonDetailMatcher {
     }
 
     @Override
-    public void describeTo(Description description) {
-        nothingEver.describeTo(description);
-    }
-
-    @Override
-    protected boolean matchesSafely(MutableReasonDetail item, Description mismatchDescription) {
+    protected boolean matchesSafely(MutableReasonDetail item) {
         return nothingEver.matches(item);
     }
 }

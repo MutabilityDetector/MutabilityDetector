@@ -73,7 +73,7 @@ public class ProvidedOtherClass {
         };
     }
 
-    private static final class AllowedIfOtherClassIsImmutable extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
+    private static final class AllowedIfOtherClassIsImmutable extends BaseMutableReasonDetailMatcher {
 
         private final Dotted className;
 
@@ -82,12 +82,7 @@ public class ProvidedOtherClass {
         }
 
         @Override
-        public void describeTo(Description description) {
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-
-        @Override
-        protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
+        protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
             return isAssignedField(reasonDetail);
         }
 
@@ -139,7 +134,7 @@ public class ProvidedOtherClass {
             
             String[] genericsTypesDescription = generics.contains(", ") 
                     ? generics.split(", ")
-                    : new String[] { generics };        
+                    : new String[] { generics };
             
             for (String genericType : genericsTypesDescription) {
                 if (!Iterables.contains(classNames, Dotted.dotted(genericType))) {
