@@ -7,11 +7,17 @@ import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
 import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import java.util.Map;
 
 import org.junit.Test;
 import org.mutabilitydetector.locations.Dotted;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 public class ConfigurationBuilderTest {
 
@@ -60,5 +66,16 @@ public class ConfigurationBuilderTest {
         assertThat(hardcodedResults, hasEntry(dotted("hardcoded.in.both.Configurations"), resultInCurrentConfig));
         assertThat(hardcodedResults, hasEntry(dotted("only.in.existing.Configuration"), definitelyImmutable("only.in.existing.Configuration")));
         assertThat(hardcodedResults, hasEntry(dotted("only.in.current.Configuration"), definitelyImmutable("only.in.current.Configuration")));
+    }
+    
+    @Test
+    public void builtConfigurationsAreImmutable() throws Exception {
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder() {
+            @Override public void configure() { }
+        };
+
+        assertInstancesOf(configurationBuilder.build().getClass(), 
+                          areImmutable(),
+                          provided(ImmutableSet.class, ImmutableMap.class).isAlsoImmutable());
     }
 }

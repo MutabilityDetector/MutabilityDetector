@@ -6,12 +6,15 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.locations.ClassNameConverter;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 import com.google.common.base.Equivalence;
@@ -19,6 +22,7 @@ import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -113,7 +117,7 @@ public abstract class ConfigurationBuilder {
     
     public final Configuration build() {
         configure();
-        return Configurations.from(hardcodedResults.build(), exceptionPolicy);
+        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
@@ -259,5 +263,29 @@ public abstract class ConfigurationBuilder {
         hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
     }
     
+    @Immutable
+    private static final class DefaultConfiguration implements Configuration {
+
+        private final Set<AnalysisResult> hardcodedResults;
+        private final Map<Dotted, AnalysisResult> resultsByClassname;
+        private final ExceptionPolicy exceptionPolicy;
+
+        private DefaultConfiguration(Set<AnalysisResult> predefinedResults, ExceptionPolicy exceptionPolicy) {
+            this.exceptionPolicy = exceptionPolicy;
+            this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
+            this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
+        }
+
+        @Override
+        public Map<Dotted, AnalysisResult> hardcodedResults() {
+            return resultsByClassname;
+        }
+        
+        @Override
+        public ExceptionPolicy exceptionPolicy() {
+            return exceptionPolicy;
+        }
+        
+    }
 
 }
