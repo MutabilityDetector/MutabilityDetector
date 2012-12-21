@@ -98,7 +98,7 @@ public class ProvidedOtherClass {
         }
 
     }
-    
+
     private static final class AllowedIfOtherClassIsGenericTypeOfCollectionField extends BaseMutableReasonDetailMatcher {
         
         private final Iterable<Dotted> classNames;

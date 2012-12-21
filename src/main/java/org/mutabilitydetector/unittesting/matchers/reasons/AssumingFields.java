@@ -3,14 +3,18 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Iterables.concat;
 import static java.util.Arrays.asList;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
 import java.util.Set;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.FieldLocation;
 
 public final class AssumingFields  {
@@ -21,35 +25,52 @@ public final class AssumingFields  {
         this.fieldNames = fieldNames;
     }
     
-    public static AssumingFields named(String first, String... rest) {
-        return new AssumingFields(copyOf(concat(asList(first), asList(rest))));
+    public static AssumingFields named(String firstFieldName, String... otherFieldNames) {
+        return named(concat(asList(firstFieldName), asList(otherFieldNames)));
     }
 
-    public static AssumingFields assumingFieldsNamed(String first, String... rest) {
-        return new AssumingFields(copyOf(concat(asList(first), asList(rest))));
+    public static AssumingFields named(Iterable<String> fieldNames) {
+        return new AssumingFields(copyOf(fieldNames));
     }
-    
+
+    public Matcher<MutableReasonDetail> isSafelyCopiedUnmodifiableCollectionWithImmutableTypes() {
+        return new AssumeCopiedIntoUnmodifiable();
+    }
+
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
-        return isMutableFieldWithName();
+        return new MutableFieldMatcher();
     }
     
     public Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
-        return isMutableFieldWithName();
+        return new MutableFieldMatcher();
     }
+    
+    private class FieldLocationWithNameMatcher extends TypeSafeMatcher<FieldLocation> {
+        @Override public void describeTo(Description description) { }
 
-    private Matcher<MutableReasonDetail> isMutableFieldWithName() {
-        return new BaseMutableReasonDetailMatcher() {
-            @Override
-            protected boolean matchesSafely(MutableReasonDetail item) {
-                CodeLocation<?> locationOfMutability = item.codeLocation();
-                if (locationOfMutability instanceof FieldLocation) {
-                    return item.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)
-                            && fieldNames.contains(((FieldLocation)locationOfMutability).fieldName());
-                } else {
-                    return false;
-                }
-            }
-
-        };
+        @Override
+        protected boolean matchesSafely(FieldLocation locationOfMutability) {
+            return fieldNames.contains(locationOfMutability.fieldName());
+        }
+        
+    }
+    
+    private class MutableFieldMatcher extends BaseMutableReasonDetailMatcher {
+        @Override protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
+            
+            return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
+                    && reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, 
+                                                     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE,
+                                                     ARRAY_TYPE_INHERENTLY_MUTABLE);
+        }
+    }
+    
+    private class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
+        @Override protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
+            return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
+                    && reasonDetail.reason().isOneOf(ABSTRACT_COLLECTION_TYPE_TO_FIELD, 
+                                                     ABSTRACT_TYPE_TO_FIELD, 
+                                                     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+        }
     }
 }

@@ -22,9 +22,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.unittesting.AllowedReason.assumingField;
 import static org.mutabilitydetector.unittesting.AllowedReason.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 
@@ -77,6 +80,17 @@ public class AllowedReasonTest {
         assertThat(AllowedReason.allowingNonFinalFields(), instanceOf(AllowingNonFinalFields.class));
     }
 
+    @Test
+    public void canAllowArrayFields() throws Exception {
+        MutableReasonDetail reason = newMutableReasonDetail("has array field",
+                                                            fieldLocation("myArrayField", fromInternalName("a/b/c")),
+                                                            ARRAY_TYPE_INHERENTLY_MUTABLE);
+        
+        assertThat(assumingField("myArrayField").areNotModifiedAndDoNotEscape(),
+                   allows(reason));
+
+    }
+    
     private static Matcher<Matcher<MutableReasonDetail>> allows(final MutableReasonDetail reason) {
         return new TypeSafeMatcher<Matcher<MutableReasonDetail>>() {
 
