@@ -25,9 +25,7 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.locations.Dotted;
@@ -101,7 +99,7 @@ public class ProvidedOtherClass {
 
     }
     
-    private static final class AllowedIfOtherClassIsGenericTypeOfCollectionField extends TypeSafeDiagnosingMatcher<MutableReasonDetail> {
+    private static final class AllowedIfOtherClassIsGenericTypeOfCollectionField extends BaseMutableReasonDetailMatcher {
         
         private final Iterable<Dotted> classNames;
         
@@ -110,12 +108,7 @@ public class ProvidedOtherClass {
         }
         
         @Override
-        public void describeTo(Description description) {
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-        
-        @Override
-        protected boolean matchesSafely(MutableReasonDetail reasonDetail, Description mismatchDescription) {
+        protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
             return allowedIfCollectionTypeWhereAllGenericElementsAreConsideredImmutable(reasonDetail);
         }
         
