@@ -18,22 +18,20 @@
 package org.mutabilitydetector.unittesting;
 
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.hamcrest.Matchers.not;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.unittesting.AllowedReason.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
-import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
@@ -46,8 +44,7 @@ public class AllowedReasonTest {
                 fromInternalName("a/b/c"),
                 ABSTRACT_TYPE_TO_FIELD);
 
-        Matcher<MutableReasonDetail> allowed = provided("a.b.c").isAlsoImmutable();
-        assertThat(allowed.matches(reason), is(true));
+        assertThat(provided("a.b.c").isAlsoImmutable(), allows(reason));
     }
 
     @Test
@@ -56,25 +53,23 @@ public class AllowedReasonTest {
                 fromInternalName("a/b/c"),
                 FIELD_CAN_BE_REASSIGNED);
 
-        Matcher<MutableReasonDetail> allowed = AllowedReason.provided("a.b.c").isAlsoImmutable();
-        assertThat(allowed.matches(reason), is(false));
+        assertThat(provided("a.b.c").isAlsoImmutable(), not(allows(reason)));
     }
 
     @Test
     public void providedMethodCanBeCalledWithClassObject() throws Exception {
         String message = format("assigning abstract type (%s) to field.", InterfaceType.class.getName());
         MutableReasonDetail reason = newMutableReasonDetail(message, fromInternalName("a/b/c"), ABSTRACT_TYPE_TO_FIELD);
-        Matcher<MutableReasonDetail> allowed = AllowedReason.provided(InterfaceType.class).isAlsoImmutable();
-
-        assertThat(allowed.matches(reason), is(true));
+        
+        assertThat(provided(InterfaceType.class).isAlsoImmutable(), allows(reason));
     }
 
     @Test
     public void noneAllowedMatcherReturnsFalseForAnyReason() throws Exception {
-        AnalysisResult result = analysisResult("any", NOT_IMMUTABLE, unusedMutableReasonDetail());
-        Matcher<MutableReasonDetail> nonAllowed = noReasonsAllowed();
-
-        assertThat(nonAllowed.matches(result), is(false));
+        MutableReasonDetail reason = newMutableReasonDetail("assigning abstract type (a.b.c)",
+                                                            fromInternalName("a/b/c"),
+                                                            ABSTRACT_TYPE_TO_FIELD);
+        assertThat(noReasonsAllowed(), not(allows(reason)));
     }
     
     @Test
@@ -82,4 +77,16 @@ public class AllowedReasonTest {
         assertThat(AllowedReason.allowingNonFinalFields(), instanceOf(AllowingNonFinalFields.class));
     }
 
+    private static Matcher<Matcher<MutableReasonDetail>> allows(final MutableReasonDetail reason) {
+        return new TypeSafeMatcher<Matcher<MutableReasonDetail>>() {
+
+            @Override public void describeTo(Description description) { }
+
+            @Override
+            protected boolean matchesSafely(Matcher<MutableReasonDetail> item) {
+                return item.matches(reason);
+            }
+            
+        };
+    }
 }
