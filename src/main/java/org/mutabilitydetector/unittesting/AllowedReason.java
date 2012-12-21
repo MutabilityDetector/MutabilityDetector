@@ -27,6 +27,7 @@ import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
+import org.mutabilitydetector.unittesting.matchers.reasons.AssumeCopiedIntoUnmodifiable;
 import org.mutabilitydetector.unittesting.matchers.reasons.AssumingArrayFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.AssumingFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
@@ -90,9 +91,12 @@ public final class AllowedReason {
         return AssumingArrayFields.named(first, rest);
     }
 
+    public static AssumeCopiedIntoUnmodifiable assumingCollectionFieldNamed(String name) {
+        return AssumeCopiedIntoUnmodifiable.assuming(name);
+    }
+    
     public static NoReasonsAllowed noReasonsAllowed() {
         return NoReasonsAllowed.noReasonsAllowed();
     }
-
 
 }

@@ -34,7 +34,7 @@ public class AssumeCopiedIntoUnmodifiableTest {
     
     @Theory
     public void matchesReasonsOnGivenField(@DataPoint MutableReasonDetail reasonDetail) throws Exception {
-        assertThat(reasonDetail, assuming("myCollectionField").isSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
+        assertThat(reasonDetail, AssumeCopiedIntoUnmodifiable.assuming("myCollectionField").isSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
     }
     
     @Test
