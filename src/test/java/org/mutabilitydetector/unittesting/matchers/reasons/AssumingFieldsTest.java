@@ -47,35 +47,35 @@ public class AssumingFieldsTest {
     public void matchesWhenGivenFieldNameIsLinkedToMutableTypeToFieldReason() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableTypeToFieldChecker, MutableFieldUsedSafely.class);
         
-        assertThat(reason, AssumingFields.named("myPrivateMap").areNotModifiedAndDoNotEscape());
+        assertThat(reason, FieldAssumptions.named("myPrivateMap").isNotModifiedAndDoesNotEscape());
     }
 
     @Test
     public void doesNotMatchWhenGivenIncorrectFieldName() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableTypeToFieldChecker, MutableFieldUsedSafely.class);
         
-        assertThat(reason, not(AssumingFields.named("myPrivateMapNOTCALLEDTHIS").areNotModifiedAndDoNotEscape()));
+        assertThat(reason, not(FieldAssumptions.named("myPrivateMapNOTCALLEDTHIS").isNotModifiedAndDoesNotEscape()));
     }
     
     @Test
     public void matchesWhenFieldIsACollectionTypeWithAMutableElementType() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(mutableElementTypeChecker, UsesMutableElementOfCollectionSafely.class);
         
-        assertThat(reason, AssumingFields.named("dates").areNotModifiedAndDoNotEscape());
+        assertThat(reason, FieldAssumptions.named("dates").isNotModifiedAndDoesNotEscape());
     }
 
     @Test
     public void doesNotMatchForReasonWhereUnsafeToAssumeNotModifyingTheFieldLocally() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(new PublishedNonFinalFieldChecker(), MutableForIrrelevantReason.class);
         
-        assertThat(reason, not(AssumingFields.named("reassignMe").areNotModifiedAndDoNotEscape()));
+        assertThat(reason, not(FieldAssumptions.named("reassignMe").isNotModifiedAndDoesNotEscape()));
     }
 
     @Test
     public void doesNotMatchForReasonWhichDoesNotOriginateFromAField() throws Exception {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(new CanSubclassChecker(), CanSubclass.class);
         
-        assertThat(reason, not(AssumingFields.named("mutabilityIsNothingToDoWithThisField").areNotModifiedAndDoNotEscape()));
+        assertThat(reason, not(FieldAssumptions.named("mutabilityIsNothingToDoWithThisField").isNotModifiedAndDoesNotEscape()));
     }
 
     private MutableReasonDetail getOnlyReasonFromRunningChecker(AsmMutabilityChecker mutabilityChecker, Class<?> toAnalyse) {

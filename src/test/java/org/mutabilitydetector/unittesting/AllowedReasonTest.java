@@ -86,7 +86,7 @@ public class AllowedReasonTest {
                                                             fieldLocation("myArrayField", fromInternalName("a/b/c")),
                                                             ARRAY_TYPE_INHERENTLY_MUTABLE);
         
-        assertThat(assumingField("myArrayField").areNotModifiedAndDoNotEscape(),
+        assertThat(assumingField("myArrayField").isNotModifiedAndDoesNotEscape(),
                    allows(reason));
 
     }

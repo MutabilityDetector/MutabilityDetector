@@ -27,8 +27,7 @@ import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
-import org.mutabilitydetector.unittesting.matchers.reasons.AssumeCopiedIntoUnmodifiable;
-import org.mutabilitydetector.unittesting.matchers.reasons.AssumingFields;
+import org.mutabilitydetector.unittesting.matchers.reasons.FieldAssumptions;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
 
@@ -54,7 +53,7 @@ import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
  * @see ProvidedOtherClass
  * @see AllowingForSubclassing
  * @see AllowingNonFinalFields
- * @see AssumingFields
+ * @see FieldAssumptions
  * @see NoReasonsAllowed
  * 
  */
@@ -82,26 +81,18 @@ public final class AllowedReason {
         return new AllowingNonFinalFields();
     }
     
-    public static AssumingFields assumingFieldsNamed(String first, String... rest) {
-        return AssumingFields.named(first, rest);
-    }
-    
-    public static AssumeCopiedIntoUnmodifiable assumingCollectionFieldNamed(String name) {
-        return AssumeCopiedIntoUnmodifiable.assuming(name);
-    }
-    
     public static NoReasonsAllowed noReasonsAllowed() {
         return NoReasonsAllowed.noReasonsAllowed();
     }
 
-    public static AssumingFields assumingField(String named) {
-        return AssumingFields.named(named);
+    public static FieldAssumptions.Singular assumingField(String named) {
+        return FieldAssumptions.named(named);
     }
-    public static AssumingFields assumingFields(String firstFieldName, String... otherFieldNames) {
-        return AssumingFields.named(firstFieldName, otherFieldNames);
+    public static FieldAssumptions.Plural assumingFields(String firstFieldName, String secondFieldName, String... otherFieldNames) {
+        return FieldAssumptions.named(firstFieldName, secondFieldName, otherFieldNames);
     }
-    public static AssumingFields assumingFields(Iterable<String> named) {
-        return AssumingFields.named(named);
+    public static FieldAssumptions.Plural assumingFields(Iterable<String> named) {
+        return FieldAssumptions.named(named);
     }
 
 }

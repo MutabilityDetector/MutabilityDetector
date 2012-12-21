@@ -73,7 +73,7 @@ public class WellKnownJavaTypesTest {
     @Test
     @FalsePositive("Field is not final " + "Field [hash] can be reassigned.")
     public void String() {
-        assertInstancesOf(String.class, areImmutable(), assumingField("value").areNotModifiedAndDoNotEscape());
+        assertInstancesOf(String.class, areImmutable(), assumingField("value").isNotModifiedAndDoesNotEscape());
     }
 
     @Test
