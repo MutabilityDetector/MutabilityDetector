@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.jufickel.guiff</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>swing</artifactId>
+    <name>Swing GUI</name>
+    <description>Provides a graphical user interface (GUI) which is made with Java Swing.</description>
+
+    <properties>
+        <messagesDir>src/main/resources/de/jufickel/guiff/swing</messagesDir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.jufickel.guiff</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jufickel.utilities</groupId>
+            <artifactId>i18n</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native2ascii-maven-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF8</encoding>
+                    <workDir>${messagesDir}</workDir>
+                    <includes>
+                        <include>messages_de_DE.properties</include>
+                    </includes>
+                </configuration>
+<!--                 <executions> -->
+<!--                     <execution> -->
+<!--                         <id>escape-unicode</id> -->
+<!--                         <goals> -->
+<!--                             <goal>native2ascii</goal> -->
+<!--                         </goals> -->
+<!--                         <phase>process-resources</phase> -->
+<!--                     </execution> -->
+<!--                 </executions> -->
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

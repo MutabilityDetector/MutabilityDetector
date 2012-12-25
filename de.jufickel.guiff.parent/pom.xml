@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.jufickel.guiff</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>Beerware</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <comments>A business-friendly OSS licence</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>jufickel</id>
+            <name>Jürgen Fickel</name>
+            <timezone>1</timezone>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>file:///home/juergen/Entwicklung/git/de.juficke.guiff.parent</url>
+        <connection>scm:git:file:///home/juergen/Entwicklung/git/de.juficke.guiff.parent</connection>
+        <developerConnection>scm:git:file:///home/juergen/Entwicklung/git/de.juficke.guiff.parent</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <licence.year>2012</licence.year>
+        <licence.author>Juergen Fickel</licence.author>
+        <licence.email>steinpfeffer@gmx.de</licence.email>
+        <relativeParentDir>${basedir}/..</relativeParentDir>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <indentSize>4</indentSize>
+                        <lineLength>120</lineLength>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <compilerVersion>1.6</compilerVersion>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <mainClass>de.jufickel.guiff.swing.MainWindow</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>1.9.0</version>
+                    <configuration>
+                        <aggregate>true</aggregate>
+                        <strictCheck>true</strictCheck>
+                        <header>src/etc/header.txt</header>
+                        <failIfMissing>true</failIfMissing>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <properties>
+                            <licence.year>${licence.year}</licence.year>
+                            <licence.author>${licence.author}</licence.author>
+                            <licence.email>${licence.email}</licence.email>
+                        </properties>
+                        <excludes>
+                            <exclude>**/guiff</exclude>
+                            <exclude>**/*LICENCE*</exclude>
+                            <exclude>**/*LICENSE*</exclude>
+                            <exclude>**/*NOTICE*</exclude>
+                            <exclude>**/*flv</exclude>
+                            <exclude>**/*md</exclude>
+                            <exclude>**/*properties</exclude>
+                            <exclude>**/*swp</exclude>
+                            <exclude>**/*xml</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>native2ascii-maven-plugin</artifactId>
+                    <version>1.0-beta-1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+<!--             <plugin> -->
+<!--                 <artifactId>maven-assembly-plugin</artifactId> -->
+<!--                 <version>2.4</version> -->
+<!--                 <inherited>false</inherited> -->
+<!--                 <configuration> -->
+<!--                     <descriptors> -->
+<!--                         <descriptor>src/main/assembly/bin.xml</descriptor> -->
+<!--                     </descriptors> -->
+<!--                     <tarLongFileMode>gnu</tarLongFileMode> -->
+<!--                 </configuration> -->
+<!--                 <executions> -->
+<!--                     <execution> -->
+<!--                         <id>assemble</id> -->
+<!--                         <phase>package</phase> -->
+<!--                         <goals> -->
+<!--                             <goal>single</goal> -->
+<!--                         </goals> -->
+<!--                     </execution> -->
+<!--                 </executions> -->
+<!--             </plugin> -->
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>format-headers</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>core</module>
+        <module>swing</module>
+        <module>distribution</module>
+    </modules>
+    
+</project>
