@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.jufickel.guiff</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -115,12 +115,14 @@
                         </properties>
                         <excludes>
                             <exclude>**/guiff</exclude>
+                            <exclude>**/gitignore</exclude>
                             <exclude>**/*LICENCE*</exclude>
                             <exclude>**/*LICENSE*</exclude>
                             <exclude>**/*NOTICE*</exclude>
                             <exclude>**/*flv</exclude>
                             <exclude>**/*md</exclude>
                             <exclude>**/*properties</exclude>
+                            <exclude>**/*releaseBackup</exclude>
                             <exclude>**/*swp</exclude>
                             <exclude>**/*xml</exclude>
                         </excludes>
