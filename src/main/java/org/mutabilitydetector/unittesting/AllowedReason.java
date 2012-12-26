@@ -85,13 +85,10 @@ public final class AllowedReason {
         return NoReasonsAllowed.noReasonsAllowed();
     }
 
-    public static FieldAssumptions.Singular assumingField(String named) {
-        return FieldAssumptions.named(named);
+    public static FieldAssumptions assumingFields(String firstFieldName, String... otherFieldNames) {
+        return FieldAssumptions.named(firstFieldName, otherFieldNames);
     }
-    public static FieldAssumptions.Plural assumingFields(String firstFieldName, String secondFieldName, String... otherFieldNames) {
-        return FieldAssumptions.named(firstFieldName, secondFieldName, otherFieldNames);
-    }
-    public static FieldAssumptions.Plural assumingFields(Iterable<String> named) {
+    public static FieldAssumptions assumingFields(Iterable<String> named) {
         return FieldAssumptions.named(named);
     }
 

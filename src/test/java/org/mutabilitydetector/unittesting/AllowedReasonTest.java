@@ -27,7 +27,7 @@ import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
-import static org.mutabilitydetector.unittesting.AllowedReason.assumingField;
+import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 
@@ -86,7 +86,7 @@ public class AllowedReasonTest {
                                                             fieldLocation("myArrayField", fromInternalName("a/b/c")),
                                                             ARRAY_TYPE_INHERENTLY_MUTABLE);
         
-        assertThat(assumingField("myArrayField").isNotModifiedAndDoesNotEscape(),
+        assertThat(assumingFields("myArrayField").areNotModifiedAndDoNotEscape(),
                    allows(reason));
 
     }

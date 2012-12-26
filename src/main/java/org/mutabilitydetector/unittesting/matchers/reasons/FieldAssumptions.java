@@ -25,42 +25,24 @@ public final class FieldAssumptions  {
         this.fieldNames = fieldNames;
     }
     
-    public static FieldAssumptions.Singular named(String fieldName) {
-        return new FieldAssumptions(copyOf(asList(fieldName))).new Singular();
+    public static FieldAssumptions named(String firstFieldName, String... otherFieldNames) {
+        return named(concat(asList(firstFieldName), asList(otherFieldNames)));
+    }
+
+    public static FieldAssumptions named(Iterable<String> fieldNames) {
+        return new FieldAssumptions(copyOf(fieldNames));
+    }
+
+    public Matcher<MutableReasonDetail> areSafelyCopiedUnmodifiableCollectionWithImmutableTypes() {
+        return new AssumeCopiedIntoUnmodifiable();
+    }
+
+    public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
+        return new MutableFieldMatcher();
     }
     
-    public static FieldAssumptions.Plural named(String firstFieldName, String secondFieldName, String... otherFieldNames) {
-        return named(concat(asList(firstFieldName, secondFieldName), asList(otherFieldNames)));
-    }
-
-    public static FieldAssumptions.Plural named(Iterable<String> fieldNames) {
-        return new FieldAssumptions(copyOf(fieldNames)).new Plural();
-    }
-
-    public class Singular {
-        public Matcher<MutableReasonDetail> isSafelyCopiedUnmodifiableCollectionWithImmutableTypes() {
-            return new AssumeCopiedIntoUnmodifiable();
-        }
-        public Matcher<MutableReasonDetail> isNotModifiedAndDoesNotEscape() {
-            return new MutableFieldMatcher();
-        }
-        public Matcher<MutableReasonDetail> isModifiedAsPartAsAnUnobservableCachingStrategy() {
-            return new MutableFieldMatcher();
-        }
-    }
-    
-    public class Plural {
-        public Matcher<MutableReasonDetail> areSafelyCopiedUnmodifiableCollectionWithImmutableTypes() {
-            return new AssumeCopiedIntoUnmodifiable();
-        }
-
-        public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
-            return new MutableFieldMatcher();
-        }
-        
-        public Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
-            return new MutableFieldMatcher();
-        }
+    public Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
+        return new MutableFieldMatcher();
     }
     
     private class FieldLocationWithNameMatcher extends TypeSafeMatcher<FieldLocation> {
