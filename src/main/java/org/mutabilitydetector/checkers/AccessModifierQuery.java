@@ -22,6 +22,7 @@ import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
+import static org.objectweb.asm.Opcodes.ACC_SYNTHETIC;
 
 /**
  * Used to check for the existence of an access flag used in ASM visitors.
@@ -77,6 +78,15 @@ public class AccessModifierQuery {
     public boolean isNotFinal() {
         return !is(ACC_FINAL);
     }
+    
+    public boolean isSynthetic() {
+        return !is(ACC_SYNTHETIC);
+    }
+    
+    public boolean isNotSynthetic() {
+        return !is(ACC_SYNTHETIC);
+    }
+    
 
     public boolean isAbstract() {
         return is(ACC_ABSTRACT);
