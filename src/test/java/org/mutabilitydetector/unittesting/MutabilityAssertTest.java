@@ -53,15 +53,15 @@ public class MutabilityAssertTest {
     private final Class<?> immutableClass = ImmutableExample.class;
     private final Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
     
-    private final String expectedError = "\n" +
-            "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE\n" + 
-            "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE\n" + 
-            "    Reasons:\n" + 
-            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
-            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
-            "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]\n" + 
-            "    Allowed reasons:\n" + 
-            "        None.";
+    private final String expectedError = String.format("%n" +
+            "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE%n" + 
+            "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" + 
+            "    Reasons:%n" + 
+            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
+            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
+            "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
+            "    Allowed reasons:%n" + 
+            "        None.");
 
     @Test
     public void assertImmutableWithImmutableClassDoesNotThrowAssertionError() throws Exception {

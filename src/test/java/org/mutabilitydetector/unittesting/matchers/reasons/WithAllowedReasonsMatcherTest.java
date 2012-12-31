@@ -18,6 +18,7 @@
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
 import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -143,8 +144,8 @@ public class WithAllowedReasonsMatcherTest {
             fail("Expected assertion to fail");
         } catch(AssertionError expectedError) {
             assertThat(expectedError.getMessage(), 
-                       allOf(containsString("    Allowed reasons:\n"),
-                             containsString(format("        %s %s\n", allowedReason.message(), allowedReason.codeLocation().prettyPrint()))));
+                       allOf(containsString(format("    Allowed reasons:%n")),
+                             containsString(format("        %s %s%n", allowedReason.message(), allowedReason.codeLocation().prettyPrint()))));
         }
     }
     
@@ -164,7 +165,7 @@ public class WithAllowedReasonsMatcherTest {
             MatcherAssert.assertThat(analysisResult, withReasonsMatcher);
             fail("Expected assertion to fail");
         } catch(AssertionError expectedError) {
-            String[] errorMessageLines = expectedError.getMessage().split("\n");
+            String[] errorMessageLines = expectedError.getMessage().split(getProperty("line.separator"));
             assertThat(errorMessageLines[5], is("    Allowed reasons:"));
             assertThat(errorMessageLines[6], is("        None."));
         }
@@ -179,12 +180,12 @@ public class WithAllowedReasonsMatcherTest {
                                                newMutableReasonDetail("it sucks", fromInternalName("org/some/Thing"), CAN_BE_SUBCLASSED));
         usingHamcrest1_1_matcher.describeMismatch(result, description);
         
-        String expectedError = 
-                "org.some.Thing is actually NOT_IMMUTABLE\n" + 
-                "    Reasons:\n" + 
-                "        it sucks [Class: org.some.Thing]\n" + 
-                "    Allowed reasons:\n" + 
-                "        None.";
+        String expectedError = String.format(
+                "org.some.Thing is actually NOT_IMMUTABLE%n" + 
+                "    Reasons:%n" + 
+                "        it sucks [Class: org.some.Thing]%n" + 
+                "    Allowed reasons:%n" + 
+                "        None.");
         
         assertThat(description.toString(), is(expectedError));
         

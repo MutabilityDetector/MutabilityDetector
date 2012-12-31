@@ -21,6 +21,8 @@ public class UnhandledExceptionBuilderTest {
     private final AsmMutabilityChecker unusedChecker = mock(AsmMutabilityChecker.class);
     private final Dotted unusedClass = Dotted.dotted("unus.ed");
     
+    private final String newline = System.getProperty("line.separator");
+    
     private final Iterable<AnalysisResult> noResultsSoFar = Collections.<AnalysisResult>emptyList();
 
     @Test
@@ -50,7 +52,7 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, noResultsSoFar, checkerThatFailed, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString("\nChecker that failed: NullMutabilityChecker\n"));
+                   containsString(newline + "Checker that failed: NullMutabilityChecker" + newline));
     }
     
     @Test
@@ -60,7 +62,7 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, noResultsSoFar, unusedChecker, classBeingAnalysed);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString("\nClass being analysed: this.is.the.clazz.being.Analysed\n"));
+                   containsString(newline + "Class being analysed: this.is.the.clazz.being.Analysed" + newline));
     }
     
     @Test
@@ -73,7 +75,10 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, asList(first, second, third), unusedChecker, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString("\nClasses analysed so far:\n    a.b.c\n    e.f.g\n    h.i.j\n"));
+                   containsString(newline + "Classes analysed so far:" +
+                                  newline + "    a.b.c" +
+                                  newline + "    e.f.g" +
+                                  newline + "    h.i.j" + newline));
     }
     
 }

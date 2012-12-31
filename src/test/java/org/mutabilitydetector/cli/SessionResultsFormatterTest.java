@@ -44,6 +44,8 @@ import org.mutabilitydetector.locations.FieldLocation;
 public class SessionResultsFormatterTest {
 
     private final ClassListReaderFactory unusedReaderFactory = null;
+    
+    private final String newline = System.getProperty("line.separator");
 
     @Test
     public void printsReadableMessage() throws Exception {
@@ -68,9 +70,9 @@ public class SessionResultsFormatterTest {
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(),
-                   allOf(containsString("a.b.c is IMMUTABLE\n"),
-                         containsString("d.e.f is EFFECTIVELY_IMMUTABLE\n"),
-                         containsString("g.h.i is NOT_IMMUTABLE\n")));
+                   allOf(containsString("a.b.c is IMMUTABLE" + newline),
+                         containsString("d.e.f is EFFECTIVELY_IMMUTABLE" + newline),
+                         containsString("g.h.i is NOT_IMMUTABLE" + newline)));
     }
 
     @Test
@@ -96,7 +98,9 @@ public class SessionResultsFormatterTest {
 
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
-        assertThat(result.toString(), containsString("a.b.c is NOT_IMMUTABLE\n" + "\t1st checker reason message [Class: path.to.MyClass]\n"
-                + "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]\n"));
+        assertThat(result.toString(), 
+                   containsString("a.b.c is NOT_IMMUTABLE" + newline + 
+                                  "\t1st checker reason message [Class: path.to.MyClass]" + newline + 
+                                  "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]" + newline));
     }
 }

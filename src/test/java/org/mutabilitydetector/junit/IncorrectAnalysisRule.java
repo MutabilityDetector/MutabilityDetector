@@ -1,5 +1,7 @@
 package org.mutabilitydetector.junit;
 
+import static java.lang.String.format;
+
 import java.lang.annotation.Annotation;
 
 import org.junit.rules.MethodRule;
@@ -25,10 +27,11 @@ public class IncorrectAnalysisRule implements MethodRule {
             base.evaluate();
             return noOpStatement();
         } catch (Throwable e) {
-            throw new AssertionError("The test is expected to pass with a False Negative result, " +
-                    "i.e. the class is mutable but the test passes.\n" +
+            throw new AssertionError(format(
+                    "The test is expected to pass with a False Negative result, " +
+                    "i.e. the class is mutable but the test passes.%n" +
                     "This test is correctly failing, therefore the analysis is no longer incorrect, " +
-                    "and the annotation can be removed.");
+                    "and the annotation can be removed."));
         }
         
     }
@@ -39,10 +42,11 @@ public class IncorrectAnalysisRule implements MethodRule {
         } catch (Throwable e) {
             return noOpStatement();
         }
-        throw new AssertionError("The test is expected to fail with a False Positive result, " +
-                "i.e. the class is immutable but the test fails.\n" +
+        throw new AssertionError(format(
+                "The test is expected to fail with a False Positive result, " +
+                "i.e. the class is immutable but the test fails.%n" +
                 "This test is correctly passing, therefore the analysis is no longer incorrect, " +
-                "and the annotation can be removed.");
+                "and the annotation can be removed."));
     }
 
     private boolean isAnnotatedWith(Class<? extends Annotation> annotation, FrameworkMethod method) {
