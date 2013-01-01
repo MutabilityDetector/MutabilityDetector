@@ -165,10 +165,18 @@ public class WithAllowedReasonsMatcherTest {
             MatcherAssert.assertThat(analysisResult, withReasonsMatcher);
             fail("Expected assertion to fail");
         } catch(AssertionError expectedError) {
-            String[] errorMessageLines = expectedError.getMessage().split(getProperty("line.separator"));
+            String[] errorMessageLines = errorMessageFrom(expectedError).split(getProperty("line.separator"));
+            
             assertThat(errorMessageLines[5], is("    Allowed reasons:"));
             assertThat(errorMessageLines[6], is("        None."));
         }
+    }
+
+    private String errorMessageFrom(AssertionError expectedError) {
+        String matcherAssertMessageWithHardcodedUnixNewLines = expectedError.getMessage();
+        return matcherAssertMessageWithHardcodedUnixNewLines
+                .replace("\nExpected:", format("%nExpected:"))
+                .replace("\n     but:", format("%n     but:"));
     }
     
     @Test
