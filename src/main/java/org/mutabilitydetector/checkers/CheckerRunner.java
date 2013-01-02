@@ -35,7 +35,7 @@ public final class CheckerRunner {
 
     private final ClassPath classpath;
     private final UnhandledExceptionBuilder unhandledExceptionBuilder;
-    private ExceptionPolicy exceptionPolicy;
+    private final ExceptionPolicy exceptionPolicy;
 
     private CheckerRunner(ClassPath classpath, UnhandledExceptionBuilder unhandledExceptionBuilder, ExceptionPolicy exceptionPolicy) {
         this.classpath = classpath;
