@@ -59,9 +59,10 @@ public final class AllChecksRunner {
 
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(database, verifierFactory,
                 mutableTypeInformation);
+        CheckerRunner checkerRunner = checkerRunnerFactory.createRunner();
 
         for (AsmMutabilityChecker checker : checkers) {
-            CheckerResult checkerResult = checkerRunnerFactory.createRunner().run(checker, toAnalyse, errorReporter,
+            CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, errorReporter,
                     analysisSession.getResults());
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
             addAll(reasons, checkerResult.reasons);
