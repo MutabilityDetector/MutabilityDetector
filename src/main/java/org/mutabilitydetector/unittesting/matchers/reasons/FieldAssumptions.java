@@ -9,6 +9,8 @@ import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTA
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hamcrest.Description;
@@ -22,7 +24,7 @@ public final class FieldAssumptions  {
     private final Set<String> fieldNames;
 
     private FieldAssumptions(Set<String> fieldNames) {
-        this.fieldNames = fieldNames;
+        this.fieldNames = Collections.unmodifiableSet(new HashSet<String>(fieldNames));
     }
     
     public static FieldAssumptions named(String firstFieldName, String... otherFieldNames) {
@@ -51,6 +53,7 @@ public final class FieldAssumptions  {
         @Override
         protected boolean matchesSafely(FieldLocation locationOfMutability) {
             return fieldNames.contains(locationOfMutability.fieldName());
+            
         }
         
     }
