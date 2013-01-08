@@ -1,17 +1,20 @@
 package org.mutabilitydetector.checkers;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.google.common.base.Objects;
@@ -19,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
-public class CollectionTypeWrappedInUmodifiableIdiomChecker {
+public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
     private static final ClassNameConverter CLASS_NAME_CONVERTER = new ClassNameConverter();
 
@@ -150,7 +153,6 @@ public class CollectionTypeWrappedInUmodifiableIdiomChecker {
         WRAPS_BUT_DOES_NOT_COPY(true, true, false),
         WRAPS_AND_COPIES_SAFELY(true, true, true);
         
-        
         public final boolean canBeWrapped;
         public final boolean invokesWhitelistedWrapperMethod;
         public final boolean safelyCopiesBeforeWrapping;
@@ -162,7 +164,7 @@ public class CollectionTypeWrappedInUmodifiableIdiomChecker {
         }
     }
     
-    public CollectionTypeWrappedInUmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
+    public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
         checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         
         this.fieldInsnNode = fieldInsnNode;
@@ -175,7 +177,8 @@ public class CollectionTypeWrappedInUmodifiableIdiomChecker {
         } 
         
         if (wrapsInUnmodifiable()) {
-            if (safelyCopiesBeforeWrapping((MethodInsnNode) fieldInsnNode.getPrevious())) {
+            MethodInsnNode wrappingMethodCall = (MethodInsnNode) lastMeaningfulNode(fieldInsnNode);
+            if (safelyCopiesBeforeWrapping(wrappingMethodCall)) {
                 return WRAPS_AND_COPIES_SAFELY;
             } else {
                 return WRAPS_BUT_DOES_NOT_COPY;
@@ -185,17 +188,17 @@ public class CollectionTypeWrappedInUmodifiableIdiomChecker {
         }
     }
     
-    
     private String typeAssignedToField() {
         return CLASS_NAME_CONVERTER.dotted(typeAssignedToField.getInternalName());
     }
 
     private boolean wrapsInUnmodifiable() {
-        if (!(fieldInsnNode.getPrevious() instanceof MethodInsnNode)) {
+        AbstractInsnNode lastMeaningfulNode = lastMeaningfulNode(fieldInsnNode);
+        if (!(lastMeaningfulNode instanceof MethodInsnNode)) {
             return false;
         }
         
-        MethodInsnNode previousInvocation = (MethodInsnNode) fieldInsnNode.getPrevious();
+        MethodInsnNode previousInvocation = (MethodInsnNode) lastMeaningfulNode;
         String methodName = previousInvocation.name;
         String onClass = previousInvocation.owner;
         
@@ -204,13 +207,21 @@ public class CollectionTypeWrappedInUmodifiableIdiomChecker {
     }
 
     private boolean safelyCopiesBeforeWrapping(MethodInsnNode unmodifiableMethodCall) {
-        if (!(unmodifiableMethodCall.getPrevious() instanceof MethodInsnNode)) {
+        AbstractInsnNode lastMeaningfulNode = lastMeaningfulNode(unmodifiableMethodCall);
+        if (!(lastMeaningfulNode instanceof MethodInsnNode)) {
             return false;
         }
         
-        MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) unmodifiableMethodCall.getPrevious();
+        MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) lastMeaningfulNode;
         
         return FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
+    }
+
+    private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {
+        AbstractInsnNode previous = node.getPrevious();
+        return (previous instanceof LabelNode) || (previous instanceof LineNumberNode)
+                ? lastMeaningfulNode(previous)
+                : previous;
     }
 
 }

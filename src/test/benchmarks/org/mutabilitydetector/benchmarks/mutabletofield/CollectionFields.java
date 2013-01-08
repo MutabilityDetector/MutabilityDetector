@@ -80,7 +80,9 @@ public class CollectionFields {
         private final Iterable<ImmutableExample> unmodifiableReferencedAsIterable;
         
         public StoresCopiedCollectionAsObjectAndIterable(List<ImmutableExample> potentiallyMutatable) {
-            this.unmodifiableReferencedAsIterable = Collections.unmodifiableList(new LinkedList<ImmutableExample>(potentiallyMutatable));
+            this.unmodifiableReferencedAsIterable = 
+                    Collections.unmodifiableList(
+                         new LinkedList<ImmutableExample>(potentiallyMutatable));
         }
         
         public ImmutableExample first() {

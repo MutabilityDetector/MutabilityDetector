@@ -52,21 +52,27 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <ul>
  * <li><a href="#OutOfTheBox">Out-of-the-box Allowed Reasons</a>
  * <ul>
- * <li><a href="AllowingAbstractImmutable">Abstract immutable
+ * <li><a href="#AllowingAbstractImmutable">Abstract immutable
  * implementations</a></li>
- * <li><a href="AllowingAbstractImmutableFields">Assigning abstract immutable
+ * <li><a href="#AllowingAbstractImmutableFields">Assigning abstract immutable
  * fields</a></li>
+ * <li><a href="#AllowingNonFinalFields">Non-final fields</a></li>
+ * <li><a href="#FieldAssumptions_UnmodifiableCopy">Safely copying into
+ * collection field TODO</a></li>
+ * <li><a href="#FieldAssumptions_NotModfied">Mutable field never modified
+ * TODO</a></li>
+ * <li><a href="#FieldAssumptions_Caching">Caching values internally TODO</a></li>
  * </ul>
  * </li>
- * <li><a href="WritingAnAllowedReason">Writing your own allowed reason</a></li>
+ * <li><a href="#WritingAnAllowedReason">Writing your own allowed reason</a></li>
  * </ul>
  * </li>
- * <li><a href="HardcodingResults">Hardcoding analysis results</a>
+ * <li><a href="#HardcodingResults">Hardcoding analysis results</a>
  * <ul>
- *   <li><a href="WhyHardcodeResults">Why hardcode results?</a></li>
- *   <li><a href="DifferentAsserter">Creating your own asserter</a></li>
- *   <li><a href="AddingHarcodedResults">Adding hardcoded results</a></li>
- *   <li><a href="TestHardcodedDirectly">Testing class with hardcoded result</a></li>
+ * <li><a href="#WhyHardcodeResults">Why hardcode results?</a></li>
+ * <li><a href="#DifferentAsserter">Creating your own asserter</a></li>
+ * <li><a href="#AddingHarcodedResults">Adding hardcoded results</a></li>
+ * <li><a href="#TestHardcodedDirectly">Testing class with hardcoded result</a></li>
  * </ul>
  * </li>
  * </ol>
@@ -143,9 +149,12 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <code>
  * import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
  * import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+ * import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
  * 
  * &#064;Test public void checkMyClassIsImmutable() {
- *     assertInstancesOf(MyClassWhereTheFieldsAreNotFinal.class, areEffectivelyImmutable());
+ *     assertInstancesOf(MyClassWhereTheFieldsAreNotFinal.class, 
+ *                       areEffectivelyImmutable(),
+ *                       allowingNonFinalFields());
  * }</code>
  * </pre>
  * 
@@ -265,7 +274,6 @@ import org.mutabilitydetector.MutableReasonDetail;
  * To make the above example pass, use an allowed reason like so:<br>
  * <br>
  * 
- * 
  * <pre>
  * <code>
  * assertInstancesOf(MyImmutable.class, areImmutable(),
@@ -273,8 +281,75 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </code>
  * </pre>
  * 
- * 
  * </p>
+ * 
+ * <h4 id="AllowingNonFinalFields">Non-final fields</h3> If you have fields
+ * which are neither mutated nor reassigned, you can suppress warnings about
+ * them not being declared as final. Since the non-final field warning relates
+ * to visibility in the Java Memory Model, and there are other ways to guarantee
+ * visibility (e.g. assigning before a volatile write) it may be desirable.
+ * Consider the following class:
+ * 
+ * <pre>
+ * <code>
+ * public final class NonFinalField {
+ *     private String myField;
+ *     
+ *     public NonFinalField(String myField) {
+ *         this.myField = myField;
+ *     }
+ *     
+ *     public String getMyField() {
+ *         return myField;
+ *     }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * This can be made to pass by allowing non-final fields, like so:
+ * 
+ * <pre>
+ * <code>
+ * assertInstancesOf(NonFinalField.class, areImmutable(),
+ *                   AllowedReason.allowingNonFinalFields());
+ * </code>
+ * </pre>
+ * 
+ * <h4 id="#FieldAssumptions_UnmodifiableCopy">Safely copying into collection
+ * field</h4>
+ * Fields of collection types are normally interfaces (e.g. List, Set,
+ * Iterable), and assigning these types to a field will result in a warning.
+ * Mutability Detector has support for recognising the pattern of copying and
+ * wrapping in an unmodifiable collection, however, it is limited to types and
+ * methods from the standard JDK. Consider the following class:
+ * 
+ * <pre>
+ * <code>
+ * import java.util.List;
+ * 
+ * public final class HasCollectionField {
+ *     private final List&lt;String&gt; myStrings;
+ *     
+ *     public HasCollectionField(List&lt;String&gt; strings) {
+ *         List&lt;String&gt; copy = copyIntoNewList(strings);
+ *         List&lt;String&gt; unmodifiable = wrapWithUnmodifiable(strings);
+ *         this.myStrings = unmodifiable;
+ *     }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * In this case we safely copy the list (<code>copyIntoNewList</code>) and the
+ * copy is then wrapped in an unmodifiable list that will prevent mutation (
+ * <code>wrapWithUnmodifiable</code>). However, since Mutability Detector is
+ * unaware of these two methods, it will conclude that a mutable
+ * <code>List</code> type has been assigned to the private field. 
+ * <p>
+ * This can be made to pass with the following:
+ * <pre><code>
+ * assertInstancesOf(HasCollectionField.class, areImmutable(),
+ *                   AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
+ * </code></pre>
  * 
  * <h3 id="WritingAnAllowedReason">Writing your own allowed reasons</h3>
  * <p>
@@ -356,17 +431,21 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </pre>
  * 
  * This allows your test case to have an assertion like:
+ * 
  * <pre>
  * <code>// in a test case 
- * MUTABILITY.assertImmutable(MyClass.class);</pre>
+ * MUTABILITY.assertImmutable(MyClass.class);
+ * </pre>
+ * 
  * </code>
  * 
  * <h4 id="AddingHarcodedResults">Hardcoding Analysis Results</h4>
  * 
- * Notice in the above example, I have glossed over the parameters given to the
- * <code>MutabilityAssert.configured()</code> method. The parameter, of type {@link Configuration},
- * is what will contain your hardcoded results. In the following example, To
- * overcome this, instantiate MutabilityAsserter like this:
+ * Notice in the above example, the parameters given to the
+ * <code>MutabilityAssert.configured()</code> method are not shown. The
+ * parameter, of type {@link Configuration}, is what will contain your hardcoded
+ * results. In the following example, To overcome this, instantiate
+ * MutabilityAsserter like this:
  * 
  * <pre>
  * <code>
@@ -382,12 +461,13 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </code>
  * </pre>
  * 
- * Now classes which transitively depend on <code>ActuallyImmutable</code> being correctly
- * analysed will not result in false positive results.
+ * Now classes which transitively depend on <code>ActuallyImmutable</code> being
+ * correctly analysed will not result in false positive results.
  * 
  * <h4 id="TestHardcodedDirectly">Testing Hardcoded Classes Directly</h4>
  * 
  * Using the configuration from above, if we have the assertion:
+ * 
  * <pre>
  * <code>MUTABILITY.assertImmutable(ActuallyImmutable.class);</code>
  * </pre>

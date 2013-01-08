@@ -23,7 +23,7 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -93,7 +93,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 } else if(!isConcreteType(fieldClass)) {
                 
-                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(
+                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomChecker(
                             fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
@@ -110,6 +110,10 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                                     MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                             break;
                         }
+                    } else if (unmodifiableWrapResult.canBeWrapped && !unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
+                        setResult("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method.",
+                                  fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                  MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                     }
                 }
                 break;

@@ -214,6 +214,19 @@ public class MutableTypeToFieldCheckerTest {
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
+
+    @Test
+    public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeUsingANonWhitelistedMethod() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+        
+        result = runChecker(checkerWithRealSession, WrapsCollectionUsingNonWhitelistedMethod.class);
+        
+        assertThat(result, areNotImmutable());
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
+        
+        assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
+        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method."));
+    }
     
     @Test
     public void doesNotAllowStoringCopiedCollectionIntoLocalVariableThatCouldEscape() throws Exception {

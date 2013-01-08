@@ -37,6 +37,7 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.DependsOnManyTypesBeingImmutable;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
+import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasCollectionField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
 import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
@@ -233,6 +234,13 @@ public class MutabilityAssertTest {
                           areImmutable(),
                           provided(AbstractType.class).isAlsoImmutable(),
                           provided(InterfaceType.class).isAlsoImmutable());
+    }
+    
+    @Test
+    public void canAllowCollectionFieldsDeemedToHaveBeenSafelyCopiedAndWrappedInUnmodifiable() throws Exception {
+        assertInstancesOf(HasCollectionField.class, 
+                          areImmutable(),
+                          AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
     }
 
 }

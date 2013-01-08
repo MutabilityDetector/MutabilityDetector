@@ -93,6 +93,7 @@ public class MutabilityCheckerTest {
         assertImmutable(CopyListIntoNewArrayListAndUnmodifiableListIdiom.class);
     }
 
+    @FalsePositive("Doesn't copy collection in constructor.")
     @Test
     public void immutableByCopyingMutableListIntoNewArrayListAndUnmodifiableListInStaticMethod() throws Exception {
         assertImmutable(StaticMethodDoesTheCopying.class);

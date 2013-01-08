@@ -2,7 +2,6 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -16,13 +15,9 @@ public final class DependsOnManyTypesBeingImmutable {
     
     public DependsOnManyTypesBeingImmutable(ImmutableExample myImmutableField, 
                                             AbstractType myAbstractClassField,
-                                            List<InterfaceType> someInterfaceTypes) {
+                                            Map<AbstractType, InterfaceType> someInterfaceTypes) {
         this.myImmutableField = myImmutableField;
-        this.mapWithRequiredImmutableTypes = 
-                Collections.unmodifiableMap(
-                    new HashMap<AbstractType, InterfaceType>(Collections.<AbstractType, InterfaceType>emptyMap()));
+        this.mapWithRequiredImmutableTypes = Collections.unmodifiableMap(new HashMap<AbstractType, InterfaceType>(someInterfaceTypes));
     }
-    
-    
     
 }

@@ -2,9 +2,9 @@ package org.mutabilitydetector.checkers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Type.getType;
 
@@ -15,11 +15,14 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
@@ -29,13 +32,13 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
     @Test(expected=IllegalArgumentException.class)
     public void requiresTheFieldInstructionNodeToBeAPutFieldInstruction() throws Exception {
         FieldInsnNode insnNode = new FieldInsnNode(Opcodes.GETFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        new CollectionTypeWrappedInUmodifiableIdiomChecker(insnNode, null);
+        new CollectionTypeWrappedInUnmodifiableIdiomChecker(insnNode, null);
     }
     
     @Test
     public void doesNotAllowCopyingIntoAbritraryType() throws Exception {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, getType("the/assigned/Type"));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, getType("the/assigned/Type"));
         
         assertThat(checker.checkWrappedInUnmodifiable(), is(UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED));
     }
@@ -56,7 +59,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
@@ -68,7 +71,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return varInsn; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
@@ -99,7 +102,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
@@ -114,7 +117,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
@@ -129,7 +132,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/lang/Iterable") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().canBeWrapped, is(true));
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
@@ -148,15 +151,43 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
         
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
+    
+    @Test
+    public void ignoresNodesWhichDoNotResultInDifferentCodeSemantics() throws Exception {
+        final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
+        final LabelNode label = new LabelNode(new Label()) {
+            @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
+        };
+        final LineNumberNode lineNumber = new LineNumberNode(42, new LabelNode()) {
+            @Override public AbstractInsnNode getPrevious() { return label; }
+        };
+        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+            @Override public AbstractInsnNode getPrevious() { return lineNumber; }
+        };
+        
+        String typeOfField = "java/util/List";
+        
+        FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
+            @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
+        };
+        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+        
+        UnmodifiableWrapResult result = checker.checkWrappedInUnmodifiable();
+        
+        assertThat(result.invokesWhitelistedWrapperMethod, is(true));
+        assertThat(result.safelyCopiesBeforeWrapping, is(true));
+        assertThat(result, is(WRAPS_AND_COPIES_SAFELY));
+    }
 
     @Theory
     public void validAssignmentsHold(ValidUnmodifiableAssignment dataPoint) throws Exception {
-        CollectionTypeWrappedInUmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
                 dataPoint.copyMethodOwner, 
                 dataPoint.copyMethodName,
                 dataPoint.copyMethodDesc,
@@ -252,7 +283,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         }
     }
 
-    private CollectionTypeWrappedInUmodifiableIdiomChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
+    private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
             String copyMethodOwner, String copyMethodName, String copyMethodDesc, String wrappingMethodName,
             String fieldType) {
         final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, copyMethodOwner, copyMethodName, copyMethodDesc);
@@ -262,20 +293,20 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
-    private CollectionTypeWrappedInUmodifiableIdiomChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
+    private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
         final MethodInsnNode wrappingMethod = new MethodInsnNode(INVOKESTATIC, "java/util/Collections", methodName, unmodifiableMethodDesc);
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
-    private CollectionTypeWrappedInUmodifiableIdiomChecker checkerForAssigningToFieldOfType(String fieldType) {
+    private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerForAssigningToFieldOfType(String fieldType) {
         FieldInsnNode fieldInsnNode = putFieldForType(fieldType);
-        return new CollectionTypeWrappedInUmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
     private FieldInsnNode putFieldForType(String fieldType) {
