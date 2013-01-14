@@ -36,6 +36,7 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable;
 import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.ThisHasToBeImmutable;
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.DependsOnManyTypesBeingImmutable;
+import org.mutabilitydetector.benchmarks.mutabletofield.HasDateField;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasCollectionField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
@@ -202,7 +203,7 @@ public class MutabilityAssertTest {
                           allowingForSubclassing());
     }
 
-    @Rule public IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
+    @Rule public final IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
     
     /**
      * @see #canMatchEffectivelyImmutableAllowingAnotherReason() for a workaround
@@ -241,6 +242,13 @@ public class MutabilityAssertTest {
         assertInstancesOf(HasCollectionField.class, 
                           areImmutable(),
                           AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
+    }
+    
+    @Test
+    public void canAllowAMutableFieldWhicIsNotMutatedAndDoesNotEscape() throws Exception {
+        assertInstancesOf(HasDateField.class,
+                          areImmutable(),
+                          AllowedReason.assumingFields("myDate").areNotModifiedAndDoNotEscape());
     }
 
 }

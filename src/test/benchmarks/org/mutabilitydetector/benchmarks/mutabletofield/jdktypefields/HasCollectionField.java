@@ -6,9 +6,9 @@ public final class HasCollectionField {
     private final List<String> myStrings;
 
     public HasCollectionField(List<String> strings) {
-//        List<String> copy = copyIntoNewList(strings);
-//        List<String> unmodifiable = wrapWithUnmodifiable(copy);
-        this.myStrings = strings;
+        List<String> copy = copyIntoNewList(strings);
+        List<String> unmodifiable = wrapWithUnmodifiable(copy);
+        this.myStrings = unmodifiable;
     }
 
     private List<String> wrapWithUnmodifiable(List<String> strings) {

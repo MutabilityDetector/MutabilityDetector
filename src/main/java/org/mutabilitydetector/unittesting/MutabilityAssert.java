@@ -20,6 +20,7 @@ package org.mutabilitydetector.unittesting;
 import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.Matcher;
@@ -58,9 +59,8 @@ import org.mutabilitydetector.MutableReasonDetail;
  * fields</a></li>
  * <li><a href="#AllowingNonFinalFields">Non-final fields</a></li>
  * <li><a href="#FieldAssumptions_UnmodifiableCopy">Safely copying into
- * collection field TODO</a></li>
- * <li><a href="#FieldAssumptions_NotModfied">Mutable field never modified
- * TODO</a></li>
+ * collection field</a></li>
+ * <li><a href="#FieldAssumptions_NotModfied">Mutable field never modified</a></li>
  * <li><a href="#FieldAssumptions_Caching">Caching values internally TODO</a></li>
  * </ul>
  * </li>
@@ -343,13 +343,65 @@ import org.mutabilitydetector.MutableReasonDetail;
  * copy is then wrapped in an unmodifiable list that will prevent mutation (
  * <code>wrapWithUnmodifiable</code>). However, since Mutability Detector is
  * unaware of these two methods, it will conclude that a mutable
- * <code>List</code> type has been assigned to the private field. 
+ * <code>List</code> type has been assigned to the private field.
  * <p>
  * This can be made to pass with the following:
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * assertInstancesOf(HasCollectionField.class, areImmutable(),
  *                   AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
- * </code></pre>
+ * </code>
+ * </pre>
+ * 
+ * This also assumes that the collection contains only immutable elements, and
+ * will suppress warnings generated when, for example, the field is a
+ * {@link List} of mutable {@link Date}s.
+ * 
+ * <h4 id="#FieldAssumptions_NotModfied">Mutable field never modified"</h4>
+ * While it is absolutely possible to build an immutable object with mutable
+ * fields, Mutability Detector errs on the side of caution. Thus, your class
+ * could have a field of a mutable type, which neither escapes, nor is mutated
+ * by the owning class, but still fails a test for immutability.
+ * 
+ * Consider the following class:
+ * 
+ * <pre>
+ * <code>
+ * import java.util.Date;
+ * 
+ * public final class HasDateField {
+ *     private final Date myDate;
+ *     
+ *     public HasDateField(Date date) {
+ *         this.myDate = new Date(date.getTime());
+ *     }
+ *     
+ *     public Date getDate() {
+ *         return new Date(myDate.getTime());
+ *     }
+ * }
+ * </pre>
+ * 
+ * </code>
+ * 
+ * A test for this class fails because the field <code>myDate</code> is a
+ * mutable type. This can be made to pass with the following:
+ * 
+ * <pre>
+ * <code>
+ * assertInstancesOf(HasDateField.class,
+ *                   areImmutable(),
+ *                   AllowedReason.assumingFields("myDate").areNotModifiedAndDoNotEscape());
+ * </code>
+ * </pre>
+ * 
+ * <h4 id="#FieldAssumptions_Caching">Caching values internally</h4>
+ * As with {@link String}, it is possible to reassign fields or mutate internal
+ * state and still be immutable. As long as callers cannot observe the change
+ * the class can be deemed immutable. 
+ * 
+ * Consider the following class:
  * 
  * <h3 id="WritingAnAllowedReason">Writing your own allowed reasons</h3>
  * <p>
