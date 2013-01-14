@@ -43,9 +43,10 @@ import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
  * <p>
  * All types returned from the static methods on AllowedReason are
  * implementations of Hamcrest {@link Matcher}, generic on the type
- * {@link MutableReasonDetail}. 
+ * {@link MutableReasonDetail}.
  * <p>
- * For more information on configuring a mutability assertion, see {@link MutabilityAssert}.
+ * For more information on configuring a mutability assertion, see
+ * {@link MutabilityAssert}.
  * 
  * @see MutabilityAssert
  * @see MutableReasonDetail
@@ -59,35 +60,85 @@ import org.mutabilitydetector.unittesting.matchers.reasons.ProvidedOtherClass;
  */
 public final class AllowedReason {
 
-    private AllowedReason() { }
+    private AllowedReason() {
+    }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static ProvidedOtherClass provided(String dottedClassName) {
         return ProvidedOtherClass.provided(dotted(dottedClassName));
     }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static ProvidedOtherClass provided(Class<?> clazz) {
         return ProvidedOtherClass.provided(fromClass(clazz));
     }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static ProvidedOtherClass provided(Class<?>... classes) {
         return ProvidedOtherClass.provided(transform(asList(classes), CLASS_TO_DOTTED));
     }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static AllowingForSubclassing allowingForSubclassing() {
         return new AllowingForSubclassing();
     }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static AllowingNonFinalFields allowingNonFinalFields() {
         return new AllowingNonFinalFields();
     }
-    
+
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static NoReasonsAllowed noReasonsAllowed() {
         return NoReasonsAllowed.noReasonsAllowed();
     }
 
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static FieldAssumptions assumingFields(String firstFieldName, String... otherFieldNames) {
         return FieldAssumptions.named(firstFieldName, otherFieldNames);
     }
+
+    /**
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
+     * 
+     * @see MutabilityAssert
+     */
     public static FieldAssumptions assumingFields(Iterable<String> named) {
         return FieldAssumptions.named(named);
     }

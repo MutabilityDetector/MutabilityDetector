@@ -7,7 +7,9 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_T
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
+import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,11 +42,11 @@ public final class FieldAssumptions  {
     }
 
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
-        return new MutableFieldMatcher();
+        return new MutableFieldNotModifiedAndDoesntEscapeMatcher();
     }
     
-    public Matcher<MutableReasonDetail> areModifiedAsPartAsAnUnobservableCachingStrategy() {
-        return new MutableFieldMatcher();
+    public Matcher<MutableReasonDetail> areModifiedAsPartOfAnUnobservableCachingStrategy() {
+        return new FieldModifiedAsPartOfAnUnobservableCachingStrategy();
     }
     
     private class FieldLocationWithNameMatcher extends TypeSafeMatcher<FieldLocation> {
@@ -53,12 +55,11 @@ public final class FieldAssumptions  {
         @Override
         protected boolean matchesSafely(FieldLocation locationOfMutability) {
             return fieldNames.contains(locationOfMutability.fieldName());
-            
         }
         
     }
     
-    private class MutableFieldMatcher extends BaseMutableReasonDetailMatcher {
+    private final class MutableFieldNotModifiedAndDoesntEscapeMatcher extends BaseMutableReasonDetailMatcher {
         @Override protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
             
             return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
@@ -67,8 +68,20 @@ public final class FieldAssumptions  {
                                                      ARRAY_TYPE_INHERENTLY_MUTABLE);
         }
     }
+
+    private final class FieldModifiedAsPartOfAnUnobservableCachingStrategy extends BaseMutableReasonDetailMatcher {
+        @Override protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
+            
+            return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
+                    && reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD, 
+                                                     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE,
+                                                     ARRAY_TYPE_INHERENTLY_MUTABLE,
+                                                     FIELD_CAN_BE_REASSIGNED,
+                                                     NON_FINAL_FIELD);
+        }
+    }
     
-    private class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
+    private final class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
         @Override protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
             return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
                     && reasonDetail.reason().isOneOf(ABSTRACT_COLLECTION_TYPE_TO_FIELD, 

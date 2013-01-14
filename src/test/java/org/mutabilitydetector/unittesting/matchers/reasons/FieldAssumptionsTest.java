@@ -22,15 +22,22 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
+import org.mutabilitydetector.checkers.SetterMethodChecker;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @SuppressWarnings("unused")
@@ -43,6 +50,9 @@ public class FieldAssumptionsTest {
                                                                                mutableTypeInfo, 
                                                                                testingVerifierFactory());
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());
+    private final PrivateMethodInvocationInformation privateMethodInvocationInfo = TestUtil.analysisDatabase().requestInformation(AnalysisDatabase.PRIVATE_METHOD_INVOCATION);
+    private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newSetterMethodChecker(privateMethodInvocationInfo, testingVerifierFactory());
+    private final AsmMutabilityChecker nonFinalFieldChecker = new NonFinalFieldChecker();
     
     @Test
     public void matchesWhenGivenFieldNameIsLinkedToMutableTypeToFieldReason() throws Exception {
@@ -77,6 +87,22 @@ public class FieldAssumptionsTest {
         MutableReasonDetail reason = getOnlyReasonFromRunningChecker(new CanSubclassChecker(), CanSubclass.class);
         
         assertThat(reason, not(FieldAssumptions.named("mutabilityIsNothingToDoWithThisField").areNotModifiedAndDoNotEscape()));
+    }
+    
+    @Test
+    public void allowsReassigningFieldsAsPartOfInternalCachingStrategy() {
+        MutableReasonDetail reason = getOnlyReasonFromRunningChecker(setterMethodChecker, ReassignsForCaching.class);
+        assertThat(reason, FieldAssumptions.named("first3Chars").areModifiedAsPartOfAnUnobservableCachingStrategy());
+    }
+    
+    @Test
+    public void allowsNonFinalFieldsAsPartOfInternalCachingStrategy() throws Exception {
+        AnalysisResult result = TestUtil.runChecker(nonFinalFieldChecker, ReassignsForCaching.class);
+        assertThat(result.isImmutable, is(IsImmutable.EFFECTIVELY_IMMUTABLE));
+        assertThat(result.reasons, Matchers.hasSize(1));
+        MutableReasonDetail reason = result.reasons.iterator().next();
+        
+        assertThat(reason, FieldAssumptions.named("first3Chars").areModifiedAsPartOfAnUnobservableCachingStrategy());
     }
     
     @Test
@@ -127,5 +153,20 @@ public class FieldAssumptionsTest {
     
     protected static class CanSubclass {
         private final String mutabilityIsNothingToDoWithThisField = "unchangeable";
+    }
+    
+    private static final class ReassignsForCaching {
+        public final String someString;
+        private String first3Chars;
+        public ReassignsForCaching(String someString, String first3Chars) {
+            this.someString = someString;
+        }
+        
+        public String getFirst3Chars() {
+            if (first3Chars == null) {
+                first3Chars = someString.substring(0, 3);
+            }
+            return first3Chars;
+        }
     }
 }

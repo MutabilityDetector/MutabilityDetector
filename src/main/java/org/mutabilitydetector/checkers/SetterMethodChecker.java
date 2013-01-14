@@ -27,6 +27,7 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
+import org.mutabilitydetector.locations.FieldLocation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -163,8 +164,9 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
         }
 
         private void setIsImmutableResult(String fieldName) {
-            String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
-            setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+            setResult(format("Field [%s] can be reassigned within method [%s]", fieldName, this.name), 
+                      FieldLocation.fieldLocation(fieldName, fromInternalName(owner)), 
+                      MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
 
     }

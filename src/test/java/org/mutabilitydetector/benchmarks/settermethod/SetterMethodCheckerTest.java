@@ -28,6 +28,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmuta
 
 import java.math.BigDecimal;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,6 +59,8 @@ import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
+import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.FieldLocation;
 
 @RunWith(Theories.class)
 public class SetterMethodCheckerTest {
@@ -165,6 +168,14 @@ public class SetterMethodCheckerTest {
     @Test
     public void reassigningFieldWithNewedUpObjectShouldBeMutable() {
         assertThat(doCheck(MutableByAssigningFieldToNewedUpObject.class), areNotImmutable());
+    }
+    
+    @Test
+    public void codeLocationOfReasonIsAFieldLocation() throws Exception {
+        CodeLocation<?> location = doCheck(ReassignsSingleField.class).reasons.iterator().next().codeLocation();
+        
+        assertThat(location, Matchers.instanceOf(FieldLocation.class));
+        assertThat(((FieldLocation)location).fieldName(), is("reassigned"));
     }
 
     @DataPoints

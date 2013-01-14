@@ -61,7 +61,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <li><a href="#FieldAssumptions_UnmodifiableCopy">Safely copying into
  * collection field</a></li>
  * <li><a href="#FieldAssumptions_NotModfied">Mutable field never modified</a></li>
- * <li><a href="#FieldAssumptions_Caching">Caching values internally TODO</a></li>
+ * <li><a href="#FieldAssumptions_Caching">Caching values internally</a></li>
  * </ul>
  * </li>
  * <li><a href="#WritingAnAllowedReason">Writing your own allowed reason</a></li>
@@ -276,7 +276,8 @@ import org.mutabilitydetector.MutableReasonDetail;
  * 
  * <pre>
  * <code>
- * assertInstancesOf(MyImmutable.class, areImmutable(),
+ * assertInstancesOf(MyImmutable.class, 
+ *                   areImmutable(),
  *                   AllowedReason.provided(ShouldAlsoBeImmutable.class).isAlsoImmutable()); 
  * </code>
  * </pre>
@@ -310,7 +311,8 @@ import org.mutabilitydetector.MutableReasonDetail;
  * 
  * <pre>
  * <code>
- * assertInstancesOf(NonFinalField.class, areImmutable(),
+ * assertInstancesOf(NonFinalField.class, 
+ *                   areImmutable(),
  *                   AllowedReason.allowingNonFinalFields());
  * </code>
  * </pre>
@@ -349,7 +351,8 @@ import org.mutabilitydetector.MutableReasonDetail;
  * 
  * <pre>
  * <code>
- * assertInstancesOf(HasCollectionField.class, areImmutable(),
+ * assertInstancesOf(HasCollectionField.class, 
+ *                   areImmutable(),
  *                   AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
  * </code>
  * </pre>
@@ -358,7 +361,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * will suppress warnings generated when, for example, the field is a
  * {@link List} of mutable {@link Date}s.
  * 
- * <h4 id="#FieldAssumptions_NotModfied">Mutable field never modified"</h4>
+ * <h4 id="#FieldAssumptions_NotModfied">Mutable field never modified</h4>
  * While it is absolutely possible to build an immutable object with mutable
  * fields, Mutability Detector errs on the side of caution. Thus, your class
  * could have a field of a mutable type, which neither escapes, nor is mutated
@@ -399,9 +402,60 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <h4 id="#FieldAssumptions_Caching">Caching values internally</h4>
  * As with {@link String}, it is possible to reassign fields or mutate internal
  * state and still be immutable. As long as callers cannot observe the change
- * the class can be deemed immutable. 
+ * the class can be deemed immutable.
  * 
  * Consider the following class:
+ * 
+ * <pre>
+ * <code>
+ * public final class MutatesAsInternalCaching {
+ *     private final String myString;
+ *     private final String otherString;
+ *     private int lengthWhenConcatenated;
+ *     public MutatesAsInternalCaching(String myString, String otherString) {
+ *         this.myString = myString;
+ *         this.otherString = otherString;
+ *     }
+ *     
+ *     public int getConcatenatedLength() {
+ *         if (lengthWhenConcatenated == 0) {
+ *             lengthWhenConcatenated = myString.concat(otherString).length();
+ *         }
+ *         return lengthWhenConcatenated;
+ *     }
+ * }
+ * </code>
+ * </pre>
+ * 
+ * Here, the field <code>lengthWhenConcatenated</code> is computed lazily. While
+ * there is a field reassignment, which is a mutation, callers will never
+ * perceive the mutation, as the calculation is done on the first request. Even
+ * in a multithreaded environment, this is safe, and will result in no
+ * observable mutation. Since the result is computed from other immutable
+ * values, if multiple threads hit the race condition of seeing an empty value
+ * while another thread is computing the result, the field will always be set to
+ * the same value. Multiple assignments will appear as exactly one assignment,
+ * just as with a final field.
+ * <p>
+ * This is called a 'benign data race', and exists in {@link String}, with its
+ * {@link #hashCode()} method.
+ * <p>
+ * <b>WARNING: This technique should be used with care, as it is very easy to get
+ * wrong.</b>
+ * <p>
+ * To allow this in tests, use an assertion like the following:
+ * 
+ * <pre>
+ * <code>
+ * assertInstancesOf(MutatesAsInternalCaching.class,
+ *                   areImmutable(),
+ *                   AllowedReason.assumingFields("lengthWhenConcatenated").areModifiedAsPartOfAnUnobservableCachingStrategy());
+ * </code>
+ * </pre>
+ * 
+ * This will also allow the use of mutable types and collections, not just
+ * reassignments of primitive fields. Thus populating an array or collection for
+ * future caching should also be allowed with this matcher.
  * 
  * <h3 id="WritingAnAllowedReason">Writing your own allowed reasons</h3>
  * <p>

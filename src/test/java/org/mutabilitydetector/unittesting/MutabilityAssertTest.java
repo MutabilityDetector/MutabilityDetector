@@ -37,6 +37,7 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.DependsOnManyTypesBeingImmutable;
 import org.mutabilitydetector.benchmarks.mutabletofield.HasDateField;
+import org.mutabilitydetector.benchmarks.mutabletofield.MutatesAsInternalCaching;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasCollectionField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
@@ -249,6 +250,13 @@ public class MutabilityAssertTest {
         assertInstancesOf(HasDateField.class,
                           areImmutable(),
                           AllowedReason.assumingFields("myDate").areNotModifiedAndDoNotEscape());
+    }
+
+    @Test
+    public void canAllowInternalCachingWhichCausesUnobservableMutation() throws Exception {
+        assertInstancesOf(MutatesAsInternalCaching.class,
+                          areImmutable(),
+                          AllowedReason.assumingFields("lengthWhenConcatenated").areModifiedAsPartOfAnUnobservableCachingStrategy());
     }
 
 }
