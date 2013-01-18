@@ -19,9 +19,9 @@ public class Configurations {
      * @see Long
      * @see Float
      * @see Double
-     * @see Class
      * @see BigDecimal
      * @see BigInteger
+     * @see Class
      */
     public static final Configuration JDK_CONFIGURATION = new ConfigurationBuilder() {
         @Override
@@ -35,9 +35,9 @@ public class Configurations {
             hardcodeAsDefinitelyImmutable(Long.class);
             hardcodeAsDefinitelyImmutable(Float.class);
             hardcodeAsDefinitelyImmutable(Double.class);
-            hardcodeAsDefinitelyImmutable(Class.class);
             hardcodeAsDefinitelyImmutable(BigDecimal.class);
             hardcodeAsDefinitelyImmutable(BigInteger.class);
+            hardcodeAsDefinitelyImmutable(Class.class);
         }
     }.build();
     
