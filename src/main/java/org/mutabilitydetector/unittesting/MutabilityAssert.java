@@ -26,7 +26,7 @@ import java.util.List;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configuration;
-import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
@@ -481,7 +481,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * 
  * See also:
  * <ul>
- * <li>{@link ConfigurationBuilder#JDK_CONFIGURATION}</li>
+ * <li>{@link Configurations#JDK_CONFIGURATION}</li>
  * </ul>
  * 
  * <p>
@@ -602,29 +602,129 @@ import org.mutabilitydetector.MutableReasonDetail;
  * @see AnalysisResult
  * @see MutableReasonDetail
  * @see IsImmutable
- * 
  */
 public final class MutabilityAssert {
 
-    private MutabilityAssert() {
-    }
+    private MutabilityAssert() { }
 
     private final static MutabilityAsserter defaultAsserter = MutabilityAsserter.configured(OUT_OF_THE_BOX_CONFIGURATION);
 
+    /**
+     * Checks that the given class is immutable, or fails with an {@link AssertionError}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * MutabilityAssert.assertImmutable(HopefullyImmutable.class);
+     * </code></pre>
+     * 
+     * @see IsImmutable#IMMUTABLE
+     * @param expectedImmutableClass
+     */
     public static void assertImmutable(Class<?> expectedImmutableClass) {
         defaultAsserter.assertImmutable(expectedImmutableClass);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * or fails with an {@link AssertionError}.
+     * <p>
+     * The given matcher will be invoked with the {@link AnalysisResult}
+     * produced by Mutability Detector's analysis of the given class. The most
+     * common matchers can be found at {@link MutabilityMatchers}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * MutabilityAssert.assertImmutable(HopefullyImmutable.class, 
+     *                                  MutabilityMatchers.areImmutable());
+     * 
+     * MutabilityAssert.assertImmutable(HopefullyEffectivelyImmutable.class, 
+     *                                  MutabilityMatchers.areEffectivelyImmutable());
+     * 
+     * </code></pre>
+     * 
+     * @see MutabilityMatchers#areImmutable()
+     * @see MutabilityMatchers#areEffectivelyImmutable()
+     * @see Matcher
+     * @see AnalysisResult
+     * @see IsImmutable#IMMUTABLE
+     * @see IsImmutable#EFFECTIVELY_IMMUTABLE
+     */
     public static void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher) {
         defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * while allowing mismatches in the form of an allowed reason, or fails with
+     * an {@link AssertionError}.
+     * <p>
+     * The given matcher will be invoked with the {@link AnalysisResult}
+     * produced by Mutability Detector's analysis of the given class. The most
+     * common matchers can be found at {@link MutabilityMatchers}.
+     * <p>
+     * The given allowed reason will be used to determine if any of the
+     * {@link MutableReasonDetail} attached to the {@link AnalysisResult} have
+     * been explicitly permitted by the unit test. If any of the reasons have
+     * not been allowed, an AssertionError will be thrown.
+     * <p>
+     * Several out-of-the-box allowed reasons can be found at
+     * {@link AllowedReason}.
+     * <p>
+     * Example:
+     * 
+     * <pre>
+     * <code>
+     * MutabilityAssert.assertImmutable(HopefullyImmutable.class, 
+     *                                  MutabilityMatchers.areImmutable(),
+     *                                  AllowedReason.allowingForSubclassing());
+     * 
+     * 
+     * </code>
+     * </pre>
+     * 
+     * @see MutableReasonDetail
+     * @see AllowedReason
+     * @see AllowedReason#allowingForSubclassing()
+     * @see MutabilityMatchers#areImmutable()
+     */
     public static void assertInstancesOf(Class<?> clazz,
                                          Matcher<AnalysisResult> mutabilityMatcher,
                                          Matcher<MutableReasonDetail> allowing) {
         defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowing);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * while allowing mismatches in the form of allowed reasons, or fails with
+     * an {@link AssertionError}.
+     * <p>
+     * The given matcher will be invoked with the {@link AnalysisResult}
+     * produced by Mutability Detector's analysis of the given class. The most
+     * common matchers can be found at {@link MutabilityMatchers}.
+     * <p>
+     * The given allowed reason will be used to determine if any of the
+     * {@link MutableReasonDetail} attached to the {@link AnalysisResult} have
+     * been explicitly permitted by the unit test. If any of the reasons have
+     * not been allowed, an AssertionError will be thrown.
+     * <p>
+     * Several out-of-the-box allowed reasons can be found at
+     * {@link AllowedReason}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * MutabilityAssert.assertImmutable(HopefullyImmutable.class, 
+     *                                  MutabilityMatchers.areImmutable(),
+     *                                  AllowedReason.allowingForSubclassing(),
+     *                                  AllowedReason.allowingNonFinalFields());
+     * </code>
+     * </pre>
+     * 
+     * @see MutableReasonDetail
+     * @see AllowedReason
+     * @see AllowedReason#allowingForSubclassing()
+     * @see MutabilityMatchers#areImmutable()
+     */
     public static void assertInstancesOf(Class<?> clazz,
                                          Matcher<AnalysisResult> mutabilityMatcher,
                                          Matcher<MutableReasonDetail> allowingFirst,
@@ -633,6 +733,21 @@ public final class MutabilityAssert {
         defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * while allowing mismatches in the form of allowed reasons, or fails with
+     * an {@link AssertionError}.
+     * <p>
+     * Alternative version of
+     * {@link #assertInstancesOf(Class, Matcher, Matcher)} which takes more
+     * allowed reasons.
+     * 
+     * @see MutableReasonDetail
+     * @see AllowedReason
+     * @see AllowedReason#allowingForSubclassing()
+     * @see AllowedReason#allowingNonFinalFields()
+     * @see MutabilityMatchers#areImmutable()
+     */
     public static void assertInstancesOf(Class<?> clazz,
                                          Matcher<AnalysisResult> mutabilityMatcher,
                                          Matcher<MutableReasonDetail> allowingFirst,
@@ -642,6 +757,21 @@ public final class MutabilityAssert {
         defaultAsserter.assertInstancesOf(clazz, mutabilityMatcher, allowingFirst, allowingSecond, allowingThird);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * while allowing mismatches in the form of allowed reasons, or fails with
+     * an {@link AssertionError}.
+     * <p>
+     * Alternative version of
+     * {@link #assertInstancesOf(Class, Matcher, Matcher)} which takes more
+     * allowed reasons.
+     * 
+     * @see MutableReasonDetail
+     * @see AllowedReason
+     * @see AllowedReason#allowingForSubclassing()
+     * @see AllowedReason#allowingNonFinalFields()
+     * @see MutabilityMatchers#areImmutable()
+     */
     public static void assertInstancesOf(Class<?> clazz,
                                          Matcher<AnalysisResult> mutabilityMatcher,
                                          Matcher<MutableReasonDetail> allowingFirst,
@@ -657,6 +787,21 @@ public final class MutabilityAssert {
                                           allowingRest);
     }
 
+    /**
+     * Checks that the result of analysis satisfies the given {@link Matcher},
+     * while allowing mismatches in the form of allowed reasons, or fails with
+     * an {@link AssertionError}.
+     * <p>
+     * Alternative version of
+     * {@link #assertInstancesOf(Class, Matcher, Matcher)} which takes an
+     * iterable of allowed reasons.
+     * 
+     * @see MutableReasonDetail
+     * @see AllowedReason
+     * @see AllowedReason#allowingForSubclassing()
+     * @see AllowedReason#allowingNonFinalFields()
+     * @see MutabilityMatchers#areImmutable()
+     */
     public static void assertInstancesOf(Class<?> clazz,
                                          Matcher<AnalysisResult> mutabilityMatcher,
                                          Iterable<Matcher<MutableReasonDetail>> allowingAll) {

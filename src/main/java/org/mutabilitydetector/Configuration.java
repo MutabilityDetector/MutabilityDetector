@@ -68,7 +68,7 @@ public interface Configuration {
      * homepage</a>.
      * 
      * 
-     * @param exceptionPolicy
+     * @return ExceptionPolicy
      *            - how to respond to exceptions during analysis. Defaults to
      */
     ExceptionPolicy exceptionPolicy();

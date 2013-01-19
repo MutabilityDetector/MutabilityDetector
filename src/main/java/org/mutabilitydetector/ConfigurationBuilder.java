@@ -59,7 +59,7 @@ import com.google.common.collect.Sets;
  * java.lang.Integer (and other primitive wrapper types) and
  * java.math.BigDecimal.
  * 
- * @see ConfigurationBuilder#JDK_CONFIGURATION
+ * @see Configurations#JDK_CONFIGURATION
  * 
  */
 @NotThreadSafe
@@ -69,7 +69,7 @@ public abstract class ConfigurationBuilder {
      * Subclasses should override this method to configure analysis.
      * <p>
      * It is recommended that any custom {@link Configuration}'s merge with the
-     * {@link #OUT_OF_THE_BOX_CONFIGURATION} in order to remain consistent with
+     * {@link Configurations#OUT_OF_THE_BOX_CONFIGURATION} in order to remain consistent with
      * {@link MutabilityAssert}, and the command line settings. For example:
      * 
      * <pre>
@@ -92,10 +92,9 @@ public abstract class ConfigurationBuilder {
      * @see #hardcodeAsDefinitelyImmutable(String)
      * 
      * @see #mergeHardcodedResultsFrom(Configuration)
-     * 
      * @see #setExceptionPolicy(ExceptionPolicy)
      * 
-     * @see #OUT_OF_THE_BOX_CONFIGURATION
+     * @see Configurations#OUT_OF_THE_BOX_CONFIGURATION
      */
     public abstract void configure();
     
