@@ -90,7 +90,7 @@ public final class FieldAssumptions {
      * }
      * 
      *  // a warning will be raised because copy method, Guava's Lists.newArrayList(),  is unrecognised
-     *  assertImmutable(SafelyCopiesAndWraps.class, areImmutable());
+     *  assertInstancesOf(SafelyCopiesAndWraps.class, areImmutable());
      *  
      *  // use FieldAssumptions to insist the usage is safe
      *  assertInstancesOf(SafelyCopiesAndWraps.class, 
@@ -120,10 +120,66 @@ public final class FieldAssumptions {
         }
     }
 
+    /**
+     * Insists that a mutable field is used safely.
+     * <p>
+     * A requirement for immutability is
+     * "If the instance fields include references to mutable objects, don't allow those objects to be changed"
+     * [0]. This necessitates that any mutable fields are not modified (e.g. by
+     * calling a method which mutates it) and their reference is not published
+     * (where client code could invoke a mutating method). While greater care is
+     * needed, it is possible to create immutable objects composed of mutable
+     * fields.
+     * <p>
+     * Example usage:
+     * 
+     * <pre>
+     * <code>
+     * import java.util.Date;
+     * 
+     * &#064;Immutable
+     * public final class UsesMutableField {
+     *   private final Date myDate;
+     *   
+     *   public UsesMutableField(Date original) {
+     *     this.myDate = new Date(original.getTime());
+     *   }
+     *   
+     *   public Date getDate() {
+     *     // if we used 'return myDate;' we would be publishing reference
+     *     return new Date(myDate.getTime());
+     *   }
+     *   
+     *   // ... other methods, which never call myDate.setTime()
+     *   // if we called, e.g. setTime() we would be mutating the field
+     * }
+     * 
+     *  // a warning will be raised because myDate is of a mutable type, java.util.Date
+     *  assertInstancesOf(UsesMutableField.class, areImmutable());
+     *  
+     *  // use FieldAssumptions to insist the usage is safe
+     *  assertInstancesOf(UsesMutableField.class, 
+     *                    areImmutable(),
+     *                    assumingFields("myDate").areNotModifiedAndDoNotEscape());
+     * </code>
+     * </pre>
+     * <p>
+     * Note: this allowed reason also assumes the defensive copy of
+     * <code>original</code> into <code>myDate</code>, although there is
+     * currently no support for automatically detecting this.
+     * 
+     * <p>
+     * [0] <a href="http://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat">
+     *       A Strategy for Defining Immutable Objects</a>
+     * 
+     * @see MutabilityReason#MUTABLE_TYPE_TO_FIELD
+     * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
+     * @see MutabilityReason#ARRAY_TYPE_INHERENTLY_MUTABLE
+     */
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
         return new MutableFieldNotModifiedAndDoesntEscapeMatcher();
     }
-
+    
     private final class MutableFieldNotModifiedAndDoesntEscapeMatcher extends BaseMutableReasonDetailMatcher {
         @Override
         protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
