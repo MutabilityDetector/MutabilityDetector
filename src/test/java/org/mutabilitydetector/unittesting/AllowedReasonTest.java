@@ -28,7 +28,6 @@ import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
-import static org.mutabilitydetector.unittesting.AllowedReason.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 
 import org.hamcrest.Description;
@@ -38,6 +37,7 @@ import org.junit.Test;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
+import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 
 public class AllowedReasonTest {
 
@@ -72,7 +72,7 @@ public class AllowedReasonTest {
         MutableReasonDetail reason = newMutableReasonDetail("assigning abstract type (a.b.c)",
                                                             fromInternalName("a/b/c"),
                                                             ABSTRACT_TYPE_TO_FIELD);
-        assertThat(noReasonsAllowed(), not(allows(reason)));
+        assertThat(NoReasonsAllowed.noReasonsAllowed(), not(allows(reason)));
     }
     
     @Test
