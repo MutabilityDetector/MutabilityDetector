@@ -106,8 +106,6 @@ public final class AllowedReason {
     /**
      * Insists that non-final fields are acceptable. 
      * <p>
-     * Must be used if matching with {@link MutabilityMatchers#areEffectivelyImmutable()}.
-     * <p>
      * Please see the JavaDoc listed with {@link MutabilityAssert} for an
      * introduction on using this method.
      * <p>
@@ -134,7 +132,8 @@ public final class AllowedReason {
      *                    allowingNonFinalFields());
      * </code></pre>
      * <p>
-     * 
+     * Must be used if matching with {@link MutabilityMatchers#areEffectivelyImmutable()}.
+     * <p>
      * @see MutabilityAssert
      */
     public static AllowingNonFinalFields allowingNonFinalFields() {
@@ -143,6 +142,9 @@ public final class AllowedReason {
     
     /**
      * Allowed reasons for mutability warnings related to fields.
+     * <p>
+     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
+     * introduction on using this method.
      * <p>
      * Several warnings raised by Mutability Detector relate to the definition, or
      * the use, of a field in a class. For example: the definition of a field may
