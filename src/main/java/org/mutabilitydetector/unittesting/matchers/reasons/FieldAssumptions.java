@@ -10,26 +10,18 @@ import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTA
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
-import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.annotation.concurrent.Immutable;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.FieldLocation;
 import org.mutabilitydetector.unittesting.AllowedReason;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
-import org.mutabilitydetector.unittesting.MutabilityMatchers;
-
-import com.google.common.collect.Lists;
 
 /**
  * Allowed reasons for mutability warnings related to fields.
@@ -110,40 +102,41 @@ public final class FieldAssumptions {
      * This case will also work when the collection is declared (with generics)
      * to contain a mutable type.
      * 
+     * @see MutabilityReason#ABSTRACT_COLLECTION_TYPE_TO_FIELD
+     * @see MutabilityReason#ABSTRACT_TYPE_TO_FIELD
+     * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
      */
     public Matcher<MutableReasonDetail> areSafelyCopiedUnmodifiableCollectionsWithImmutableElements() {
         return new AssumeCopiedIntoUnmodifiable();
+    }
+
+    private final class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
+        @Override
+        protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
+            return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
+                    && reasonDetail.reason().isOneOf(ABSTRACT_COLLECTION_TYPE_TO_FIELD,
+                                                     ABSTRACT_TYPE_TO_FIELD,
+                                                     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+        }
     }
 
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
         return new MutableFieldNotModifiedAndDoesntEscapeMatcher();
     }
 
-    public Matcher<MutableReasonDetail> areModifiedAsPartOfAnUnobservableCachingStrategy() {
-        return new FieldModifiedAsPartOfAnUnobservableCachingStrategy();
-    }
-
-    private class FieldLocationWithNameMatcher extends TypeSafeMatcher<FieldLocation> {
-        @Override
-        public void describeTo(Description description) {
-        }
-
-        @Override
-        protected boolean matchesSafely(FieldLocation locationOfMutability) {
-            return fieldNames.contains(locationOfMutability.fieldName());
-        }
-
-    }
-
     private final class MutableFieldNotModifiedAndDoesntEscapeMatcher extends BaseMutableReasonDetailMatcher {
         @Override
         protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
-
+    
             return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
                     && reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD,
                                                      COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE,
                                                      ARRAY_TYPE_INHERENTLY_MUTABLE);
         }
+    }
+
+    public Matcher<MutableReasonDetail> areModifiedAsPartOfAnUnobservableCachingStrategy() {
+        return new FieldModifiedAsPartOfAnUnobservableCachingStrategy();
     }
 
     private final class FieldModifiedAsPartOfAnUnobservableCachingStrategy extends BaseMutableReasonDetailMatcher {
@@ -159,13 +152,15 @@ public final class FieldAssumptions {
         }
     }
 
-    private final class AssumeCopiedIntoUnmodifiable extends BaseMutableReasonDetailMatcher {
+    private class FieldLocationWithNameMatcher extends TypeSafeMatcher<FieldLocation> {
         @Override
-        protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
-            return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
-                    && reasonDetail.reason().isOneOf(ABSTRACT_COLLECTION_TYPE_TO_FIELD,
-                                                     ABSTRACT_TYPE_TO_FIELD,
-                                                     COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+        public void describeTo(Description description) {
         }
+    
+        @Override
+        protected boolean matchesSafely(FieldLocation locationOfMutability) {
+            return fieldNames.contains(locationOfMutability.fieldName());
+        }
+    
     }
 }
