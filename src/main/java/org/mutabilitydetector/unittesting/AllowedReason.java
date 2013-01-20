@@ -114,16 +114,6 @@ public final class AllowedReason {
     }
 
     /**
-     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
-     * introduction on using this method.
-     * 
-     * @see MutabilityAssert
-     */
-    public static NoReasonsAllowed noReasonsAllowed() {
-        return NoReasonsAllowed.noReasonsAllowed();
-    }
-
-    /**
      * Allowed reasons for mutability warnings related to fields.
      * <p>
      * Several warnings raised by Mutability Detector relate to the definition, or
