@@ -124,23 +124,82 @@ public final class AllowedReason {
     }
 
     /**
-     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
-     * introduction on using this method.
+     * Allowed reasons for mutability warnings related to fields.
+     * <p>
+     * Several warnings raised by Mutability Detector relate to the definition, or
+     * the use, of a field in a class. For example: the definition of a field may
+     * include declaring that the type of the field is mutable; or the use of a
+     * field may include reassigning it outwith the constructor.
+     * {@link FieldAssumptions} provides several methods which allow this category
+     * of reasons.
+     * <p>
+     * Reasons are allowed by matching the field by it's name and then
+     * matching the reasons that particular field causes mutability.
+     * <p>
+     * Example usage:
+     * 
+     * <pre><code>
+     * &#064;Immutable
+     * public final class UsesInternalMapForCaching {
+     *   private final Map<String, String> internalCache = new HashMap<String, String>();
+     *   // ... constructor, and methods which mutate the map for caching
+     * }
+     * 
+     *  // a warning will be raised because field 'internalCache' is a mutable type.
+     *  assertImmutable(UsesInternalMapForCaching.class, areImmutable());
+     *  
+     *  // use FieldAssumptions to insist the usage is safe
+     *  assertImmutable(UsesInternalMapForCaching.class, 
+     *                  areImmutable(),
+     *                  assumingFields("internalCache").areModifiedAsPartOfAnUnobservableCachingStrategy());
+     * </code></pre>
+     * <p>
+     * This method is also available in Iterable$lt;String&gt; form {@link #assumingFields(Iterable))}.
+     * 
      * 
      * @see MutabilityAssert
-     */
+     */ 
     public static FieldAssumptions assumingFields(String firstFieldName, String... otherFieldNames) {
         return FieldAssumptions.named(firstFieldName, otherFieldNames);
     }
 
     /**
-     * Please see the JavaDoc listed with {@link MutabilityAssert} for an
-     * introduction on using this method.
+     * Allowed reasons for mutability warnings related to fields.
+     * <p>
+     * Several warnings raised by Mutability Detector relate to the definition, or
+     * the use, of a field in a class. For example: the definition of a field may
+     * include declaring that the type of the field is mutable; or the use of a
+     * field may include reassigning it outwith the constructor.
+     * {@link FieldAssumptions} provides several methods which allow this category
+     * of reasons.
+     * <p>
+     * Reasons are allowed by matching the field by it's name and then
+     * matching the reasons that particular field causes mutability.
+     * <p>
+     * Example usage:
+     * 
+     * <pre><code>
+     * &#064;Immutable
+     * public final class UsesInternalMapForCaching {
+     *   private final Map<String, String> internalCache = new HashMap<String, String>();
+     *   // ... constructor, and methods which mutate the map for caching
+     * }
+     * 
+     *  // a warning will be raised because field 'internalCache' is a mutable type.
+     *  assertImmutable(UsesInternalMapForCaching.class, areImmutable());
+     *  
+     *  // use FieldAssumptions to insist the usage is safe
+     *  assertImmutable(UsesInternalMapForCaching.class, 
+     *                  areImmutable(),
+     *                  assumingFields(Arrays.asList("internalCache")).areModifiedAsPartOfAnUnobservableCachingStrategy());
+     * </code></pre>
+     * <p>
+     * This method is also available in varargs form {@link #assumingFields(String, String...)}.
+     * 
      * 
      * @see MutabilityAssert
-     */
+     */ 
     public static FieldAssumptions assumingFields(Iterable<String> named) {
         return FieldAssumptions.named(named);
     }
-
 }

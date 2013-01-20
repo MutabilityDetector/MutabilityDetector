@@ -353,7 +353,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <code>
  * assertInstancesOf(HasCollectionField.class, 
  *                   areImmutable(),
- *                   AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
+ *                   AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionsWithImmutableElements());
  * </code>
  * </pre>
  * 

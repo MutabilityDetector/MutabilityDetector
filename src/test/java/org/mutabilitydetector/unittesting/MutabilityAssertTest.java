@@ -242,7 +242,7 @@ public class MutabilityAssertTest {
     public void canAllowCollectionFieldsDeemedToHaveBeenSafelyCopiedAndWrappedInUnmodifiable() throws Exception {
         assertInstancesOf(HasCollectionField.class, 
                           areImmutable(),
-                          AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionWithImmutableTypes());
+                          AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionsWithImmutableElements());
     }
     
     @Test
