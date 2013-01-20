@@ -79,7 +79,7 @@ public final class FieldAssumptions {
      * 
      * &#064;Immutable
      * public final class SafelyCopiesAndWraps {
-     *   private final List<String> unmodifiableCopy;
+     *   private final List&lt;String&gt; unmodifiableCopy;
      *   
      *   public SafelyCopiesAndWraps(List<String> original) {
      *     // use Guava method to copy 
@@ -191,6 +191,68 @@ public final class FieldAssumptions {
         }
     }
 
+    /**
+     * Insists that while a field may have been mutated, changes will not be
+     * observable.
+     * <p>
+     * As described in the documentation for Java Concurrency In Practice's
+     * &#064;Immutable annotation, objects may maintain mutable state, as long
+     * as the mutation is internal, and cannot be observed by callers. This can
+     * be useful for providing caching within the object instance. A classic
+     * example of this is the Open JDK's implementation of
+     * {@link java.lang.String}. Each instance uses the <code>hash</code> field
+     * to cache the result of {@link #hashCode()}. The hash field is computed
+     * lazily, and the field is reassigned (a mutation), however clients of
+     * {@link String} can not observe the mutation as it is internal.
+     * <p>
+     * While this technique is tricky, it can be very useful for performance
+     * reasons. Unfortunately, Mutability Detector cannot tell the difference
+     * between: lazily storing the result of a computation for future lookup;
+     * and a setter method. 
+     * <p>
+     * This allowed reason will permit mutable fields, and also reassigning field references.
+     * <p>
+     * Example usage:
+     * <pre>
+     * <code>
+     * import java.util.Date;
+     * 
+     * &#064;Immutable
+     * public static final class ReassignsHashCode {
+     *   private final String name;
+     *   private final Integer age;
+     *   private int hash;
+     *     
+     *   public ReassignsHashCode(String name, Integer age) {
+     *     this.name = name;
+     *     this.age = age;
+     *   }
+     *     
+     *   &#064;Override
+     *   public int hashCode() {
+     *     if (hash == 0) {
+     *         hash = name.hashCode() + age.hashCode();
+     *     }
+     *     return hash;
+     *   }
+     * }
+     * 
+     *  // a warning will be raised because the hash field is reassigned, as with a setter method
+     *  assertInstancesOf(ReassignsHashCode.class, areImmutable());
+     *  
+     *  // use FieldAssumptions to insist the usage is safe
+     *  assertInstancesOf(ReassignsHashCode.class, 
+     *                    areImmutable(),
+     *                    assumingFields("hash").areModifiedAsPartOfAnUnobservableCachingStrategy());
+     * </code>
+     * </pre>
+     * 
+     * @see MutabilityReason#MUTABLE_TYPE_TO_FIELD
+     * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
+     * @see MutabilityReason#ARRAY_TYPE_INHERENTLY_MUTABLE
+     * @see MutabilityReason#FIELD_CAN_BE_REASSIGNED
+     * @see MutabilityReason#NON_FINAL_FIELD
+     */
     public Matcher<MutableReasonDetail> areModifiedAsPartOfAnUnobservableCachingStrategy() {
         return new FieldModifiedAsPartOfAnUnobservableCachingStrategy();
     }
