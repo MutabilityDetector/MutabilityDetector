@@ -104,15 +104,43 @@ public final class AllowedReason {
     }
 
     /**
+     * Insists that non-final fields are acceptable. 
+     * <p>
+     * Must be used if matching with {@link MutabilityMatchers#areEffectivelyImmutable()}.
+     * <p>
      * Please see the JavaDoc listed with {@link MutabilityAssert} for an
      * introduction on using this method.
+     * <p>
+     * Example usage:
+     * <pre><code>
+     * &#064;Immutable
+     * public final class HasNonFinalField {
+     *   private int someValue;
+     *   
+     *   public HasNonFinalField(int value) {
+     *     this.someValue = value;
+     *   }
+     *   
+     *   // may have getter methods, but definitely no setter methods or reassignments.
+     * }
+     * 
+     *  // a warning will be raised because field 'someValue' is not declared final
+     *  assertInstancesOf(HasNonFinalField.class, areImmutable());
+     *  
+     *  // use AllowingNonFinalFields to permit this
+     *  // must be used if matching result with areEffectivelyImmutable()
+     *  assertInstancesOf(UsesInternalMapForCaching.class, 
+     *                    areImmutable(),
+     *                    allowingNonFinalFields());
+     * </code></pre>
+     * <p>
      * 
      * @see MutabilityAssert
      */
     public static AllowingNonFinalFields allowingNonFinalFields() {
         return new AllowingNonFinalFields();
     }
-
+    
     /**
      * Allowed reasons for mutability warnings related to fields.
      * <p>
@@ -136,12 +164,12 @@ public final class AllowedReason {
      * }
      * 
      *  // a warning will be raised because field 'internalCache' is a mutable type.
-     *  assertImmutable(UsesInternalMapForCaching.class, areImmutable());
+     *  assertInstancesOf(UsesInternalMapForCaching.class, areImmutable());
      *  
      *  // use FieldAssumptions to insist the usage is safe
-     *  assertImmutable(UsesInternalMapForCaching.class, 
-     *                  areImmutable(),
-     *                  assumingFields("internalCache").areModifiedAsPartOfAnUnobservableCachingStrategy());
+     *  assertInstancesOf(UsesInternalMapForCaching.class, 
+     *                    areImmutable(),
+     *                    assumingFields("internalCache").areModifiedAsPartOfAnUnobservableCachingStrategy());
      * </code></pre>
      * <p>
      * This method is also available in Iterable$lt;String&gt; form {@link #assumingFields(Iterable))}.
