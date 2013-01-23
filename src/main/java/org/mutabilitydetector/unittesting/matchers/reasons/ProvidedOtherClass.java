@@ -33,7 +33,7 @@ import org.mutabilitydetector.locations.Dotted;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
-public class ProvidedOtherClass {
+public final class ProvidedOtherClass {
 
     private final Iterable<Dotted> dottedClassNames;
 
@@ -53,12 +53,148 @@ public class ProvidedOtherClass {
         return new ProvidedOtherClass(classNames);
     }
 
+    /**
+     * Assumes that the selected type is immutable, preventing warnings related
+     * to transitive mutability.
+     * <p>
+     * One common way for classes to be rendered mutable is to contain a mutable
+     * field. Another way is that the class is extensible (non-final). The
+     * interaction of these rules can occasionally conflict with the notion of
+     * abstraction. For example, consider the following classes:
+     * 
+     * <pre>
+     * </code>
+     *  // implementations MUST be immutable
+     *  public interface Named {
+     *      String getName();
+     *  }
+     *  
+     *  public final class HasSomethingNamed {
+     *      private final Named named;
+     *      public HasSomethingNamed(Named named) {
+     *          this.named = named;
+     *      }
+     *  
+     *      public String getNameOfYourThing() {
+     *          return this.named.getName();
+     *      }
+     *  }
+     * </code>
+     * </pre>
+     * 
+     * In this contrived example, the interface Named is abstracting something.
+     * It would be preferable to be able to depend on that abstraction, rather
+     * than a concrete implementation. Unfortunately, any implementation of
+     * Named <strong>could</strong> violate the condition that it must be
+     * immutable. If the Named implementation given to the constructor of
+     * HasSomethingNamed is actually mutable, it causes HasSomething named to be
+     * mutable as well. Consider this code:
+     * 
+     * <pre>
+     * </code>
+     * SneakyMutableNamed n = new SneakyMutableNamed("Jimmy");
+     * HasSomethingNamed h = new HasSomethingNamed(n);
+     * 
+     * String nameOnFirstCall = h.getNameOfYourThing();
+     * n.myReassignableName = "Bobby";
+     * String nameOnSecondCall = h.getNameOfYourThing();
+     * </code>
+     * </pre>
+     * 
+     * Here, because a sneaky subclass of Named is mutated, the instance of
+     * HasSomethingNamed has been observed to change (getNameOfYourThing() first
+     * returns "Jimmy" then "Bobby").
+     * <p>
+     * Despite this limitation, it can still be preferable that the abstract
+     * class is given as a parameter. Perhaps you are able to trust that all
+     * implementations <strong>are</strong> immutable. In that case, Mutability
+     * Detector raising a warning on HasSomethingNamed would be considered a
+     * false positive. This reason allows the test to pass.
+     * <p>
+     * Example usage:
+     * 
+     * <pre><code>
+     * assertInstancesOf(HasSomethingNamed.class,
+     *                   areImmutable(),
+     *                   AllowedReason.provided(Named.class).isAlsoImmutable());
+     * </pre></code>
+     * 
+     * Not that this also allows a field which is a collection type, with Named as a generic element type.
+     */
     public Matcher<MutableReasonDetail> isAlsoImmutable() {
         final Matcher<MutableReasonDetail> allowGenericTypes = new AllowedIfOtherClassIsGenericTypeOfCollectionField(dottedClassNames);
         
         return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, toMatcher())));
     }
 
+    /**
+     * Assumes that the selected type is immutable, preventing warnings related
+     * to transitive mutability.
+     * <p>
+     * One common way for classes to be rendered mutable is to contain a mutable
+     * field. Another way is that the class is extensible (non-final). The
+     * interaction of these rules can occasionally conflict with the notion of
+     * abstraction. For example, consider the following classes:
+     * 
+     * <pre>
+     * </code>
+     *  // implementations MUST be immutable
+     *  public interface Named {
+     *      String getName();
+     *  }
+     *  
+     *  public final class HasSomethingNamed {
+     *      private final Named named;
+     *      public HasSomethingNamed(Named named) {
+     *          this.named = named;
+     *      }
+     *  
+     *      public String getNameOfYourThing() {
+     *          return this.named.getName();
+     *      }
+     *  }
+     * </code>
+     * </pre>
+     * 
+     * In this contrived example, the interface Named is abstracting something.
+     * It would be preferable to be able to depend on that abstraction, rather
+     * than a concrete implementation. Unfortunately, any implementation of
+     * Named <strong>could</strong> violate the condition that it must be
+     * immutable. If the Named implementation given to the constructor of
+     * HasSomethingNamed is actually mutable, it causes HasSomething named to be
+     * mutable as well. Consider this code:
+     * 
+     * <pre>
+     * </code>
+     * SneakyMutableNamed n = new SneakyMutableNamed("Jimmy");
+     * HasSomethingNamed h = new HasSomethingNamed(n);
+     * 
+     * String nameOnFirstCall = h.getNameOfYourThing();
+     * n.myReassignableName = "Bobby";
+     * String nameOnSecondCall = h.getNameOfYourThing();
+     * </code>
+     * </pre>
+     * 
+     * Here, because a sneaky subclass of Named is mutated, the instance of
+     * HasSomethingNamed has been observed to change (getNameOfYourThing() first
+     * returns "Jimmy" then "Bobby)".
+     * <p>
+     * Despite this limitation, it can still be preferable that the abstract
+     * class is given as a parameter. Perhaps you are able to trust that all
+     * implementations <strong>are</strong> immutable. In that case, Mutability
+     * Detector raising a warning on HasSomethingNamed would be considered a
+     * false positive. This reason allows the test to pass.
+     * <p>
+     * Example usage:
+     * 
+     * <pre><code>
+     * assertInstancesOf(HasSomethingNamed.class,
+     *                   areImmutable(),
+     *                   AllowedReason.provided(Named.class).areAlsoImmutable());
+     * </pre></code>
+     * 
+     * Not that this also allows a field which is a collection type, with Named as a generic element type.
+     */
     public Matcher<MutableReasonDetail> areAlsoImmutable() {
         return isAlsoImmutable();
     }
