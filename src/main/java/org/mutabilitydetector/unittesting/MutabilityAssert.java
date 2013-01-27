@@ -318,7 +318,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </code>
  * </pre>
  * 
- * <h4 id="#FieldAssumptions_UnmodifiableCopy">Safely copying into collection
+ * <h4 id="FieldAssumptions_UnmodifiableCopy">Safely copying into collection
  * field</h4>
  * Fields of collection types are normally interfaces (e.g. List, Set,
  * Iterable), and assigning these types to a field will result in a warning.
@@ -362,7 +362,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * will suppress warnings generated when, for example, the field is a
  * {@link List} of mutable {@link Date}s.
  * 
- * <h4 id="#FieldAssumptions_NotModfied">Mutable field never modified</h4>
+ * <h4 id="FieldAssumptions_NotModfied">Mutable field never modified</h4>
  * While it is absolutely possible to build an immutable object with mutable
  * fields, Mutability Detector errs on the side of caution. Thus, your class
  * could have a field of a mutable type, which neither escapes, nor is mutated
@@ -400,7 +400,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </code>
  * </pre>
  * 
- * <h4 id="#FieldAssumptions_Caching">Caching values internally</h4>
+ * <h4 id="FieldAssumptions_Caching">Caching values internally</h4>
  * As with {@link String}, it is possible to reassign fields or mutate internal
  * state and still be immutable. As long as callers cannot observe the change
  * the class can be deemed immutable.
