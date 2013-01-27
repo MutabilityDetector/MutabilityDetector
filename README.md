@@ -22,7 +22,7 @@ To use Mutability Detector directly, either from the command line, at runtime in
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector</artifactId>
-        <version>0.8</version>
+        <version>0.9</version>
         <scope>test</scope>
     </dependency>
 
@@ -53,7 +53,7 @@ The output is a list of the analysed classes against the result of asking "Is im
 The command line has the following usage:
 
 
-    $ java -jar MutabilityDetector-0.8.jar --help
+    $ java -jar MutabilityDetector-0.9.jar --help
     usage: MutabilityDetector
     -cl,--classlist <filename>   Only report results on the classes listed
                                   within <filename>. Currently this option
