@@ -26,6 +26,7 @@ import java.util.List;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configuration;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
@@ -602,6 +603,10 @@ import org.mutabilitydetector.MutableReasonDetail;
  * @see AnalysisResult
  * @see MutableReasonDetail
  * @see IsImmutable
+ * @see Configuration
+ * @see Configurations#OUT_OF_THE_BOX_CONFIGURATION
+ * @see ConfigurationBuilder
+ * @see MutabilityReason
  */
 public final class MutabilityAssert {
 
