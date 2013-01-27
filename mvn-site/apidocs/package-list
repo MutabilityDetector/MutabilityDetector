@@ -3,10 +3,10 @@ org.mutabilitydetector.asmoverride
 org.mutabilitydetector.checkers
 org.mutabilitydetector.checkers.info
 org.mutabilitydetector.checkers.util
+org.mutabilitydetector.classloading
 org.mutabilitydetector.cli
 org.mutabilitydetector.locations
 org.mutabilitydetector.unittesting
 org.mutabilitydetector.unittesting.internal
 org.mutabilitydetector.unittesting.matchers
 org.mutabilitydetector.unittesting.matchers.reasons
-org.mutabilitydetector.visitor
