@@ -22,44 +22,29 @@ import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.CARRY_ON;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
-import org.mutabilitydetector.asmoverride.FileBasedTypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.classpath.RegExpResourceFilter;
-import com.google.common.collect.MapMaker;
-import com.google.common.io.InputSupplier;
 
 /**
  * Runs an analysis configured by the given classpath and options.
@@ -125,23 +110,6 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                        .format(completedSession.getResults(), completedSession.getErrors());
     }
 
-    @SuppressWarnings("unused") 
-    private NonClassLoadingVerifierFactory createGuavaVerifierFactory(String[] findResources) {
-        return new NonClassLoadingVerifierFactory(
-                new GuavaIsAssignableFromCachingTypeHierarchyReader(
-                        new GuavaCachingTypeHierarchyReader(new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
-                                                            findResources.length)));
-    }
-    @SuppressWarnings("unused")
-    private NonClassLoadingVerifierFactory createVerifierFactory(String[] findResources) {
-        return new NonClassLoadingVerifierFactory(
-                new IsAssignableFromCachingTypeHierarchyReader(
-                        new CachingTypeHierarchyReader(
-                                new FileBasedTypeHierarchyReader(getClassPathFileSuppliers(findResources)),
-                                new MapMaker().initialCapacity(findResources.length).<Type, TypeHierarchy>makeMap())));
-    }
-    
-    
     private ClassLoadingVerifierFactory createClassLoadingVerifierFactory(String[] classPathFiles) {
         return new ClassLoadingVerifierFactory(
                 new CachingAnalysisClassLoader(
@@ -160,20 +128,6 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
             }
         }
         return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
-    }
-
-    private Map<Dotted, InputSupplier<InputStream>> getClassPathFileSuppliers(String[] findResources) {
-        Map<Dotted, InputSupplier<InputStream>> classFileInputMap = new ConcurrentHashMap<Dotted, InputSupplier<InputStream>>(findResources.length);
-
-        for (final String resourcePath : findResources) {
-            classFileInputMap.put(dotted(resourcePath), new InputSupplier<InputStream>() {
-                @Override
-                public InputStream getInput() throws IOException {
-                    return classpath.getResourceAsStream(resourcePath);
-                }
-            });
-        }
-        return classFileInputMap;
     }
 
     public static void main(String[] args) {

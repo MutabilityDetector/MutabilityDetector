@@ -41,7 +41,6 @@ import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
-import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
 
 @Ignore
 public class TestUtil {
@@ -100,10 +99,6 @@ public class TestUtil {
 
     public static AnalysisClassLoader testingAnalysisClassLoader() {
         return new CachingAnalysisClassLoader(new ClassForNameWrapper());
-    }
-
-    public static TypeHierarchyReader testingTypeHierarchyReader() {
-        return new TypeHierarchyReader();
     }
 
     public static AsmVerifierFactory testingVerifierFactory() {
