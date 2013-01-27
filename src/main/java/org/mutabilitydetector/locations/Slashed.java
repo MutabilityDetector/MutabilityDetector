@@ -34,6 +34,11 @@ public final class Slashed extends ClassName {
         Slashed other = (Slashed) obj;
         return asString().equals(other.asString());
     }
+    
+    @Override
+    public int hashCode() {
+        return asString().hashCode();
+    }
 
     public Dotted toDotted() {
         return Dotted.fromSlashed(this);

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -107,8 +108,8 @@ public abstract class ConfigurationBuilder {
             }
     };
 
-    private Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
-        @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
+    private static final Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
+        @Override public AnalysisResult apply(@Nonnull Wrapper<AnalysisResult> input) { return input.get(); }
     };
 
     

@@ -24,7 +24,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class ClassIdentifier {
 
-    private Dotted dotted;
+    private final Dotted dotted;
 
     private ClassIdentifier(Dotted className) {
         this.dotted = className;

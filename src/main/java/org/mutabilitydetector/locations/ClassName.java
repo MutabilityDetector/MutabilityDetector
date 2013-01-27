@@ -23,12 +23,9 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class ClassName {
     private final String asString;
-    private final int hashCode;
 
     public ClassName(@Nonnull String className) {
         this.asString = className;
-        
-        this.hashCode = className.hashCode();
     }
 
     public String asString() {
@@ -42,7 +39,7 @@ public abstract class ClassName {
 
     @Override
     public int hashCode() {
-        return hashCode;
+        return asString.hashCode();
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import org.mutabilitydetector.locations.Dotted;
@@ -98,20 +99,20 @@ public final class AnalysisResult {
         return analysisResult(dottedClassName, IsImmutable.IMMUTABLE);
     }
     
-    public static final Predicate<AnalysisResult> forClass(final Dotted className) {
-        return new Predicate<AnalysisResult>() { @Override public boolean apply(AnalysisResult input) {
+    public static final Predicate<AnalysisResult> forClass(@Nonnull final Dotted className) {
+        return new Predicate<AnalysisResult>() { @Override public boolean apply(@Nonnull AnalysisResult input) {
             return input.dottedClassName.equals(className.asString());
         }};
     }
 
     public static final Function<AnalysisResult, Dotted> TO_DOTTED_CLASSNAME = new Function<AnalysisResult, Dotted>() {
-        @Override public Dotted apply(AnalysisResult input) {
+        @Override public Dotted apply(@Nonnull AnalysisResult input) {
             return dotted(input.dottedClassName);
         }
     };
 
     public static final Function<AnalysisResult, String> TO_CLASSNAME = new Function<AnalysisResult, String>() {
-        @Override public String apply(AnalysisResult input) {
+        @Override public String apply(@Nonnull AnalysisResult input) {
             return input.dottedClassName;
         }
     };

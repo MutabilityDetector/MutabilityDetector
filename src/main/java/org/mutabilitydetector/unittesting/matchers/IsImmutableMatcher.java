@@ -26,7 +26,7 @@ import org.mutabilitydetector.IsImmutable;
 
 public final class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<AnalysisResult> {
     private final IsImmutable isImmutable;
-    private AnalysisResult result;
+    private AnalysisResult result = null;
 
     private IsImmutableMatcher(IsImmutable isImmutable) {
         this.isImmutable = isImmutable;

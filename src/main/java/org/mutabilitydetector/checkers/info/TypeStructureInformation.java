@@ -46,14 +46,10 @@ public final class TypeStructureInformation implements AnalysisInformation {
     }
 
     private Boolean getResultFrom(Dotted className, Map<Dotted, Boolean> resultMap) {
-        Boolean result = false;
-        if (resultMap.containsKey(className)) {
-            result = resultMap.get(className);
-        } else {
+        if (!resultMap.containsKey(className)) {
             runCheckerAndPopulateResultMaps(className);
-            result = resultMap.get(className);
         }
-        return result;
+        return resultMap.get(className);
     }
 
     public boolean isTypeAbstract(Dotted className) {

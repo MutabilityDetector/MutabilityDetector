@@ -65,35 +65,30 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends Abstra
                                                  BasicValue stackValue) {
             if (isInvalidStackValue(stackValue)) { return; }
             
-            checkIfClassIsMutable(fieldInsnNode, stackValue.getType());
-        }
-        
-        private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
-            int sort = typeAssignedToField.getSort();
-            String fieldName = fieldInsnNode.name;
-
-            switch (sort) {
-            case Type.OBJECT:
-                Dotted fieldClass = dotted(typeAssignedToField.getInternalName());
-                
-                if (jdkCollectionTypes.isCollectionType(fieldClass)) {
-                    String fieldSignature = fieldSignatures.get(fieldInsnNode.name);
-                    CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);
-                    
-                    Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;
-                    
-                    if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
-                        setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
-                                  fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
-                                  MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
-                    }
-                }
-
-            default:
-                return;
+            Type typeAssignedToField = stackValue.getType();
+            if (typeAssignedToField.getSort() == Type.OBJECT) {
+                checkIfClassIsMutable(fieldInsnNode, typeAssignedToField);
             }
         }
 
+        private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
+            Dotted fieldClass = dotted(typeAssignedToField.getInternalName());
+            
+            if (jdkCollectionTypes.isCollectionType(fieldClass)) {
+                String fieldName = fieldInsnNode.name;
+                String fieldSignature = fieldSignatures.get(fieldName);
+                CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);
+                
+                Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;
+                
+                if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
+                    setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                              fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                              MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+                }
+            }
+        }
+        
         private boolean anyGenericParameterTypesAreMutable(Iterable<GenericType> genericParameters) {
             for (GenericType genericType : genericParameters) {
                 if (genericType.equals(GenericType.wildcard())) {

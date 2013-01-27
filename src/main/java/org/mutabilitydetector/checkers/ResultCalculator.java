@@ -16,7 +16,6 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static java.lang.Integer.valueOf;
 import static org.mutabilitydetector.IsImmutable.COULD_NOT_ANALYSE;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
@@ -24,8 +23,11 @@ import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.mutabilitydetector.IsImmutable;
 
+@Immutable
 public final class ResultCalculator {
     
     public IsImmutable calculateImmutableStatus(Map<IsImmutable, Integer> results) {
@@ -49,10 +51,6 @@ public final class ResultCalculator {
     }
 
     private int getNumOfResult(Map<IsImmutable, Integer> results, IsImmutable resultType) {
-        if (!results.containsKey(resultType)) { return valueOf(0); }
-
-        Integer numOfResultType = valueOf(results.get(resultType));
-        
-        return (numOfResultType != null) ? numOfResultType.intValue() : valueOf(0);
+        return results.containsKey(resultType) ? results.get(resultType) : 0;
     }
 }

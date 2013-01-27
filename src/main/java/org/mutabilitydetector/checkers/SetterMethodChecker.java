@@ -133,20 +133,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
             if (varStackSnapshot.thisObjectWasAddedToStack()) {
                 // Throwing an NPE, assuming it's mutable for now.
                 setIsImmutableResult(fieldInsnNode.name);
-                
-//                int indexOfOwningObject = varStackSnapshot.indexOfOwningObject();
-//                if (isThisObject(indexOfOwningObject)) {
-//                    setIsImmutableResult(fieldInsnNode.name);
-//                } else {
-//                    // Setting field on other instance of 'this' type
-//                }
-
             }
-        }
-
-        @SuppressWarnings("unused")
-        private boolean isThisObject(int indexOfOwningObject) {
-            return indexOfOwningObject == 0;
         }
 
         @Override

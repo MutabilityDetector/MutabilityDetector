@@ -28,7 +28,6 @@ public class PlainTextClassListToReportReader implements ClassListToReportCollec
 
     public PlainTextClassListToReportReader(BufferedReader reader) {
         this.reader = reader;
-
     }
 
     @Override

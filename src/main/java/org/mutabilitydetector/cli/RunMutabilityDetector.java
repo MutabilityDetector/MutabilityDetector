@@ -125,7 +125,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                        .format(completedSession.getResults(), completedSession.getErrors());
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") 
     private NonClassLoadingVerifierFactory createGuavaVerifierFactory(String[] findResources) {
         return new NonClassLoadingVerifierFactory(
                 new GuavaIsAssignableFromCachingTypeHierarchyReader(

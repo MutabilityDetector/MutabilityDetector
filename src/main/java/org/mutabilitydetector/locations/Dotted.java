@@ -17,6 +17,7 @@
 
 package org.mutabilitydetector.locations;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Function;
@@ -37,12 +38,17 @@ public final class Dotted extends ClassName {
         return asString().equals(other.asString());
     }
     
+    @Override
+    public int hashCode() {
+        return asString().hashCode();
+    }
+    
     public static final Function<String, Dotted> STRING_NAME_TO_DOTTED = new Function<String, Dotted>() {
-        @Override public Dotted apply(String className) { return dotted(className); }
+        @Override public Dotted apply(@Nonnull String className) { return dotted(className); }
     };
 
     public static final Function<Class<?>, Dotted> CLASS_TO_DOTTED = new Function<Class<?>, Dotted>() {
-        @Override public Dotted apply(Class<?> clazz) { return fromClass(clazz); }
+        @Override public Dotted apply(@Nonnull Class<?> clazz) { return fromClass(clazz); }
     };
 
     public static Dotted dotted(String className) {

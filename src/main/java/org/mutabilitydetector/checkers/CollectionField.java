@@ -180,10 +180,9 @@ public abstract class CollectionField {
         
         @Override
         public String toString() {
-            
             if (type == null) {
                 return wildcard;
-            } else if (type != null) {
+            } else {
                 if (wildcard.equals("=")) {
                     return type.asString();
                 } else if (wildcard.equals("+")){
