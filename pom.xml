@@ -37,8 +37,8 @@
 
   <scm>
     <url>https://github.com/MutabilityDetector/MutabilityDetector</url>
-    <connection>scm:git:ssh://git@github.com:MutabilityDetector/MutabilityDetector.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:MutabilityDetector/MutabilityDetector.git</developerConnection>
+    <connection>scm:git:ssh://github.com:MutabilityDetector/MutabilityDetector.git</connection>
+    <developerConnection>scm:git:ssh://github.com:MutabilityDetector/MutabilityDetector.git</developerConnection>
   </scm>
 
   <developers>
