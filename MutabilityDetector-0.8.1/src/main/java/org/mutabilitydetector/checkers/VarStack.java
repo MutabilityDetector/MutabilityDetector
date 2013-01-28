@@ -23,23 +23,42 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class VarStack {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<Integer> indices = new ArrayList<Integer>();
     private List<VarStackSnapshot> snapshots = new ArrayList<VarStackSnapshot>();
     private Iterator<VarStackSnapshot> snapshotsIterator = snapshots.iterator();
 
     public void visitVarInsn(int var) {
+        logger.debug("Parameter var: {}.", var);
         indices.add(var);
     }
 
     public void takeSnapshotOfVarsAtPutfield() {
         snapshots.add(new VarStackSnapshot(indices));
         snapshotsIterator = snapshots.iterator();
+        logger.debug("snapshots: {}.", getSnapshotsAsString());
+    }
+
+    private String getSnapshotsAsString() {
+        final StringBuilder sb = new StringBuilder();
+        final String separator = ",";
+        String sep = "";
+        for (final VarStackSnapshot snapshot : snapshots) {
+            sb.append(snapshot.indices).append(sep);
+            sep = separator;
+        }
+        return sb.toString();
     }
 
     public VarStackSnapshot next() {
-        return snapshotsIterator.next();
+        final VarStackSnapshot result = snapshotsIterator.next();
+        logger.debug("result.indices: {}.", result.indices);
+        return result;
     }
 
     public static class VarStackSnapshot {

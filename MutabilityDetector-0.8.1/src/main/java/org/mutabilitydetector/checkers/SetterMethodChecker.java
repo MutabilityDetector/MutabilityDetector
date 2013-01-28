@@ -31,6 +31,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class checks, for each field, that there is no method available which can change the reference of the field.
@@ -72,6 +74,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     class SetterAssignmentVisitor extends FieldAssignmentVisitor {
 
+        private final Logger logger = LoggerFactory.getLogger(getClass());
         private final VarStack varStack = new VarStack();
 
         public SetterAssignmentVisitor(String ownerName,
@@ -85,6 +88,9 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
         @Override
         protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+            logger.debug(
+                    "Parameters: assignmentFrame: {}, fieldInsnNode, desc: {}, name: {}, owner: {}, stackValue: {}.",
+                    assignmentFrame, fieldInsnNode.desc, fieldInsnNode.name, fieldInsnNode.owner, stackValue);
             if (MethodIs.aConstructor(name) || isInvalidStackValue(stackValue)) { return; }
 
             if (method(access).isStatic()) {
@@ -123,6 +129,8 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
         }
 
         private void detectInInstanceMethod(FieldInsnNode fieldInsnNode) {
+            logger.debug("Parameter fieldInsnNode, desc: {}, name: {}, owner: {}.", fieldInsnNode.desc,
+                    fieldInsnNode.name, fieldInsnNode.owner);
             if (isOnlyCalledFromConstructor()) { return; }
 
             VarStackSnapshot varStackSnapshot = varStack.next();
@@ -145,8 +153,11 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
             return indexOfOwningObject == 0;
         }
 
+        // Wird vor `visitFieldAssignmentFrame` aufgerufen.
         @Override
         public void visitFieldInsn(int opcode, String fieldsOwner, String fieldName, String fieldDesc) {
+            logger.debug("Parameters: opcode: {}, fieldsOwner: {}, fieldName: {}, fieldDesc: {}.", opcode, fieldsOwner,
+                    fieldName, fieldDesc);
             super.visitFieldInsn(opcode, fieldsOwner, fieldName, fieldDesc);
             if (opcode == Opcodes.PUTFIELD) {
                 varStack.takeSnapshotOfVarsAtPutfield();
@@ -155,6 +166,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
         @Override
         public void visitVarInsn(int opcode, int var) {
+            logger.debug("Parameters: opcode: {}, var: {}.", opcode, var);
             super.visitVarInsn(opcode, var);
             varStack.visitVarInsn(var);
         }
