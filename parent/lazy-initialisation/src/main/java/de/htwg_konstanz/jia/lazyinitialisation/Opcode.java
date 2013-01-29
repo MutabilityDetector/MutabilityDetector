@@ -3,7 +3,11 @@
  */
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import static org.apache.commons.lang3.Validate.notNull;
+
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 
 import com.google.common.collect.ImmutableSortedSet;
@@ -223,7 +227,7 @@ public enum Opcode implements OpcodeInformation {
         }
     };
 
-    private static enum Category {
+    public static enum Category {
         LOCAL_VARIABLES,
         STACK,
         CONSTANTS,
@@ -258,6 +262,11 @@ public enum Opcode implements OpcodeInformation {
         return opcodeAsHex;
     }
 
+    @Override
+    public Category category() {
+        return category;
+    }
+
     public static SortedSet<Opcode> localVariables() {
         return getAllOpcodesFor(Category.LOCAL_VARIABLES);
     }
@@ -274,6 +283,18 @@ public enum Opcode implements OpcodeInformation {
     
     private static boolean isSameCategory(final Category expectedCategory, final Opcode opcode) {
         return expectedCategory == opcode.category;
+    }
+
+    public List<Opcode> allOfCategory(final Category category) {
+        notNull(category);
+        final byte maxSize = 40;
+        final List<Opcode> result = new ArrayList<Opcode>(maxSize);
+        for (final Opcode opcode : Opcode.values()) {
+            if (category == opcode.category) {
+                result.add(opcode);
+            }
+        }
+        return result;
     }
 
     /**
