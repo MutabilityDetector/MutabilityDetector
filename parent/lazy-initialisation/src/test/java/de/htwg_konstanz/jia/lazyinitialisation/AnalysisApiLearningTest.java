@@ -22,7 +22,8 @@ import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 
-import de.htwg_konstanz.jia.testsubjects.lazy.BasicLazyInitialisation;
+import de.htwg_konstanz.jia.testsubjects.lazy.BasicSingleCheckLazyInitialisation;
+
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -137,7 +138,7 @@ public final class AnalysisApiLearningTest {
 
     @Test
     public void numberOfInstructionsIsExpected() throws AnalyzerException {
-        final ClassNode classNode = getNodeForClass(BasicLazyInitialisation.class);
+        final ClassNode classNode = getNodeForClass(BasicSingleCheckLazyInitialisation.class);
         final List<MethodNode> methods = getMethodsWithName("hashCode", classNode);
         assertThat(methods.size(), equalTo(1));
 

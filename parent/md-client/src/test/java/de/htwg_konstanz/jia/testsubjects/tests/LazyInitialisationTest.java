@@ -8,7 +8,8 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffective
 
 import org.junit.Test;
 
-import de.htwg_konstanz.jia.testsubjects.lazy.BasicLazyInitialisation;
+import de.htwg_konstanz.jia.testsubjects.lazy.BasicSingleCheckLazyInitialisation;
+
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -18,7 +19,7 @@ public final class LazyInitialisationTest {
 
     @Test
     public void doesNotRenderMutableForBasicLazyInitialisation() {
-        assertInstancesOf(BasicLazyInitialisation.class, areEffectivelyImmutable());
+        assertInstancesOf(BasicSingleCheckLazyInitialisation.class, areEffectivelyImmutable());
     }
 
 }

@@ -22,7 +22,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
-import de.htwg_konstanz.jia.testsubjects.lazy.BasicLazyInitialisation;
+import de.htwg_konstanz.jia.testsubjects.lazy.BasicSingleCheckLazyInitialisation;
+
 
 /**
  * 
@@ -168,7 +169,7 @@ public final class AsmApiLearningTest {
 
     public AsmApiLearningTest() throws IOException {
         super();
-        classReader = new ClassReader(BasicLazyInitialisation.class.getName());
+        classReader = new ClassReader(BasicSingleCheckLazyInitialisation.class.getName());
         visitor = null;
     }
 
