@@ -31,21 +31,31 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to Mutability Detector.</h3>
 
-<p>Migration to GitHub from Google Code is a work-in-progress. Expect this page to be populated soon :)</p>
+<h4>What is Mutability Detector?</h4>
+Mutability Detector is designed to analyse Java classes and report on whether instances of a given class are immutable. It can be used:
+<ul>
+ <li>In a unit test, with an assertion like <code>assertImmutable(MyClass.class)</code>. Is your class actually immutable? What about after that change you just made?</li>
+ <li>As a FindBugs plugin. Those classes you annotated with <code>@Immutable</code>, are they actually?</li>
+ <li>At runtime. Does your API require being given immutable objects?</li>
+ <li>From the command line. Do you want to quickly run Mutability Detector over an entire code base?</li>
+</ul>
 
-<h4>Project Information (Maven Generated)</h4>
-Licensing, JavaDoc, etc, available <a href="mvn-site">here</a>.
+<h4>Why Try To Detect Mutability?</h4>
+
+Developing classes to be immutable has several benefits. An immutable object is one which cannot be changed once it is constructed. While writing concurrent programs, using immutable objects can greatly simplify complex systems, as sharing an object across threads is much safer. There are a few rules for what makes an object immutable, and it is easy to break the rules and render the object unsafe. This could lead to subtle, hard-to-detect bugs which could lower the integrity of the system. Using an automated tool to recognise mutability where it's not intended can reduce the complexity of writing immutable classes.
 
 <h4>Getting started with Unit Testing</h4>
 Got Mutability Detector jar? Ready to write your first test? Check out the <a href="mvn-site/apidocs/org/mutabilitydetector/unittesting/MutabilityAssert.html">getting started guide</a>! 
 
-<h4><a name="Mutability_Detector_Blog"></a>Mutability Detector Blog<a href="#Mutability_Detector_Blog" class="section_anchor"></a></h2>
+<h4>
+Mutability Detector Blog
+<a name="Mutability_Detector_Blog" href="#Mutability_Detector_Blog" class="section_anchor"></a>
+</h4>
 
 
 <p>
-Check out the latest Mutability Detector blog posts:
+Check out the latest Mutability Detector <a href="http://mutability-detector.blogspot.co.uk/">blog posts</a>:
 <script src="//code-opensocial.googleusercontent.com/gadgets/js/rpc.js?c=1&amp;container=code"></script>
 <script type="text/javascript">
 function resizeIframeHandler(opt_height) {
@@ -77,7 +87,8 @@ gadgets.rpc.register('set_title', function(title) {
  prettyPrint();
 </script>
 
- 
+<h4>Contact</h4>
+For how to get in touch, for help, raising issues, contributing, see <a href="https://github.com/MutabilityDetector/MutabilityDetector/wiki/How-to-get-in-touch">here</a>.
  
  <script type="text/javascript" src="http://www.gstatic.com/codesite/ph/7707091683928850954/js/ph_core.js"></script>
 
