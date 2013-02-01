@@ -35,127 +35,93 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class checks, for each field, that there is no method available which can change the reference of the field.
+ * This class checks, for each field, that there is no method available which
+ * can change the reference of the field.
  * 
- * The check will pass iff there is no method available to change a reference for ANY field.
+ * The check will pass iff there is no method available to change a reference
+ * for ANY field.
  * 
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
  */
 public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
-    private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
-
-    /**
-     * @see #newSetterMethodChecker(PrivateMethodInvocationInformation)
-     */
-    private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
-        this.privateMethodInvocationInfo = privateMethodInvocationInfo;
-    }
-
-    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo) {
-        return new SetterMethodChecker(privateMethodInvocationInfo);
-    }
-
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        super.visit(version, access, name, signature, superName, interfaces);
-    }
-
-    @Override
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new SetterAssignmentVisitor(ownerClass,
-                access,
-                name,
-                desc,
-                signature,
-                exceptions);
-    }
-
-    class SetterAssignmentVisitor extends FieldAssignmentVisitor {
-
+    private final class SetterAssignmentVisitor extends FieldAssignmentVisitor {
+    
         private final Logger logger = LoggerFactory.getLogger(getClass());
         private final VarStack varStack = new VarStack();
-
-        public SetterAssignmentVisitor(String ownerName,
-                int access,
-                String name,
-                String desc,
-                String signature,
-                String[] exceptions) {
+    
+        public SetterAssignmentVisitor(final String ownerName, final int access, final String name, final String desc,
+                final String signature, final String[] exceptions) {
             super(ownerName, access, name, desc, signature, exceptions);
         }
-
+    
         @Override
-        protected void visitFieldAssignmentFrame(Frame assignmentFrame, FieldInsnNode fieldInsnNode, BasicValue stackValue) {
+        protected void visitFieldAssignmentFrame(final Frame assignmentFrame, final FieldInsnNode fieldInsnNode,
+                final BasicValue stackValue) {
             logger.debug(
                     "Parameters: assignmentFrame: {}, fieldInsnNode, desc: {}, name: {}, owner: {}, stackValue: {}.",
                     assignmentFrame, fieldInsnNode.desc, fieldInsnNode.name, fieldInsnNode.owner, stackValue);
-            if (MethodIs.aConstructor(name) || isInvalidStackValue(stackValue)) { return; }
-
+            if (MethodIs.aConstructor(name) || isInvalidStackValue(stackValue)) {
+                return;
+            }
             if (method(access).isStatic()) {
                 detectInStaticMethod(fieldInsnNode);
             } else {
                 detectInInstanceMethod(fieldInsnNode);
             }
-
         }
-
+    
         private boolean isOnlyCalledFromConstructor() {
-            MethodIdentifier methodId = forMethod(slashed(this.owner), name + ":" + desc);
+            final MethodIdentifier methodId = forMethod(slashed(owner), name + ":" + desc);
             return privateMethodInvocationInfo.isOnlyCalledFromConstructor(methodId);
         }
-
-        private void detectInStaticMethod(FieldInsnNode fieldInsnNode) {
-            String ownerOfReassignedField = fieldInsnNode.owner;
+    
+        private void detectInStaticMethod(final FieldInsnNode fieldInsnNode) {
+            final String ownerOfReassignedField = fieldInsnNode.owner;
             if (reassignedIsThisType(ownerOfReassignedField) && assignmentIsNotOnAParameter(fieldInsnNode)) {
                 setIsImmutableResult(fieldInsnNode.name);
             }
         }
-
-        private boolean assignmentIsNotOnAParameter(FieldInsnNode fieldInsnNode) {
+    
+        private boolean assignmentIsNotOnAParameter(final FieldInsnNode fieldInsnNode) {
             /*
-             * This is a temporary hack/workaround. It's quite difficult to tell for sure if the owner of the reassigned
-             * field is a parameter. But if the type is not included in the parameter list, we can guess it's not
-             * (though it still may be).
+             * This is a temporary hack/workaround. It's quite difficult to tell
+             * for sure if the owner of the reassigned field is a parameter. But
+             * if the type is not included in the parameter list, we can guess
+             * it's not (though it still may be).
              */
-            boolean reassignmentIsOnATypeIncludedInParameters = this.desc.contains(fieldInsnNode.owner);
-
+            final boolean reassignmentIsOnATypeIncludedInParameters = desc.contains(fieldInsnNode.owner);
+    
             return reassignmentIsOnATypeIncludedInParameters;
         }
-
-        private boolean reassignedIsThisType(String ownerOfReassignedField) {
-            return this.owner.compareTo(ownerOfReassignedField) == 0;
+    
+        private boolean reassignedIsThisType(final String ownerOfReassignedField) {
+            return owner.compareTo(ownerOfReassignedField) == 0;
         }
-
-        private void detectInInstanceMethod(FieldInsnNode fieldInsnNode) {
+    
+        private void detectInInstanceMethod(final FieldInsnNode fieldInsnNode) {
             logger.debug("Parameter fieldInsnNode, desc: {}, name: {}, owner: {}.", fieldInsnNode.desc,
                     fieldInsnNode.name, fieldInsnNode.owner);
-            if (isOnlyCalledFromConstructor()) { return; }
-
-            VarStackSnapshot varStackSnapshot = varStack.next();
+            if (isOnlyCalledFromConstructor()) {
+                return;
+            }
+            final VarStackSnapshot varStackSnapshot = varStack.next();
             if (varStackSnapshot.thisObjectWasAddedToStack()) {
                 // Throwing an NPE, assuming it's mutable for now.
                 setIsImmutableResult(fieldInsnNode.name);
-                
-//                int indexOfOwningObject = varStackSnapshot.indexOfOwningObject();
-//                if (isThisObject(indexOfOwningObject)) {
-//                    setIsImmutableResult(fieldInsnNode.name);
-//                } else {
-//                    // Setting field on other instance of 'this' type
-//                }
-
             }
         }
-
+    
         @SuppressWarnings("unused")
-        private boolean isThisObject(int indexOfOwningObject) {
+        private boolean isThisObject(final int indexOfOwningObject) {
             return indexOfOwningObject == 0;
         }
-
+    
         // Wird vor `visitFieldAssignmentFrame` aufgerufen.
         @Override
-        public void visitFieldInsn(int opcode, String fieldsOwner, String fieldName, String fieldDesc) {
+        public void visitFieldInsn(final int opcode, final String fieldsOwner, final String fieldName,
+                final String fieldDesc) {
             logger.debug("Parameters: opcode: {}, fieldsOwner: {}, fieldName: {}, fieldDesc: {}.", opcode, fieldsOwner,
                     fieldName, fieldDesc);
             super.visitFieldInsn(opcode, fieldsOwner, fieldName, fieldDesc);
@@ -163,19 +129,47 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
                 varStack.takeSnapshotOfVarsAtPutfield();
             }
         }
-
+    
         @Override
-        public void visitVarInsn(int opcode, int var) {
+        public void visitVarInsn(final int opcode, final int var) {
             logger.debug("Parameters: opcode: {}, var: {}.", opcode, var);
             super.visitVarInsn(opcode, var);
             varStack.visitVarInsn(var);
         }
-
-        private void setIsImmutableResult(String fieldName) {
-            String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
+    
+        private void setIsImmutableResult(final String fieldName) {
+            final String message = format("Field [%s] can be reassigned within method [%s]", fieldName, name);
+            logger.debug(message);
             addResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
+    
+    } // class SetterAssignmentVisitor
 
+
+    private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
+
+    /**
+     * @see #newSetterMethodChecker(PrivateMethodInvocationInformation)
+     */
+    private SetterMethodChecker(final PrivateMethodInvocationInformation privateMethodInvocationInfo) {
+        this.privateMethodInvocationInfo = privateMethodInvocationInfo;
+    }
+
+    public static SetterMethodChecker newSetterMethodChecker(
+            final PrivateMethodInvocationInformation privateMethodInvocationInfo) {
+        return new SetterMethodChecker(privateMethodInvocationInfo);
+    }
+
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    @Override
+    public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+            final String[] exceptions) {
+        return new SetterAssignmentVisitor(ownerClass, access, name, desc, signature, exceptions);
     }
 
 }

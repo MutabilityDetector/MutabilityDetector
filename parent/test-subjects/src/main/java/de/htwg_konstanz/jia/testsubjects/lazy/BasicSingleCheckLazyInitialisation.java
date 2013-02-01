@@ -7,7 +7,7 @@ package de.htwg_konstanz.jia.testsubjects.lazy;
  */
 public final class BasicSingleCheckLazyInitialisation {
 
-    private volatile int hash;
+    private int hash;
 
     @Override
     public int hashCode() {
