@@ -146,6 +146,7 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
     } // class SetterAssignmentVisitor
 
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
 
     /**
@@ -169,6 +170,8 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
     @Override
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
             final String[] exceptions) {
+        logger.debug("Parameters: access: {}, name: '{}', desc: '{}', signature: '{}', exceptions: {}", access, name,
+                desc, signature, exceptions);
         return new SetterAssignmentVisitor(ownerClass, access, name, desc, signature, exceptions);
     }
 
