@@ -16,11 +16,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import de.htwg_konstanz.jia.testsubjects.lazy.BasicSingleCheckLazyInitialisation;
 
@@ -118,21 +116,21 @@ public final class AsmApiLearningTest {
         }
     }
 
-    private static final class TestMethodVisitor extends MethodVisitor {
+    private static final class TestMethodVisitor extends MethodNode {
 
         public TestMethodVisitor() {
-            super(Opcodes.ASM4);
+            super();
         }
         
     }
 
-    private static final class TestClassVisitor extends ClassVisitor {
+    private static final class TestClassVisitor extends ClassNode {
 
         private VisitDao headerData;
         private VisitDao methodData;
 
         public TestClassVisitor() {
-            super(Opcodes.ASM4);
+            super();
             final VisitDao.Builder builder = new VisitDao.Builder();
             headerData = builder.build();
             methodData = builder.build();
@@ -187,7 +185,7 @@ public final class AsmApiLearningTest {
 
     @Test
     public void treeClassNodeHasExpectedVersion() {
-        final ClassNode classNode = new ClassNode(Opcodes.ASM4);
+        final ClassNode classNode = new ClassNode();
         classReader.accept(classNode, 0);
         assertThat(classNode.version, equalTo(50));
     }
