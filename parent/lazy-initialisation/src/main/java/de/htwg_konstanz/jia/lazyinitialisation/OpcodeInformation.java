@@ -17,4 +17,6 @@ public interface OpcodeInformation {
 
     Category category();
 
+    String description();
+
 }

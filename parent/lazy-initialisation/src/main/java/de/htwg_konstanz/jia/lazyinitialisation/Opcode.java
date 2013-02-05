@@ -195,10 +195,10 @@ public enum Opcode implements OpcodeInformation {
     DRETURN(175, Category.RETURN),
     ARETURN(176, Category.RETURN),
     RETURN(177, Category.RETURN),
-    GETSTATIC(178, Category.FIELDS),
-    PUTSTATIC(179, Category.FIELDS),
-    GETFIELD(180, Category.FIELDS),
-    PUTFIELD(181, Category.FIELDS),
+    GETSTATIC(178, Category.FIELDS, "Get value of static field."),
+    PUTSTATIC(179, Category.FIELDS, "Set value of static field."),
+    GETFIELD(180, Category.FIELDS, "Get value of object field."),
+    PUTFIELD(181, Category.FIELDS, "Set value of object field."),
     INVOKEVIRTUAL(182, Category.METHODS),
     INVOKESPECIAL(183, Category.METHODS),
     INVOKESTATIC(184, Category.METHODS),
@@ -245,11 +245,17 @@ public enum Opcode implements OpcodeInformation {
     private final int opcodeAsInt;
     private final String opcodeAsHex;
     private final Category category;
+    private final String description;
 
     private Opcode(final int opcodeAsInt, final Category category) {
-        this.category = category;
-        this.opcodeAsInt = opcodeAsInt;
-        opcodeAsHex = Integer.toHexString(opcodeAsInt);
+        this(opcodeAsInt, category, "");
+    }
+
+    private Opcode(final int theOpcodeAsInt, final Category theCategory, final String theDescription) {
+        category = theCategory;
+        opcodeAsInt = theOpcodeAsInt;
+        opcodeAsHex = Integer.toHexString(theOpcodeAsInt);
+        description = theDescription;
     }
 
     @Override
@@ -267,10 +273,24 @@ public enum Opcode implements OpcodeInformation {
         return category;
     }
 
+    @Override
+    public String description() {
+        return description;
+    }
+
+    public static Opcode forInt(final int opcodeInt) {
+        for (final Opcode opcode : Opcode.values()) {
+            if (opcodeInt == opcode.asInt()) {
+                return opcode;
+            }
+        }
+        return Opcode.NOP;
+    }
+
     public static SortedSet<Opcode> localVariables() {
         return getAllOpcodesFor(Category.LOCAL_VARIABLES);
     }
-    
+
     private static SortedSet<Opcode> getAllOpcodesFor(final Category category) {
         final ImmutableSortedSet.Builder<Opcode> builder = new ImmutableSortedSet.Builder<Opcode>(opcodeComparator);
         for (final Opcode opcode : Opcode.values()) {
@@ -280,7 +300,7 @@ public enum Opcode implements OpcodeInformation {
         }
         return builder.build();
     }
-    
+
     private static boolean isSameCategory(final Category expectedCategory, final Opcode opcode) {
         return expectedCategory == opcode.category;
     }

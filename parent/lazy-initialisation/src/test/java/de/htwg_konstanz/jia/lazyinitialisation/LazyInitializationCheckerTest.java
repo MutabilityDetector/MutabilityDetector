@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mutabilitydetector.locations.ClassName;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
 
 /**
  * 
@@ -21,9 +20,9 @@ public final class LazyInitializationCheckerTest {
     public void startVerification() throws IOException {
         final ClassName dotted = Dotted.fromClass(IntegerSingleCheckLazyInitialisation.class);
         final ClassReader cr = new ClassReader(dotted.asString());
-        final ClassNode classNode = new ClassNode();
-        cr.accept(classNode, 0);
-        System.out.println(classNode.fields);
+        final LazyInitializationChecker checker = new LazyInitializationChecker();
+        cr.accept(checker, 0);
+        checker.result();
     }
 
     @Test

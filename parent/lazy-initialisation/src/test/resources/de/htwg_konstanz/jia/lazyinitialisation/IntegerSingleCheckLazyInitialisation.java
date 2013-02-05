@@ -7,6 +7,8 @@ package de.htwg_konstanz.jia.lazyinitialisation;
  */
 public final class IntegerSingleCheckLazyInitialisation {
 
+    private static final String ID = "Foo";
+
     private int hash;
 
     @Override
