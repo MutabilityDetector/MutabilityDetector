@@ -1,10 +1,13 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
+import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
+import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
 import java.util.*;
-import java.util.Map.Entry;
 
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
 import org.mutabilitydetector.checkers.MethodIs;
 import org.objectweb.asm.FieldVisitor;
@@ -19,101 +22,34 @@ import org.objectweb.asm.tree.*;
  */
 public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
-    private static final class InstanceVariableSetterMethodCollection implements
-            Iterable<Map.Entry<FieldNode, List<MethodNode>>> {
-        private final Map<FieldNode, List<MethodNode>> instanceVariableSetterMethods;
-        
-        public InstanceVariableSetterMethodCollection() {
-            instanceVariableSetterMethods = new HashMap<FieldNode, List<MethodNode>>();
-        }
-
-        public boolean addInstanceVariable(final FieldNode instanceVariableNode) {
-            final boolean result = !instanceVariableSetterMethods.containsKey(instanceVariableSetterMethods);
-            instanceVariableSetterMethods.put(instanceVariableNode, new ArrayList<MethodNode>(2));
-            return result;
-        }
-
-        public boolean addSetterMethodForInstanceVariable(final String instanceVariableName,
-                final MethodNode setterMethodNode) {
-            boolean result = false;
-            final FieldNode instanceVariableNode = getInstanceVariableNodeForName(instanceVariableName);
-            if (null != instanceVariableNode) {
-                result = addSetterMethodForInstanceVariable(instanceVariableNode, setterMethodNode);
-            }
-            return result;
-        }
-
-        private FieldNode getInstanceVariableNodeForName(final String variableName) {
-            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetterMethods.entrySet()) {
-                final FieldNode instanceVariableNode = entry.getKey();
-                if (instanceVariableNode.name.equals(variableName)) {
-                    return instanceVariableNode;
-                }
-            }
-            return null;
-        }
-
-        private boolean addSetterMethodForInstanceVariable(final FieldNode instanceVariableNode,
-                final MethodNode setterMethodNode) {
-            final List<MethodNode> setterMethodsForInstanceVariable = instanceVariableSetterMethods
-                    .get(instanceVariableNode);
-            return setterMethodsForInstanceVariable.add(setterMethodNode);
-        }
-
-        public List<MethodNode> getSetterMethodsFor(final String instanceVariableName) {
-            List<MethodNode> result = Collections.emptyList();
-            final FieldNode instanceVariableNode = getInstanceVariableNodeForName(instanceVariableName);
-            if (null != instanceVariableNode) {
-                final List<MethodNode> setterMethodsForInstanceVariable = instanceVariableSetterMethods
-                        .get(instanceVariableNode);
-                result = new ArrayList<MethodNode>(setterMethodsForInstanceVariable);
-            }
-            return result;
-        }
-
-        @Override
-        public Iterator<Entry<FieldNode, List<MethodNode>>> iterator() {
-            final Set<Entry<FieldNode, List<MethodNode>>> entrySet = new HashSet<Entry<FieldNode, List<MethodNode>>>(
-                    instanceVariableSetterMethods.entrySet());
-            return entrySet.iterator();
-        }
-
-    }
-
     private final class InstanceVerifier implements Runnable {
 
-        private final InstanceVariableSetterMethodCollection instanceVariableSetters;
-        private final List<MethodNode> setterMethods = new ArrayList<MethodNode>();
-        private final String owner = classNode.name;
+        private final VariableSetterMethodCollection instanceVariableSetters;
+        private final String owner;
 
         public InstanceVerifier() {
-            instanceVariableSetters = new InstanceVariableSetterMethodCollection();
+            instanceVariableSetters = VariableSetterMethodCollection.newInstance();
+            owner = classNode.name;
         }
 
         @Override
         public void run() {
             // TODO Auto-generated method stub
+            collectAndAssociateLazyVariablesAndLazyMethods();
+//            printAllInstanceVariableSetters();
+            examineLazyVariablesAndLazyMethods();
+        }
+
+        private void collectAndAssociateLazyVariablesAndLazyMethods() {
             collectPrivateNonFinalInstanceVariables();
             collectSetterMethods();
-            printAllInstanceVariableSetters();
+            instanceVariableSetters.removeUnassociatedVariables();
         }
 
-        private void printAllInstanceVariableSetters() {
-            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
-                final FieldNode instanceVariable = entry.getKey();
-                final List<MethodNode> setterMethods = entry.getValue();
-                System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
-                for (final MethodNode setterMethod : setterMethods) {
-                    System.out.println(String.format("  Setter: '%s'.", setterMethod.name));
-                }
-            }
-        }
-
-        @SuppressWarnings("unchecked")
         private void collectPrivateNonFinalInstanceVariables() {
             for (final FieldNode fieldNode : (List<FieldNode>) classNode.fields) {
                 if (isPrivateAndNonFinalInstanceVariable(fieldNode.access)) {
-                    instanceVariableSetters.addInstanceVariable(fieldNode);
+                    instanceVariableSetters.addVariable(fieldNode);
                 }
             }
         }
@@ -122,13 +58,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             return field(access).isNotStatic() && field(access).isPrivate() && field(access).isNotFinal(); 
         }
 
-        @SuppressWarnings("unchecked")
         private void collectSetterMethods() {
             for (final MethodNode methodNode : (List<MethodNode>) classNode.methods) {
                 if (isNotConstructor(methodNode.name)) {
                     for (final FieldInsnNode putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
                         final String nameOfInstanceVariable = putfieldInstruction.name;
-                        instanceVariableSetters.addSetterMethodForInstanceVariable(nameOfInstanceVariable, methodNode);
+                        instanceVariableSetters.addSetterMethodForVariable(nameOfInstanceVariable, methodNode);
                     }
                 }
             }
@@ -136,19 +71,18 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
         private List<FieldInsnNode> getPutfieldInstructions(final InsnList instructionsOfMethod) {
             final List<FieldInsnNode> result = new ArrayList<FieldInsnNode>(instructionsOfMethod.size());
-            @SuppressWarnings("unchecked")
             final ListIterator<AbstractInsnNode> iterator = instructionsOfMethod.iterator();
             while (iterator.hasNext()) {
-                final AbstractInsnNode instructionNode = iterator.next();
-                if (isPutfieldOpcodeForInstanceVariable(instructionNode)) {
-                    result.add((FieldInsnNode) instructionNode);
+                final AbstractInsnNode abstractInstruction = iterator.next();
+                if (isPutfieldOpcodeForInstanceVariable(abstractInstruction)) {
+                    result.add((FieldInsnNode) abstractInstruction);
                 }
             }
             return result;
         }
 
-        private boolean isPutfieldOpcodeForInstanceVariable(final AbstractInsnNode abstractInstructionNode) {
-            return isFieldInstructionNode(abstractInstructionNode) && isPutfieldOpcode(abstractInstructionNode);
+        private boolean isPutfieldOpcodeForInstanceVariable(final AbstractInsnNode abstractInstruction) {
+            return isFieldInstructionNode(abstractInstruction) && isPutfieldOpcode(abstractInstruction);
         }
 
         private boolean isFieldInstructionNode(final AbstractInsnNode abstractInstructionNode) {
@@ -160,6 +94,64 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             final Opcode opcode = Opcode.forInt(opcodeInt);
             return Opcode.PUTFIELD == opcode;
         }
+
+        private void printAllInstanceVariableSetters() {
+            instanceVariableSetters.removeUnassociatedVariables();
+            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
+                final FieldNode instanceVariable = entry.getKey();
+                final List<MethodNode> setterMethods = entry.getValue();
+                System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
+                for (final MethodNode setterMethod : setterMethods) {
+                    System.out.println(String.format("  Setter: '%s'.", setterMethod.name));
+                }
+            }
+        }
+
+        private void examineLazyVariablesAndLazyMethods() {
+            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
+                final List<MethodNode> setterMethods = entry.getValue();
+                assertAllAreNotPrivate(entry.getKey().name, setterMethods);
+                
+                for (final MethodNode publicSetterMethod : setterMethods) {
+                    final List<JumpInsnNode> jumpInstructions = getJumpInstructions(publicSetterMethod.instructions);
+                    System.out.println(jumpInstructions);
+                }
+            }
+        }
+
+        private List<JumpInsnNode> getJumpInstructions(final InsnList instructions) {
+            final List<JumpInsnNode> result = new ArrayList<JumpInsnNode>();
+            final ListIterator<AbstractInsnNode> iterator = instructions.iterator();
+            while (iterator.hasNext()) {
+                final AbstractInsnNode abstractInstruction = iterator.next();
+                if (isJumpInstruction(abstractInstruction)) {
+                    result.add((JumpInsnNode) abstractInstruction);
+                }
+            }
+            return result;
+        }
+
+        private boolean isJumpInstruction(final AbstractInsnNode abstractInstruction) {
+            return AbstractInsnNode.JUMP_INSN == abstractInstruction.getType();
+        }
+
+        private void assertAllAreNotPrivate(final String variableName, final List<MethodNode> setterMethods) {
+            for (final MethodNode setterMethod : setterMethods) {
+                 if (isNotPrivate(setterMethod)) {
+                     setIsImmutableResult(variableName, setterMethod.name);
+                 }
+            }
+        }
+
+        private boolean isNotPrivate(final MethodNode methodNode) {
+            return method(methodNode.access).isNotPrivate();
+        }
+
+        private void setIsImmutableResult(final String variableName, final String methodName) {
+            final String message = format("Field [%s] can be reassigned within method [%s]", variableName, methodName);
+            setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+        }
+
 
     }
 

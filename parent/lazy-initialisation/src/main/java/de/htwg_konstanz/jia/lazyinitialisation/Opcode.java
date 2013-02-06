@@ -171,7 +171,7 @@ public enum Opcode implements OpcodeInformation {
     DCMPL(151, Category.ARITHMETIC_AND_LOGIC),
     DCMPG(152, Category.ARITHMETIC_AND_LOGIC),
     IFEQ(153, Category.JUMPS),
-    IFNE(154, Category.JUMPS),
+    IFNE(154, Category.JUMPS, "Jump if nonzero."),
     IFLT(155, Category.JUMPS),
     IFGE(156, Category.JUMPS),
     IFGT(157, Category.JUMPS),
