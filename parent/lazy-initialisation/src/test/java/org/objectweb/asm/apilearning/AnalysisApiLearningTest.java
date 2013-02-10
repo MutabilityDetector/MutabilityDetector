@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.htwg_konstanz.jia.lazyinitialisation;
+package org.objectweb.asm.apilearning;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -22,6 +22,7 @@ import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 
+import de.htwg_konstanz.jia.lazyinitialisation.Opcode;
 import de.htwg_konstanz.jia.testsubjects.lazy.BasicSingleCheckLazyInitialisation;
 
 

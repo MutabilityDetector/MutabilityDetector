@@ -1,4 +1,4 @@
-package de.htwg_konstanz.jia.lazyinitialisation;
+package org.objectweb.asm.apilearning;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;

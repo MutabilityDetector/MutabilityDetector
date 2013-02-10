@@ -109,8 +109,10 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
         private void examineLazyVariablesAndLazyMethods() {
             for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
+                final String variableName = entry.getKey().name;
                 final List<MethodNode> setterMethods = entry.getValue();
-                assertAllAreNotPrivate(entry.getKey().name, setterMethods);
+                assertAllAreNotPrivate(variableName, setterMethods);
+                assertOnlyOneSetterMethodForVariable(variableName, setterMethods);
                 
                 for (final MethodNode publicSetterMethod : setterMethods) {
                     final List<JumpInsnNode> jumpInstructions = getJumpInstructions(publicSetterMethod.instructions);
@@ -152,7 +154,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
 
-
+        private void assertOnlyOneSetterMethodForVariable(final String variableName, final List<MethodNode> setterMethods) {
+            if (1 < setterMethods.size()) {
+                final String message = format("Field [%s] can be reassigned by more than one method.", variableName);
+                setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+            }
+        }
     }
 
     private final ClassNode classNode;
