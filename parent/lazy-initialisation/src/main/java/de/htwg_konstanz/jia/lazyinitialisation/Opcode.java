@@ -305,7 +305,7 @@ public enum Opcode implements OpcodeInformation {
         return expectedCategory == opcode.category;
     }
 
-    public List<Opcode> allOfCategory(final Category category) {
+    public static List<Opcode> allOfCategory(final Category category) {
         notNull(category);
         final byte maxSize = 40;
         final List<Opcode> result = new ArrayList<Opcode>(maxSize);
