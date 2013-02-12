@@ -6,11 +6,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import java.util.*;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Value;
 import org.slf4j.Logger;
@@ -25,6 +21,7 @@ final class PublicMethodVisitor extends MethodVisitor {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String owner;
     private final VariableAssignmentCollection variableAssignments;
+    private final LabeledBlockBuilder blockBuilder;
     private final Map<String, Stack<Value>> fieldStacks;
     private Label currentLabel;
 
@@ -36,6 +33,7 @@ final class PublicMethodVisitor extends MethodVisitor {
         super(Opcodes.ASM4);
         owner = theOwner;
         variableAssignments = VariableAssignmentCollection.newInstance();
+        blockBuilder = new LabeledBlockBuilder();
         for (final FieldNode fieldNode : thePotentialLazyVariables) {
             variableAssignments.addVariable(fieldNode);
         }
@@ -66,12 +64,15 @@ final class PublicMethodVisitor extends MethodVisitor {
     public void visitLabel(final Label label) {
         logger.debug("Setting current label to '{}'.", label);
         currentLabel = label;
+        blockBuilder.build();
+        blockBuilder.setLabel(getLabelNode(label));
         methodNode.visitLabel(label);
     }
 
     @Override
     public void visitIntInsn(final int opcode, final int operand) {
         logger.debug("Delegating to methodNode; opcode: {}, operand: {}.", getOpcodeString(opcode), operand);
+        blockBuilder.addInstruction(new IntInsnNode(opcode, operand));
         methodNode.visitIntInsn(opcode, operand);
     }
 
@@ -91,12 +92,14 @@ final class PublicMethodVisitor extends MethodVisitor {
     @Override
     public void visitVarInsn(final int opcode, final int var) {
         logger.debug("Delegating to methodNode; opcode: {}, var: {}.", getOpcodeString(opcode), var);
+        blockBuilder.addInstruction(new VarInsnNode(opcode, var));
         methodNode.visitVarInsn(opcode, var);
     }
 
     @Override
     public void visitTypeInsn(final int opcode, final String type) {
         logger.debug("Delegating to methodNode; opcode: {}, type: {}.", getOpcodeString(opcode), type);
+        blockBuilder.addInstruction(new TypeInsnNode(opcode, type));
         methodNode.visitTypeInsn(opcode, type);
     }
 
@@ -124,6 +127,7 @@ final class PublicMethodVisitor extends MethodVisitor {
         }
         logger.debug("Delegating to methodNode; opcode: {}, owner: {}, name: {}, desc: {}.", getOpcodeString(opcode),
                 owner, name, desc);
+        blockBuilder.addInstruction(new FieldInsnNode(opcode, owner, name, desc));
         methodNode.visitFieldInsn(opcode, owner, name, desc);
     }
 
@@ -139,6 +143,7 @@ final class PublicMethodVisitor extends MethodVisitor {
     @Override
     public void visitInsn(final int opcode) {
         logger.debug("Delegating to methodNode; opcode: {}.", getOpcodeString(opcode));
+        blockBuilder.addInstruction(new InsnNode(opcode));
         methodNode.visitInsn(opcode);
     }
 
@@ -156,7 +161,9 @@ final class PublicMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitJumpInsn(final int opcode, final Label label) {
-        jumpInstructions.add(new JumpInsnNode(opcode, getLabelNode(label)));
+        final JumpInsnNode jumpInsnNode = new JumpInsnNode(opcode, getLabelNode(label));
+        jumpInstructions.add(jumpInsnNode);
+        blockBuilder.addInstruction(jumpInsnNode);
         logger.debug("Delegating to methodNode; opcode:{}, label: {}", getOpcodeString(opcode), label);
         methodNode.visitJumpInsn(opcode, label);
     }

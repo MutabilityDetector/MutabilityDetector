@@ -19,6 +19,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.Opcode;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.FloatWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
 
 /**
@@ -100,4 +101,16 @@ public final class LazyInitialisationInterpreterTest {
         }
         return null;
     }
+
+    @Test
+    public void name() throws IOException, AnalyzerException {
+        final ClassName dotted = Dotted.fromClass(FloatWithDefault.class);
+        final ClassReader cr = new ClassReader(dotted.asString());
+        final ClassNode cn = new ClassNode();
+        cr.accept(cn, 0);
+        final MethodNode hashCodeMethodNode = findMethodWithName(cn, "hashCodeFloat");
+        final LazyInitialisationAnalyser analyser = new LazyInitialisationAnalyser();
+        final List<AbstractInsnNode> nullDereferences = analyser.findLazyMethods(cn.name, hashCodeMethodNode);
+    }
+
 }
