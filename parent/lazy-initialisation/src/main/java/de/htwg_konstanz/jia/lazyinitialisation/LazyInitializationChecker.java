@@ -28,12 +28,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
     private final class InstanceVerifier implements Runnable {
 
         private final VariableSetterMethodCollection instanceVariableSetters;
-        private final List<AssignmentInstruction> putfieldInstructions;
+        private final List<AssignmentInsn> putfieldInstructions;
         private final String owner;
 
         public InstanceVerifier() {
             instanceVariableSetters = VariableSetterMethodCollection.newInstance();
-            putfieldInstructions = new ArrayList<AssignmentInstruction>();
+            putfieldInstructions = new ArrayList<AssignmentInsn>();
             owner = classNode.name;
         }
 
@@ -66,7 +66,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         private void collectSetterMethods() {
             for (final MethodNode methodNode : (List<MethodNode>) classNode.methods) {
                 if (isNotConstructor(methodNode.name)) {
-                    for (final AssignmentInstruction putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
+                    for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
                         final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
                         instanceVariableSetters.addSetterMethodForVariable(nameOfInstanceVariable, methodNode);
                     }
@@ -74,8 +74,8 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             }
         }
 
-        private List<AssignmentInstruction> getPutfieldInstructions(final InsnList instructionsOfMethod) {
-            final List<AssignmentInstruction> result = new ArrayList<AssignmentInstruction>(
+        private List<AssignmentInsn> getPutfieldInstructions(final InsnList instructionsOfMethod) {
+            final List<AssignmentInsn> result = new ArrayList<AssignmentInsn>(
                     instructionsOfMethod.size());
             final ListIterator<AbstractInsnNode> iterator = instructionsOfMethod.iterator();
             LabelNode labelNode = null;
@@ -84,7 +84,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 if (isLabelNode(abstractInstruction)) {
                     labelNode = (LabelNode) abstractInstruction;
                 } else if (isPutfieldOpcodeForInstanceVariable(abstractInstruction)) {
-                    result.add(AssignmentInstruction.getInstance(labelNode, (FieldInsnNode) abstractInstruction));
+                    result.add(AssignmentInsn.getInstance(labelNode, (FieldInsnNode) abstractInstruction));
                 }
             }
             return result;

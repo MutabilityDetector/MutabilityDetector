@@ -6,6 +6,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import java.util.*;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -23,9 +24,10 @@ final class PublicMethodVisitor extends MethodVisitor {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String owner;
-    private final List<FieldNode> potentialLazyInstanceVariables;
+    private final VariableAssignmentCollection variableAssignments;
     private final Map<String, Stack<Value>> fieldStacks;
-    
+    private Label currentLabel;
+
     private final MethodNode methodNode;
     private final List<JumpInsnNode> jumpInstructions;
 
@@ -33,7 +35,10 @@ final class PublicMethodVisitor extends MethodVisitor {
             final String[] exceptions, final String theOwner, final List<FieldNode> thePotentialLazyVariables) {
         super(Opcodes.ASM4);
         owner = theOwner;
-        potentialLazyInstanceVariables = Collections.unmodifiableList(thePotentialLazyVariables);
+        variableAssignments = VariableAssignmentCollection.newInstance();
+        for (final FieldNode fieldNode : thePotentialLazyVariables) {
+            variableAssignments.addVariable(fieldNode);
+        }
         fieldStacks = new HashMap<String, Stack<Value>>();
         methodNode = new MethodNode();
         jumpInstructions = new ArrayList<JumpInsnNode>();
@@ -56,10 +61,11 @@ final class PublicMethodVisitor extends MethodVisitor {
         logger.debug("Delegating to methodNode.");
         methodNode.visitCode();
     }
-    
+
     @Override
     public void visitLabel(final Label label) {
-        logger.debug("Delegating to methodNode; label: {}", label);
+        logger.debug("Setting current label to '{}'.", label);
+        currentLabel = label;
         methodNode.visitLabel(label);
     }
 
@@ -68,7 +74,7 @@ final class PublicMethodVisitor extends MethodVisitor {
         logger.debug("Delegating to methodNode; opcode: {}, operand: {}.", getOpcodeString(opcode), operand);
         methodNode.visitIntInsn(opcode, operand);
     }
-    
+
     private static String getOpcodeString(final int theOpcode) {
         final Opcode opcode = Opcode.forInt(theOpcode);
         return opcode.toString();
@@ -81,7 +87,7 @@ final class PublicMethodVisitor extends MethodVisitor {
                 local, nStack, stack);
         methodNode.visitFrame(type, nLocal, local, nStack, stack);
     }
-    
+
     @Override
     public void visitVarInsn(final int opcode, final int var) {
         logger.debug("Delegating to methodNode; opcode: {}, var: {}.", getOpcodeString(opcode), var);
@@ -107,9 +113,14 @@ final class PublicMethodVisitor extends MethodVisitor {
                 }
             }
         }
-        
-        if (Opcodes.PUTFIELD == opcode) {
 
+        if (Opcodes.PUTFIELD == opcode) {
+            final LabelNode labelNode = getLabelNode(currentLabel);
+            final FieldInsnNode assignmentNode = new FieldInsnNode(opcode, owner, name, desc);
+            logger.debug("Adding assignment instruction; labelNode: '{}', assignmentInstructionNode: '{}'.", labelNode,
+                    assignmentNode);
+            variableAssignments.addAssignmentInstructionForVariable(name,
+                    AssignmentInsn.getInstance(labelNode, assignmentNode));
         }
         logger.debug("Delegating to methodNode; opcode: {}, owner: {}, name: {}, desc: {}.", getOpcodeString(opcode),
                 owner, name, desc);
@@ -117,14 +128,14 @@ final class PublicMethodVisitor extends MethodVisitor {
     }
 
     private FieldNode findVariable(final String aName, final String aDesc) {
-        for (final FieldNode v : potentialLazyInstanceVariables) {
+        for (final FieldNode v : variableAssignments.getVariables()) {
             if (v.name.equals(aName) && v.desc.equals(aDesc)) {
                 return v;
             }
         }
         return null;
     }
-    
+
     @Override
     public void visitInsn(final int opcode) {
         logger.debug("Delegating to methodNode; opcode: {}.", getOpcodeString(opcode));

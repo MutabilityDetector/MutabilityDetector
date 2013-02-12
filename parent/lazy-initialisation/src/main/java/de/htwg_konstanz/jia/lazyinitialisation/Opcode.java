@@ -75,7 +75,7 @@ public enum Opcode implements OpcodeInformation {
     LSTORE(55, Category.LOCAL_VARIABLES),
     FSTORE(56, Category.LOCAL_VARIABLES),
     DSTORE(57, Category.LOCAL_VARIABLES),
-    ASTORE(58, Category.LOCAL_VARIABLES),
+    ASTORE(58, Category.LOCAL_VARIABLES, "Stores object reference in local variable,"),
     ISTORE_0(59, Category.LOCAL_VARIABLES),
     ISTORE_1(60, Category.LOCAL_VARIABLES),
     ISTORE_2(61, Category.LOCAL_VARIABLES),

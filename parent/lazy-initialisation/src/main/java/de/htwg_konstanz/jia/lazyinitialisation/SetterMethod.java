@@ -16,16 +16,16 @@ public final class SetterMethod {
 
     public static final class Builder {
         private final MethodNode methodNode;
-        private final List<AssignmentInstruction> assignmentInstructions;
+        private final List<AssignmentInsn> assignmentInstructions;
         private final List<JumpInstruction> jumpInstructions;
 
         public Builder(final MethodNode theMethodNode) {
             methodNode = theMethodNode;
-            assignmentInstructions = new ArrayList<AssignmentInstruction>();
+            assignmentInstructions = new ArrayList<AssignmentInsn>();
             jumpInstructions = new ArrayList<JumpInstruction>();
         }
 
-        public Builder assignmentInsn(final AssignmentInstruction anAssignmentInsn) {
+        public Builder assignmentInsn(final AssignmentInsn anAssignmentInsn) {
             assignmentInstructions.add(anAssignmentInsn);
             return this;
         }
@@ -42,12 +42,12 @@ public final class SetterMethod {
     }
 
     private final MethodNode methodNode;
-    private final List<AssignmentInstruction> assignmentInstructions;
+    private final List<AssignmentInsn> assignmentInstructions;
     private final List<JumpInstruction> jumpInstructions;
 
     private SetterMethod(final Builder builder) {
         methodNode = builder.methodNode;
-        assignmentInstructions = new ArrayList<AssignmentInstruction>(builder.assignmentInstructions);
+        assignmentInstructions = new ArrayList<AssignmentInsn>(builder.assignmentInstructions);
         jumpInstructions = new ArrayList<JumpInstruction>(builder.jumpInstructions);
     }
 

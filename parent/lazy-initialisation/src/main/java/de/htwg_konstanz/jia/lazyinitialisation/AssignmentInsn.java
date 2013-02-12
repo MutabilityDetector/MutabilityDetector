@@ -13,27 +13,27 @@ import org.objectweb.asm.tree.LabelNode;
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 11.02.2013
  */
-final class AssignmentInstruction {
+final class AssignmentInsn {
 
     private final LabelNode labelNode;
-    private final FieldInsnNode setInstructionNode;
+    private final FieldInsnNode assignmentInstructionNode;
 
-    private AssignmentInstruction(final LabelNode theLabelNode, final FieldInsnNode theSetInstructionNode) {
+    private AssignmentInsn(final LabelNode theLabelNode, final FieldInsnNode theSetInstructionNode) {
         labelNode = theLabelNode;
-        setInstructionNode = theSetInstructionNode;
+        assignmentInstructionNode = theSetInstructionNode;
     }
 
-    public static AssignmentInstruction getInstance(final LabelNode labelNode,
-            final FieldInsnNode setInstructionNode) {
-        return new AssignmentInstruction(notNull(labelNode), notNull(setInstructionNode));
+    public static AssignmentInsn getInstance(final LabelNode labelNode,
+            final FieldInsnNode assignmentInstructionNode) {
+        return new AssignmentInsn(notNull(labelNode), notNull(assignmentInstructionNode));
     }
 
     public String getNameOfAssignedVariable() {
-        return setInstructionNode.name;
+        return assignmentInstructionNode.name;
     }
 
-    public FieldInsnNode getMethodNode() {
-        return setInstructionNode;
+    public FieldInsnNode getInstructionNode() {
+        return assignmentInstructionNode;
     }
 
     public boolean isUnderLabel(final LabelNode labelNodeToCheckFor) {
@@ -45,7 +45,7 @@ final class AssignmentInstruction {
         final int prime = 31;
         int result = 1;
         result = prime * result + labelNode.hashCode();
-        result = prime * result + setInstructionNode.hashCode();
+        result = prime * result + assignmentInstructionNode.hashCode();
         return result;
     }
 
@@ -57,14 +57,14 @@ final class AssignmentInstruction {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof AssignmentInstruction)) {
+        if (!(obj instanceof AssignmentInsn)) {
             return false;
         }
-        final AssignmentInstruction other = (AssignmentInstruction) obj;
+        final AssignmentInsn other = (AssignmentInsn) obj;
         if (!labelNode.equals(other.labelNode)) {
             return false;
         }
-        if (!setInstructionNode.equals(other.setInstructionNode)) {
+        if (!assignmentInstructionNode.equals(other.assignmentInstructionNode)) {
             return false;
         }
         return true;
@@ -73,7 +73,7 @@ final class AssignmentInstruction {
     @Override
     public String toString() {
         final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("labelNode", labelNode).append("setInstructionNode", setInstructionNode);
+        builder.append("labelNode", labelNode).append("assignmentInstructionNode", assignmentInstructionNode);
         return builder.toString();
     }
 
