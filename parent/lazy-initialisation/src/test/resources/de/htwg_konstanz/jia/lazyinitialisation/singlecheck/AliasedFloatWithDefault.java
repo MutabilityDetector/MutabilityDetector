@@ -11,7 +11,7 @@ public final class AliasedFloatWithDefault {
 
     public float hashCodeFloat() {
         float result = hash;
-        if (0.0F > result) {
+        if (0.0F == result) {
             result = 2342.0F;
             hash = result;
         }

@@ -40,8 +40,10 @@ public final class LazyInitialisationInterpreterTest {
             final AbstractInsnNode[] instructions = methodNode.instructions.toArray();
             for (int i = 0; i < instructions.length; i++) {
                 final AbstractInsnNode instruction = instructions[i];
-                if (null != frames[i]) {
-                    final BasicValue target = getTarget(instruction, frames[i]);
+                final Opcode opcode = Opcode.forInt(instruction.getOpcode());
+                final Frame<BasicValue> currentFrame = frames[i];
+                if (null != currentFrame) {
+                    final BasicValue target = getTarget(instruction, currentFrame);
 //                    if (interpreter.isNull(target) || interpreter.isMaybeNull(target)) {
 //                        final Opcode opcode = Opcode.forInt(instruction.getOpcode());
 //                        System.out.println(String.format("Instruction: '%s', Target value: '%s'.", opcode,

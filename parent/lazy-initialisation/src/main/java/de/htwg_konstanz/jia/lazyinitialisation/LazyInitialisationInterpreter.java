@@ -41,7 +41,14 @@ final class LazyInitialisationInterpreter extends Interpreter<BasicValue> {
 
     @Override
     public BasicValue newOperation(AbstractInsnNode insn) throws AnalyzerException {
+        if (isFconst0(insn)) {
+            System.out.println("Lege 0.0F auf den Stack.");
+        }
         return basicInterpreter.newOperation(insn);
+    }
+
+    private static boolean isFconst0(final AbstractInsnNode abstractInstructionNode) {
+        return Opcodes.FCONST_0 == abstractInstructionNode.getOpcode();
     }
 
     @Override
