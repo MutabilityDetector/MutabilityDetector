@@ -17,6 +17,8 @@ public interface OpcodeInformation {
 
     Category category();
 
+    Object stackValue();
+
     String description();
 
 }

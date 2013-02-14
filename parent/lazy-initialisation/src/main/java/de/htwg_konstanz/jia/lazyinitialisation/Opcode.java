@@ -5,12 +5,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-
-import com.google.common.collect.ImmutableSortedSet;
+import java.util.*;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -18,21 +13,21 @@ import com.google.common.collect.ImmutableSortedSet;
  */
 public enum Opcode implements OpcodeInformation {
     NOP(0, Category.NOP),
-    ACONST_NULL(1, Category.CONSTANTS),
-    ICONST_M1(2, Category.CONSTANTS),
-    ICONST_0(3, Category.CONSTANTS),
-    ICONST_1(4, Category.CONSTANTS),
-    ICONST_2(5, Category.CONSTANTS),
-    ICONST_3(6, Category.CONSTANTS),
-    ICONST_4(7, Category.CONSTANTS),
-    ICONST_5(8, Category.CONSTANTS),
-    LCONST_0(9, Category.CONSTANTS),
-    LCONST_1(10, Category.CONSTANTS),
-    FCONST_0(11, Category.CONSTANTS),
-    FCONST_1(12, Category.CONSTANTS),
-    FCONST_2(13, Category.CONSTANTS),
-    DCONST_0(14, Category.CONSTANTS),
-    DCONST_1(15, Category.CONSTANTS),
+    ACONST_NULL(1, Category.CONSTANTS, Null.INSTANCE),
+    ICONST_M1(2, Category.CONSTANTS, Integer.valueOf(-1), "Pushes the integer constant -1 onto the stack."),
+    ICONST_0(3, Category.CONSTANTS, Integer.valueOf(0), "Pushes the integer constant 0 onto the stack."),
+    ICONST_1(4, Category.CONSTANTS, Integer.valueOf(1), "Pushes the integer constant 1 onto the stack."),
+    ICONST_2(5, Category.CONSTANTS, Integer.valueOf(2), "Pushes the integer constant 2 onto the stack."),
+    ICONST_3(6, Category.CONSTANTS, Integer.valueOf(3), "Pushes the integer constant 3 onto the stack."),
+    ICONST_4(7, Category.CONSTANTS, Integer.valueOf(4), "Pushes the integer constant 4 onto the stack."),
+    ICONST_5(8, Category.CONSTANTS, Integer.valueOf(5), "Pushes the integer constant 5 onto the stack."),
+    LCONST_0(9, Category.CONSTANTS, Long.valueOf(0), "Pushes the long integer constant 0 onto the stack."),
+    LCONST_1(10, Category.CONSTANTS, Long.valueOf(1), "Pushes the long integer constant 1 onto the stack."),
+    FCONST_0(11, Category.CONSTANTS, Float.valueOf(0.0F)),
+    FCONST_1(12, Category.CONSTANTS, Float.valueOf(1.0F)),
+    FCONST_2(13, Category.CONSTANTS, Float.valueOf(2.0F)),
+    DCONST_0(14, Category.CONSTANTS, Double.valueOf(0.0D)),
+    DCONST_1(15, Category.CONSTANTS, Double.valueOf(1.0D)),
     BIPUSH(16, Category.CONSTANTS),
     SIPUSH(17, Category.CONSTANTS),
     LDC(18, Category.CONSTANTS),
@@ -220,6 +215,10 @@ public enum Opcode implements OpcodeInformation {
     GOTO_W(200, Category.JUMPS),
     JSR_W(201, Category.JUMPS);
 
+    private static enum Null {
+        INSTANCE;
+    }
+
     private static final Comparator<Opcode> opcodeComparator = new Comparator<Opcode>() {
         @Override
         public int compare(final Opcode o1, final Opcode o2) {
@@ -245,16 +244,29 @@ public enum Opcode implements OpcodeInformation {
     private final int opcodeAsInt;
     private final String opcodeAsHex;
     private final Category category;
+    private final Object stackValue;
     private final String description;
 
     private Opcode(final int opcodeAsInt, final Category category) {
         this(opcodeAsInt, category, "");
     }
 
-    private Opcode(final int theOpcodeAsInt, final Category theCategory, final String theDescription) {
+    private Opcode(final int opcodeAsInt, final Category category, final String description) {
+        this(opcodeAsInt, category, null, description);
+    }
+
+    private Opcode(final int opcodeAsInt, final Category category, final Object stackValue) {
+        this(opcodeAsInt, category, stackValue, "");
+    }
+
+    private Opcode(final int theOpcodeAsInt,
+            final Category theCategory,
+            final Object theStackValue,
+            final String theDescription) {
         category = theCategory;
         opcodeAsInt = theOpcodeAsInt;
         opcodeAsHex = Integer.toHexString(theOpcodeAsInt);
+        stackValue = theStackValue;
         description = theDescription;
     }
 
@@ -271,6 +283,11 @@ public enum Opcode implements OpcodeInformation {
     @Override
     public Category category() {
         return category;
+    }
+
+    @Override
+    public Object stackValue() {
+        return stackValue;
     }
 
     @Override
@@ -292,13 +309,13 @@ public enum Opcode implements OpcodeInformation {
     }
 
     private static SortedSet<Opcode> getAllOpcodesFor(final Category category) {
-        final ImmutableSortedSet.Builder<Opcode> builder = new ImmutableSortedSet.Builder<Opcode>(opcodeComparator);
+        final SortedSet<Opcode> result = new TreeSet<Opcode>(opcodeComparator);
         for (final Opcode opcode : Opcode.values()) {
             if (isSameCategory(category, opcode)) {
-                builder.add(opcode);
+                result.add(opcode);
             }
         }
-        return builder.build();
+        return Collections.unmodifiableSortedSet(result);
     }
 
     private static boolean isSameCategory(final Category expectedCategory, final Opcode opcode) {

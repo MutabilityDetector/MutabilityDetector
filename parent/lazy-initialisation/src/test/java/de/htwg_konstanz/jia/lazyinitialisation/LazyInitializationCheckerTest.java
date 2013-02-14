@@ -14,10 +14,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.FloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemanticDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
 
 /**
  * 
@@ -29,11 +26,12 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyIntegerSingleCheckLI() throws IOException {
-        final ClassName dotted = Dotted.fromClass(IntegerWithDefault.class);
-        final ClassReader cr = new ClassReader(dotted.asString());
-        final LazyInitializationChecker checker = new LazyInitializationChecker();
-        cr.accept(checker, 0);
-        checker.result();
+        runImmutabilityVerificationFor(IntegerWithDefault.class);
+    }
+
+    @Test
+    public void verifySemanticIntegerScli() throws IOException {
+        runImmutabilityVerificationFor(IntegerWithSemantic.class);
     }
 
     @Test
@@ -50,6 +48,16 @@ public final class LazyInitializationCheckerTest {
     @Test
     public void verifyFloatSingleCheckLI() throws IOException {
         final ClassName dotted = Dotted.fromClass(FloatWithDefault.class);
+        final ClassReader cr = new ClassReader(dotted.asString());
+        final LazyInitializationChecker checker = new LazyInitializationChecker();
+        cr.accept(checker, 0);
+        checker.result();
+    }
+
+
+    @Test
+    public void verifyFloatSingleCheckLIWithSemantic() throws IOException {
+        final ClassName dotted = Dotted.fromClass(FloatWithSemantic.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final LazyInitializationChecker checker = new LazyInitializationChecker();
         cr.accept(checker, 0);

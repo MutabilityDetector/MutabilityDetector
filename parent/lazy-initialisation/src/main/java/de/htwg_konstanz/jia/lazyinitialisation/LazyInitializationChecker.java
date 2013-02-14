@@ -6,6 +6,7 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
@@ -17,6 +18,9 @@ import org.objectweb.asm.tree.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+
 /**
  * 
  *
@@ -27,12 +31,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
     private final class InstanceVerifier implements Runnable {
 
-        private final VariableSetterMethodCollection instanceVariableSetters;
+        private final VariableSetterCollection instanceVariableSetters;
         private final List<AssignmentInsn> putfieldInstructions;
         private final String owner;
 
         public InstanceVerifier() {
-            instanceVariableSetters = VariableSetterMethodCollection.newInstance();
+            instanceVariableSetters = VariableSetterCollection.newInstance();
             putfieldInstructions = new ArrayList<AssignmentInsn>();
             owner = classNode.name;
         }
@@ -41,13 +45,29 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         public void run() {
             // TODO Auto-generated method stub
             collectAndAssociateLazyVariablesAndLazyMethods();
-//            printAllInstanceVariableSetters();
-            examineLazyVariablesAndLazyMethods();
+            if (instanceVariableSetters.isEmpty()) {
+                // Klasse ist evtl. unveraenderlich.
+            }
+            for (final Entry<FieldNode, Setters> entry : instanceVariableSetters) {
+                final FieldNode variable = entry.getKey();
+                final Setters setters = entry.getValue();
+                final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
+                initialValueFinder.run();
+                final List<InitialValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
+                final List<MethodNode> setterMethods = setters.methods();
+                if (1 == setterMethods.size()) {
+                    // Setter-Methode analysieren.
+                } else if (1 < setterMethods.size()) {
+                    // Klasse als veraenderlich erkennen.
+                }
+            }
+            printAllInstanceVariableSetters();
+//            examineLazyVariablesAndLazyMethods();
         }
 
         private void collectAndAssociateLazyVariablesAndLazyMethods() {
             collectPrivateNonFinalInstanceVariables();
-            collectSetterMethods();
+            collectSetters();
             instanceVariableSetters.removeUnassociatedVariables();
         }
 
@@ -63,13 +83,11 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             return field(access).isNotStatic() && field(access).isPrivate() && field(access).isNotFinal(); 
         }
 
-        private void collectSetterMethods() {
+        private void collectSetters() {
             for (final MethodNode methodNode : (List<MethodNode>) classNode.methods) {
-                if (isNotConstructor(methodNode.name)) {
-                    for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
-                        final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
-                        instanceVariableSetters.addSetterMethodForVariable(nameOfInstanceVariable, methodNode);
-                    }
+                for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
+                    final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
+                    instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
                 }
             }
         }
@@ -95,7 +113,8 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         }
 
         private boolean isPutfieldOpcodeForInstanceVariable(final AbstractInsnNode abstractInstruction) {
-            return isFieldInstructionNode(abstractInstruction) && isPutfieldOpcode(abstractInstruction);
+//            return isFieldInstructionNode(abstractInstruction) && isPutfieldOpcode(abstractInstruction);
+            return isPutfieldOpcode(abstractInstruction);
         }
 
         private boolean isFieldInstructionNode(final AbstractInsnNode abstractInstructionNode) {
@@ -108,26 +127,15 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
         private void printAllInstanceVariableSetters() {
             instanceVariableSetters.removeUnassociatedVariables();
-            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
+            for (final Map.Entry<FieldNode, Setters> entry : instanceVariableSetters) {
                 final FieldNode instanceVariable = entry.getKey();
-                final List<MethodNode> setterMethods = entry.getValue();
+                final Setters setters = entry.getValue();
                 System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
-                for (final MethodNode setterMethod : setterMethods) {
-                    System.out.println(String.format("  Setter: '%s'.", setterMethod.name));
+                for (final MethodNode constructor : setters.constructors()) {
+                    System.out.println(String.format("  Constructor: '%s'.", constructor.name));
                 }
-            }
-        }
-
-        private void examineLazyVariablesAndLazyMethods() {
-            for (final Map.Entry<FieldNode, List<MethodNode>> entry : instanceVariableSetters) {
-                final String variableName = entry.getKey().name;
-                final List<MethodNode> setterMethods = entry.getValue();
-                assertAllAreNotPrivate(variableName, setterMethods);
-                assertOnlyOneSetterMethodForVariable(variableName, setterMethods);
-                
-                for (final MethodNode publicSetterMethod : setterMethods) {
-                    final List<JumpInsnNode> jumpInstructions = getJumpInstructions(publicSetterMethod.instructions);
-                    System.out.println(jumpInstructions);
+                for (final MethodNode setterMethod : setters.methods()) {
+                    System.out.println(String.format("  Setter method: '%s'.", setterMethod.name));
                 }
             }
         }
@@ -214,9 +222,9 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             result = new FieldNode(access, name, desc, signature, value);
             potentialLazyInstanceVariables.add((FieldNode) result);
         } else {
-            result = classNode.visitField(access, name, desc, signature, value);
+//            result = classNode.visitField(access, name, desc, signature, value);
         }
-        return result;
+        return classNode.visitField(access, name, desc, signature, value);
     }
 
     private static boolean isPrivateAndNonFinalInstanceVariable(final int access) {
@@ -225,13 +233,13 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        if (isNotConstructor(name)) {
-            logger.debug("Create new 'PublicMethodVisitor' instance.");
-            return new PublicMethodVisitor(access, name, desc, signature, exceptions, classNode.name,
-                    potentialLazyInstanceVariables);
-        }
-        logger.debug("Delegating to classNode; access: {}, name: {}, desc: {}, signature: {}, exceptions: {}", access,
-                name, desc, signature, exceptions);
+//        if (isNotConstructor(name)) {
+//            logger.debug("Create new 'PublicMethodVisitor' instance.");
+//            return new PublicMethodVisitor(access, name, desc, signature, exceptions, classNode.name,
+//                    potentialLazyInstanceVariables);
+//        }
+//        logger.debug("Delegating to classNode; access: {}, name: {}, desc: {}, signature: {}, exceptions: {}", access,
+//                name, desc, signature, exceptions);
         return classNode.visitMethod(access, name, desc, signature, exceptions);
     }
 
