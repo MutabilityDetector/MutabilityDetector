@@ -53,7 +53,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 final Setters setters = entry.getValue();
                 final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
                 initialValueFinder.run();
-                final List<InitialValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
+                final Set<InitialValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
                 final List<MethodNode> setterMethods = setters.methods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
@@ -88,6 +88,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
                     final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
                     instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
+                    break;
                 }
             }
         }
@@ -102,7 +103,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 if (isLabelNode(abstractInstruction)) {
                     labelNode = (LabelNode) abstractInstruction;
                 } else if (isPutfieldOpcodeForInstanceVariable(abstractInstruction)) {
-                    result.add(AssignmentInsn.getInstance(labelNode, (FieldInsnNode) abstractInstruction));
+                    result.add(DefaultAssignmentInsn.getInstance(labelNode, (FieldInsnNode) abstractInstruction));
                 }
             }
             return result;

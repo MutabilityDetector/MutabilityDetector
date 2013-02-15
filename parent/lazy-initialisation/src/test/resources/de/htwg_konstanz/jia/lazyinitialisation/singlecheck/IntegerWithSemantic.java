@@ -13,7 +13,7 @@ public final class IntegerWithSemantic {
         }
     }
 
-    private int hash = 0;
+    private int hash = -1;
 
     @Override
     public int hashCode() {

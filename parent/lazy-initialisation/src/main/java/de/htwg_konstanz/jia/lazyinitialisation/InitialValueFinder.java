@@ -8,7 +8,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.slf4j.Logger;
@@ -47,9 +46,8 @@ final class InitialValueFinder implements Runnable {
         <T> T asConcreteObject(Class<T> targetTypeClass);
     } // interface InitialValue
 
-
     @NotThreadSafe
-    private static final class BaseInitialValue implements InitialValue {
+    static final class BaseInitialValue implements InitialValue {
 
         private final Object baseValue;
 
@@ -145,6 +143,36 @@ final class InitialValueFinder implements Runnable {
         }
 
         @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((baseValue == null) ? 0 : baseValue.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof BaseInitialValue)) {
+                return false;
+            }
+            final BaseInitialValue other = (BaseInitialValue) obj;
+            if (baseValue == null) {
+                if (other.baseValue != null) {
+                    return false;
+                }
+            } else if (!baseValue.equals(other.baseValue)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
         public String toString() {
             final ToStringBuilder builder = new ToStringBuilder(this);
             builder.append(baseValue);
@@ -152,7 +180,6 @@ final class InitialValueFinder implements Runnable {
         }
     } // class BaseInitialValue
 
-    
     @Immutable
     private static final class InitialValueFactory {
         public InitialValue getConcreteInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
@@ -224,16 +251,15 @@ final class InitialValueFinder implements Runnable {
         }
     } // class JvmInitialValueFactory
 
-
     private final FieldNode variable;
     private final Setters setters;
-    private final List<InitialValue> possibleInitialValues;
+    private final Set<InitialValue> possibleInitialValues;
 
     private InitialValueFinder(final FieldNode theVariable, final Setters theSetters) {
         variable = theVariable;
         setters = theSetters;
         final byte supposedMaximumOfPossibleInitialValues = 5;
-        possibleInitialValues = new ArrayList<InitialValue>(supposedMaximumOfPossibleInitialValues);
+        possibleInitialValues = new HashSet<InitialValue>(supposedMaximumOfPossibleInitialValues);
     }
 
     /**
@@ -273,45 +299,12 @@ final class InitialValueFinder implements Runnable {
     private void addConcreteInitialValuesByConstructor() {
         for (final MethodNode constructor : setters.constructors()) {
             final AbstractInsnNode[] insns = constructor.instructions.toArray();
-            final Map<Integer, FieldInsnNode> putfieldInsns = findPutfieldInstructionsForVariable(insns);
-            final int effectivePutfieldInstruction = getNumberOfEffectivePutfieldInstruction(putfieldInsns);
-            addPossibleInitialValueFor(insns[effectivePutfieldInstruction - 1]);
+            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.getInstance(
+                    variable, constructor.instructions);
+            final AssignmentInsn effectivePutfieldInstruction = putfieldFinder.getEffectivePutfieldInstruction();
+            final int indexOfAssignmentInstruction = effectivePutfieldInstruction.getIndexOfAssignmentInstruction();
+            addPossibleInitialValueFor(insns[indexOfAssignmentInstruction - 1]);
         }
-    }
-
-    private Map<Integer, FieldInsnNode> findPutfieldInstructionsForVariable(final AbstractInsnNode[] instructions) {
-        final Map<Integer, FieldInsnNode> result = new HashMap<Integer, FieldInsnNode>(instructions.length);
-        for (int i = 0; i < instructions.length; i++) {
-            final AbstractInsnNode abstractInsnNode = instructions[i];
-            addIfPutfieldInstructionForVariable(abstractInsnNode, i, result);
-        }
-        return result;
-    }
-
-    private void addIfPutfieldInstructionForVariable(final AbstractInsnNode abstractInsnNode,
-            final int numberOfInsn,
-            final Map<Integer, FieldInsnNode> putfieldInsnsForVariable) {
-        if (Opcodes.PUTFIELD == abstractInsnNode.getOpcode()) {
-            final FieldInsnNode putfieldInstruction = (FieldInsnNode) abstractInsnNode;
-            if (putfieldInstruction.name.equals(variable.name)) {
-                putfieldInsnsForVariable.put(Integer.valueOf(numberOfInsn), putfieldInstruction);
-            }
-        }
-    }
-
-    /*
-     * The effective putfield instruction is the last one in the
-     * sequence of instructions which puts a value to the target
-     * variable. Thus the highest instruction number indicates the
-     * position of the effective putfield instruction.
-     */
-    private int getNumberOfEffectivePutfieldInstruction(final Map<Integer, FieldInsnNode> putfieldInstructions) {
-        int maxInstructionNumber = -1;
-        final Set<Integer> instructionNumbers = putfieldInstructions.keySet();
-        for (final Integer currentInstructionNumber : instructionNumbers) {
-            maxInstructionNumber = Math.max(maxInstructionNumber, currentInstructionNumber);
-        }
-        return maxInstructionNumber;
     }
 
     private void addPossibleInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
@@ -322,8 +315,8 @@ final class InitialValueFinder implements Runnable {
         }
     }
 
-    public List<InitialValue> getPossibleInitialValues() {
-        return Collections.unmodifiableList(possibleInitialValues);
+    public Set<InitialValue> getPossibleInitialValues() {
+        return Collections.unmodifiableSet(possibleInitialValues);
     }
 
     @Override

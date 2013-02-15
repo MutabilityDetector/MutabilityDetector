@@ -47,13 +47,13 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyFloatSingleCheckLI() throws IOException {
-        final ClassName dotted = Dotted.fromClass(FloatWithDefault.class);
-        final ClassReader cr = new ClassReader(dotted.asString());
-        final LazyInitializationChecker checker = new LazyInitializationChecker();
-        cr.accept(checker, 0);
-        checker.result();
+        runImmutabilityVerificationFor(FloatWithDefault.class);
     }
 
+    @Test
+    public void verifyFloatWithMultipleScli() throws IOException {
+        runImmutabilityVerificationFor(FloatWithMultiple.class);
+    }
 
     @Test
     public void verifyFloatSingleCheckLIWithSemantic() throws IOException {

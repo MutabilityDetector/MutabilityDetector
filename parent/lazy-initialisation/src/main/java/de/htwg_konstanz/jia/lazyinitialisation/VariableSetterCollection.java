@@ -134,6 +134,10 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
         return settersForvariable.add(setter);
     }
 
+    public List<FieldNode> getVariables() {
+        return new ArrayList<FieldNode>(variableSetters.keySet());
+    }
+
     /**
      * @param variableName
      *            name of the variable to get all setter methods for.

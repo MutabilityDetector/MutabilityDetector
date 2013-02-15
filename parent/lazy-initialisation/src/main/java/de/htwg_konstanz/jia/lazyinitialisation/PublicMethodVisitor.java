@@ -123,7 +123,7 @@ final class PublicMethodVisitor extends MethodVisitor {
             logger.debug("Adding assignment instruction; labelNode: '{}', assignmentInstructionNode: '{}'.", labelNode,
                     assignmentNode);
             variableAssignments.addAssignmentInstructionForVariable(name,
-                    AssignmentInsn.getInstance(labelNode, assignmentNode));
+                    DefaultAssignmentInsn.getInstance(labelNode, assignmentNode));
         }
         logger.debug("Delegating to methodNode; opcode: {}, owner: {}, name: {}, desc: {}.", getOpcodeString(opcode),
                 owner, name, desc);
