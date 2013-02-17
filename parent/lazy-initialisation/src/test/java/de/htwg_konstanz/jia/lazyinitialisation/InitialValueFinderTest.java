@@ -7,16 +7,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.junit.Test;
-import org.mutabilitydetector.locations.ClassName;
-import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -63,20 +59,8 @@ public final class InitialValueFinderTest {
         }
 
         private static ClassNode createAppropriateClassNode(final Class<?> targetClass) {
-            final ClassName dotted = Dotted.fromClass(targetClass);
-            final ClassReader cr = tryToCreateClassReaderFor(dotted.asString());
-            final ClassNode result = new ClassNode();
-            cr.accept(result, 0);
-            return result;
-        }
-
-        private static ClassReader tryToCreateClassReaderFor(final String dottedClassName) {
-            try {
-                return new ClassReader(dottedClassName);
-            } catch (final IOException e) {
-                final String msg = String.format("Unable to create ClassReader for '%s'.", dottedClassName);
-                throw new IllegalStateException(msg, e);
-            }
+            final ClassNodeFactory factory = ClassNodeFactory.getInstance();
+            return factory.classNodeFor(targetClass);
         }
 
         private static VariableSetterCollection createVariableSetterCollection(final ClassNode classNode) {

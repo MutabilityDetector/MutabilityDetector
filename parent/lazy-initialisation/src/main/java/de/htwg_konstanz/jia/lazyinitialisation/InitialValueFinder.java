@@ -299,7 +299,7 @@ final class InitialValueFinder implements Runnable {
     private void addConcreteInitialValuesByConstructor() {
         for (final MethodNode constructor : setters.constructors()) {
             final AbstractInsnNode[] insns = constructor.instructions.toArray();
-            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.getInstance(
+            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.newInstance(
                     variable, constructor.instructions);
             final AssignmentInsn effectivePutfieldInstruction = putfieldFinder.getEffectivePutfieldInstruction();
             final int indexOfAssignmentInstruction = effectivePutfieldInstruction.getIndexOfAssignmentInstruction();
