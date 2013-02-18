@@ -8,6 +8,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
@@ -89,7 +90,9 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
      */
     @Override
     public boolean isUnderLabel(final LabelNode labelNodeToCheckFor) {
-        return labelNode.equals(labelNodeToCheckFor);
+        final Label thisLabel = labelNode.getLabel();
+        final Label otherLabel = labelNodeToCheckFor.getLabel();
+        return thisLabel.equals(otherLabel);
     }
 
     @Override

@@ -10,15 +10,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.JumpInsnNode;
 
+import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
+
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 15.02.2013
  */
+@Immutable
 final class EffectiveJumpInsnFinder {
 
     private final AssignmentInsn effectivePutfieldInsn;
@@ -27,22 +32,20 @@ final class EffectiveJumpInsnFinder {
 
     private EffectiveJumpInsnFinder(final AssignmentInsn theEffectivePutfieldInsn, final InsnList theInstructions) {
         effectivePutfieldInsn = theEffectivePutfieldInsn;
-        instructions = theInstructions.toArray();
+        final AbstractInsnNode[] originalInstructions = theInstructions.toArray();
+        instructions = Arrays.copyOf(originalInstructions, originalInstructions.length);
         associatedJumpInstructions = new ArrayList<JumpInsn>();
     }
 
     public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectivePutfieldInsn,
             final InsnList instructions) {
-        return new EffectiveJumpInsnFinder(notNull(effectivePutfieldInsn), notNull(instructions));
+        final EffectiveJumpInsnFinder result = new EffectiveJumpInsnFinder(notNull(effectivePutfieldInsn),
+                notNull(instructions));
+        result.collectAndSortAssociatedJumpInstructions();
+        return result;
     }
 
-    public JumpInsn getOfEffectiveJumpInsn() {
-        collectAssociatedJumpInstructions();
-        final int indexOfEffectiveJumpInstruction = associatedJumpInstructions.size() - 1;
-        return associatedJumpInstructions.get(indexOfEffectiveJumpInstruction);
-    }
-
-    private void collectAssociatedJumpInstructions() {
+    private void collectAndSortAssociatedJumpInstructions() {
         for (int i = 0; i < instructions.length; i++) {
             final AbstractInsnNode abstractInsnNode = instructions[i];
             addIfAssociatedJumpInstruction(i, abstractInsnNode);
@@ -61,6 +64,24 @@ final class EffectiveJumpInsnFinder {
 
     private static boolean isJumpInsn(final AbstractInsnNode abstractInsnNode) {
         return AbstractInsnNode.JUMP_INSN == abstractInsnNode.getType();
+    }
+    
+//    public JumpInsn getEffectiveJumpInsn() {
+//        final int indexOfEffectiveJumpInstruction = associatedJumpInstructions.size() - 1;
+//        return associatedJumpInstructions.get(indexOfEffectiveJumpInstruction);
+//    }
+
+    public JumpInsn getEffectiveJumpInsn() {
+        final int indexOfEffectiveJumpInstruction = associatedJumpInstructions.size() - 1;
+        return associatedJumpInstructions.get(indexOfEffectiveJumpInstruction);
+    }
+
+    /**
+     * @return {@code true} iff there are more than one jump instructions which
+     *         lead to the effective assignment instruction.
+     */
+    public boolean hasMoreThanOneAssociatedJumpInstruction() {
+        return 1 < associatedJumpInstructions.size();
     }
 
     @Override

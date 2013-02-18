@@ -5,6 +5,8 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
+import javax.annotation.concurrent.Immutable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -13,6 +15,7 @@ import org.objectweb.asm.tree.LabelNode;
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 15.02.2013
  */
+@Immutable
 final class DefaultJumpInsn implements JumpInsn {
 
     private final JumpInsnNode jumpInsnNode;
@@ -41,11 +44,6 @@ final class DefaultJumpInsn implements JumpInsn {
     }
 
     @Override
-    public LabelNode getLabelNode() {
-        return new LabelNode(jumpInsnNode.label.getLabel());
-    }
-
-    @Override
     public JumpInsnNode getJumpInsnNode() {
         return deepCopy(jumpInsnNode);
     }
@@ -56,8 +54,8 @@ final class DefaultJumpInsn implements JumpInsn {
     }
 
     @Override
-    public LabelNode getTargetLabelNode() {
-        return jumpInsnNode.label;
+    public LabelNode getLabelNodeOfJumpTarget() {
+        return new LabelNode(jumpInsnNode.label.getLabel());
     }
 
     @Override

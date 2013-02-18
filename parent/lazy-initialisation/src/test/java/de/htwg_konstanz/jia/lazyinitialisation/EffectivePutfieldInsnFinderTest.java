@@ -20,6 +20,10 @@ public final class EffectivePutfieldInsnFinderTest {
 
     private static final class Asserter {
 
+        private Asserter() {
+            super();
+        }
+
         public static void assertEffectivePutfieldInsnIsFound(final Class<?> klasse,
                 final String variableName,
                 final String setterName,

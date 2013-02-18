@@ -12,13 +12,11 @@ import org.objectweb.asm.tree.LabelNode;
  */
 interface JumpInsn extends Comparable<JumpInsn> {
 
-    LabelNode getLabelNode();
-
     JumpInsnNode getJumpInsnNode();
 
     int getIndexOfJumpInsn();
 
-    LabelNode getTargetLabelNode();
+    LabelNode getLabelNodeOfJumpTarget();
 
     AssignmentInsn getTargetAssignmentInsn();
 

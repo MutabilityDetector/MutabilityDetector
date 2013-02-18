@@ -60,6 +60,10 @@ final class ConvenienceClassNode {
         return new ConvenienceClassNode(notNull(classNode));
     }
 
+    public String name() {
+        return classNode.name;
+    }
+
     public List<FieldNode> fields() {
         return classNode.fields;
     }
