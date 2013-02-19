@@ -27,9 +27,9 @@ final class EffectivePutfieldInsnFinder {
     private final FieldNode targetVariable;
     private final AbstractInsnNode[] setterInstructions;
 
-    private EffectivePutfieldInsnFinder(final FieldNode theTargetVariable, final InsnList instructions) {
+    private EffectivePutfieldInsnFinder(final FieldNode theTargetVariable, final AbstractInsnNode[] instructions) {
         targetVariable = theTargetVariable;
-        setterInstructions = instructions.toArray();
+        setterInstructions = instructions;
     }
 
     /**
@@ -41,6 +41,18 @@ final class EffectivePutfieldInsnFinder {
      */
     public static EffectivePutfieldInsnFinder newInstance(final FieldNode targetVariable,
             final InsnList instructions) {
+        return newInstance(targetVariable, instructions.toArray());
+    }
+
+    /**
+     * Static factory method.
+     * 
+     * @param targetVariable the variable to find the effective {@code putfield} instruction for.
+     * @param instructions all instructions of a constructor or setter method.
+     * @return a new instance of this class.
+     */
+    public static EffectivePutfieldInsnFinder newInstance(final FieldNode targetVariable,
+            final AbstractInsnNode[] instructions) {
         return new EffectivePutfieldInsnFinder(notNull(targetVariable), notNull(instructions));
     }
 

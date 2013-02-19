@@ -20,4 +20,6 @@ interface JumpInsn extends Comparable<JumpInsn> {
 
     AssignmentInsn getTargetAssignmentInsn();
 
+    boolean isNull();
+
 }

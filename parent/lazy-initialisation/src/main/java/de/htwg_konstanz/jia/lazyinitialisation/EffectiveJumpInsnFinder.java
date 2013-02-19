@@ -13,11 +13,11 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.JumpInsnNode;
-
-import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -26,20 +26,25 @@ import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlock
 @Immutable
 final class EffectiveJumpInsnFinder {
 
-    private final AssignmentInsn effectivePutfieldInsn;
+    private final AssignmentInsn effectiveAssignmentInsn;
     private final AbstractInsnNode[] instructions;
     private final List<JumpInsn> associatedJumpInstructions;
 
-    private EffectiveJumpInsnFinder(final AssignmentInsn theEffectivePutfieldInsn, final InsnList theInstructions) {
-        effectivePutfieldInsn = theEffectivePutfieldInsn;
-        final AbstractInsnNode[] originalInstructions = theInstructions.toArray();
-        instructions = Arrays.copyOf(originalInstructions, originalInstructions.length);
+    private EffectiveJumpInsnFinder(final AssignmentInsn theEffectiveAssignmentInsn,
+            final AbstractInsnNode[] theInstructions) {
+        effectiveAssignmentInsn = theEffectiveAssignmentInsn;
+        instructions = Arrays.copyOf(theInstructions, theInstructions.length);
         associatedJumpInstructions = new ArrayList<JumpInsn>();
     }
 
-    public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectivePutfieldInsn,
+    public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
             final InsnList instructions) {
-        final EffectiveJumpInsnFinder result = new EffectiveJumpInsnFinder(notNull(effectivePutfieldInsn),
+        return newInstance(effectiveAssignmentInsn, instructions.toArray());
+    }
+
+    public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
+            final AbstractInsnNode[] instructions) {
+        final EffectiveJumpInsnFinder result = new EffectiveJumpInsnFinder(notNull(effectiveAssignmentInsn),
                 notNull(instructions));
         result.collectAndSortAssociatedJumpInstructions();
         return result;
@@ -53,26 +58,53 @@ final class EffectiveJumpInsnFinder {
         Collections.sort(associatedJumpInstructions);
     }
 
+//    private void addIfAssociatedJumpInstruction(final int i, final AbstractInsnNode abstractInsnNode) {
+//        if (isJumpInsn(abstractInsnNode)) {
+//            final JumpInsnNode jumpInsn = (JumpInsnNode) abstractInsnNode;
+//            if (effectiveAssignmentInsn.isUnderLabel(jumpInsn.label)) {
+//                associatedJumpInstructions.add(DefaultJumpInsn.newInstance(jumpInsn, i, effectiveAssignmentInsn));
+//            }
+//        }
+//    }
+
     private void addIfAssociatedJumpInstruction(final int i, final AbstractInsnNode abstractInsnNode) {
         if (isJumpInsn(abstractInsnNode)) {
             final JumpInsnNode jumpInsn = (JumpInsnNode) abstractInsnNode;
-            if (effectivePutfieldInsn.isUnderLabel(jumpInsn.label)) {
-                associatedJumpInstructions.add(DefaultJumpInsn.newInstance(jumpInsn, i, effectivePutfieldInsn));
+            final int indexOfPredecessor = i - 1;
+            if (0 < indexOfPredecessor) {
+                final AbstractInsnNode predecessor = instructions[indexOfPredecessor];
+                addIfPredecessorIsEffectiveAssignmentInsnForLazyVariable(predecessor, i, jumpInsn);
             }
+        }
+    }
+
+    private void addIfPredecessorIsEffectiveAssignmentInsnForLazyVariable(final AbstractInsnNode predecessor,
+            final int i,
+            final JumpInsnNode jumpInsn) {
+        if (null != predecessor && isGetfieldInstructionForLazyVariable(predecessor)) {
+            associatedJumpInstructions.add(DefaultJumpInsn.newInstance(jumpInsn, i, effectiveAssignmentInsn));
         }
     }
 
     private static boolean isJumpInsn(final AbstractInsnNode abstractInsnNode) {
         return AbstractInsnNode.JUMP_INSN == abstractInsnNode.getType();
     }
-    
-//    public JumpInsn getEffectiveJumpInsn() {
-//        final int indexOfEffectiveJumpInstruction = associatedJumpInstructions.size() - 1;
-//        return associatedJumpInstructions.get(indexOfEffectiveJumpInstruction);
-//    }
+
+    private boolean isGetfieldInstructionForLazyVariable(final AbstractInsnNode insn) {
+        boolean result = false;
+        if (Opcodes.GETFIELD == insn.getOpcode()) {
+            final FieldInsnNode getfieldInsn = (FieldInsnNode) insn;
+            final String nameOfAssignedVariable = getfieldInsn.name;
+            result = nameOfAssignedVariable.equals(effectiveAssignmentInsn.getNameOfAssignedVariable());
+        }
+        return result;
+    }
 
     public JumpInsn getEffectiveJumpInsn() {
         final int indexOfEffectiveJumpInstruction = associatedJumpInstructions.size() - 1;
+        if (associatedJumpInstructions.isEmpty()) {
+            return NullJumpInsn.getInstance();
+        }
         return associatedJumpInstructions.get(indexOfEffectiveJumpInstruction);
     }
 
@@ -89,7 +121,7 @@ final class EffectiveJumpInsnFinder {
         final int prime = 31;
         int result = 1;
         result = prime * result + associatedJumpInstructions.hashCode();
-        result = prime * result + effectivePutfieldInsn.hashCode();
+        result = prime * result + effectiveAssignmentInsn.hashCode();
         result = prime * result + Arrays.hashCode(instructions);
         return result;
     }
@@ -109,7 +141,7 @@ final class EffectiveJumpInsnFinder {
         if (!associatedJumpInstructions.equals(other.associatedJumpInstructions)) {
             return false;
         }
-        if (!effectivePutfieldInsn.equals(other.effectivePutfieldInsn)) {
+        if (!effectiveAssignmentInsn.equals(other.effectiveAssignmentInsn)) {
             return false;
         }
         if (!Arrays.equals(instructions, other.instructions)) {
@@ -121,7 +153,7 @@ final class EffectiveJumpInsnFinder {
     @Override
     public String toString() {
         final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("effectivePutfieldInsn", effectivePutfieldInsn).append("instructions", instructions);
+        builder.append("effectivePutfieldInsn", effectiveAssignmentInsn).append("instructions", instructions);
         builder.append("associatedJumpInstructions", associatedJumpInstructions);
         return builder.toString();
     }

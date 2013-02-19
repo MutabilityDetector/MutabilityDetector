@@ -9,8 +9,6 @@ import java.util.TreeSet;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 18.02.2013
@@ -18,6 +16,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Immutable
 final class Range {
 
+    /**
+     * Builder for creating instances of
+     * {@link de.htwg_konstanz.jia.lazyinitialisation.Range}.
+     */
     @NotThreadSafe
     public static final class RangeBuilder {
         private final SortedSet<Integer> items;
@@ -26,8 +28,9 @@ final class Range {
             items = new TreeSet<Integer>();
         }
 
-        public void add(final int item) {
+        public RangeBuilder add(final int item) {
             items.add(Integer.valueOf(item));
+            return this;
         }
 
         public Range build() {
@@ -36,8 +39,13 @@ final class Range {
     } // class RangeBuilder
 
 
+    /** Value of this range's lower boundary. */
     public final int lowerBoundary;
+
+    /** Value of this range's upper boundary. */
     public final int upperBoundary;
+
+    /** All items of this range. */
     public final List<Integer> allItems;
 
     private Range(final int theLowerBoundary, final int theUpperBoundary, final List<Integer> allItems) {
@@ -96,9 +104,9 @@ final class Range {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("lowerBoundary", lowerBoundary).append("upperBoundary", upperBoundary);
-        builder.append("allItems", allItems);
+        final StringBuilder builder = new StringBuilder("Range[");
+        builder.append("lowerBoundary=").append(lowerBoundary).append(", upperBoundary=").append(upperBoundary);
+        builder.append(", allItems=").append(allItems).append("]");
         return builder.toString();
     }
 

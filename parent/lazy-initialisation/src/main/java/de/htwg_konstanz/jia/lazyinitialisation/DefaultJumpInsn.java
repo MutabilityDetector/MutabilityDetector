@@ -64,6 +64,11 @@ final class DefaultJumpInsn implements JumpInsn {
     }
 
     @Override
+    public boolean isNull() {
+        return false;
+    }
+
+    @Override
     public int compareTo(final JumpInsn o) {
         final Integer thisIndexOfJumpInsn = Integer.valueOf(indexOfJumpInsn);
         final Integer otherIndexOfJumpInsn = Integer.valueOf(o.getIndexOfJumpInsn());
