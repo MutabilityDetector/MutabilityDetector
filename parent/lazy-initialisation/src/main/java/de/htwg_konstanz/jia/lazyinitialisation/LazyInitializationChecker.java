@@ -18,6 +18,7 @@ import org.objectweb.asm.tree.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
 import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 
@@ -57,6 +58,11 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 final List<MethodNode> setterMethods = setters.methods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
+                    final ControlFlowBlockFactory controlFlowBlockFactory = ControlFlowBlockFactory.newInstance(owner,
+                            setterMethods.get(0));
+                    final List<ControlFlowBlock> allControlFlowBlocksForMethod = controlFlowBlockFactory
+                            .getAllControlFlowBlocksForMethod();
+                    
                 } else if (1 < setterMethods.size()) {
                     // Klasse als veraenderlich erkennen.
                 }
@@ -85,11 +91,17 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
         private void collectSetters() {
             for (final MethodNode methodNode : (List<MethodNode>) classNode.methods) {
-                for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
-                    final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
-                    instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
-                    break;
+                if (isNotPrivate(methodNode)) {
+                    collectAllPutfieldInsnsOf(methodNode);
                 }
+            }
+        }
+
+        private void collectAllPutfieldInsnsOf(final MethodNode methodNode) {
+            for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
+                final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
+                instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
+                break;
             }
         }
 

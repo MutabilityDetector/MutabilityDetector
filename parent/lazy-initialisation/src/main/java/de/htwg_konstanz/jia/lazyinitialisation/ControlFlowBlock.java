@@ -9,6 +9,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.objectweb.asm.Label;
@@ -21,37 +22,69 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 
-import de.htwg_konstanz.jia.lazyinitialisation.Range.RangeBuilder;
-
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 18.02.2013
  */
-final class ControlFlowBlock {
+@Immutable
+final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     @NotThreadSafe
     public static final class Builder {
         private final int blockNumber;
         private final String identifier;
-        private final RangeBuilder rangeBuilder;
+        private final SortedSet<Integer> rangeItems;
         private final List<AbstractInsnNode> instructionsOfCurrentBlock;
+        private final Set<Builder> successorBuilders;
+        private ControlFlowBlock cfbInstance;
 
         public Builder(final int theBlockNumber, final String theIdentifier) {
             blockNumber = theBlockNumber;
             identifier = notEmpty(theIdentifier);
-            rangeBuilder = new RangeBuilder();
+            rangeItems = new TreeSet<Integer>();
             instructionsOfCurrentBlock = new ArrayList<AbstractInsnNode>();
+            successorBuilders = new HashSet<Builder>();
+            cfbInstance = null;
         }
 
         public void addInstruction(final int instructionIndex, final AbstractInsnNode actualInstruction) {
-            rangeBuilder.add(instructionIndex);
+            rangeItems.add(Integer.valueOf(instructionIndex));
             instructionsOfCurrentBlock.add(actualInstruction);
         }
 
-        public ControlFlowBlock build() {
-            final AbstractInsnNode[] insns = instructionsOfCurrentBlock
-                    .toArray(new AbstractInsnNode[instructionsOfCurrentBlock.size()]);
-            return ControlFlowBlock.newInstance(blockNumber, identifier, insns, rangeBuilder.build());
+        public boolean isBuilderForBlockNumber(final int aBlockNumber) {
+            return blockNumber == aBlockNumber;
+        }
+
+        public boolean doesRangeCover(final int instructionIndex) {
+            return rangeItems.contains(Integer.valueOf(instructionIndex));
+        }
+
+        public void addSuccessor(final Builder successor) {
+            successorBuilders.add(notNull(successor));
+        }
+
+        public synchronized ControlFlowBlock build() {
+            if (null == cfbInstance) {
+                final Set<ControlFlowBlock> successors = buildSuccessors();
+                final AbstractInsnNode[] instructions = instructionsToArray();
+                final Range range = Range.newInstance(rangeItems);
+                cfbInstance = ControlFlowBlock.newInstance(blockNumber, identifier, instructions, range, successors);
+            }
+            return cfbInstance;
+        }
+
+        private AbstractInsnNode[] instructionsToArray() {
+            final int numberOfInstructions = instructionsOfCurrentBlock.size();
+            return instructionsOfCurrentBlock.toArray(new AbstractInsnNode[numberOfInstructions]);
+        }
+
+        private Set<ControlFlowBlock> buildSuccessors() {
+            final Set<ControlFlowBlock> result = new HashSet<ControlFlowBlock>();
+            for (final Builder b : successorBuilders) {
+                result.add(b.build());
+            }
+            return result;
         }
     } // class Builder
 
@@ -61,6 +94,7 @@ final class ControlFlowBlock {
         private final MethodNode setter;
         private final AbstractInsnNode[] allInstructions;
         private final List<ControlFlowBlock> controlFlowBlocks;
+        private final List<Builder> controlFlowBlockBuilders;
         private final AtomicInteger currentBlockNumber;
 
         private final Analyzer<BasicValue> analyser = new Analyzer<BasicValue>(new BasicInterpreter()) {
@@ -70,18 +104,17 @@ final class ControlFlowBlock {
             }
 
             private void interlinkControlFlowBlocks(final int src, final int dest) {
-                ControlFlowBlock srcBlock = null;
-                ControlFlowBlock destBlock = null;
-                for (final ControlFlowBlock cfb : controlFlowBlocks) {
-                    if (cfb.covers(src)) {
-                        srcBlock = cfb;
-                    } else if (cfb.covers(dest)) {
-                        destBlock = cfb;
+                Builder srcBlock = null;
+                Builder destBlock = null;
+                for (final Builder b : controlFlowBlockBuilders) {
+                    if (b.doesRangeCover(src)) {
+                        srcBlock = b;
+                    } else if (b.doesRangeCover(dest)) {
+                        destBlock = b;
                     }
                 }
                 if (null != srcBlock && null != destBlock) {
                     srcBlock.addSuccessor(destBlock);
-                    destBlock.addPredecessor(srcBlock);
                 }
             }
         };
@@ -92,17 +125,18 @@ final class ControlFlowBlock {
             final AbstractInsnNode[] allInstructionsOriginal = theSetter.instructions.toArray();
             this.allInstructions = Arrays.copyOf(allInstructionsOriginal, allInstructionsOriginal.length);
             controlFlowBlocks = new ArrayList<ControlFlowBlock>();
+            controlFlowBlockBuilders = new ArrayList<Builder>();
             currentBlockNumber = new AtomicInteger(0);
         }
 
         public static ControlFlowBlockFactory newInstance(final String owner, final MethodNode setter) {
             final ControlFlowBlockFactory result = new ControlFlowBlockFactory(notEmpty(owner), notNull(setter));
-            result.createAllControlFlowBlocks();
+            result.createAllControlFlowBlockBuilders();
             result.analyseMethod();
             return result;
         }
 
-        private void createAllControlFlowBlocks() {
+        private void createAllControlFlowBlockBuilders() {
             final Builder builder = handleFirstInstruction();
             handleRemainingInstructions(builder);
         }
@@ -134,12 +168,12 @@ final class ControlFlowBlock {
             for (int i = 1; i < allInstructions.length; i++) {
                 final AbstractInsnNode insn = allInstructions[i];
                 if (isLabel(insn)) {
-                    controlFlowBlocks.add(builder.build());
+                    controlFlowBlockBuilders.add(builder);
                     builder = createNewControlFlowBlockBuilderForLabel(insn);
                 }
                 builder.addInstruction(i, insn);
             }
-            controlFlowBlocks.add(builder.build());
+            controlFlowBlockBuilders.add(builder);
         }
 
         private void analyseMethod() {
@@ -155,14 +189,19 @@ final class ControlFlowBlock {
         }
 
         public List<ControlFlowBlock> getAllControlFlowBlocksForMethod() {
-            final ArrayList<ControlFlowBlock> result = new ArrayList<ControlFlowBlock>(controlFlowBlocks.size());
-            for (final ControlFlowBlock controlFlowBlock : controlFlowBlocks) {
-                if (controlFlowBlock.isNotEmpty()) {
-                    result.add(controlFlowBlock);
-                }
-            }
+            createAllControlFlowBlocks();
+            final ArrayList<ControlFlowBlock> result = new ArrayList<ControlFlowBlock>(controlFlowBlocks);
             result.trimToSize();
             return result;
+        }
+
+        private void createAllControlFlowBlocks() {
+            for (final Builder b : controlFlowBlockBuilders) {
+                final ControlFlowBlock cfb = b.build();
+                if (cfb.isNotEmpty()) {
+                    controlFlowBlocks.add(cfb);
+                }
+            }
         }
     } // class ControlFlowFactory
 
@@ -171,27 +210,27 @@ final class ControlFlowBlock {
     private final String identifier;
     private final AbstractInsnNode[] instructions;
     private final Range rangeOfInstructionIndices;
-    private final Set<ControlFlowBlock> predecessors;
     private final Set<ControlFlowBlock> successors;
 
     private ControlFlowBlock(final int theBlockNumber,
             final String theIdentifier,
             final AbstractInsnNode[] theInstructions,
-            final Range theRangeOfInstructionIndices) {
+            final Range theRangeOfInstructionIndices,
+            final Set<ControlFlowBlock> theSuccessors) {
         blockNumber = theBlockNumber;
         identifier = theIdentifier;
         instructions = Arrays.copyOf(theInstructions, theInstructions.length);
         rangeOfInstructionIndices = theRangeOfInstructionIndices;
-        predecessors = new HashSet<ControlFlowBlock>();
-        successors = new HashSet<ControlFlowBlock>();
+        successors = Collections.unmodifiableSet(theSuccessors);
     }
 
     public static ControlFlowBlock newInstance(final int blockNumber,
             final String identifier,
             final AbstractInsnNode[] instructions,
-            final Range rangeOfInstructionIndices) {
+            final Range rangeOfInstructionIndices,
+            final Set<ControlFlowBlock> successors) {
         return new ControlFlowBlock(blockNumber, notEmpty(identifier), notNull(instructions),
-                notNull(rangeOfInstructionIndices));
+                notNull(rangeOfInstructionIndices), notNull(successors));
     }
 
     public boolean isEmpty() {
@@ -218,10 +257,19 @@ final class ControlFlowBlock {
         return blockNumber;
     }
 
-    public boolean containsEffectiveConditionCheck(final AssignmentInsn effectiveAssignmentInsn) {
-        final EffectiveJumpInsnFinder f = EffectiveJumpInsnFinder.newInstance(effectiveAssignmentInsn, instructions);
-        final JumpInsn effectiveJumpInsn = f.getEffectiveJumpInsn();
-        return !effectiveJumpInsn.isNull();
+    public boolean containsConditionCheck() {
+        boolean result = false;
+        for (final AbstractInsnNode insn : instructions) {
+            if (isJumpInsnNode(insn)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private static boolean isJumpInsnNode(final AbstractInsnNode insn) {
+        return AbstractInsnNode.JUMP_INSN == insn.getType();
     }
 
     public boolean containsEffectiveAssignmentInstruction(final FieldNode assignedVariable) {
@@ -234,24 +282,80 @@ final class ControlFlowBlock {
         return rangeOfInstructionIndices.covers(someInstructionIndex);
     }
 
-    public void addPredecessor(final ControlFlowBlock predecessor) {
-        predecessors.add(notNull(predecessor));
-    }
-
-    public void addSuccessor(final ControlFlowBlock successor) {
-        successors.add(notNull(successor));
-    }
-
-    public boolean isPredecessorOf(final ControlFlowBlock successor) {
+    public boolean isDirectPredecessorOf(final ControlFlowBlock successor) {
         return successors.contains(successor);
     }
 
-    public boolean isSuccessorOf(final ControlFlowBlock predecessor) {
-        return predecessors.contains(predecessor);
+    public boolean isPredecessorOf(final ControlFlowBlock possibleSuccessor) {
+        boolean result = false;
+        for (final ControlFlowBlock directSuccessor : successors) {
+            if (directSuccessor.equals(possibleSuccessor) || directSuccessor.isPredecessorOf(possibleSuccessor)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public boolean isDirectSuccessorOf(final ControlFlowBlock possiblePredecessor) {
+        return possiblePredecessor.isDirectPredecessorOf(this);
+    }
+
+    public boolean isSuccessorOf(final ControlFlowBlock possiblePredecessor) {
+        return possiblePredecessor.isPredecessorOf(this);
     }
 
     public List<AbstractInsnNode> getInstructions() {
         return Arrays.asList(instructions);
+    }
+
+    @Override
+    public int compareTo(final ControlFlowBlock o) {
+        final Integer thisBlockNumber = Integer.valueOf(blockNumber);
+        final Integer otherBlockNumber = Integer.valueOf(o.blockNumber);
+        return thisBlockNumber.compareTo(otherBlockNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + blockNumber;
+        result = prime * result + identifier.hashCode();
+        result = prime * result + Arrays.hashCode(instructions);
+        result = prime * result + rangeOfInstructionIndices.hashCode();
+        result = prime * result + successors.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ControlFlowBlock)) {
+            return false;
+        }
+        ControlFlowBlock other = (ControlFlowBlock) obj;
+        if (blockNumber != other.blockNumber) {
+            return false;
+        }
+        if (!identifier.equals(other.identifier)) {
+            return false;
+        }
+        if (!Arrays.equals(instructions, other.instructions)) {
+            return false;
+        }
+        if (!rangeOfInstructionIndices.equals(other.rangeOfInstructionIndices)) {
+            return false;
+        }
+        if (!successors.equals(other.successors)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -260,7 +364,6 @@ final class ControlFlowBlock {
         builder.append("[blockNumber=").append(blockNumber);
         builder.append(", identifier=").append(identifier);
         builder.append(", rangeOfInstructionIndices=").append(rangeOfInstructionIndices);
-        builder.append(", predecessors=").append(setToString(predecessors));
         builder.append(", successors=").append(setToString(successors));
         builder.append("]");
         return builder.toString();

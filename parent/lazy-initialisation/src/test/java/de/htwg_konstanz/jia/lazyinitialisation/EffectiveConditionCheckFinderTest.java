@@ -21,7 +21,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
  * @author Juergen Fickel
  * @version 17.02.2013
  */
-public final class EffectiveJumpInsnFinderTest {
+public final class EffectiveConditionCheckFinderTest {
 
     private static final class Asserter {
 
@@ -31,15 +31,15 @@ public final class EffectiveJumpInsnFinderTest {
 
         public static void assertEffectiveJumpInsnIsFound(final Class<?> klasse,
                 final String variableName, final String setterName, final int indexOfExpectedJumpInsn) {
-            final EffectiveJumpInsnFinder ejif = createEffectiveJumpInsnFinder(klasse, variableName, setterName);
+            final EffectiveConditionCheckFinder ejif = createEffectiveJumpInsnFinder(klasse, variableName, setterName);
             assertThat(ejif, is(not(equalTo(null))));
             assertThat(ejif.hasMoreThanOneAssociatedJumpInstruction(), is(false));
             assertThat(ejif.getEffectiveJumpInsn().getIndexOfJumpInsn(), is(indexOfExpectedJumpInsn));
         }
 
-        private static EffectiveJumpInsnFinder createEffectiveJumpInsnFinder(final Class<?> klasse,
+        private static EffectiveConditionCheckFinder createEffectiveJumpInsnFinder(final Class<?> klasse,
                 final String variableName, final String setterName) {
-            EffectiveJumpInsnFinder result = null;
+            EffectiveConditionCheckFinder result = null;
             final ConvenienceClassNode classNode = createConvenienceClassNodeFor(klasse);
             final MethodNode setter = classNode.findMethodWithName(setterName);
             final InsnList setterInstructions = setter.instructions;
@@ -47,7 +47,7 @@ public final class EffectiveJumpInsnFinderTest {
                 final AssignmentInsn effectiveAssignmentInsn = findEffectivePutfieldInsnFor(classNode, variableName,
                         setterInstructions);
                 if (!effectiveAssignmentInsn.isNull()) {
-                    result = EffectiveJumpInsnFinder.newInstance(effectiveAssignmentInsn, setterInstructions);
+                    result = EffectiveConditionCheckFinder.newInstance(effectiveAssignmentInsn, setterInstructions);
                 }
             }
             return result;
@@ -82,7 +82,7 @@ public final class EffectiveJumpInsnFinderTest {
     @Test
     @Ignore("MethodNotFoundException caused by Mutability Detector occurs.")
     public void assertImmutability() {
-        assertInstancesOf(EffectiveJumpInsnFinder.class, areImmutable());
+        assertInstancesOf(EffectiveConditionCheckFinder.class, areImmutable());
     }
 
     @Test

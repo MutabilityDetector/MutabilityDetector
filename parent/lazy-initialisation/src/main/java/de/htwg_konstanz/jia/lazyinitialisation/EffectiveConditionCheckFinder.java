@@ -24,27 +24,27 @@ import org.objectweb.asm.tree.JumpInsnNode;
  * @version 15.02.2013
  */
 @Immutable
-final class EffectiveJumpInsnFinder {
+final class EffectiveConditionCheckFinder {
 
     private final AssignmentInsn effectiveAssignmentInsn;
     private final AbstractInsnNode[] instructions;
     private final List<JumpInsn> associatedJumpInstructions;
 
-    private EffectiveJumpInsnFinder(final AssignmentInsn theEffectiveAssignmentInsn,
+    private EffectiveConditionCheckFinder(final AssignmentInsn theEffectiveAssignmentInsn,
             final AbstractInsnNode[] theInstructions) {
         effectiveAssignmentInsn = theEffectiveAssignmentInsn;
         instructions = Arrays.copyOf(theInstructions, theInstructions.length);
         associatedJumpInstructions = new ArrayList<JumpInsn>();
     }
 
-    public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
+    public static EffectiveConditionCheckFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
             final InsnList instructions) {
         return newInstance(effectiveAssignmentInsn, instructions.toArray());
     }
 
-    public static EffectiveJumpInsnFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
+    public static EffectiveConditionCheckFinder newInstance(final AssignmentInsn effectiveAssignmentInsn,
             final AbstractInsnNode[] instructions) {
-        final EffectiveJumpInsnFinder result = new EffectiveJumpInsnFinder(notNull(effectiveAssignmentInsn),
+        final EffectiveConditionCheckFinder result = new EffectiveConditionCheckFinder(notNull(effectiveAssignmentInsn),
                 notNull(instructions));
         result.collectAndSortAssociatedJumpInstructions();
         return result;
@@ -134,10 +134,10 @@ final class EffectiveJumpInsnFinder {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof EffectiveJumpInsnFinder)) {
+        if (!(obj instanceof EffectiveConditionCheckFinder)) {
             return false;
         }
-        final EffectiveJumpInsnFinder other = (EffectiveJumpInsnFinder) obj;
+        final EffectiveConditionCheckFinder other = (EffectiveConditionCheckFinder) obj;
         if (!associatedJumpInstructions.equals(other.associatedJumpInstructions)) {
             return false;
         }
