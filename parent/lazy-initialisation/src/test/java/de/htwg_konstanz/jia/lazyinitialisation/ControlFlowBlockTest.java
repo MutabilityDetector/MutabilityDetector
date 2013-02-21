@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -138,8 +139,7 @@ public final class ControlFlowBlockTest {
         for (final int f : further) {
             rb.add(f);
         }
-        cfb = ControlFlowBlock.newInstance(0, id, new AbstractInsnNode[0], rb.build(),
-                Collections.<ControlFlowBlock> emptySet());
+        cfb = ControlFlowBlock.newInstance(0, id, new AbstractInsnNode[0], rb.build());
     }
 
     private void assertCfbDoesNotCover(final int notCovered) {
@@ -175,6 +175,7 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
+    @Ignore("Bytecode of String seems to be platform dependent.")
     public void recognizedBlockSequenceOfJavaLangStringIsCorrect() {
         final Helper h = new Helper(String.class, "hash", "hashCode");
         h.assertNumberOfFoundControlFlowBlocks(4);
@@ -192,12 +193,14 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
+    @Ignore("Bytecode of String seems to be platform dependent.")
     public void findBlockWithEffectiveAssignmentInsnForJavaLangString() {
         final Helper h = new Helper(String.class, "hash", "hashCode");
         h.assertBlockContainsEffectiveAssignmentInsn(2);
     }
 
     @Test
+    @Ignore("Bytecode of String seems to be platform dependent.")
     public void findBlocksWithConditionCheckForJavaLangString() {
         final Helper h = new Helper(String.class, "hash", "hashCode");
         h.assertBlockContainsConditionCheck(0);
@@ -229,7 +232,7 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void recognizedBlockSequenceOfAliasedFloatWithDefaultIsCorrecdt() {
+    public void recognizedBlockSequenceOfAliasedFloatWithDefaultIsCorrect() {
         final Helper h = new Helper(AliasedFloatWithDefault.class, "hash", "hashCodeFloat");
         h.assertNumberOfFoundControlFlowBlocks(5);
         h.assertFirstIsPredecessorOfSecond(0, 1);
