@@ -3,18 +3,23 @@
  */
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import static org.junit.Assert.assertEquals;
 import static org.objectweb.asm.Opcodes.*;
-import static org.junit.Assert.fail;
 
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
+
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedByteWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
 
@@ -24,106 +29,160 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
  */
 public final class AssignmentGuardFinder {
 
-    private static final class Pair<L, R> {
-        public final L left;
-        public final R right;
+    @NotThreadSafe
+    private static final class IntegerSetBuilder {
+        private final Set<Integer> resultSet;
 
-        private Pair(final L theLeft, final R theRight) {
-            left = theLeft;
-            right = theRight;
+        private IntegerSetBuilder() {
+            resultSet = new HashSet<Integer>();
         }
 
-        public static <L, R> Pair<L, R> newPair(final L left, final R right) {
-            return new Pair<L, R>(left, right);
-        }
-    } // class Pair<L, R>
-
-
-    private static final class Helper {
-        private final Class<?> klasse;
-        private final String variableName;
-        private final String methodName;
-        private final ConvenienceClassNode convenienceClassNode;
-        private final List<ControlFlowBlock> controlFlowBlocks;
-
-        private Helper(final Class<?> theKlasse, final String theVariableName, final String theMethodName) {
-            super();
-            klasse = theKlasse;
-            variableName = theVariableName;
-            methodName = theMethodName;
-            convenienceClassNode = createConvenienceClassNodeFor(klasse);
-            controlFlowBlocks = getControlFlowBlocksFor(klasse, methodName);
+        public static IntegerSetBuilder getInstance() {
+            return new IntegerSetBuilder();
         }
 
-        private static List<ControlFlowBlock> getControlFlowBlocksFor(final Class<?> klasse, final String methodName) {
-            List<ControlFlowBlock> result = Collections.emptyList();
-            final ConvenienceClassNode ccn = createConvenienceClassNodeFor(klasse);
-            final MethodNode methodNode = ccn.findMethodWithName(methodName);
-            if (isNotNull(methodNode)) {
-                result = createControlFlowBlocksFor(ccn.name(), methodNode);
+        public IntegerSetBuilder add(final int integer) {
+            resultSet.add(Integer.valueOf(integer));
+            return this;
+        }
+
+        public Set<Integer> build() {
+            return resultSet;
+        }
+    } // class IntegerSetBuilder
+
+
+    @Immutable
+    private static final class Alias {
+        public final boolean doesExist;
+        public final int localVariable;
+
+        private Alias(final boolean doesExist, final int localVariable) {
+            this.doesExist = doesExist;
+            this.localVariable = localVariable;
+        }
+
+        public static Alias newInstance(final boolean doesExist, final int localVariable) {
+            return new Alias(doesExist, localVariable);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder b = new StringBuilder();
+            b.append("Alias [").append("doesExist=").append(doesExist);
+            b.append(", localVariable=").append(localVariable).append("]");
+            return b.toString();
+        }
+    } // class Alias
+
+
+    private final class AliasFinder {
+
+        public Alias searchForAliasInBlock(final ControlFlowBlock block) {
+            Alias result = Alias.newInstance(false, Integer.MIN_VALUE);
+            final AbstractInsnNode[] insns = toArray(block.getInstructions());
+            int indexOfGetfield = findIndexOfGetfieldForVariable(insns);
+            if (indexOfGetfieldFound(indexOfGetfield)) {
+                final AbstractInsnNode successorInsnOfGetfieldForVariable = insns[indexOfGetfield + 1];
+                if (isStoreInstruction(successorInsnOfGetfieldForVariable)) {
+                    final VarInsnNode storeInsn = (VarInsnNode) successorInsnOfGetfieldForVariable;
+                    result = Alias.newInstance(true, storeInsn.var);
+                }
+            }
+            if (!result.doesExist) {
+                for (final ControlFlowBlock predecessor : block.getPredecessors()) {
+                    return searchForAliasInBlock(predecessor);
+                }
             }
             return result;
         }
 
-        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
-            final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.convenienceClassNodeFor(klasse);
+        private AbstractInsnNode[] toArray(final List<AbstractInsnNode> asList) {
+            final List<AbstractInsnNode> instructions = asList;
+            return instructions.toArray(new AbstractInsnNode[asList.size()]);
         }
 
-        private static boolean isNotNull(final Object ref) {
-            return null != ref;
-        }
-
-        private static List<ControlFlowBlock> createControlFlowBlocksFor(final String owner, final MethodNode setter) {
-            final ControlFlowBlockFactory cfbFactory = ControlFlowBlockFactory.newInstance(owner, setter);
-            return cfbFactory.getAllControlFlowBlocksForMethod();
-        }
-
-        public List<ControlFlowBlock> getAllControlFlowBlocks() {
-            return controlFlowBlocks;
-        }
-
-        public ControlFlowBlock getBlockWithNumber(final int blockNumber) {
-            ControlFlowBlock result = null;
-            for (final ControlFlowBlock b : controlFlowBlocks) {
-                if (b.getBlockNumber() == blockNumber) {
-                    result = b;
+        private int findIndexOfGetfieldForVariable(final AbstractInsnNode[] instructions) {
+            int result = -1;
+            for (int i = 0; i < instructions.length; i++) {
+                if (isGetfieldForVariable(instructions[i])) {
+                    result = i;
                     break;
                 }
             }
-            if (null == result) {
-                fail(String.format("No control flow block found for number %d.", blockNumber));
-            }
             return result;
         }
 
-        public FieldNode getVariableForName(final String variableName) {
-            return convenienceClassNode.findVariableWithName(variableName);
+        private boolean indexOfGetfieldFound(final int index) {
+            return -1 < index;
         }
-    } // class Helper
+
+        private boolean isStoreInstruction(final AbstractInsnNode insn) {
+            final Set<Integer> storeInstructions = getStoreInstructions();
+            final Integer opcode = Integer.valueOf(insn.getOpcode());
+            return storeInstructions.contains(opcode);
+        }
+
+        private Set<Integer> getStoreInstructions() {
+            final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
+            b.add(ISTORE).add(LSTORE).add(FSTORE).add(DSTORE).add(ASTORE);
+            return b.build();
+        }
+
+    } // class AliasFinder
 
 
-    private final Map<Integer, JumpInsnNode> relevantJumpInsns = new HashMap<Integer, JumpInsnNode>();
-    private String variableName;
-    private Helper h = null;
+    private Map<Integer, ControlFlowBlock> controlFlowBlocks = null;
+    private String variableName = null;
+    private Map<Integer, JumpInsnNode> relevantJumpInsns = null;
 
     @After
     public void tearDown() {
-        relevantJumpInsns.clear();
+        controlFlowBlocks = null;
         variableName = null;
-        h = null;
+        relevantJumpInsns = null;
+    }
+
+    @Before
+    public void setUp() {
+        relevantJumpInsns = new HashMap<Integer, JumpInsnNode>();
     }
 
     @Test
     public void findAssignmentGuardForIntegerWithDefault() {
-        variableName = "hash";
-        h = new Helper(IntegerWithDefault.class, variableName, "hashCode");
-        final ControlFlowBlock blockWithJumpInsn = h.getBlockWithNumber(0);
-        final Map<Integer, JumpInsnNode> jumpInsnNodes = getAllJumpInsructions(blockWithJumpInsn.getInstructions());
-        analyseJumpInstructions(jumpInsnNodes, blockWithJumpInsn);
+        analyseJumpInstructionsFor(IntegerWithDefault.class, "hash", "hashCode", 0);
+        assertEquals(1, relevantJumpInsns.size());
+        for (final Entry<Integer, JumpInsnNode> entry : relevantJumpInsns.entrySet()) {
+            assertEquals(Integer.valueOf(4), entry.getKey());
+        }
     }
 
-    private static Map<Integer, JumpInsnNode> getAllJumpInsructions(final List<AbstractInsnNode> instructions) {
+    private void analyseJumpInstructionsFor(final Class<?> klasse, final String theVariableName,
+            final String methodName, final int blockNumber) {
+        initialiseAll(klasse, theVariableName, methodName);
+        final ControlFlowBlock blockWithJumpInsn = controlFlowBlocks.get(Integer.valueOf(blockNumber));
+        analyseJumpInstructions(getAllJumpInsructionsOfBlock(blockWithJumpInsn), blockWithJumpInsn);
+    }
+
+    private void initialiseAll(final Class<?> klasse, final String theVariableName, final String methodName) {
+        variableName = theVariableName;
+        controlFlowBlocks = initialiseControlFlowBlocksFor(klasse, methodName);
+    }
+
+    private static Map<Integer, ControlFlowBlock> initialiseControlFlowBlocksFor(final Class<?> klasse,
+            final String methodName) {
+        final ClassNodeFactory factory = ClassNodeFactory.getInstance();
+        final ConvenienceClassNode ccn = factory.convenienceClassNodeFor(klasse);
+        final MethodNode methodNode = ccn.findMethodWithName(methodName);
+        if (null != methodNode) {
+            final ControlFlowBlockFactory cfbFactory = ControlFlowBlockFactory.newInstance(ccn.name(), methodNode);
+            return cfbFactory.getAllControlFlowBlocksForMethodInMap();
+        }
+        return Collections.emptyMap();
+    }
+
+    private static Map<Integer, JumpInsnNode> getAllJumpInsructionsOfBlock(final ControlFlowBlock blockWithJumpInsn) {
+        final List<AbstractInsnNode> instructions = blockWithJumpInsn.getInstructions();
         final Map<Integer, JumpInsnNode> result = new HashMap<Integer, JumpInsnNode>();
         for (final AbstractInsnNode abstractInsnNode : instructions) {
             if (isJumpInsnNode(abstractInsnNode)) {
@@ -140,118 +199,78 @@ public final class AssignmentGuardFinder {
     private void analyseJumpInstructions(final Map<Integer, JumpInsnNode> jumpInsnNodes,
             final ControlFlowBlock blockWithJumpInsn) {
         for (final Entry<Integer, JumpInsnNode> jumpInsnWithIndex : jumpInsnNodes.entrySet()) {
-            analyseParticularJumpInstruction(jumpInsnWithIndex, blockWithJumpInsn);
+            if (isRelevantJumpInstruction(jumpInsnWithIndex.getKey(), blockWithJumpInsn)) {
+                addToRelevantJumpInsns(jumpInsnWithIndex);
+            }
         }
     }
 
-    private void analyseParticularJumpInstruction(final Entry<Integer, JumpInsnNode> jumpInsnWithIndex,
+    /* Im aktuellen und in allen Vorgaengerbloecken:
+     *     GETFIELD fuer `variableName` suchen.
+     *     Lokale Variable fuer den Wert von `variableName` suchen (`?STORE x`).
+     *     *Implementiert*
+     * 
+     * 
+     * In Block mit Sprunganweisung:
+     * Typ der Vorgaenger-Anweisung ermitteln:
+     *     `?LOAD` x
+     *         Alias suchen
+     *         ? Stimmt x überein
+     *             ? Bedingungspruefung entscheidet evtl. ueber Zuweisung
+     *             : aktueller Block scheidet aus
+     *         : `GETFIELD` fuer `variableName`
+     *             ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
+     *             : mit naechster Sprunganweisung fortfahren.
+     *         : Ist Anweisung n - 1 eine Vergleichsanweisung (z. B. `FCMPL`)
+     *             ? Ist n - 2 `GETFIELD` fuer `variableName`
+     *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
+     *                 : mit naechster Sprunganweisung fortfahren.
+     *                 *Implementiert*
+     *
+     *             : Ist n - 2 `?LOAD` fuer Alias x
+     *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
+     *                 : mit naechster Sprunganweisung fortfahren.
+     *                 *Implementiert*
+     *
+     */
+    private boolean isRelevantJumpInstruction(final int indexOfInstructionToAnalyse,
             final ControlFlowBlock blockWithJumpInsn) {
-        // TODO Auto-generated method stub
-        final int previousIndex = jumpInsnWithIndex.getKey() - 1;
-        final List<AbstractInsnNode> instructions = blockWithJumpInsn.getInstructions();
-        if (isPreviousInsnGetfieldForVariable(instructions.get(previousIndex))) {
-            relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-        } else {
-            /* Im aktuellen und in allen Vorgaengerbloecken:
-             *     GETFIELD fuer `variableName` suchen.
-             *     Lokale Variable fuer den Wert von `variableName` suchen (`?STORE x`).
-             *     *Implementiert*
-             * 
-             * 
-             * In Block mit Sprunganweisung:
-             * Typ der Vorgaenger-Anweisung ermitteln:
-             *     `?LOAD` x
-             *         Alias suchen
-             *         ? Stimmt x überein
-             *             ? Bedingungspruefung entscheidet evtl. ueber Zuweisung
-             *             : aktueller Block scheidet aus
-             *         : `GETFIELD` fuer `variableName`
-             *             ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-             *             : mit naechster Sprunganweisung fortfahren.
-             *         : Ist Anweisung n - 1 eine Vergleichsanweisung (z. B. `FCMPL`)
-             *             ? Ist n - 2 `GETFIELD` fuer `variableName`
-             *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-             *                 : mit naechster Sprunganweisung fortfahren.
-             *             : Ist n - 2 `?LOAD` fuer Alias x
-             *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-             *                 : mit naechster Sprunganweisung fortfahren.
-             *
-             */
-            final Pair<Boolean, Integer> psblCompareInstruction = isPreviousInsnComparison(instructions.get(previousIndex));
-
-//            final Pair<Boolean,Integer> aliasInBlock = searchForAliasInBlock(blockWithJumpInsn);
-//            if (aliasInBlock.left) {
-//                System.out.println(String.format("Alias ist %d", aliasInBlock.right));
-//            }
-        }
-    }
-
-    private boolean isPreviousInsnGetfieldForVariable(final AbstractInsnNode previousInsn) {
         boolean result = false;
-        if (Opcodes.GETFIELD == previousInsn.getOpcode()) {
-            final FieldInsnNode getfield = (FieldInsnNode) previousInsn;
-            result = variableName.equals(getfield.name);
-        }
-        return result;
-    }
-    
-    private Pair<Boolean, Integer> isPreviousInsnComparison(final AbstractInsnNode abstractInsnNode) {
-        Pair<Boolean, Integer> result = Pair.newPair(Boolean.FALSE, Integer.MIN_VALUE);
-        if (isCompareInstruction(abstractInsnNode)) {
-            
-        }
-        return result;
-    }
-
-    private boolean isCompareInstruction(final AbstractInsnNode abstractInsnNode) {
-        final Set<Integer> compareInstructions = getCompareInstructions();
-        final Integer opcode = Integer.valueOf(abstractInsnNode.getOpcode());
-        return compareInstructions.contains(opcode);
-    }
-
-    private static Set<Integer> getCompareInstructions() {
-        final class SetBuilder {
-            final Set<Integer> compareInstructions = new HashSet<Integer>();
-            SetBuilder add(final int opcode) {
-                compareInstructions.add(Integer.valueOf(opcode));
-                return this;
-            }
-        }
-        final SetBuilder b = new SetBuilder();
-        b.add(LCMP).add(FCMPL).add(FCMPG).add(DCMPL).add(DCMPG);
-        b.add(IF_ICMPEQ).add(IF_ICMPNE).add(IF_ICMPLT).add(IF_ICMPGE).add(IF_ICMPGT).add(IF_ICMPLE);
-        b.add(IF_ACMPEQ).add(IF_ACMPNE);
-        return b.compareInstructions;
-    }
-
-    private Pair<Boolean, Integer> searchForAliasInBlock(final ControlFlowBlock block) {
-        Pair<Boolean, Integer> result = Pair.newPair(Boolean.FALSE, Integer.MIN_VALUE);
-        final AbstractInsnNode[] insns = toArray(block.getInstructions());
-        int indexOfGetfield = -1;
-        for (int i = 0; i < insns.length; i++) {
-            if (isGetfieldForVariable(insns[i])) {
-                indexOfGetfield = i;
-                break;
-            }
-        }
-        if (-1 < indexOfGetfield) {
-            if (isStoreInstruction(insns[indexOfGetfield + 1])) {
-                final VarInsnNode storeInsn = (VarInsnNode) insns[indexOfGetfield + 1];
-                result = Pair.newPair(Boolean.TRUE, storeInsn.var);
-            }
-        }
-        if (!result.left) {
-            for (final ControlFlowBlock predecessor : block.getPredecessors()) {
-                return searchForAliasInBlock(predecessor);
-            }
+        final List<AbstractInsnNode> instructions = blockWithJumpInsn.getInstructions();
+        final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;
+        final AbstractInsnNode predecessorInstruction = instructions.get(indexOfPredecessorInstruction);
+        if (isGetfieldForVariable(predecessorInstruction)) {
+            result = true;
+        } else if (isLoadInstructionForAlias(blockWithJumpInsn, predecessorInstruction)) {
+            result = true;
+        } else if (isComparisonInsn(predecessorInstruction)) {
+            result = isRelevantJumpInstruction(indexOfPredecessorInstruction, blockWithJumpInsn);
         }
         return result;
     }
 
-    private static AbstractInsnNode[] toArray(final List<AbstractInsnNode> asList) {
-        final List<AbstractInsnNode> instructions = asList;
-        return instructions.toArray(new AbstractInsnNode[asList.size()]);
-    }
+// TODO Löschen (Implementierung ohne Rekursion)
+//    private void isRelevantJumpInstruction(final Entry<Integer, JumpInsnNode> jumpInsnWithIndex,
+//            final ControlFlowBlock blockWithJumpInsn) {
+//        final List<AbstractInsnNode> instructions = blockWithJumpInsn.getInstructions();
+//        final int indexOfPredecessorInstruction = jumpInsnWithIndex.getKey() - 1;
+//        final AbstractInsnNode predecessorInstruction = instructions.get(indexOfPredecessorInstruction);
+//        if (isGetfieldForVariable(predecessorInstruction)) {
+//            addToRelevantJumpInsns(jumpInsnWithIndex);
+//        } else if (isLoadInstructionForAlias(blockWithJumpInsn, predecessorInstruction)) {
+//            addToRelevantJumpInsns(jumpInsnWithIndex);
+//        } else {
+//            if (isComparisonInsn(predecessorInstruction)) {
+//            final AbstractInsnNode prePredecessorInstruction = instructions.get(indexOfPredecessorInstruction - 1);
+//            isParticularJumpInstruction(jumpInsnWithIndex, blockWithJumpInsn);
+//            if (isGetfieldForVariable(prePredecessorInstruction)) {
+//                addToRelevantJumpInsns(jumpInsnWithIndex);
+//            } else if (isLoadInstructionForAlias(blockWithJumpInsn, prePredecessorInstruction)) {
+//                addToRelevantJumpInsns(jumpInsnWithIndex);
+//            }
+//            }
+//        }
+//    }
 
     private boolean isGetfieldForVariable(final AbstractInsnNode insn) {
         boolean result = false;
@@ -262,32 +281,55 @@ public final class AssignmentGuardFinder {
         return result;
     }
 
-    private boolean isStoreInstruction(final AbstractInsnNode insn) {
-        final Set<Integer> storeInstructions = getStoreInstructions();
-        final Integer opcode = Integer.valueOf(insn.getOpcode());
-        return storeInstructions.contains(opcode);
+    private void addToRelevantJumpInsns(final Entry<Integer, JumpInsnNode> entryToAdd) {
+        relevantJumpInsns.put(entryToAdd.getKey(), entryToAdd.getValue());
     }
 
-    private static Set<Integer> getStoreInstructions() {
-        final class SetBuilder {
-            final Set<Integer> storeInstructions = new HashSet<Integer>();
-            SetBuilder add(final int opcode) {
-                storeInstructions.add(Integer.valueOf(opcode));
-                return this;
-            }
+    private boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
+        final Set<Integer> compareInstructions = getComparisonInstructions();
+        final Integer opcode = Integer.valueOf(abstractInsnNode.getOpcode());
+        return compareInstructions.contains(opcode);    
+    }
+
+    private static Set<Integer> getComparisonInstructions() {
+        final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
+        b.add(LCMP).add(FCMPL).add(FCMPG).add(DCMPL).add(DCMPG);
+        b.add(IF_ICMPEQ).add(IF_ICMPNE).add(IF_ICMPLT).add(IF_ICMPGE).add(IF_ICMPGT).add(IF_ICMPLE);
+        b.add(IF_ACMPEQ).add(IF_ACMPNE);
+        return b.build();
+    }
+    
+    private boolean isLoadInstructionForAlias(final ControlFlowBlock blockWithJumpInsn, final AbstractInsnNode insn) {
+        final AliasFinder aliasFinder = new AliasFinder();
+        final Alias alias = aliasFinder.searchForAliasInBlock(blockWithJumpInsn);
+        return alias.doesExist && isLoadInstructionForAlias(insn, alias);
+    }
+
+    private boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
+        boolean result = false;
+        if (AbstractInsnNode.VAR_INSN == insn.getType()) {
+            final VarInsnNode loadInstruction = (VarInsnNode) insn;
+            result = loadInstruction.var == alias.localVariable;
         }
-        final SetBuilder b = new SetBuilder();
-        b.add(ISTORE).add(LSTORE).add(FSTORE).add(DSTORE).add(ASTORE);
-        return b.storeInstructions;
+        return result;
     }
 
     @Test
     public void findAssignmentGuardForAliasedFloatWithDefault() {
-        variableName = "hash";
-        h = new Helper(AliasedFloatWithDefault.class, variableName, "hashCodeFloat");
-        final ControlFlowBlock blockWithJumpInsn = h.getBlockWithNumber(1);
-        final Map<Integer, JumpInsnNode> jumpInsnNodes = getAllJumpInsructions(blockWithJumpInsn.getInstructions());
-        analyseJumpInstructions(jumpInsnNodes, blockWithJumpInsn);
+        analyseJumpInstructionsFor(AliasedFloatWithDefault.class, "hash", "hashCodeFloat", 1);
+        assertEquals(1, relevantJumpInsns.size());
+    }
+
+    @Test
+    public void findAssignmentGuardForAliasedByteWithDefault() {
+        analyseJumpInstructionsFor(AliasedByteWithDefault.class, "hash", "hashCodeByte", 1);
+        assertEquals(1, relevantJumpInsns.size());
+    }
+
+    @Test
+    public void findAssignmentGuardForJavaLangString() {
+        analyseJumpInstructionsFor(String.class, "hash", "hashCode", 0);
+        assertEquals(1, relevantJumpInsns.size());
     }
 
 }
