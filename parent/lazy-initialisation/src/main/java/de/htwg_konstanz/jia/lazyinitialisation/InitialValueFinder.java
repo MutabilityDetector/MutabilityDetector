@@ -46,6 +46,7 @@ final class InitialValueFinder implements Runnable {
         <T> T asConcreteObject(Class<T> targetTypeClass);
     } // interface InitialValue
 
+
     @NotThreadSafe
     static final class BaseInitialValue implements InitialValue {
 
@@ -179,6 +180,7 @@ final class InitialValueFinder implements Runnable {
             return builder.toString();
         }
     } // class BaseInitialValue
+
 
     @Immutable
     private static final class InitialValueFactory {

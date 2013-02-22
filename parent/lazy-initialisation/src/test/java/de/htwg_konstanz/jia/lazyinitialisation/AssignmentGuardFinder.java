@@ -19,9 +19,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
+import de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedByteWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemantic;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -134,7 +136,7 @@ public final class AssignmentGuardFinder {
 
     private Map<Integer, ControlFlowBlock> controlFlowBlocks = null;
     private String variableName = null;
-    private Map<Integer, JumpInsnNode> relevantJumpInsns = null;
+    private Map<Integer, Map<Integer, JumpInsnNode>> relevantJumpInsns = null;
 
     @After
     public void tearDown() {
@@ -145,23 +147,29 @@ public final class AssignmentGuardFinder {
 
     @Before
     public void setUp() {
-        relevantJumpInsns = new HashMap<Integer, JumpInsnNode>();
+        relevantJumpInsns = new HashMap<Integer, Map<Integer, JumpInsnNode>>();
     }
 
     @Test
     public void findAssignmentGuardForIntegerWithDefault() {
         analyseJumpInstructionsFor(IntegerWithDefault.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
-        for (final Entry<Integer, JumpInsnNode> entry : relevantJumpInsns.entrySet()) {
+
+        // TODO Neu: Versuch
+        final Map<Integer, JumpInsnNode> indexedJumpInsnsOfBlock = relevantJumpInsns.get(0);
+        for (final Entry<Integer, JumpInsnNode> entry : indexedJumpInsnsOfBlock.entrySet()) {
             assertEquals(Integer.valueOf(4), entry.getKey());
         }
+//        for (final Entry<Integer, JumpInsnNode> entry : relevantJumpInsns.entrySet()) {
+//            assertEquals(Integer.valueOf(4), entry.getKey());
+//        }
     }
 
     private void analyseJumpInstructionsFor(final Class<?> klasse, final String theVariableName,
             final String methodName, final int blockNumber) {
         initialiseAll(klasse, theVariableName, methodName);
         final ControlFlowBlock blockWithJumpInsn = controlFlowBlocks.get(Integer.valueOf(blockNumber));
-        analyseJumpInstructions(getAllJumpInsructionsOfBlock(blockWithJumpInsn), blockWithJumpInsn);
+        collectRelevantJumpInstructions(getAllJumpInsructionsOfBlock(blockWithJumpInsn), blockWithJumpInsn);
     }
 
     private void initialiseAll(final Class<?> klasse, final String theVariableName, final String methodName) {
@@ -196,11 +204,15 @@ public final class AssignmentGuardFinder {
         return AbstractInsnNode.JUMP_INSN == abstractInsnNode.getType();
     }
 
-    private void analyseJumpInstructions(final Map<Integer, JumpInsnNode> jumpInsnNodes,
+    private void collectRelevantJumpInstructions(final Map<Integer, JumpInsnNode> jumpInsnNodes,
             final ControlFlowBlock blockWithJumpInsn) {
         for (final Entry<Integer, JumpInsnNode> jumpInsnWithIndex : jumpInsnNodes.entrySet()) {
             if (isRelevantJumpInstruction(jumpInsnWithIndex.getKey(), blockWithJumpInsn)) {
-                addToRelevantJumpInsns(jumpInsnWithIndex);
+                // TODO Neu: Versuch
+                final Map<Integer, JumpInsnNode> indexedJumpInsnsOfBlock = new HashMap<Integer, JumpInsnNode>();
+                indexedJumpInsnsOfBlock.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
+                relevantJumpInsns.put(blockWithJumpInsn.getBlockNumber(), indexedJumpInsnsOfBlock);
+//                addToRelevantJumpInsns(jumpInsnWithIndex);
             }
         }
     }
@@ -244,33 +256,13 @@ public final class AssignmentGuardFinder {
         } else if (isLoadInstructionForAlias(blockWithJumpInsn, predecessorInstruction)) {
             result = true;
         } else if (isComparisonInsn(predecessorInstruction)) {
+            /*
+             * 
+             */
             result = isRelevantJumpInstruction(indexOfPredecessorInstruction, blockWithJumpInsn);
         }
         return result;
     }
-
-// TODO Löschen (Implementierung ohne Rekursion)
-//    private void isRelevantJumpInstruction(final Entry<Integer, JumpInsnNode> jumpInsnWithIndex,
-//            final ControlFlowBlock blockWithJumpInsn) {
-//        final List<AbstractInsnNode> instructions = blockWithJumpInsn.getInstructions();
-//        final int indexOfPredecessorInstruction = jumpInsnWithIndex.getKey() - 1;
-//        final AbstractInsnNode predecessorInstruction = instructions.get(indexOfPredecessorInstruction);
-//        if (isGetfieldForVariable(predecessorInstruction)) {
-//            addToRelevantJumpInsns(jumpInsnWithIndex);
-//        } else if (isLoadInstructionForAlias(blockWithJumpInsn, predecessorInstruction)) {
-//            addToRelevantJumpInsns(jumpInsnWithIndex);
-//        } else {
-//            if (isComparisonInsn(predecessorInstruction)) {
-//            final AbstractInsnNode prePredecessorInstruction = instructions.get(indexOfPredecessorInstruction - 1);
-//            isParticularJumpInstruction(jumpInsnWithIndex, blockWithJumpInsn);
-//            if (isGetfieldForVariable(prePredecessorInstruction)) {
-//                addToRelevantJumpInsns(jumpInsnWithIndex);
-//            } else if (isLoadInstructionForAlias(blockWithJumpInsn, prePredecessorInstruction)) {
-//                addToRelevantJumpInsns(jumpInsnWithIndex);
-//            }
-//            }
-//        }
-//    }
 
     private boolean isGetfieldForVariable(final AbstractInsnNode insn) {
         boolean result = false;
@@ -279,10 +271,6 @@ public final class AssignmentGuardFinder {
             result = variableName.equals(getfield.name);
         }
         return result;
-    }
-
-    private void addToRelevantJumpInsns(final Entry<Integer, JumpInsnNode> entryToAdd) {
-        relevantJumpInsns.put(entryToAdd.getKey(), entryToAdd.getValue());
     }
 
     private boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
@@ -331,5 +319,19 @@ public final class AssignmentGuardFinder {
         analyseJumpInstructionsFor(String.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
     }
+
+    @Test
+    public void findAssignmentGuardForAliasedIntegerWithDefault() {
+        analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 1);
+        analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 4);
+        assertEquals(2, relevantJumpInsns.size());
+    }
+
+    @Test
+    public void findAssignmentGuardForIntegerWithSemantic() {
+        analyseJumpInstructionsFor(IntegerWithSemantic.class, "hash", "hashCode", 0);
+        assertEquals(1, relevantJumpInsns.size());
+    }
+
 
 }

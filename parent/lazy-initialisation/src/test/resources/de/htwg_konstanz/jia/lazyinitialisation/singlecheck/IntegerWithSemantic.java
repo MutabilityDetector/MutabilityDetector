@@ -7,17 +7,11 @@ package de.htwg_konstanz.jia.lazyinitialisation.singlecheck;
  */
 public final class IntegerWithSemantic {
 
-    private static final class IntValueHolder {
-        public int getValue() {
-            return 1;
-        }
-    }
-
     private int hash = -1;
 
     @Override
     public int hashCode() {
-        if (0 == hash) {
+        if (-1 == hash) {
             hash = 2342;
         }
         return hash;
