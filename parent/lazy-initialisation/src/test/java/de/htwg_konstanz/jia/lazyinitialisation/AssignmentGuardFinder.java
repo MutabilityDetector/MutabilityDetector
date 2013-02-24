@@ -80,20 +80,25 @@ public final class AssignmentGuardFinder {
 
     private final class AliasFinder {
 
+        private final Set<ControlFlowBlock> alreadyVisited = new HashSet<ControlFlowBlock>();
+
         public Alias searchForAliasInBlock(final ControlFlowBlock block) {
             Alias result = Alias.newInstance(false, Integer.MIN_VALUE);
-            final AbstractInsnNode[] insns = toArray(block.getInstructions());
-            int indexOfGetfield = findIndexOfGetfieldForVariable(insns);
-            if (indexOfGetfieldFound(indexOfGetfield)) {
-                final AbstractInsnNode successorInsnOfGetfieldForVariable = insns[indexOfGetfield + 1];
-                if (isStoreInstruction(successorInsnOfGetfieldForVariable)) {
-                    final VarInsnNode storeInsn = (VarInsnNode) successorInsnOfGetfieldForVariable;
-                    result = Alias.newInstance(true, storeInsn.var);
+            if (!alreadyVisited.contains(block)) {
+                alreadyVisited.add(block);
+                final AbstractInsnNode[] insns = toArray(block.getInstructions());
+                int indexOfGetfield = findIndexOfGetfieldForVariable(insns);
+                if (indexOfGetfieldFound(indexOfGetfield)) {
+                    final AbstractInsnNode successorInsnOfGetfieldForVariable = insns[indexOfGetfield + 1];
+                    if (isStoreInstruction(successorInsnOfGetfieldForVariable)) {
+                        final VarInsnNode storeInsn = (VarInsnNode) successorInsnOfGetfieldForVariable;
+                        result = Alias.newInstance(true, storeInsn.var);
+                    }
                 }
-            }
-            if (!result.doesExist) {
-                for (final ControlFlowBlock predecessor : block.getPredecessors()) {
-                    return searchForAliasInBlock(predecessor);
+                if (!result.doesExist) {
+                    for (final ControlFlowBlock predecessor : block.getPredecessors()) {
+                        return searchForAliasInBlock(predecessor);
+                    }
                 }
             }
             return result;
@@ -316,7 +321,12 @@ public final class AssignmentGuardFinder {
 
     @Test
     public void findAssignmentGuardForJavaLangString() {
-        analyseJumpInstructionsFor(String.class, "hash", "hashCode", 0);
+        initialiseAll(String.class, "hash", "hashCode");
+        for (final ControlFlowBlock cfb : controlFlowBlocks.values()) {
+            if (cfb.containsConditionCheck()) {
+                collectRelevantJumpInstructions(getAllJumpInsructionsOfBlock(cfb), cfb);
+            }
+        }
         assertEquals(1, relevantJumpInsns.size());
     }
 
