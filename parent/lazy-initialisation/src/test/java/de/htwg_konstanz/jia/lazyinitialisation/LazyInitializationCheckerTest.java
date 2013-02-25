@@ -79,7 +79,7 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyIntegerScliWithSemanticDefaultValue() throws IOException {
-        final ClassName dotted = Dotted.fromClass(IntegerWithSemanticDefault.class);
+        final ClassName dotted = Dotted.fromClass(AliasedIntegerWithSemantic.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final LazyInitializationChecker checker = new LazyInitializationChecker();
         cr.accept(checker, 0);

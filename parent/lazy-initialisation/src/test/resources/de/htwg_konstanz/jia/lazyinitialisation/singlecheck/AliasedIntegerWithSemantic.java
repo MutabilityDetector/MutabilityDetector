@@ -1,11 +1,11 @@
 package de.htwg_konstanz.jia.lazyinitialisation.singlecheck;
 
-public final class IntegerWithSemanticDefault {
+public final class AliasedIntegerWithSemantic {
 
     private final String message;
     private int cachedValue;
 
-    public IntegerWithSemanticDefault(final String aMessage) {
+    public AliasedIntegerWithSemantic(final String aMessage) {
         message = aMessage;
         cachedValue = -2;
     }

@@ -19,9 +19,12 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
+import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 import de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedByteWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedIntegerWithSemantic;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemantic;
 
@@ -141,12 +144,14 @@ public final class AssignmentGuardFinder {
 
     private Map<Integer, ControlFlowBlock> controlFlowBlocks = null;
     private String variableName = null;
+    private Set<InitialValue> possibleInitialValuesForVariable = null;
     private Map<Integer, Map<Integer, JumpInsnNode>> relevantJumpInsns = null;
 
     @After
     public void tearDown() {
         controlFlowBlocks = null;
         variableName = null;
+        possibleInitialValuesForVariable = null;
         relevantJumpInsns = null;
     }
 
@@ -179,19 +184,34 @@ public final class AssignmentGuardFinder {
 
     private void initialiseAll(final Class<?> klasse, final String theVariableName, final String methodName) {
         variableName = theVariableName;
-        controlFlowBlocks = initialiseControlFlowBlocksFor(klasse, methodName);
-    }
-
-    private static Map<Integer, ControlFlowBlock> initialiseControlFlowBlocksFor(final Class<?> klasse,
-            final String methodName) {
         final ClassNodeFactory factory = ClassNodeFactory.getInstance();
         final ConvenienceClassNode ccn = factory.convenienceClassNodeFor(klasse);
+        controlFlowBlocks = initialiseControlFlowBlocksFor(ccn, methodName);
+        possibleInitialValuesForVariable = initialisePossibleInitialValuesFor(ccn, theVariableName);
+    }
+
+    private static Map<Integer, ControlFlowBlock> initialiseControlFlowBlocksFor(final ConvenienceClassNode ccn,
+            final String methodName) {
         final MethodNode methodNode = ccn.findMethodWithName(methodName);
         if (null != methodNode) {
             final ControlFlowBlockFactory cfbFactory = ControlFlowBlockFactory.newInstance(ccn.name(), methodNode);
             return cfbFactory.getAllControlFlowBlocksForMethodInMap();
         }
         return Collections.emptyMap();
+    }
+
+    public Set<InitialValue> initialisePossibleInitialValuesFor(final ConvenienceClassNode ccn, final String variableName) {
+        final VariableSetterCollection varSetters = createVariableSetterCollection(classNode);
+        for (final Entry<FieldNode, Setters> entry : varSetters) {
+            final FieldNode variable = entry.getKey();
+            if (variable.name.equals(variableName)) {
+                final Setters setters = entry.getValue();
+                final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
+                initialValueFinder.run();
+                return initialValueFinder.getPossibleInitialValues();
+            }
+        }
+        return Collections.emptySet();
     }
 
     private static Map<Integer, JumpInsnNode> getAllJumpInsructionsOfBlock(final ControlFlowBlock blockWithJumpInsn) {
@@ -306,7 +326,7 @@ public final class AssignmentGuardFinder {
         }
         return result;
     }
-
+    
     @Test
     public void findAssignmentGuardForAliasedFloatWithDefault() {
         analyseJumpInstructionsFor(AliasedFloatWithDefault.class, "hash", "hashCodeFloat", 1);
@@ -338,10 +358,62 @@ public final class AssignmentGuardFinder {
     }
 
     @Test
+    public void findAssignmentGuardForAliasedIntegerWithSemantic() {
+        analyseJumpInstructionsFor(AliasedIntegerWithSemantic.class, "cachedValue", "getMessageLength", 1);
+        assertEquals(1, relevantJumpInsns.size());
+    }
+
+    @Test
     public void findAssignmentGuardForIntegerWithSemantic() {
         analyseJumpInstructionsFor(IntegerWithSemantic.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
     }
 
+
+    // Ueberpruefung der Sprunganweisung
+
+    public void foo() {
+        for (final Entry<Integer, Map<Integer, JumpInsnNode>> blocksWithRelevantJumpInsn : relevantJumpInsns.entrySet()) {
+            final ControlFlowBlock blockWithRelevantJumpInsn = controlFlowBlocks.get(blocksWithRelevantJumpInsn.getKey());
+            final Map<Integer, JumpInsnNode> relevantJumpInsns = blocksWithRelevantJumpInsn.getValue();
+            for (final Entry<Integer, JumpInsnNode> relevantJumpInsnWithIndex : relevantJumpInsns.entrySet()) {
+                final JumpInsnNode relevantJumpInsn = relevantJumpInsnWithIndex.getValue();
+                final List<AbstractInsnNode> blockInstructions = blockWithRelevantJumpInsn.getInstructions();
+                final int indexOfPredecessorInstruction = relevantJumpInsnWithIndex.getKey() - 1;
+                final AbstractInsnNode predecessorInstruction = blockInstructions.get(indexOfPredecessorInstruction);
+                if (isOneValueJumpInstruction(relevantJumpInsn)) {
+                    if (checksAgainstZero(relevantJumpInsn)) {
+                        if (isGetfieldForVariable(predecessorInstruction)) {
+                            
+                        }
+                    }
+                } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {
+                    
+                }
+            }
+        }
+    }
+    
+    private boolean isOneValueJumpInstruction(final AbstractInsnNode insn) {
+        final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
+        b.add(IFEQ).add(IFNE).add(IFLT).add(IFGE).add(IFGT).add(IFLE).add(IFNULL).add(IFNONNULL);
+        final Set<Integer> oneValueJumpInstructions = b.build();
+        return oneValueJumpInstructions.contains(insn.getType());
+    }
+
+    private boolean checksAgainstZero(final JumpInsnNode jumpInsruction) {
+        final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
+        b.add(IFEQ).add(IFNE).add(IFLT).add(IFGE).add(IFGT).add(IFLE);
+        final Set<Integer> zeroChecks = b.build();
+        return zeroChecks.contains(jumpInsruction.getType());
+    }
+
+    private boolean isTwoValuesJumpInstruction(final AbstractInsnNode insn) {
+        final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
+        b.add(IF_ICMPEQ).add(IF_ICMPNE).add(IF_ICMPLT).add(IF_ICMPGE).add(IF_ICMPGT).add(IF_ICMPLE);
+        b.add(IF_ACMPEQ).add(IF_ACMPNE);
+        final Set<Integer> twoValuesJumpInstructions = b.build();
+        return twoValuesJumpInstructions.contains(insn.getType());
+    }
 
 }
