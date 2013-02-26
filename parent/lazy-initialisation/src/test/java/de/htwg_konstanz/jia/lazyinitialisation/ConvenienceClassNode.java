@@ -9,9 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
 
 /**
  * 
@@ -22,9 +21,11 @@ import org.objectweb.asm.tree.MethodNode;
 final class ConvenienceClassNode {
 
     private final ClassNode classNode;
+    private VariableSetterCollection variableSetterCollection;
 
     private ConvenienceClassNode(final ClassNode theClassNode) {
         classNode = flatCopy(theClassNode);
+        variableSetterCollection = null;
     }
 
     private static ClassNode flatCopy(final ClassNode source) {
@@ -76,7 +77,8 @@ final class ConvenienceClassNode {
         notEmpty(variableName);
         for (final FieldNode variable : fields()) {
             if (variableName.equals(variable.name)) {
-                return deepCopy(variable);
+//                return deepCopy(variable);
+                return variable;
             }
         }
         return null;
@@ -112,6 +114,37 @@ final class ConvenienceClassNode {
         final MethodNode result = new MethodNode(access, name, desc, signature, exceptions);
         result.instructions = source.instructions;
         return result;
+    }
+
+    public synchronized VariableSetterCollection getVariableSetterCollection() {
+        VariableSetterCollection result = variableSetterCollection;
+        if (null == result) {
+            result = VariableSetterCollection.newInstance();
+            for (final FieldNode variable : classNode.fields) {
+                result.addVariable(variable);
+            }
+            for (final MethodNode method : classNode.methods) {
+                addMethodIfSetterForInstanceVariable(method, result);
+            }
+            result.removeUnassociatedVariables();
+            variableSetterCollection = result;
+        }
+        return result;
+    }
+
+    private static void addMethodIfSetterForInstanceVariable(final MethodNode method,
+            final VariableSetterCollection collection) {
+        for (final AbstractInsnNode insn : method.instructions.toArray()) {
+            if (isPutfieldOpcode(insn)) {
+                final FieldInsnNode putfield = (FieldInsnNode) insn;
+                final String nameOfAssignedVariable = putfield.name;
+                collection.addSetterForVariable(nameOfAssignedVariable, method);
+            }
+        }
+    }
+
+    private static boolean isPutfieldOpcode(final AbstractInsnNode insn) {
+        return Opcodes.PUTFIELD == insn.getOpcode();
     }
 
     @Override

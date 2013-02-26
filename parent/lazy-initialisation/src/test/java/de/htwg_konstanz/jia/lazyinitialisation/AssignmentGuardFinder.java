@@ -19,14 +19,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 import de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedByteWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedIntegerWithSemantic;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemantic;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -56,15 +51,36 @@ public final class AssignmentGuardFinder {
         }
     } // class IntegerSetBuilder
 
-
+    
     @Immutable
-    private static final class Alias {
+    private static class BooleanIntegerPair {
         public final boolean doesExist;
         public final int localVariable;
 
-        private Alias(final boolean doesExist, final int localVariable) {
+        private BooleanIntegerPair(final boolean doesExist, final int localVariable) {
             this.doesExist = doesExist;
             this.localVariable = localVariable;
+        }
+
+        public static BooleanIntegerPair newInstance(final boolean doesExist, final int localVariable) {
+            return new BooleanIntegerPair(doesExist, localVariable);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder b = new StringBuilder();
+            b.append("BooleanIntegerPair [").append("doesExist=").append(doesExist);
+            b.append(", localVariable=").append(localVariable).append("]");
+            return b.toString();
+        }
+    } // class Alias
+
+
+    @Immutable
+    private static final class Alias extends BooleanIntegerPair {
+
+        private Alias(final boolean doesExist, final int localVariable) {
+            super(doesExist, localVariable);
         }
 
         public static Alias newInstance(final boolean doesExist, final int localVariable) {
@@ -144,7 +160,7 @@ public final class AssignmentGuardFinder {
 
     private Map<Integer, ControlFlowBlock> controlFlowBlocks = null;
     private String variableName = null;
-    private Set<InitialValue> possibleInitialValuesForVariable = null;
+    private Set<UnknownTypeValue> possibleInitialValuesForVariable = null;
     private Map<Integer, Map<Integer, JumpInsnNode>> relevantJumpInsns = null;
 
     @After
@@ -173,6 +189,7 @@ public final class AssignmentGuardFinder {
 //        for (final Entry<Integer, JumpInsnNode> entry : relevantJumpInsns.entrySet()) {
 //            assertEquals(Integer.valueOf(4), entry.getKey());
 //        }
+        foo();
     }
 
     private void analyseJumpInstructionsFor(final Class<?> klasse, final String theVariableName,
@@ -200,18 +217,18 @@ public final class AssignmentGuardFinder {
         return Collections.emptyMap();
     }
 
-    public Set<InitialValue> initialisePossibleInitialValuesFor(final ConvenienceClassNode ccn, final String variableName) {
-        final VariableSetterCollection varSetters = createVariableSetterCollection(classNode);
-        for (final Entry<FieldNode, Setters> entry : varSetters) {
-            final FieldNode variable = entry.getKey();
-            if (variable.name.equals(variableName)) {
-                final Setters setters = entry.getValue();
-                final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-                initialValueFinder.run();
-                return initialValueFinder.getPossibleInitialValues();
-            }
+    private static Set<UnknownTypeValue> initialisePossibleInitialValuesFor(final ConvenienceClassNode ccn,
+            final String variableName) {
+        Set<UnknownTypeValue> result = Collections.emptySet();
+        final VariableSetterCollection variableSetterCollection = ccn.getVariableSetterCollection();
+        final FieldNode variable = ccn.findVariableWithName(variableName);
+        if (null != variable) {
+            final Setters setters = variableSetterCollection.getSettersFor(variable);
+            final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
+            initialValueFinder.run();
+            result = initialValueFinder.getPossibleInitialValues();
         }
-        return Collections.emptySet();
+        return result;
     }
 
     private static Map<Integer, JumpInsnNode> getAllJumpInsructionsOfBlock(final ControlFlowBlock blockWithJumpInsn) {
@@ -326,11 +343,19 @@ public final class AssignmentGuardFinder {
         }
         return result;
     }
-    
+
+    @Test
+    public void findAssignmentGuardForFloatWithDefault() {
+        analyseJumpInstructionsFor(FloatWithDefault.class, "hash", "hashCodeFloat", 0);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
     @Test
     public void findAssignmentGuardForAliasedFloatWithDefault() {
         analyseJumpInstructionsFor(AliasedFloatWithDefault.class, "hash", "hashCodeFloat", 1);
         assertEquals(1, relevantJumpInsns.size());
+        foo();
     }
 
     @Test
@@ -361,16 +386,36 @@ public final class AssignmentGuardFinder {
     public void findAssignmentGuardForAliasedIntegerWithSemantic() {
         analyseJumpInstructionsFor(AliasedIntegerWithSemantic.class, "cachedValue", "getMessageLength", 1);
         assertEquals(1, relevantJumpInsns.size());
+        foo();
     }
 
     @Test
     public void findAssignmentGuardForIntegerWithSemantic() {
         analyseJumpInstructionsFor(IntegerWithSemantic.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
+        foo();
     }
 
+    @Test
+    public void findAssignmentGuardForObjectWithDefault() {
+        analyseJumpInstructionsFor(ObjectWithDefault.class, "hash", "hashCodeObject", 0);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForAliasedIntegerWithDefaultDcli() {
+        analyseJumpInstructionsFor(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class,
+                "someNumber", "getSomeNumber", 1);
+        analyseJumpInstructionsFor(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class,
+                "someNumber", "getSomeNumber", 4);
+        assertEquals(2, relevantJumpInsns.size());
+        foo();
+    }
 
     // Ueberpruefung der Sprunganweisung
+
+    
 
     public void foo() {
         for (final Entry<Integer, Map<Integer, JumpInsnNode>> blocksWithRelevantJumpInsn : relevantJumpInsns.entrySet()) {
@@ -378,34 +423,130 @@ public final class AssignmentGuardFinder {
             final Map<Integer, JumpInsnNode> relevantJumpInsns = blocksWithRelevantJumpInsn.getValue();
             for (final Entry<Integer, JumpInsnNode> relevantJumpInsnWithIndex : relevantJumpInsns.entrySet()) {
                 final JumpInsnNode relevantJumpInsn = relevantJumpInsnWithIndex.getValue();
-                final List<AbstractInsnNode> blockInstructions = blockWithRelevantJumpInsn.getInstructions();
                 final int indexOfPredecessorInstruction = relevantJumpInsnWithIndex.getKey() - 1;
+                final List<AbstractInsnNode> blockInstructions = blockWithRelevantJumpInsn.getInstructions();
                 final AbstractInsnNode predecessorInstruction = blockInstructions.get(indexOfPredecessorInstruction);
                 if (isOneValueJumpInstruction(relevantJumpInsn)) {
                     if (checksAgainstZero(relevantJumpInsn)) {
                         if (isGetfieldForVariable(predecessorInstruction)) {
+                            // passt
+                            System.out.println("Passt.");
+                        } else if (isLoadInstructionForAlias(blockWithRelevantJumpInsn, predecessorInstruction)) {
+                                // TODO
                             
+                        } else if (isComparisonInsn(predecessorInstruction)) {
+                            final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
+                            final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
+                            if (isGetfieldForVariable(predecessorOfComparisonInsn)) {
+                                final int indexOfGetfieldPredecessorInsn = indexOfPreComparisonInsn - 2;
+                                final AbstractInsnNode predecessorOfGetfieldInsn = blockInstructions.get(indexOfGetfieldPredecessorInsn);
+                                final UnknownTypeValue comparisonValue = getComparisonValue(predecessorOfGetfieldInsn);
+                                if (null != comparisonValue) {
+                                    if (possibleInitialValuesForVariable.contains(comparisonValue)) {
+                                        // passt
+                                        System.out.println("Passt.");
+                                    } else {
+                                        // nicht korrekt verzoegert initialisiert
+                                        System.out.println("Nicht korrekt verzoegert initialisiert.");
+                                    }
+                                } else {
+                                    // TODO Was passiert hier?
+                                }
+                            } else if (isLoadInstructionForAlias(blockWithRelevantJumpInsn, predecessorOfComparisonInsn)) {
+                                final int indexOfLoadInsnPredecessor = indexOfPreComparisonInsn - 1;
+                                final AbstractInsnNode predecessorOfLoadInsn = blockInstructions.get(indexOfLoadInsnPredecessor);
+                                final UnknownTypeValue comparisonValue = getComparisonValue(predecessorOfLoadInsn);
+                                if (null != comparisonValue) {
+                                    if (possibleInitialValuesForVariable.contains(comparisonValue)) {
+                                        // passt
+                                        System.out.println("Passt.");
+                                    } else {
+                                        // nicht korrekt verzoegert initialisiert
+                                        System.out.println("Nicht korrekt verzoegert initialisiert.");
+                                    }
+                                }
+                            }
+                        }
+                    } else if (checksAgainstNull(relevantJumpInsn)) {
+                        
+                    } else if (checksAgainstNonNull(relevantJumpInsn)) {
+                        if (isGetfieldForVariable(predecessorInstruction)) {
+                            final UnknownTypeValue nullValue = UnknownTypeValueDefault.getInstanceForNull();
+                            if (possibleInitialValuesForVariable.contains(nullValue)) {
+                             // passt
+                                System.out.println("Passt.");
+                            } else {
+                             // nicht korrekt verzoegert initialisiert
+                                System.out.println("Nicht korrekt verzoegert initialisiert.");
+                            }
                         }
                     }
                 } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {
-                    
+                    if (isGetfieldForVariable(predecessorInstruction)) {
+                        final int indexOfStackPutInsn = indexOfPredecessorInstruction - 2;
+                        final AbstractInsnNode stackPutInsn = blockInstructions.get(indexOfStackPutInsn);
+                        final UnknownTypeValue comparisonValue = getComparisonValue(stackPutInsn);
+                        if (possibleInitialValuesForVariable.contains(comparisonValue)) {
+                            // passt
+                            System.out.println("Passt.");
+                        } else {
+                            // nicht korrekt verzoegert initialisiert
+                            System.out.println("Nicht korrekt verzoegert initialisiert.");
+                        }
+                    } else if (isLoadInstructionForAlias(blockWithRelevantJumpInsn, predecessorInstruction)) {
+                        final int indexOfLoadInsnPredecessor = indexOfPredecessorInstruction - 1;
+                        final AbstractInsnNode predecessorOfLoadInsn = blockInstructions.get(indexOfLoadInsnPredecessor);
+                        final UnknownTypeValue comparisonValue = getComparisonValue(predecessorOfLoadInsn);
+                        if (null != comparisonValue) {
+                            if (possibleInitialValuesForVariable.contains(comparisonValue)) {
+                                // passt
+                                System.out.println("Passt.");
+                            } else {
+                                // nicht korrekt verzoegert initialisiert
+                                System.out.println("Nicht korrekt verzoegert initialisiert.");
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-    
+
+    private UnknownTypeValue getComparisonValue(final AbstractInsnNode insn) {
+        UnknownTypeValue result = null;
+        if (AbstractInsnNode.INSN == insn.getType()) {
+            final Opcode opcode = Opcode.forInt(insn.getOpcode());
+            result = opcode.stackValue();
+        } else if (AbstractInsnNode.LDC_INSN == insn.getType()) {
+            final LdcInsnNode ldcInsn = (LdcInsnNode) insn;
+            result = UnknownTypeValueDefault.getInstance(ldcInsn.cst);
+        } else if (AbstractInsnNode.INT_INSN == insn.getType()) {
+            final IntInsnNode intInsnNode = (IntInsnNode) insn;
+            result = UnknownTypeValueDefault.getInstance(intInsnNode.operand);
+        }
+        return result;
+    }
+
     private boolean isOneValueJumpInstruction(final AbstractInsnNode insn) {
         final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
         b.add(IFEQ).add(IFNE).add(IFLT).add(IFGE).add(IFGT).add(IFLE).add(IFNULL).add(IFNONNULL);
         final Set<Integer> oneValueJumpInstructions = b.build();
-        return oneValueJumpInstructions.contains(insn.getType());
+        return oneValueJumpInstructions.contains(insn.getOpcode());
     }
 
     private boolean checksAgainstZero(final JumpInsnNode jumpInsruction) {
         final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
         b.add(IFEQ).add(IFNE).add(IFLT).add(IFGE).add(IFGT).add(IFLE);
         final Set<Integer> zeroChecks = b.build();
-        return zeroChecks.contains(jumpInsruction.getType());
+        return zeroChecks.contains(jumpInsruction.getOpcode());
+    }
+
+    private boolean checksAgainstNull(final JumpInsnNode jumpInstruction) {
+        return IFNULL == jumpInstruction.getOpcode();
+    }
+
+    private boolean checksAgainstNonNull(final JumpInsnNode jumpInstruction) {
+        return IFNONNULL == jumpInstruction.getOpcode();
     }
 
     private boolean isTwoValuesJumpInstruction(final AbstractInsnNode insn) {
@@ -413,7 +554,7 @@ public final class AssignmentGuardFinder {
         b.add(IF_ICMPEQ).add(IF_ICMPNE).add(IF_ICMPLT).add(IF_ICMPGE).add(IF_ICMPGT).add(IF_ICMPLE);
         b.add(IF_ACMPEQ).add(IF_ACMPNE);
         final Set<Integer> twoValuesJumpInstructions = b.build();
-        return twoValuesJumpInstructions.contains(insn.getType());
+        return twoValuesJumpInstructions.contains(insn.getOpcode());
     }
 
 }

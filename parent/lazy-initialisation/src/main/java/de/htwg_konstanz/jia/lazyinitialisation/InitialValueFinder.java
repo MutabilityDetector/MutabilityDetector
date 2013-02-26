@@ -10,8 +10,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 
@@ -22,170 +20,10 @@ import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 @NotThreadSafe
 final class InitialValueFinder implements Runnable {
 
-    public interface InitialValue {
-        boolean asBoolean();
-
-        byte asByte();
-
-        char asChar();
-
-        short asShort();
-
-        int asInt();
-
-        long asLong();
-
-        float asFloat();
-
-        double asDouble();
-
-        String asString();
-
-        Object asObject();
-
-        <T> T asConcreteObject(Class<T> targetTypeClass);
-    } // interface InitialValue
-
-
-    @NotThreadSafe
-    static final class BaseInitialValue implements InitialValue {
-
-        private final Object baseValue;
-
-        private BaseInitialValue(final Object theBaseValue) {
-            baseValue = theBaseValue;
-        }
-
-        public static InitialValue getInstance(final Object baseValue) {
-            return new BaseInitialValue(baseValue);
-        }
-
-        @Override
-        public boolean asBoolean() {
-            final Boolean result = tryToCast(baseValue, Boolean.class);
-            return result.booleanValue();
-        }
-
-        private static <T> T tryToCast(final Object value, final Class<T> targetClass) {
-            try {
-                return cast(value, targetClass);
-            } catch (final ClassCastException e) {
-                final String msg = String.format("Unable to cast '%s' to target class '%s'.", value, targetClass);
-                final Logger logger = LoggerFactory.getLogger(BaseInitialValue.class);
-                logger.error(msg, e);
-            }
-            return null;
-        }
-
-        private static <T> T cast(final Object value, final Class<T> targetClass) {
-            final T result = targetClass.cast(value);
-            if (null == result) {
-                final String msg = String.format("Unable to cast '%s' to target class '%s'.", value, targetClass);
-                throw new NullPointerException(msg);
-            }
-            return result;
-        }
-
-        @Override
-        public byte asByte() {
-            return tryToCastToNumber().byteValue();
-        }
-
-        private Number tryToCastToNumber() {
-            return tryToCast(baseValue, Number.class);
-        }
-
-        @Override
-        public char asChar() {
-            final Character result = tryToCast(baseValue, Character.class);
-            return result.charValue();
-        }
-
-        @Override
-        public short asShort() {
-            return tryToCastToNumber().shortValue();
-        }
-
-        @Override
-        public int asInt() {
-            return tryToCastToNumber().intValue();
-        }
-
-        @Override
-        public long asLong() {
-            return tryToCastToNumber().longValue();
-        }
-
-        @Override
-        public float asFloat() {
-            return tryToCastToNumber().floatValue();
-        }
-
-        @Override
-        public double asDouble() {
-            return tryToCastToNumber().doubleValue();
-        }
-
-        @Override
-        public String asString() {
-            final String result = tryToCast(baseValue, String.class);
-            return result;
-        }
-
-        @Override
-        public Object asObject() {
-            return baseValue;
-        }
-
-        @Override
-        public <T> T asConcreteObject(final Class<T> targetTypeClass) {
-            final T result = tryToCast(baseValue, targetTypeClass);
-            return result;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((baseValue == null) ? 0 : baseValue.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (!(obj instanceof BaseInitialValue)) {
-                return false;
-            }
-            final BaseInitialValue other = (BaseInitialValue) obj;
-            if (baseValue == null) {
-                if (other.baseValue != null) {
-                    return false;
-                }
-            } else if (!baseValue.equals(other.baseValue)) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            final ToStringBuilder builder = new ToStringBuilder(this);
-            builder.append(baseValue);
-            return builder.toString();
-        }
-    } // class BaseInitialValue
-
-
     @Immutable
     private static final class InitialValueFactory {
-        public InitialValue getConcreteInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
-            InitialValue result = null;
+        public UnknownTypeValue getConcreteInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
+            UnknownTypeValue result = null;
             if (isLdcInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfLdcInsn(variableValueSetupInsn);
             } else if (isIntInsn(variableValueSetupInsn)) {
@@ -200,20 +38,20 @@ final class InitialValueFinder implements Runnable {
             return AbstractInsnNode.LDC_INSN == abstractInsnNode.getType();
         }
 
-        private static InitialValue getInitialValueOfLdcInsn(final AbstractInsnNode variableValueSetupInsn) {
+        private static UnknownTypeValue getInitialValueOfLdcInsn(final AbstractInsnNode variableValueSetupInsn) {
             final LdcInsnNode ldcInsn = (LdcInsnNode) variableValueSetupInsn;
             final Object cst = ldcInsn.cst;
-            return BaseInitialValue.getInstance(cst);
+            return UnknownTypeValueDefault.getInstance(cst);
         }
 
         private static boolean isIntInsn(final AbstractInsnNode abstractInsnNode) {
             return AbstractInsnNode.INT_INSN == abstractInsnNode.getType();
         }
 
-        private static InitialValue getInitialValueOfIntInsn(final AbstractInsnNode variableValueSetupInsn) {
+        private static UnknownTypeValue getInitialValueOfIntInsn(final AbstractInsnNode variableValueSetupInsn) {
             final IntInsnNode singleIntOperandInsn = (IntInsnNode) variableValueSetupInsn;
             final int operand = singleIntOperandInsn.operand;
-            return BaseInitialValue.getInstance(Integer.valueOf(operand));
+            return UnknownTypeValueDefault.getInstance(Integer.valueOf(operand));
         }
 
         private static boolean isStackConstantPushInsn(final AbstractInsnNode abstractInsnNode) {
@@ -222,46 +60,49 @@ final class InitialValueFinder implements Runnable {
             return constantsInstructions.contains(opcode);
         }
 
-        private static InitialValue getInitialValueOfStackConstantInsn(final AbstractInsnNode variableValueSetupInsn) {
+        private static UnknownTypeValue getInitialValueOfStackConstantInsn(final AbstractInsnNode variableValueSetupInsn) {
             final Opcode opcode = Opcode.forInt(variableValueSetupInsn.getOpcode());
-            return BaseInitialValue.getInstance(opcode.stackValue());
+            return opcode.stackValue();
         }
 
-        public InitialValue getJvmDefaultInitialValueFor(final Type type) {
-            final InitialValue result;
+        public UnknownTypeValue getJvmDefaultInitialValueFor(final Type type) {
+            final UnknownTypeValue result;
             final int sort = type.getSort();
             if (Type.BOOLEAN == sort) {
-                result = BaseInitialValue.getInstance(Boolean.FALSE);
+                result = UnknownTypeValueDefault.getInstance(Boolean.FALSE);
             } else if (Type.BYTE == sort) {
-                result = BaseInitialValue.getInstance(Byte.valueOf((byte) 0));
+                result = UnknownTypeValueDefault.getInstance(Byte.valueOf((byte) 0));
             } else if (Type.CHAR == sort) {
-                result = BaseInitialValue.getInstance(Character.valueOf((char) 0));
+                result = UnknownTypeValueDefault.getInstance(Character.valueOf((char) 0));
             } else if (Type.SHORT == sort) {
-                result = BaseInitialValue.getInstance(Short.valueOf((short) 0));
+                result = UnknownTypeValueDefault.getInstance(Short.valueOf((short) 0));
             } else if (Type.INT == sort) {
-                result = BaseInitialValue.getInstance(Integer.valueOf(0));
+                result = UnknownTypeValueDefault.getInstance(Integer.valueOf(0));
             } else if (Type.LONG == sort) {
-                result = BaseInitialValue.getInstance(Long.valueOf(0L));
+                result = UnknownTypeValueDefault.getInstance(Long.valueOf(0L));
             } else if (Type.FLOAT == sort) {
-                result = BaseInitialValue.getInstance(Float.valueOf(0.0F));
+                result = UnknownTypeValueDefault.getInstance(Float.valueOf(0.0F));
             } else if (Type.DOUBLE == sort) {
-                result = BaseInitialValue.getInstance(Double.valueOf(0.0D));
+                result = UnknownTypeValueDefault.getInstance(Double.valueOf(0.0D));
             } else {
-                result = BaseInitialValue.getInstance(null);
+                result = UnknownTypeValueDefault.getInstance(null);
             }
             return result;
         }
     } // class JvmInitialValueFactory
 
+
+    private volatile boolean isRun;
     private final FieldNode variable;
     private final Setters setters;
-    private final Set<InitialValue> possibleInitialValues;
+    private final Set<UnknownTypeValue> possibleInitialValues;
 
     private InitialValueFinder(final FieldNode theVariable, final Setters theSetters) {
+        isRun = false;
         variable = theVariable;
         setters = theSetters;
         final byte supposedMaximumOfPossibleInitialValues = 5;
-        possibleInitialValues = new HashSet<InitialValue>(supposedMaximumOfPossibleInitialValues);
+        possibleInitialValues = new HashSet<UnknownTypeValue>(supposedMaximumOfPossibleInitialValues);
     }
 
     /**
@@ -285,6 +126,7 @@ final class InitialValueFinder implements Runnable {
         } else {
             addConcreteInitialValuesByConstructor();
         }
+        isRun = true;
     }
 
     private boolean hasNoConstructors() {
@@ -311,13 +153,25 @@ final class InitialValueFinder implements Runnable {
 
     private void addPossibleInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
         final InitialValueFactory factory = new InitialValueFactory();
-        final InitialValue initialValue = factory.getConcreteInitialValueFor(variableValueSetupInsn);
+        final UnknownTypeValue initialValue = factory.getConcreteInitialValueFor(variableValueSetupInsn);
         if (null != initialValue) {
             possibleInitialValues.add(initialValue);
         }
     }
 
-    public Set<InitialValue> getPossibleInitialValues() {
+    /**
+     * Gets all possible values the given variable may have after initialisation
+     * of its class. {@link #run()} has to be invoked beforehand!
+     * 
+     * @return all possible values the given variable may have after
+     *         initialisation of its class. This is never {@code null}.
+     * @throws IllegalStateException
+     *             if {@code run} was not invoked before this method.
+     */
+    public Set<UnknownTypeValue> getPossibleInitialValues() {
+        if (!isRun) {
+            throw new IllegalStateException("Method 'run' has to be invoked before 'getPossibleInitialValues'!");
+        }
         return Collections.unmodifiableSet(possibleInitialValues);
     }
 

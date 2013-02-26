@@ -16,9 +16,8 @@ import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.BaseInitialValue;
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedIntegerWithSemantic;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.FloatWithMultiple;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemantic;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.StringWithDefault;
@@ -43,7 +42,7 @@ public final class InitialValueFinderTest {
             return INSTANCE;
         }
 
-        public Set<InitialValue> getPossibleInitialValuesFor(final Class<?> targetClass, final String variableName) {
+        public Set<UnknownTypeValue> getPossibleInitialValuesFor(final Class<?> targetClass, final String variableName) {
             final ClassNode classNode = createAppropriateClassNode(targetClass);
             final VariableSetterCollection varSetters = createVariableSetterCollection(classNode);
             for (final Entry<FieldNode, Setters> entry : varSetters) {
@@ -91,7 +90,6 @@ public final class InitialValueFinderTest {
                 for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
                     final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
                     instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
-                    break;
                 }
             }
         }
@@ -118,50 +116,58 @@ public final class InitialValueFinderTest {
 
     @Test
     public void testForFloatWithMultipleScli() {
-        final Set<InitialValue> expected = createExpected(Float.valueOf(-1.0F), Float.valueOf(23.0F));
-        final Set<InitialValue> actual = getPossibleInitialValuesFor(FloatWithMultiple.class, "hash");
+        final Set<UnknownTypeValue> expected = createExpected(Float.valueOf(-1.0F), Float.valueOf(23.0F));
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(FloatWithMultiple.class, "hash");
         assertThat(actual, is(expected));
     }
 
-    private static Set<InitialValue> getPossibleInitialValuesFor(final Class<?> klasse, final String variableName) {
+    private static Set<UnknownTypeValue> getPossibleInitialValuesFor(final Class<?> klasse, final String variableName) {
         final InitialValuesFactory factory = InitialValuesFactory.getInstance();
         return factory.getPossibleInitialValuesFor(klasse, variableName);
     }
 
-    private static Set<InitialValue> createExpected(final Object first, final Object ... further)  {
-        final Set<InitialValue> result = new HashSet<InitialValue>();
-        result.add(BaseInitialValue.getInstance(first));
+    private static Set<UnknownTypeValue> createExpected(final Object first, final Object ... further)  {
+        final Set<UnknownTypeValue> result = new HashSet<UnknownTypeValue>();
+        result.add(UnknownTypeValueDefault.getInstance(first));
         for (final Object next : further) {
-            result.add(BaseInitialValue.getInstance(next));
+            result.add(UnknownTypeValueDefault.getInstance(next));
         }
         return result;
     }
 
     @Test
     public void testForJavaLangString() {
-        final Set<InitialValue> expected = createExpected(Integer.valueOf(0));
-        final Set<InitialValue> actual = getPossibleInitialValuesFor(String.class, "hash");
+        final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(0));
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(String.class, "hash");
         assertThat(actual, is(expected));
     }
 
     @Test
     public void testForIntegerWithSemanticScli() {
-        final Set<InitialValue> expected = createExpected(Integer.valueOf(-1));
-        final Set<InitialValue> actual = getPossibleInitialValuesFor(IntegerWithSemantic.class, "hash");
+        final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(-1));
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(IntegerWithSemantic.class, "hash");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void testForAliasedIntegerWithSemanticScli() {
+        final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(-2));
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(AliasedIntegerWithSemantic.class,
+                "cachedValue");
         assertThat(actual, is(expected));
     }
 
     @Test
     public void testForStringWithDefaultScli() {
-        final Set<InitialValue> expected = createExpected(null);
-        final Set<InitialValue> actual = getPossibleInitialValuesFor(StringWithDefault.class, "hash");
+        final Set<UnknownTypeValue> expected = createExpected(null);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringWithDefault.class, "hash");
         assertThat(actual, is(expected));
     }
 
     @Test
     public void testForStringWithSemanticScli() {
-        final Set<InitialValue> expected = createExpected("");
-        final Set<InitialValue> actual = getPossibleInitialValuesFor(StringWithSemantic.class, "hash");
+        final Set<UnknownTypeValue> expected = createExpected("");
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringWithSemantic.class, "hash");
         assertThat(actual, is(expected));
     }
 

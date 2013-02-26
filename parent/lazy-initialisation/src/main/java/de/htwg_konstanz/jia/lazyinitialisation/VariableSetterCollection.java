@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -22,21 +23,75 @@ import org.objectweb.asm.tree.MethodNode;
 @NotThreadSafe
 final class VariableSetterCollection implements Iterable<Entry<FieldNode, VariableSetterCollection.Setters>> {
 
+    public interface Setters {
+
+        boolean add(MethodNode setter);
+
+        boolean isEmpty();
+
+        List<MethodNode> constructors();
+
+        List<MethodNode> methods();
+
+    } // interface Setters
+
+
+    @Immutable
+    private static final class NullSetters implements Setters {
+        private static final NullSetters INSTANCE = new NullSetters();
+
+        private NullSetters() {
+            super();
+        }
+
+        public static Setters getInstance() {
+            return INSTANCE;
+        }
+
+        @Override
+        public boolean add(final MethodNode setter) {
+            return false;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public List<MethodNode> constructors() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public List<MethodNode> methods() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String toString() {
+            return "NullSetters []";
+        }
+
+    } // class NullSetters
+
+
     @NotThreadSafe
-    public static final class Setters {
+    private static final class SettersDefault implements Setters {
         private final List<MethodNode> constructors;
         private final List<MethodNode> methods;
 
-        private Setters() {
+        private SettersDefault() {
             final byte initialSize = 2;
             constructors = new ArrayList<MethodNode>(initialSize);
             methods = new ArrayList<MethodNode>(initialSize);
         }
 
         public static Setters getInstance() {
-            return new Setters();
+            return new SettersDefault();
         }
 
+        @Override
         public boolean add(final MethodNode setter) {
             final boolean result;
             if (isConstructor(setter)) {
@@ -51,24 +106,44 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
             return MethodIs.aConstructor(setter.name);
         }
 
+        @Override
         public boolean isEmpty() {
             return constructors.isEmpty() && methods.isEmpty();
         }
 
+        @Override
         public List<MethodNode> constructors() {
             return Collections.unmodifiableList(constructors);
         }
 
+        @Override
         public List<MethodNode> methods() {
             return Collections.unmodifiableList(methods);
         }
 
         @Override
         public String toString() {
-            final ToStringBuilder builder = new ToStringBuilder(this);
-            builder.append("constructors", constructors).append("methods", methods);
+            final StringBuilder builder = new StringBuilder();
+            builder.append(getClass().getSimpleName()).append(" [");
+            builder.append("constructors=").append(concatenateMethodNames(constructors));
+            builder.append(", methods=").append(concatenateMethodNames(methods)).append("]");
             return builder.toString();
         }
+
+        private String concatenateMethodNames(final List<MethodNode> methods) {
+            final StringBuilder result = new StringBuilder();
+            result.append("[");
+            final String separator = ", ";
+            String sep = "";
+            for (final MethodNode method : methods) {
+                result.append(sep).append(method.name);
+                sep = separator;
+            }
+            result.append("]");
+            return result.toString();
+            
+        }
+
     } // class Setters
 
 
@@ -94,7 +169,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
     public boolean addVariable(final FieldNode variableNode) {
         notNull(variableNode);
         final boolean result = !variableSetters.containsKey(variableNode);
-        variableSetters.put(variableNode, Setters.getInstance());
+        variableSetters.put(variableNode, SettersDefault.getInstance());
         return result;
     }
 
@@ -136,6 +211,15 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
 
     public List<FieldNode> getVariables() {
         return new ArrayList<FieldNode>(variableSetters.keySet());
+    }
+
+    public Setters getSettersFor(final FieldNode variable) {
+        notNull(variable);
+        Setters result = variableSetters.get(variable);
+        if (null == result) {
+            result = NullSetters.getInstance();
+        }
+        return result;
     }
 
     /**
@@ -194,9 +278,24 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("variableSetterMethods", variableSetters);
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getSimpleName()).append(" [");
+        builder.append("variableSetterMethods=").append(variableSettersToString()).append("]");
         return builder.toString();
+    }
+
+    private String variableSettersToString() {
+        final StringBuilder result = new StringBuilder();
+        result.append("{");
+        final String separator = ", ";
+        String sep = "";
+        for (final Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
+            final FieldNode variable = entry.getKey();
+            result.append(sep).append(variable.name).append(": ").append(entry.getValue());
+            sep = separator;
+        }
+        result.append("}");
+        return result.toString();
     }
 
 }

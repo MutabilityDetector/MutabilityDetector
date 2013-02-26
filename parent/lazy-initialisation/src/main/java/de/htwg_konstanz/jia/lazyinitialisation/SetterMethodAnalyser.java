@@ -9,7 +9,6 @@ import java.util.List;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 
 /**
  * 
@@ -20,11 +19,11 @@ import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 public final class SetterMethodAnalyser implements Runnable {
 
     private final FieldNode variable;
-    private final List<InitialValue> possibleInitialValues;
+    private final List<UnknownTypeValue> possibleInitialValues;
     private final MethodNode setterMethod;
 
     private SetterMethodAnalyser(final FieldNode theVariable,
-            final List<InitialValue> thePossibleInitialValues,
+            final List<UnknownTypeValue> thePossibleInitialValues,
             final MethodNode theSetterMethod) {
         variable = theVariable;
         possibleInitialValues = thePossibleInitialValues;
@@ -32,9 +31,9 @@ public final class SetterMethodAnalyser implements Runnable {
     }
 
     public static SetterMethodAnalyser getInstance(final FieldNode variable,
-            final List<InitialValue> possibleInitialValues,
+            final List<UnknownTypeValue> possibleInitialValues,
             final MethodNode setterMethod) {
-        final List<InitialValue> piv = Collections.unmodifiableList(notEmpty(possibleInitialValues));
+        final List<UnknownTypeValue> piv = Collections.unmodifiableList(notEmpty(possibleInitialValues));
         return new SetterMethodAnalyser(notNull(variable), piv, notNull(setterMethod));
     }
 

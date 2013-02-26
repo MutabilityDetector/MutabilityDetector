@@ -7,6 +7,8 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 import java.util.*;
 
+import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Null;
+
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 07.12.2012
@@ -215,10 +217,6 @@ public enum Opcode implements OpcodeInformation {
     GOTO_W(200, Category.JUMPS),
     JSR_W(201, Category.JUMPS);
 
-    private static enum Null {
-        INSTANCE;
-    }
-
     private static final Comparator<Opcode> opcodeComparator = new Comparator<Opcode>() {
         @Override
         public int compare(final Opcode o1, final Opcode o2) {
@@ -244,7 +242,7 @@ public enum Opcode implements OpcodeInformation {
     private final int opcodeAsInt;
     private final String opcodeAsHex;
     private final Category category;
-    private final Object stackValue;
+    private final UnknownTypeValue stackValue;
     private final String description;
 
     private Opcode(final int opcodeAsInt, final Category category) {
@@ -266,7 +264,7 @@ public enum Opcode implements OpcodeInformation {
         category = theCategory;
         opcodeAsInt = theOpcodeAsInt;
         opcodeAsHex = Integer.toHexString(theOpcodeAsInt);
-        stackValue = theStackValue;
+        stackValue = UnknownTypeValueDefault.getInstance(theStackValue);
         description = theDescription;
     }
 
@@ -286,7 +284,7 @@ public enum Opcode implements OpcodeInformation {
     }
 
     @Override
-    public Object stackValue() {
+    public UnknownTypeValue stackValue() {
         return stackValue;
     }
 

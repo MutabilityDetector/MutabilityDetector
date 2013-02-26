@@ -12,7 +12,6 @@ import java.util.List;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -21,11 +20,11 @@ import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 final class TestValueFinder implements Runnable {
 
     private final FieldNode variable;
-    private final List<InitialValue> possibleInitialValues;
+    private final List<UnknownTypeValue> possibleInitialValues;
     private final MethodNode setterMethod;
 
     private TestValueFinder(final FieldNode theVariable,
-            final List<InitialValue> thePossibleInitialValues,
+            final List<UnknownTypeValue> thePossibleInitialValues,
             final MethodNode theSetterMethod) {
         variable = theVariable;
         possibleInitialValues = thePossibleInitialValues;
@@ -33,9 +32,9 @@ final class TestValueFinder implements Runnable {
     }
 
     public static TestValueFinder getInstance(final FieldNode variable,
-            final List<InitialValue> possibleInitialValues,
+            final List<UnknownTypeValue> possibleInitialValues,
             final MethodNode setterMethod) {
-        final List<InitialValue> piv = Collections.unmodifiableList(notEmpty(possibleInitialValues));
+        final List<UnknownTypeValue> piv = Collections.unmodifiableList(notEmpty(possibleInitialValues));
         return new TestValueFinder(notNull(variable), piv, notNull(setterMethod));
     }
 

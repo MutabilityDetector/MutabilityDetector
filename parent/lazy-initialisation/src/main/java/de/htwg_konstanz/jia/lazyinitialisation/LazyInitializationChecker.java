@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
-import de.htwg_konstanz.jia.lazyinitialisation.InitialValueFinder.InitialValue;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
 
 /**
@@ -54,7 +53,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 final Setters setters = entry.getValue();
                 final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
                 initialValueFinder.run();
-                final Set<InitialValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
+                final Set<UnknownTypeValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
                 final List<MethodNode> setterMethods = setters.methods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
