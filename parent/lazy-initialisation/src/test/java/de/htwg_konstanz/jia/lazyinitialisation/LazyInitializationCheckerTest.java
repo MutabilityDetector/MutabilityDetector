@@ -25,18 +25,18 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
 public final class LazyInitializationCheckerTest {
 
     @Test
-    public void verifyIntegerSingleCheckLI() throws IOException {
-        runImmutabilityVerificationFor(IntegerWithDefault.class);
+    public void verifyValidIntegerWithJvmInitialValue() throws IOException {
+        runImmutabilityVerificationFor(WithoutAlias.WithJvmInitialValue.IntegerValid.class);
     }
 
     @Test
-    public void verifySemanticIntegerScli() throws IOException {
-        runImmutabilityVerificationFor(IntegerWithSemantic.class);
+    public void verifyValidIntegerWithCustomInitialValue() throws IOException {
+        runImmutabilityVerificationFor(WithoutAlias.WithCustomInitialValue.IntegerValid.class);
     }
 
     @Test
-    public void verifyIntegerSingleCheckLIWithClassNode() throws IOException {
-        final ClassName dotted = Dotted.fromClass(IntegerWithDefault.class);
+    public void verifyValidIntegerSingleCheckLIWithClassNode() throws IOException {
+        final ClassName dotted = Dotted.fromClass(WithoutAlias.WithJvmInitialValue.IntegerValid.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final ClassNode cn = new ClassNode();
         cr.accept(cn, 0);
@@ -47,17 +47,17 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyFloatSingleCheckLI() throws IOException {
-        runImmutabilityVerificationFor(FloatWithDefault.class);
+        runImmutabilityVerificationFor(WithoutAlias.WithJvmInitialValue.FloatValid.class);
     }
 
     @Test
     public void verifyFloatWithMultipleScli() throws IOException {
-        runImmutabilityVerificationFor(FloatWithMultiple.class);
+        runImmutabilityVerificationFor(WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class);
     }
 
     @Test
     public void verifyFloatSingleCheckLIWithSemantic() throws IOException {
-        final ClassName dotted = Dotted.fromClass(FloatWithSemantic.class);
+        final ClassName dotted = Dotted.fromClass(WithoutAlias.WithCustomInitialValue.FloatValid.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final LazyInitializationChecker checker = new LazyInitializationChecker();
         cr.accept(checker, 0);
@@ -66,7 +66,7 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyAliasedFloatWithDefaultSingleCheckLI() throws IOException {
-        final IsImmutable result = runImmutabilityVerificationFor(AliasedFloatWithDefault.class);
+        final IsImmutable result = runImmutabilityVerificationFor(WithAlias.WithJvmInitialValue.FloatValid.class);
     }
 
     private static IsImmutable runImmutabilityVerificationFor(final Class<?> klasse) throws IOException {
@@ -79,7 +79,7 @@ public final class LazyInitializationCheckerTest {
 
     @Test
     public void verifyIntegerScliWithSemanticDefaultValue() throws IOException {
-        final ClassName dotted = Dotted.fromClass(AliasedIntegerWithSemantic.class);
+        final ClassName dotted = Dotted.fromClass(WithAlias.WithCustomInitialValue.IntegerValid.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final LazyInitializationChecker checker = new LazyInitializationChecker();
         cr.accept(checker, 0);

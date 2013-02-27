@@ -20,7 +20,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.Opcode;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * Example from the ASM 4 Guide.
@@ -162,7 +162,7 @@ public final class LazyInitialisationAnalyserTest {
 
     @Test
     public void findNullDereferences() throws IOException, AnalyzerException {
-        final ClassName dotted = Dotted.fromClass(IntegerWithDefault.class);
+        final ClassName dotted = Dotted.fromClass(WithoutAlias.WithJvmInitialValue.IntegerValid.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final ClassNode cn = new ClassNode();
         cr.accept(cn, 0);

@@ -17,11 +17,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedIntegerWithSemantic;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.FloatWithMultiple;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithSemantic;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.StringWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.StringWithSemantic;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -115,9 +112,10 @@ public final class InitialValueFinderTest {
 
 
     @Test
-    public void testForFloatWithMultipleScli() {
+    public void invalidFloatWithMultipleCustomInitialValues() {
         final Set<UnknownTypeValue> expected = createExpected(Float.valueOf(-1.0F), Float.valueOf(23.0F));
-        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(FloatWithMultiple.class, "hash");
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class, "hash");
         assertThat(actual, is(expected));
     }
 
@@ -143,31 +141,42 @@ public final class InitialValueFinderTest {
     }
 
     @Test
-    public void testForIntegerWithSemanticScli() {
+    public void validIntegerWithCustomInitialValueScli() {
         final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(-1));
-        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(IntegerWithSemantic.class, "hash");
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithoutAlias.WithCustomInitialValue.IntegerValid.class, "hash");
         assertThat(actual, is(expected));
     }
 
     @Test
-    public void testForAliasedIntegerWithSemanticScli() {
+    public void aliasedValidIntegerWithCustomInitialValueScli() {
         final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(-2));
-        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(AliasedIntegerWithSemantic.class,
-                "cachedValue");
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithAlias.WithCustomInitialValue.IntegerValid.class, "cachedValue");
         assertThat(actual, is(expected));
     }
 
     @Test
-    public void testForStringWithDefaultScli() {
-        final Set<UnknownTypeValue> expected = createExpected(null);
-        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringWithDefault.class, "hash");
+    public void validStringWithJvmInitialValue() {
+        final Set<UnknownTypeValue> expected = createExpected(UnknownTypeValueDefault.getInstanceForNull());
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithoutAlias.WithJvmInitialValue.StringValid.class, "hash");
         assertThat(actual, is(expected));
     }
 
     @Test
-    public void testForStringWithSemanticScli() {
+    public void validStringWithCustomInitialValue() {
         final Set<UnknownTypeValue> expected = createExpected("");
-        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringWithSemantic.class, "hash");
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithoutAlias.WithCustomInitialValue.StringValid.class, "hash");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void validCustomObjectWithNullAsInitialValue() {
+        final Set<UnknownTypeValue> expected = createExpected(UnknownTypeValueDefault.getInstanceForNull());
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
+                WithoutAlias.WithJvmInitialValue.CustomObjectValid.class, "someObject");
         assertThat(actual, is(expected));
     }
 

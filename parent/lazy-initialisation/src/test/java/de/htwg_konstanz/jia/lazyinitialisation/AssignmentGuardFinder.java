@@ -9,8 +9,6 @@ import static org.objectweb.asm.Opcodes.*;
 import java.util.*;
 import java.util.Map.Entry;
 
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,135 +26,6 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
  * @version 20.02.2013
  */
 public final class AssignmentGuardFinder {
-
-    @NotThreadSafe
-    private static final class IntegerSetBuilder {
-        private final Set<Integer> resultSet;
-
-        private IntegerSetBuilder() {
-            resultSet = new HashSet<Integer>();
-        }
-
-        public static IntegerSetBuilder getInstance() {
-            return new IntegerSetBuilder();
-        }
-
-        public IntegerSetBuilder add(final int integer) {
-            resultSet.add(Integer.valueOf(integer));
-            return this;
-        }
-
-        public Set<Integer> build() {
-            return resultSet;
-        }
-    } // class IntegerSetBuilder
-
-    
-    @Immutable
-    private static class BooleanIntegerPair {
-        public final boolean doesExist;
-        public final int localVariable;
-
-        private BooleanIntegerPair(final boolean doesExist, final int localVariable) {
-            this.doesExist = doesExist;
-            this.localVariable = localVariable;
-        }
-
-        public static BooleanIntegerPair newInstance(final boolean doesExist, final int localVariable) {
-            return new BooleanIntegerPair(doesExist, localVariable);
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder b = new StringBuilder();
-            b.append("BooleanIntegerPair [").append("doesExist=").append(doesExist);
-            b.append(", localVariable=").append(localVariable).append("]");
-            return b.toString();
-        }
-    } // class Alias
-
-
-    @Immutable
-    private static final class Alias extends BooleanIntegerPair {
-
-        private Alias(final boolean doesExist, final int localVariable) {
-            super(doesExist, localVariable);
-        }
-
-        public static Alias newInstance(final boolean doesExist, final int localVariable) {
-            return new Alias(doesExist, localVariable);
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder b = new StringBuilder();
-            b.append("Alias [").append("doesExist=").append(doesExist);
-            b.append(", localVariable=").append(localVariable).append("]");
-            return b.toString();
-        }
-    } // class Alias
-
-
-    private final class AliasFinder {
-
-        private final Set<ControlFlowBlock> alreadyVisited = new HashSet<ControlFlowBlock>();
-
-        public Alias searchForAliasInBlock(final ControlFlowBlock block) {
-            Alias result = Alias.newInstance(false, Integer.MIN_VALUE);
-            if (!alreadyVisited.contains(block)) {
-                alreadyVisited.add(block);
-                final AbstractInsnNode[] insns = toArray(block.getInstructions());
-                int indexOfGetfield = findIndexOfGetfieldForVariable(insns);
-                if (indexOfGetfieldFound(indexOfGetfield)) {
-                    final AbstractInsnNode successorInsnOfGetfieldForVariable = insns[indexOfGetfield + 1];
-                    if (isStoreInstruction(successorInsnOfGetfieldForVariable)) {
-                        final VarInsnNode storeInsn = (VarInsnNode) successorInsnOfGetfieldForVariable;
-                        result = Alias.newInstance(true, storeInsn.var);
-                    }
-                }
-                if (!result.doesExist) {
-                    for (final ControlFlowBlock predecessor : block.getPredecessors()) {
-                        return searchForAliasInBlock(predecessor);
-                    }
-                }
-            }
-            return result;
-        }
-
-        private AbstractInsnNode[] toArray(final List<AbstractInsnNode> asList) {
-            final List<AbstractInsnNode> instructions = asList;
-            return instructions.toArray(new AbstractInsnNode[asList.size()]);
-        }
-
-        private int findIndexOfGetfieldForVariable(final AbstractInsnNode[] instructions) {
-            int result = -1;
-            for (int i = 0; i < instructions.length; i++) {
-                if (isGetfieldForVariable(instructions[i])) {
-                    result = i;
-                    break;
-                }
-            }
-            return result;
-        }
-
-        private boolean indexOfGetfieldFound(final int index) {
-            return -1 < index;
-        }
-
-        private boolean isStoreInstruction(final AbstractInsnNode insn) {
-            final Set<Integer> storeInstructions = getStoreInstructions();
-            final Integer opcode = Integer.valueOf(insn.getOpcode());
-            return storeInstructions.contains(opcode);
-        }
-
-        private Set<Integer> getStoreInstructions() {
-            final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
-            b.add(ISTORE).add(LSTORE).add(FSTORE).add(DSTORE).add(ASTORE);
-            return b.build();
-        }
-
-    } // class AliasFinder
-
 
     private Map<Integer, ControlFlowBlock> controlFlowBlocks = null;
     private String variableName = null;
@@ -177,8 +46,8 @@ public final class AssignmentGuardFinder {
     }
 
     @Test
-    public void findAssignmentGuardForIntegerWithDefault() {
-        analyseJumpInstructionsFor(IntegerWithDefault.class, "hash", "hashCode", 0);
+    public void findAssignmentGuardForValidIntegerWithJvmInitial() {
+        analyseJumpInstructionsFor(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
 
         // TODO Neu: Versuch
@@ -330,7 +199,7 @@ public final class AssignmentGuardFinder {
     }
     
     private boolean isLoadInstructionForAlias(final ControlFlowBlock blockWithJumpInsn, final AbstractInsnNode insn) {
-        final AliasFinder aliasFinder = new AliasFinder();
+        final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
         final Alias alias = aliasFinder.searchForAliasInBlock(blockWithJumpInsn);
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
@@ -345,23 +214,52 @@ public final class AssignmentGuardFinder {
     }
 
     @Test
-    public void findAssignmentGuardForFloatWithDefault() {
-        analyseJumpInstructionsFor(FloatWithDefault.class, "hash", "hashCodeFloat", 0);
+    public void findAssignmentGuardForValidFloatWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithoutAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat", 0);
         assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
     @Test
-    public void findAssignmentGuardForAliasedFloatWithDefault() {
-        analyseJumpInstructionsFor(AliasedFloatWithDefault.class, "hash", "hashCodeFloat", 1);
+    public void findAssignmentGuardForAliasedValidFloatWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat", 1);
         assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
     @Test
-    public void findAssignmentGuardForAliasedByteWithDefault() {
-        analyseJumpInstructionsFor(AliasedByteWithDefault.class, "hash", "hashCodeByte", 1);
+    public void findAssignmentGuardForAliasedValidByteWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithJvmInitialValue.ByteValid.class, "hash", "hashCodeByte", 1);
         assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForValidByteWithJvmInitial() {
+        analyseJumpInstructionsFor(WithAlias.WithJvmInitialValue.ByteValid.class, "hash", "hashCodeByte", 1);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForAliasedValidShortWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithJvmInitialValue.ShortValid.class, "hash", "hashCodeShort", 1);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForAliasedValidStringWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithJvmInitialValue.StringValid.class, "hash", "hashCodeString", 1);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForAliasedValidStringWithCustomInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithCustomInitialValue.StringValid.class, "hash", "hashCodeString", 1);
+        assertEquals(1, relevantJumpInsns.size());
+        foo();
     }
 
     @Test
@@ -376,40 +274,50 @@ public final class AssignmentGuardFinder {
     }
 
     @Test
-    public void findAssignmentGuardForAliasedIntegerWithDefault() {
+    public void findAssignmentGuardForAliasedValidIntegerWithJvmInitialValue() {
         analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 1);
         analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 4);
         assertEquals(2, relevantJumpInsns.size());
     }
 
     @Test
-    public void findAssignmentGuardForAliasedIntegerWithSemantic() {
-        analyseJumpInstructionsFor(AliasedIntegerWithSemantic.class, "cachedValue", "getMessageLength", 1);
+    public void findAssignmentGuardForAliasedValidIntegerWithCustomInitialValue() {
+        analyseJumpInstructionsFor(WithAlias.WithCustomInitialValue.IntegerValid.class, "cachedValue",
+                "getMessageLength", 1);
         assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
     @Test
-    public void findAssignmentGuardForIntegerWithSemantic() {
-        analyseJumpInstructionsFor(IntegerWithSemantic.class, "hash", "hashCode", 0);
+    public void findAssignmentGuardForValidIntegerWithCustomInitialValue() {
+        analyseJumpInstructionsFor(WithoutAlias.WithCustomInitialValue.IntegerValid.class, "hash", "hashCode", 0);
         assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
     @Test
-    public void findAssignmentGuardForObjectWithDefault() {
-        analyseJumpInstructionsFor(ObjectWithDefault.class, "hash", "hashCodeObject", 0);
+    public void findAssignmentGuardForValidCustomObjectWithJvmInitialValue() {
+        analyseJumpInstructionsFor(WithoutAlias.WithJvmInitialValue.CustomObjectValid.class, "someObject",
+                "hashCodeSomeObject", 0);
         assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
     @Test
-    public void findAssignmentGuardForAliasedIntegerWithDefaultDcli() {
+    public void findAssignmentGuardForAliasedValidIntegerWithDefaultDcli() {
         analyseJumpInstructionsFor(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class,
                 "someNumber", "getSomeNumber", 1);
         analyseJumpInstructionsFor(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class,
                 "someNumber", "getSomeNumber", 4);
         assertEquals(2, relevantJumpInsns.size());
+        foo();
+    }
+
+    @Test
+    public void findAssignmentGuardForInvalidFloatObjectWithMultipleCustomInitialValues() {
+        analyseJumpInstructionsFor(WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class,
+                "hash", "hashCodeFloat", 0);
+        assertEquals(1, relevantJumpInsns.size());
         foo();
     }
 
@@ -432,8 +340,8 @@ public final class AssignmentGuardFinder {
                             // passt
                             System.out.println("Passt.");
                         } else if (isLoadInstructionForAlias(blockWithRelevantJumpInsn, predecessorInstruction)) {
-                                // TODO
-                            
+                            // passt
+                            System.out.println("Passt.");
                         } else if (isComparisonInsn(predecessorInstruction)) {
                             final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
                             final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
@@ -468,17 +376,23 @@ public final class AssignmentGuardFinder {
                             }
                         }
                     } else if (checksAgainstNull(relevantJumpInsn)) {
-                        
+                        // TODO Was passiert hier?
                     } else if (checksAgainstNonNull(relevantJumpInsn)) {
-                        if (isGetfieldForVariable(predecessorInstruction)) {
+                        if (!possibleInitialValuesForVariable.contains(UnknownTypeValueDefault.getInstanceForNull())) {
+                            // nicht korrekt verzoegert initialisiert
+                            System.out.println("Nicht korrekt verzoegert initialisiert.");
+                        } else if (isGetfieldForVariable(predecessorInstruction)) {
                             final UnknownTypeValue nullValue = UnknownTypeValueDefault.getInstanceForNull();
                             if (possibleInitialValuesForVariable.contains(nullValue)) {
-                             // passt
+                                // passt
                                 System.out.println("Passt.");
                             } else {
-                             // nicht korrekt verzoegert initialisiert
+                                // nicht korrekt verzoegert initialisiert
                                 System.out.println("Nicht korrekt verzoegert initialisiert.");
                             }
+                        } else if (isLoadInstructionForAlias(blockWithRelevantJumpInsn, predecessorInstruction)) {
+                            // passt
+                            System.out.println("Passt.");
                         }
                     }
                 } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {

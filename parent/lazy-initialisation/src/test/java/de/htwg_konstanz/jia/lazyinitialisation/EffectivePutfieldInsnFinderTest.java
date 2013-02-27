@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * 
@@ -71,13 +71,15 @@ public final class EffectivePutfieldInsnFinderTest {
     }
 
     @Test
-    public void findForIntegerWithDefault() {
-        Asserter.assertEffectivePutfieldInsnIsFound(IntegerWithDefault.class, "hash", "hashCode", 9);
+    public void validIntegerWithJvmInitialValue() {
+        Asserter.assertEffectivePutfieldInsnIsFound(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash",
+                "hashCode", 9);
     }
 
     @Test
-    public void findForAliasedFloatWithDefault() {
-        Asserter.assertEffectivePutfieldInsnIsFound(AliasedFloatWithDefault.class, "hash", "hashCodeFloat", 19);
+    public void aliasedValidFloatWithJvmInitialValue() {
+        Asserter.assertEffectivePutfieldInsnIsFound(WithAlias.WithJvmInitialValue.FloatValid.class, "hash",
+                "hashCodeFloat", 19);
     }
 
 }

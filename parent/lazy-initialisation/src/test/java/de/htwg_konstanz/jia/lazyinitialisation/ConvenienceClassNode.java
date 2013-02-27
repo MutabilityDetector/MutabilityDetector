@@ -8,7 +8,6 @@ import java.lang.String;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -149,8 +148,8 @@ final class ConvenienceClassNode {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("classNode", classNode);
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ConvenienceClassNode [").append("classNode=").append(classNode).append("]");
         return builder.toString();
     }
 

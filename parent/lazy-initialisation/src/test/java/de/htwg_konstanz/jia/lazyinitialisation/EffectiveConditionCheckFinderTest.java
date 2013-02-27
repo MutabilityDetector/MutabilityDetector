@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * 
@@ -92,8 +92,9 @@ public final class EffectiveConditionCheckFinderTest {
 
     @Test
 //    @Ignore("Implementation of 'EffectiveJumpInsnFinder is incomplete.'")
-    public void findInAliasedIntegerWithDefaultDcli() {
-        Asserter.assertEffectiveJumpInsnIsFound(IntegerWithDefault.class, "hash", "hashCode", 4);
+    public void findInValidIntegerWithJvmInitialValueDcli() {
+        Asserter.assertEffectiveJumpInsnIsFound(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash",
+                "hashCode", 4);
     }
 
 }

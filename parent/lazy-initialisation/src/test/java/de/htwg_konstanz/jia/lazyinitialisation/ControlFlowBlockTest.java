@@ -17,9 +17,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
 import de.htwg_konstanz.jia.lazyinitialisation.Range.RangeBuilder;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.AliasedFloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.FloatWithDefault;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * 
@@ -151,8 +150,8 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void recognizedBlockSequenceOfIntegerWithDefaultIsCorrect() {
-        final Helper h = new Helper(IntegerWithDefault.class, "hash", "hashCode");
+    public void recognizedBlockSequenceOfValidIntegerWithJvmInitialValueIsCorrect() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash", "hashCode");
         h.assertNumberOfFoundControlFlowBlocks(3);
         h.assertFirstIsPredecessorOfSecond(0, 1);
         h.assertFirstIsPredecessorOfSecond(0, 2);
@@ -163,14 +162,14 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void findBlockWithEffectiveAssignmentInsnForIntegerWithDefault() {
-        final Helper h = new Helper(IntegerWithDefault.class, "hash", "hashCode");
+    public void findBlockWithEffectiveAssignmentInsnForValidIntegerWithJvmInitialValue() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash", "hashCode");
         h.assertBlockContainsEffectiveAssignmentInsn(1);
     }
 
     @Test
-    public void findBlockWithConditionCheckForIntegerWithDefault() {
-        final Helper h = new Helper(IntegerWithDefault.class, "hash", "hashCode");
+    public void findBlockWithConditionCheckForValidIntegerWithJvmInitialValue() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash", "hashCode");
         h.assertBlockContainsConditionCheck(0);
     }
 
@@ -208,8 +207,8 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void recognizedBlockSequenceOfFloatWithDefaultIsCorrecdt() {
-        final Helper h = new Helper(FloatWithDefault.class, "hash", "hashCodeFloat");
+    public void recognizedBlockSequenceOfValidFloatWithJvmInitialValueIsCorrect() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertNumberOfFoundControlFlowBlocks(3);
         h.assertFirstIsPredecessorOfSecond(0, 1);
         h.assertFirstIsPredecessorOfSecond(0, 2);
@@ -220,20 +219,20 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void findBlockWithEffectiveAssignmentInsnForFloatWithDefault() {
-        final Helper h = new Helper(FloatWithDefault.class, "hash", "hashCodeFloat");
+    public void findBlockWithEffectiveAssignmentInsnForValidFloatWithJvmInitialValue() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertBlockContainsEffectiveAssignmentInsn(1);
     }
 
     @Test
-    public void findblockWithConditionCheckForFloatwithDefault() {
-        final Helper h = new Helper(FloatWithDefault.class, "hash", "hashCodeFloat");
+    public void findblockWithConditionCheckForValidFloatWithJvmInitialValue() {
+        final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertBlockContainsConditionCheck(0);
     }
 
     @Test
-    public void recognizedBlockSequenceOfAliasedFloatWithDefaultIsCorrect() {
-        final Helper h = new Helper(AliasedFloatWithDefault.class, "hash", "hashCodeFloat");
+    public void recognizedBlockSequenceOfAliasedValidFloatWithJvmInitialValueIsCorrect() {
+        final Helper h = new Helper(WithAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertNumberOfFoundControlFlowBlocks(5);
         h.assertFirstIsPredecessorOfSecond(0, 1);
         h.assertFirstIsPredecessorOfSecond(1, 2);
@@ -247,14 +246,14 @@ public final class ControlFlowBlockTest {
     }
 
     @Test
-    public void findBlockWithEffectiveAssignmentInsnForAliasedFloatWithDefault() {
-        final Helper h = new Helper(AliasedFloatWithDefault.class, "hash", "hashCodeFloat");
+    public void findBlockWithEffectiveAssignmentInsnForAliasedValidFloatWithJvmInitialValue() {
+        final Helper h = new Helper(WithAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertBlockContainsEffectiveAssignmentInsn(3);
     }
 
     @Test
-    public void findblockWithConditionCheckForAliasedFloatwithDefault() {
-        final Helper h = new Helper(AliasedFloatWithDefault.class, "hash", "hashCodeFloat");
+    public void findblockWithConditionCheckForAliasedValidFloatWithJvmInitialValue() {
+        final Helper h = new Helper(WithAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
         h.assertBlockContainsConditionCheck(1);
     }
 

@@ -30,6 +30,8 @@ final class InitialValueFinder implements Runnable {
                 result = getInitialValueOfIntInsn(variableValueSetupInsn);
             } else if (isStackConstantPushInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfStackConstantInsn(variableValueSetupInsn);
+//            } else if (is()) {
+//                
             }
             return result;
         }
@@ -65,6 +67,12 @@ final class InitialValueFinder implements Runnable {
             return opcode.stackValue();
         }
 
+        private static boolean isSetterParameterLoadInsn(final AbstractInsnNode abstractInsnNode) {
+            // TODO Methode implementieren (evtl. unter Zuhilfenahme von `AliasFinder`).
+//            AbstractInsnNode.
+            return false;
+        }
+
         public UnknownTypeValue getJvmDefaultInitialValueFor(final Type type) {
             final UnknownTypeValue result;
             final int sort = type.getSort();
@@ -85,7 +93,7 @@ final class InitialValueFinder implements Runnable {
             } else if (Type.DOUBLE == sort) {
                 result = UnknownTypeValueDefault.getInstance(Double.valueOf(0.0D));
             } else {
-                result = UnknownTypeValueDefault.getInstance(null);
+                result = UnknownTypeValueDefault.getInstanceForNull();
             }
             return result;
         }

@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.*;
 
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * Example taken from ASM 4 Guide.
@@ -87,7 +87,7 @@ public final class CustomControlFlowAnalysis {
 
     @Test
     public void getCyclomaticComplexity() throws IOException, AnalyzerException {
-        final ClassName dotted = Dotted.fromClass(IntegerWithDefault.class);
+        final ClassName dotted = Dotted.fromClass(WithoutAlias.WithJvmInitialValue.IntegerValid.class);
         final ClassReader cr = new ClassReader(dotted.asString());
         final ClassNode cn = new ClassNode();
         cr.accept(cn, 0);

@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.objectweb.asm.tree.MethodNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.IntegerWithDefault;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * TODO Klasse löschen?
@@ -28,7 +28,7 @@ public final class ControlFlowBlockManagerTest {
     @Test
     public void numberOfBlocksIsExpected() {
         final byte expected = 3;
-        initialiseManagerWith(IntegerWithDefault.class, "hashCode");
+        initialiseManagerWith(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hashCode");
         final Map<Integer, ControlFlowBlock> controlFlowBlocks = manager.getAllControlFlowBlocks();
         assertEquals(expected, controlFlowBlocks.size());
     }
