@@ -3,6 +3,8 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -39,7 +41,8 @@ public final class EffectivePutfieldInsnFinderTest {
             final ConvenienceClassNode classNode = createConvenienceClassNodeFor(klasse);
             final FieldNode variable = classNode.findVariableWithName(variableName);
             if (isNotNull(variable)) {
-                final MethodNode setter = classNode.findMethodWithName(setterName);
+                final List<MethodNode> setters = classNode.findMethodByName(setterName);
+                final MethodNode setter = setters.get(0);
                 if (isNotNull(setter)) {
                     final EffectivePutfieldInsnFinder epif = EffectivePutfieldInsnFinder.newInstance(variable,
                             setter.instructions);

@@ -22,7 +22,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 
 /**
  * 
- *
+ * 
  * @author Juergen Fickel
  * @version 19.02.2013
  */
@@ -48,18 +48,19 @@ public final class ControlFlowBlockTest {
         private static List<ControlFlowBlock> getControlFlowBlocksFor(final Class<?> klasse, final String methodName) {
             List<ControlFlowBlock> result = Collections.emptyList();
             final ConvenienceClassNode ccn = createConvenienceClassNodeFor(klasse);
-            final MethodNode methodNode = ccn.findMethodWithName(methodName);
-            if (isNotNull(methodNode)) {
-                result = createControlFlowBlocksFor(ccn.name(), methodNode);
+            final List<MethodNode> methods = ccn.findMethodByName(methodName);
+            final MethodNode method = methods.get(0);
+            if (isNotNull(method)) {
+                result = createControlFlowBlocksFor(ccn.name(), method);
             }
             return result;
         }
-        
+
         private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.convenienceClassNodeFor(klasse);
         }
-        
+
         private static boolean isNotNull(final Object ref) {
             return null != ref;
         }
@@ -132,7 +133,7 @@ public final class ControlFlowBlockTest {
         assertCfbCovers(0);
     }
 
-    private void initialiseCfbWith(final String id, final int first, final int ... further) {
+    private void initialiseCfbWith(final String id, final int first, final int... further) {
         final RangeBuilder rb = new RangeBuilder();
         rb.add(first);
         for (final int f : further) {
@@ -144,7 +145,7 @@ public final class ControlFlowBlockTest {
     private void assertCfbDoesNotCover(final int notCovered) {
         assertFalse(cfb.covers(notCovered));
     }
-    
+
     private void assertCfbCovers(final int covered) {
         assertTrue(cfb.covers(covered));
     }

@@ -7,6 +7,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.objectweb.asm.tree.FieldNode;
@@ -41,7 +43,8 @@ public final class EffectiveConditionCheckFinderTest {
                 final String variableName, final String setterName) {
             EffectiveConditionCheckFinder result = null;
             final ConvenienceClassNode classNode = createConvenienceClassNodeFor(klasse);
-            final MethodNode setter = classNode.findMethodWithName(setterName);
+            final List<MethodNode> setters = classNode.findMethodByName(setterName);
+            final MethodNode setter = setters.get(0);
             final InsnList setterInstructions = setter.instructions;
             if (isNotNull(setter)) {
                 final AssignmentInsn effectiveAssignmentInsn = findEffectivePutfieldInsnFor(classNode, variableName,

@@ -79,6 +79,18 @@ public final class WithAlias {
         } // class ObjectValid
 
 
+        public static final class SynchronizedObjectValid {
+            private Object hash;
+            public Object hashCodeObject() {
+                Object result = hash;
+                if (null == result) {
+                    result = new Object();
+                    hash = result;
+                }
+                return result;
+            }
+        } // class SynchronizedObjectValid
+
     } // class WithJvmInitialValue
 
 

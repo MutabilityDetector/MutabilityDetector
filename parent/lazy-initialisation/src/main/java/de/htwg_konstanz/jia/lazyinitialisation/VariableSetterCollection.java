@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mutabilitydetector.checkers.MethodIs;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -130,7 +129,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
             return builder.toString();
         }
 
-        private String concatenateMethodNames(final List<MethodNode> methods) {
+        private static String concatenateMethodNames(final List<MethodNode> methods) {
             final StringBuilder result = new StringBuilder();
             result.append("[");
             final String separator = ", ";
@@ -141,7 +140,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
             }
             result.append("]");
             return result.toString();
-            
+
         }
 
     } // class Setters
@@ -178,8 +177,8 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
      *            name of the variable to associate the setter method with. Must
      *            neither be {@code null} nor {@code ""}.
      * @param setter
-     *            setter to be associated with {@code variableName} Must
-     *            not be {@code null}.
+     *            setter to be associated with {@code variableName} Must not be
+     *            {@code null}.
      * @return {@code true} if {@code variableName} was already part of this
      *         collection, {@code false} else.
      */
@@ -224,11 +223,11 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
 
     /**
      * @param variableName
-     *            name of the variable to get all setter methods for.
-     *            Must neither be {@code null} nor {@code ""}.
-     * @return all setter methods (not constructors) for the variable
-     *         with name {@code variableName}. If none are found an
-     *         empty {@code List} is returned.
+     *            name of the variable to get all setter methods for. Must
+     *            neither be {@code null} nor {@code ""}.
+     * @return all setter methods (not constructors) for the variable with name
+     *         {@code variableName}. If none are found an empty {@code List} is
+     *         returned.
      */
     public List<MethodNode> getSetterMethodsFor(final String variableName) {
         notEmpty(variableName);

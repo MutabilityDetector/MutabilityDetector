@@ -16,18 +16,14 @@ import org.objectweb.asm.tree.LabelNode;
  * @version 15.02.2013
  */
 @Immutable
-final class DefaultJumpInsn implements JumpInsn {
+final class JumpInsnDefault implements JumpInsn {
 
     private final JumpInsnNode jumpInsnNode;
     private final int indexOfJumpInsn;
-    private final AssignmentInsn targetAssignmentInsn;
 
-    private DefaultJumpInsn(final JumpInsnNode theJumpInsnNode,
-            final int theIndexOfJumpInsn,
-            final AssignmentInsn theTargetAssignmentInsn) {
+    private JumpInsnDefault(final JumpInsnNode theJumpInsnNode, final int theIndexOfJumpInsn) {
         jumpInsnNode = deepCopy(theJumpInsnNode);
         indexOfJumpInsn = theIndexOfJumpInsn;
-        targetAssignmentInsn = theTargetAssignmentInsn;
     }
 
     private static JumpInsnNode deepCopy(final JumpInsnNode source) {
@@ -37,10 +33,8 @@ final class DefaultJumpInsn implements JumpInsn {
         return new JumpInsnNode(resultOpcode, resultLabelNode);
     }
 
-    public static DefaultJumpInsn newInstance(final JumpInsnNode jumpInsnNode,
-            final int indexOfJumpInsn,
-            final AssignmentInsn targetAssignmentInsn) {
-        return new DefaultJumpInsn(notNull(jumpInsnNode), indexOfJumpInsn, notNull(targetAssignmentInsn));
+    public static JumpInsnDefault newInstance(final JumpInsnNode jumpInsnNode, final int indexOfJumpInsn) {
+        return new JumpInsnDefault(notNull(jumpInsnNode), indexOfJumpInsn);
     }
 
     @Override
@@ -56,11 +50,6 @@ final class DefaultJumpInsn implements JumpInsn {
     @Override
     public LabelNode getLabelNodeOfJumpTarget() {
         return new LabelNode(jumpInsnNode.label.getLabel());
-    }
-
-    @Override
-    public AssignmentInsn getTargetAssignmentInsn() {
-        return targetAssignmentInsn;
     }
 
     @Override
@@ -81,7 +70,6 @@ final class DefaultJumpInsn implements JumpInsn {
         int result = 1;
         result = prime * result + indexOfJumpInsn;
         result = prime * result + jumpInsnNode.hashCode();
-        result = prime * result + targetAssignmentInsn.hashCode();
         return result;
     }
 
@@ -93,17 +81,14 @@ final class DefaultJumpInsn implements JumpInsn {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof DefaultJumpInsn)) {
+        if (!(obj instanceof JumpInsnDefault)) {
             return false;
         }
-        final DefaultJumpInsn other = (DefaultJumpInsn) obj;
+        final JumpInsnDefault other = (JumpInsnDefault) obj;
         if (indexOfJumpInsn != other.indexOfJumpInsn) {
             return false;
         }
         if (!jumpInsnNode.equals(other.jumpInsnNode)) {
-            return false;
-        }
-        if (!targetAssignmentInsn.equals(other.targetAssignmentInsn)) {
             return false;
         }
         return true;
@@ -113,7 +98,6 @@ final class DefaultJumpInsn implements JumpInsn {
     public String toString() {
         final ToStringBuilder builder = new ToStringBuilder(this);
         builder.append("jumpInsnNode", jumpInsnNode).append("indexOfJumpInsn", indexOfJumpInsn);
-        builder.append("targetAssignmentInsn", targetAssignmentInsn);
         return builder.toString();
     }
 

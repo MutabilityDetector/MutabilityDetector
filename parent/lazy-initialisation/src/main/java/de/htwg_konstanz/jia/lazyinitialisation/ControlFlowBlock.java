@@ -16,6 +16,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
@@ -34,19 +35,21 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     public static final class Builder {
         private final int blockNumber;
         private final String identifier;
+        private final AbstractInsnNode[] allInstructions;
         private final SortedSet<Integer> rangeItems;
-        private final List<AbstractInsnNode> instructionsOfCurrentBlock;
+//        private final List<AbstractInsnNode> instructionsOfCurrentBlock;
 
-        public Builder(final int theBlockNumber, final String theIdentifier) {
+        public Builder(final int theBlockNumber, final String theIdentifier, final AbstractInsnNode[] allInstructions) {
             blockNumber = theBlockNumber;
             identifier = notEmpty(theIdentifier);
+            this.allInstructions = notEmpty(allInstructions);
             rangeItems = new TreeSet<Integer>();
-            instructionsOfCurrentBlock = new ArrayList<AbstractInsnNode>();
+//            instructionsOfCurrentBlock = new ArrayList<AbstractInsnNode>();
         }
 
-        public void addInstruction(final int instructionIndex, final AbstractInsnNode actualInstruction) {
+        public void addInstruction(final int instructionIndex) {//, final AbstractInsnNode actualInstruction) {
             rangeItems.add(Integer.valueOf(instructionIndex));
-            instructionsOfCurrentBlock.add(actualInstruction);
+//            instructionsOfCurrentBlock.add(actualInstruction);
         }
 
         public boolean isBuilderForBlockNumber(final int aBlockNumber) {
@@ -54,15 +57,15 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         }
 
         public ControlFlowBlock build() {
-            final AbstractInsnNode[] instructions = instructionsToArray();
+//            final AbstractInsnNode[] instructions = instructionsToArray();
             final Range range = Range.newInstance(rangeItems);
-            return ControlFlowBlock.newInstance(blockNumber, identifier, instructions, range);
+            return ControlFlowBlock.newInstance(blockNumber, identifier, allInstructions, range);
         }
 
-        private AbstractInsnNode[] instructionsToArray() {
-            final int numberOfInstructions = instructionsOfCurrentBlock.size();
-            return instructionsOfCurrentBlock.toArray(new AbstractInsnNode[numberOfInstructions]);
-        }
+//        private AbstractInsnNode[] instructionsToArray() {
+//            final int numberOfInstructions = instructionsOfCurrentBlock.size();
+//            return instructionsOfCurrentBlock.toArray(new AbstractInsnNode[numberOfInstructions]);
+//        }
     } // class Builder
 
 
@@ -124,9 +127,10 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             if (isLabel(firstInsn)) {
                 result = createNewControlFlowBlockBuilderForLabel(firstInsn);
             } else {
-                result = new Builder(currentBlockNumber.getAndIncrement(), "L<Pseudo>");
+                result = new Builder(currentBlockNumber.getAndIncrement(), "L<Pseudo>", allInstructions);
             }
-            result.addInstruction(0, firstInsn);
+//            result.addInstruction(0, firstInsn);
+            result.addInstruction(0);
             return result;
         }
 
@@ -137,7 +141,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         private Builder createNewControlFlowBlockBuilderForLabel(final AbstractInsnNode insn) {
             final LabelNode labelNode = (LabelNode) insn;
             final Label label = labelNode.getLabel();
-            return new Builder(currentBlockNumber.getAndIncrement(), label.toString());
+            return new Builder(currentBlockNumber.getAndIncrement(), label.toString(), allInstructions);
         }
 
         private void handleRemainingInstructions(final Builder controlFlowBlockBuilder) {
@@ -148,7 +152,8 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
                     controlFlowBlocks.add(builder.build());
                     builder = createNewControlFlowBlockBuilderForLabel(insn);
                 }
-                builder.addInstruction(i, insn);
+//                builder.addInstruction(i, insn);
+                builder.addInstruction(i);
             }
             controlFlowBlocks.add(builder.build());
         }
@@ -189,8 +194,9 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     private final int blockNumber;
     private final String identifier;
-    private final AbstractInsnNode[] instructions;
-    private final Range rangeOfInstructionIndices;
+    private final AbstractInsnNode[] methodInstructions;
+//    private final AbstractInsnNode[] blockInstructions;
+    private final Range rangeOfBlockInstructions;
     private final Set<ControlFlowBlock> predecessors;
     private final Set<ControlFlowBlock> successors;
     private int hashCode;
@@ -198,12 +204,14 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     private ControlFlowBlock(final int theBlockNumber,
             final String theIdentifier,
-            final AbstractInsnNode[] theInstructions,
-            final Range theRangeOfInstructionIndices) {
+            final AbstractInsnNode[] theMethodInstructions,
+//            final AbstractInsnNode[] theBlockInstructions,
+            final Range theRangeOfBlockInstructionIndices) {
         blockNumber = theBlockNumber;
         identifier = theIdentifier;
-        instructions = Arrays.copyOf(theInstructions, theInstructions.length);
-        rangeOfInstructionIndices = theRangeOfInstructionIndices;
+        methodInstructions = theMethodInstructions;
+//        blockInstructions = Arrays.copyOf(theBlockInstructions, theBlockInstructions.length);
+        rangeOfBlockInstructions = theRangeOfBlockInstructionIndices;
         predecessors = new HashSet<ControlFlowBlock>();
         successors = new HashSet<ControlFlowBlock>();
         hashCode = 0;
@@ -212,23 +220,20 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     public static ControlFlowBlock newInstance(final int blockNumber,
             final String identifier,
-            final AbstractInsnNode[] instructions,
+            final AbstractInsnNode[] methodInstructions,
+//            final AbstractInsnNode[] blockInstructions,
             final Range rangeOfInstructionIndices) {
-        return new ControlFlowBlock(blockNumber, notEmpty(identifier), notNull(instructions),
-                notNull(rangeOfInstructionIndices));
+        return new ControlFlowBlock(blockNumber, notEmpty(identifier),// notNull(blockInstructions),
+                notEmpty(methodInstructions), notNull(rangeOfInstructionIndices));
     }
 
     public boolean isEmpty() {
-        boolean result = false;
-        if (1 == instructions.length) {
-            result = isLabelNode(instructions[0]);
-        }
-        return result;
+        return rangeOfBlockInstructions.allItems.isEmpty();
     }
 
-    private static boolean isLabelNode(final AbstractInsnNode insn) {
-        return AbstractInsnNode.LABEL == insn.getType();
-    }
+//    private static boolean isLabelNode(final AbstractInsnNode insn) {
+//        return AbstractInsnNode.LABEL == insn.getType();
+//    }
 
     public boolean isNotEmpty() {
         return !isEmpty();
@@ -244,12 +249,18 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     public boolean containsConditionCheck() {
         boolean result = false;
-        for (final AbstractInsnNode insn : instructions) {
-            if (isJumpInsnNode(insn)) {
+        for (int i = rangeOfBlockInstructions.lowerBoundary; i <= rangeOfBlockInstructions.upperBoundary; i++) {
+            if (isJumpInsnNode(methodInstructions[i])) {
                 result = true;
                 break;
             }
         }
+//        for (final AbstractInsnNode insn : blockInstructions) {
+//            if (isJumpInsnNode(insn)) {
+//                result = true;
+//                break;
+//            }
+//        }
         return result;
     }
 
@@ -257,14 +268,30 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return AbstractInsnNode.JUMP_INSN == insn.getType();
     }
 
+    public List<JumpInsn> getConditionCheckInstructions() {
+        final ArrayList<JumpInsn> result = new ArrayList<JumpInsn>();
+        for (int i = rangeOfBlockInstructions.lowerBoundary; i <= rangeOfBlockInstructions.upperBoundary; i++) {
+            final AbstractInsnNode abstractInsnNode = methodInstructions[i];
+            if (isJumpInsnNode(abstractInsnNode)) {
+                final JumpInsnNode jumpInsnNode = (JumpInsnNode) abstractInsnNode;
+                result.add(JumpInsnDefault.newInstance(jumpInsnNode, i));
+            }
+        }
+        result.trimToSize();
+        return result;
+    }
+
     public boolean containsEffectiveAssignmentInstruction(final FieldNode assignedVariable) {
-        final EffectivePutfieldInsnFinder f = EffectivePutfieldInsnFinder.newInstance(assignedVariable, instructions);
+        final AbstractInsnNode[] blockInstructions = Arrays.copyOfRange(methodInstructions,
+                rangeOfBlockInstructions.lowerBoundary, rangeOfBlockInstructions.upperBoundary + 1);
+        final EffectivePutfieldInsnFinder f = EffectivePutfieldInsnFinder.newInstance(assignedVariable,
+                blockInstructions);
         final AssignmentInsn effectivePutfieldInstruction = f.getEffectivePutfieldInstruction();
         return !effectivePutfieldInstruction.isNull();
     }
 
     public boolean covers(final int someInstructionIndex) {
-        return rangeOfInstructionIndices.covers(someInstructionIndex);
+        return rangeOfBlockInstructions.covers(someInstructionIndex);
     }
 
     public boolean isDirectPredecessorOf(final ControlFlowBlock successor) {
@@ -290,8 +317,14 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return possiblePredecessor.isPredecessorOf(this);
     }
 
-    public List<AbstractInsnNode> getInstructions() {
-        return Arrays.asList(instructions);
+    public List<AbstractInsnNode> getBlockInstructions() {
+        final ArrayList<AbstractInsnNode> result = new ArrayList<AbstractInsnNode>();
+        for (int i = rangeOfBlockInstructions.lowerBoundary; i <= rangeOfBlockInstructions.upperBoundary; i++) {
+            result.add(methodInstructions[i]);
+        }
+//        return Arrays.asList(blockInstructions);
+        result.trimToSize();
+        return result;
     }
 
     public Set<ControlFlowBlock> getPredecessors() {
@@ -316,8 +349,9 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             int result = 1;
             result = prime * result + blockNumber;
             result = prime * result + identifier.hashCode();
-            result = prime * result + Arrays.hashCode(instructions);
-            result = prime * result + rangeOfInstructionIndices.hashCode();
+            result = prime * result + Arrays.hashCode(methodInstructions);
+//            result = prime * result + Arrays.hashCode(blockInstructions);
+            result = prime * result + rangeOfBlockInstructions.hashCode();
             result = prime * result + predecessors.hashCode();
             result = prime * result + successors.hashCode();
             hashCode = result;
@@ -343,10 +377,13 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         if (!identifier.equals(other.identifier)) {
             return false;
         }
-        if (!Arrays.equals(instructions, other.instructions)) {
+        if (!Arrays.equals(methodInstructions, other.methodInstructions)) {
             return false;
         }
-        if (!rangeOfInstructionIndices.equals(other.rangeOfInstructionIndices)) {
+//        if (!Arrays.equals(blockInstructions, other.blockInstructions)) {
+//            return false;
+//        }
+        if (!rangeOfBlockInstructions.equals(other.rangeOfBlockInstructions)) {
             return false;
         }
         if (!predecessors.equals(other.predecessors)) {
@@ -364,7 +401,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
             builder.append("[blockNumber=").append(blockNumber);
             builder.append(", identifier=").append(identifier);
-            builder.append(", rangeOfInstructionIndices=").append(rangeOfInstructionIndices);
+            builder.append(", rangeOfBlockInstructionIndices=").append(rangeOfBlockInstructions);
             builder.append(", predecessors=").append(setToString(predecessors));
             builder.append(", successors=").append(setToString(successors));
             builder.append("]");

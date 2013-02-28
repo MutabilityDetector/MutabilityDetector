@@ -18,8 +18,6 @@ interface JumpInsn extends Comparable<JumpInsn> {
 
     LabelNode getLabelNodeOfJumpTarget();
 
-    AssignmentInsn getTargetAssignmentInsn();
-
     boolean isNull();
 
 }

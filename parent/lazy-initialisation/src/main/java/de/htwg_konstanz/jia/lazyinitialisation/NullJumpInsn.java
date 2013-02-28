@@ -42,11 +42,6 @@ final class NullJumpInsn implements JumpInsn {
     }
 
     @Override
-    public AssignmentInsn getTargetAssignmentInsn() {
-        return null;
-    }
-
-    @Override
     public boolean isNull() {
         return true;
     }

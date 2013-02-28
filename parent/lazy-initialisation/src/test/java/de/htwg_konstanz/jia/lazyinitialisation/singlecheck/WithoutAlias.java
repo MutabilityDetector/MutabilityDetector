@@ -60,6 +60,17 @@ public final class WithoutAlias {
         } // class ObjectValid
 
 
+        public static final class SynchronizedObjectValid {
+            private Object complexObject;
+            public synchronized Object getComplexObject() {
+                if (null == complexObject) {
+                    complexObject = new Object();
+                }
+                return complexObject;
+            }
+        } // class SynchronizedObjectValid
+
+
         public static final class StringValid {
             private String hash;
             public String hashCodeString() {

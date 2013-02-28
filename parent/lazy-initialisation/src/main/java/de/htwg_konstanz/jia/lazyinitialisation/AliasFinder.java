@@ -63,7 +63,7 @@ final class AliasFinder {
             return result;
         }
         alreadyVisited.add(block);
-        final List<AbstractInsnNode> insns = block.getInstructions();
+        final List<AbstractInsnNode> insns = block.getBlockInstructions();
         final int indexOfGetfield = findIndexOfGetfieldForVariable(insns);
         if (indexOfGetfieldFound(indexOfGetfield)) {
             final AbstractInsnNode successorInsnOfGetfieldForVariable = insns.get(indexOfGetfield + 1);
