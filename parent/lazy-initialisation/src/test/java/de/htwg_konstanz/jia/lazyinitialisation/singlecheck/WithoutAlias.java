@@ -83,7 +83,7 @@ public final class WithoutAlias {
 
 
         public static final class CustomObjectValid {
-            private static final class SomeObject {
+            public static final class SomeObject {
                 private SomeObject() {
                     super();
                 }

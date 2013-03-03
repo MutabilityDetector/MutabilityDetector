@@ -32,7 +32,12 @@ final class NullJumpInsn implements JumpInsn {
     }
 
     @Override
-    public int getIndexOfJumpInsn() {
+    public int getIndexWithinBlock() {
+        return Integer.MIN_VALUE;
+    }
+
+    @Override
+    public int getIndexWithinMethod() {
         return Integer.MIN_VALUE;
     }
 

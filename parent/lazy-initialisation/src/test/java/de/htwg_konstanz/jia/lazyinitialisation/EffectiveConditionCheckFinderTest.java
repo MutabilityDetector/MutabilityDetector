@@ -36,7 +36,7 @@ public final class EffectiveConditionCheckFinderTest {
             final EffectiveConditionCheckFinder ejif = createEffectiveJumpInsnFinder(klasse, variableName, setterName);
             assertThat(ejif, is(not(equalTo(null))));
             assertThat(ejif.hasMoreThanOneAssociatedJumpInstruction(), is(false));
-            assertThat(ejif.getEffectiveJumpInsn().getIndexOfJumpInsn(), is(indexOfExpectedJumpInsn));
+            assertThat(ejif.getEffectiveJumpInsn().getIndexWithinBlock(), is(indexOfExpectedJumpInsn));
         }
 
         private static EffectiveConditionCheckFinder createEffectiveJumpInsnFinder(final Class<?> klasse,

@@ -1,10 +1,8 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import static org.apache.commons.lang3.Validate.notNull;
+
+import java.util.*;
 
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -66,6 +64,32 @@ final class Range {
 
     public boolean covers(final int index) {
         return allItems.contains(Integer.valueOf(index));
+    }
+
+    public boolean coversAll(final Collection<Integer> indices) {
+        notNull(indices, "Argument 'indices' must not be null!");
+        boolean result = true;
+        if (indices.isEmpty()) {
+            result = false;
+        } else {
+            final Iterator<Integer> indicesIterator = indices.iterator();
+            while (result && indicesIterator.hasNext()) {
+                final Integer index = indicesIterator.next();
+                result = allItems.contains(index);
+            }
+        }
+        return result;
+    }
+
+    public boolean coversOneOf(final Collection<Integer> indices) {
+        notNull(indices, "Argument 'indices' must not be null!");
+        boolean result = false;
+        final Iterator<Integer> indicesIterator = indices.iterator();
+        while (!result && indicesIterator.hasNext()) {
+            final Integer index = indicesIterator.next();
+            result = allItems.contains(index);
+        }
+        return result;
     }
 
     @Override

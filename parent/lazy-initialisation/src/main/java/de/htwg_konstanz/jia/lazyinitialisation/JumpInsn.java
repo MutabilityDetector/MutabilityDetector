@@ -14,7 +14,9 @@ interface JumpInsn extends Comparable<JumpInsn> {
 
     JumpInsnNode getJumpInsnNode();
 
-    int getIndexOfJumpInsn();
+    int getIndexWithinBlock();
+
+    int getIndexWithinMethod();
 
     LabelNode getLabelNodeOfJumpTarget();
 
