@@ -7,6 +7,8 @@ import static de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinder.Cove
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.util.*;
@@ -17,6 +19,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -30,6 +34,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmI
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 20.02.2013
  */
+@RunWith(Enclosed.class)
 public final class AssignmentGuardFinder {
 
     @NotThreadSafe
@@ -47,6 +52,11 @@ public final class AssignmentGuardFinder {
             indicesOfRelevantJumpInstructions = new ArrayList<Integer>();
             variableName = "";
             possibleInitialValuesForVariable = new HashSet<UnknownTypeValue>();
+        }
+
+        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+            final ClassNodeFactory factory = ClassNodeFactory.getInstance();
+            return factory.convenienceClassNodeFor(klasse);
         }
     
         public Reason forMethod(final String methodName, final Type returnType,
@@ -139,151 +149,236 @@ public final class AssignmentGuardFinder {
     } // class CoversMatcher
 
 
-    @Test
-    public void findAssignmentGuardForValidIntegerWithJvmInitial() {
-        final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+    public static final class ValidSingleCheckLazyInitialisationWithoutAlias {
 
-    @Test
-    public void findAssignmentGuardForValidFloatWithJvmInitialValue() {
-        final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void integerWithJvmInitial() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidFloatWithJvmInitialValue() {
-        final Class<?> klasse = WithAlias.WithJvmInitialValue.FloatValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void floatWithJvmInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidByteWithJvmInitialValue() {
-        final Class<?> klasse = WithAlias.WithJvmInitialValue.ByteValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeByte", Type.BYTE_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void charWithJvmInitial() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeChar", Type.CHAR_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForValidCharWithJvmInitial() {
-        final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeChar", Type.CHAR_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void objectWithJvmInitialValue() {
+            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectValid.class).forMethod("hashCodeObject",
+                    Type.getType(Object.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidShortWithJvmInitialValue() {
-        final Class<?> klasse = WithAlias.WithJvmInitialValue.ShortValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeShort", Type.SHORT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void integerWithCustomInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidStringWithJvmInitialValue() {
-        final Class<?> klasse = WithAlias.WithJvmInitialValue.StringValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void floatWithCustomInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidStringWithCustomInitialValue() {
-        final Class<?> klasse = WithAlias.WithCustomInitialValue.StringValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void customObjectWithJvmInitialValue() {
+            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.CustomObjectValid.class).forMethod(
+                    "hashCodeSomeObject", Type.getType(SomeObject.class)).andVariable("someObject");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            // FIXME
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForJavaLangString() {
-        final Class<?> klasse = String.class;
-        final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-    }
+    } // class TestsForValidSingleCheckLazyInitialisationWithoutAlias
 
-// TODO Löschen, da Double-Check-Idiom
-//
-//    @Test
-//    public void findAssignmentGuardForAliasedValidIntegerWithJvmInitialValue() {
-//        analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 1);
-//        analyseJumpInstructionsFor(AliasedIntegerWithDefault.class, "someNumber", "getSomeNumber", 4);
-//        assertEquals(2, relevantJumpInsns.size());
-//    }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidIntegerWithCustomInitialValue() {
-        final Class<?> klasse = WithAlias.WithCustomInitialValue.IntegerValid.class;
-        final Reason r = new Reason(klasse).forMethod("getMessageLength", Type.INT_TYPE).andVariable("cachedValue");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+    public static final class InvalidSingleCheckLazyInitialisationWithoutAlias {
 
-    @Test
-    public void findAssignmentGuardForValidIntegerWithCustomInitialValue() {
-        final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void charWithJvmInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharInvalid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeChar", Type.CHAR_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForValidCustomObjectWithJvmInitialValue() {
-        final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.CustomObjectValid.class).forMethod(
-                "hashCodeSomeObject", Type.getType(SomeObject.class)).andVariable("someObject");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void integerWithJvmInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerInvalid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForAliasedValidIntegerWithDefaultDcli() {
-        final Reason r = new Reason(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class)
-                .forMethod("getSomeNumber", Type.INT_TYPE).andVariable("someNumber");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(2));
-        assertThat(r.block(1), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void floatWithJvmInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatInvalid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findAssignmentGuardForInvalidFloatObjectWithMultipleCustomInitialValues() {
-        final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-        verifyComparativeValueOfRelevantConditionCheck(r);
-    }
+        @Test
+        public void objectWithJvmInitialValue() {
+            // FIXME
+            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectInvalid.class).forMethod(
+                    "hashCodeObject", Type.getType(Object.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
 
-    @Test
-    public void findIndexOfRelevantJumpInstructionForLazyMethodOfAliasedValidFloatWithJvmInitialValue() {
-        final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatValid.class;
-        final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-        assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-        assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-    }
+        @Test
+        public void stringWithJvmInitialValue() {
+            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.StringInvalid.class).forMethod(
+                    "hashCodeString", Type.getType(String.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void floatWithMultipleCustomInitialValues() {
+            final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void integerWithCustomInitialValue() {
+            final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerInvalid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void stringWithCustomInitialValue() {
+            final Reason r = new Reason(WithoutAlias.WithCustomInitialValue.StringInvalid.class).forMethod(
+                    "hashCodeString", Type.getType(String.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+//            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertFalse(checksAgainstAppropriateComparativeValue(r));
+        }
+
+    } // class InvalidSingleCheckLazyInitialisationWithoutAlias
+
+
+    public static final class ValidSingleCheckLazyInitialisationWithAlias {
+
+        @Test
+        public void byteWithJvmInitialValue() {
+            final Class<?> klasse = WithAlias.WithJvmInitialValue.ByteValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeByte", Type.BYTE_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void shortWithJvmInitialValue() {
+            final Class<?> klasse = WithAlias.WithJvmInitialValue.ShortValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeShort", Type.SHORT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void floatWithJvmInitialValue() {
+            final Class<?> klasse = WithAlias.WithJvmInitialValue.FloatValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void javaLangString() {
+            final Class<?> klasse = String.class;
+            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+        }
+
+        @Test
+        public void stringWithJvmInitialValue() {
+            final Class<?> klasse = WithAlias.WithJvmInitialValue.StringValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void stringWithCustomInitialValue() {
+            final Class<?> klasse = WithAlias.WithCustomInitialValue.StringValid.class;
+            final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+        @Test
+        public void integerWithCustomInitialValue() {
+            final Class<?> klasse = WithAlias.WithCustomInitialValue.IntegerValid.class;
+            final Reason r = new Reason(klasse).forMethod("getMessageLength", Type.INT_TYPE).andVariable("cachedValue");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+    } // TestsForValidSingleCheckLazyInitialisationWithAlias
+
+
+    public static final class ValidDoubleCheckLazyInitialisationWithAlias {
+
+        @Test
+        public void findAssignmentGuardForAliasedValidIntegerWithDefaultDcli() {
+            final Reason r = new Reason(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class)
+                    .forMethod("getSomeNumber", Type.INT_TYPE).andVariable("someNumber");
+            assertThat(r.numberOfRelevantJumpInstructions(), is(2));
+            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertTrue(checksAgainstAppropriateComparativeValue(r));
+        }
+
+    } // ValidDoubleCheckLazyInitialisationWithAlias
+
+
 
     // Ueberpruefung der Sprunganweisung
 
     
-    public void verifyComparativeValueOfRelevantConditionCheck(final Reason r) {
+    public static boolean checksAgainstAppropriateComparativeValue(final Reason r) {
+        boolean result = false;
         final Set<UnknownTypeValue> possibleInitialValuesForVariable = r.initialValues();
         for (final ControlFlowBlock cfb : r.blocks()) {
             final List<AbstractInsnNode> blockInstructions = cfb.getBlockInstructions();
@@ -294,84 +389,118 @@ public final class AssignmentGuardFinder {
                 if (isOneValueJumpInstruction(relevantJumpInsn)) {
                     if (checksAgainstZero(relevantJumpInsn)) {
                         if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                            // passt
-                            System.out.println("Passt.");
+                            if (isZeroOnlyPossibleInitialValueForVariable(possibleInitialValuesForVariable)) {
+                                // passt
+                                System.out.println("Passt.");
+                                result = true;
+                            } else {
+                                System.out.println("Nicht korrekt verzoegert initialisiert.");
+                                result = false;
+                            }
                         } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
                             // passt
                             System.out.println("Passt.");
+                            result = true;
                         } else if (isComparisonInsn(predecessorInstruction)) {
                             final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
                             final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
                             if (isGetfieldForVariable(predecessorOfComparisonInsn, r.variableName())) {
-                                foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                                result = foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
                             } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
-                                bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                                result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
                             }
                         }
                     } else if (checksAgainstNull(relevantJumpInsn)) {
                         // TODO Was passiert hier?
                     } else if (checksAgainstNonNull(relevantJumpInsn)) {
-                        if (!possibleInitialValuesForVariable.contains(UnknownTypeValueDefault.getInstanceForNull())) {
+                        if (!possibleInitialValuesForVariable.contains(DefaultUnknownTypeValue.getInstanceForNull())) {
                             // nicht korrekt verzoegert initialisiert
                             System.out.println("Nicht korrekt verzoegert initialisiert.");
+                            result = false;
                         } else if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                            final UnknownTypeValue nullValue = UnknownTypeValueDefault.getInstanceForNull();
+                            final UnknownTypeValue nullValue = DefaultUnknownTypeValue.getInstanceForNull();
                             if (possibleInitialValuesForVariable.contains(nullValue)) {
                                 // passt
                                 System.out.println("Passt.");
+                                result = true;
                             } else {
                                 // nicht korrekt verzoegert initialisiert
                                 System.out.println("Nicht korrekt verzoegert initialisiert.");
+                                result = false;
                             }
                         } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
                             // passt
                             System.out.println("Passt.");
+                            result = true;
+                        } else if (checksAgainstOtherObject(relevantJumpInsn)) {
+                            // TODO Block implementieren.
                         }
                     }
                 } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {
                     if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                        foo(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
+                        result = foo(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
                     } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
-                        bar(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
+                        result = bar(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
                     }
                 }
             }
         }
+        return result;
     }
 
-    private void bar(final int indexOfPreComparisonInsn,
+    private static boolean checksAgainstOtherObject(final JumpInsn jumpInsn) {
+        
+        // TODO Methode implementieren.
+        return false;
+    }
+
+    private static boolean isZeroOnlyPossibleInitialValueForVariable(
+            final Set<UnknownTypeValue> possibleInitialValuesForVariable) {
+        boolean result = true;
+        final Iterator<UnknownTypeValue> i = possibleInitialValuesForVariable.iterator();
+        while (result && i.hasNext()) {
+            final UnknownTypeValue u = i.next();
+            result = u.isZero();
+        }
+        return result;
+    }
+
+    private static boolean bar(final int indexOfPreComparisonInsn,
             final List<AbstractInsnNode> blockInstructions,
             final Set<UnknownTypeValue> possibleInitialValuesForVariable) {
+        final boolean result;
         final int indexOfLoadInsnPredecessor = indexOfPreComparisonInsn - 1;
         final AbstractInsnNode predecessorOfLoadInsn = blockInstructions.get(indexOfLoadInsnPredecessor);
         final UnknownTypeValue comparativeValue = getComparativeValue(predecessorOfLoadInsn);
         if (possibleInitialValuesForVariable.contains(comparativeValue)) {
             // passt
             System.out.println("Passt.");
+            result = true;
         } else {
             // nicht korrekt verzoegert initialisiert
             System.out.println("Nicht korrekt verzoegert initialisiert.");
+            result = false;
         }
+        return result;
     }
 
-    private void foo(final int indexOfPreComparisonInsn,
+    private static boolean foo(final int indexOfPreComparisonInsn,
             final List<AbstractInsnNode> blockInstructions,
             final Set<UnknownTypeValue> possibleInitialValuesForVariable) {
+        final boolean result;
         final int indexOfGetfieldPredecessorInsn = indexOfPreComparisonInsn - 2;
         final AbstractInsnNode predecessorOfGetfieldInsn = blockInstructions.get(indexOfGetfieldPredecessorInsn);
         final UnknownTypeValue comparativeValue = getComparativeValue(predecessorOfGetfieldInsn);
         if (possibleInitialValuesForVariable.contains(comparativeValue)) {
             // passt
             System.out.println("Passt.");
+            result = true;
         } else {
             // nicht korrekt verzoegert initialisiert
             System.out.println("Nicht korrekt verzoegert initialisiert.");
+            result = false;
         }
-    }
-
-    private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
-        final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-        return factory.convenienceClassNodeFor(klasse);
+        return result;
     }
 
     private static boolean isGetfieldForVariable(final AbstractInsnNode insn, final String variableName) {
@@ -383,7 +512,7 @@ public final class AssignmentGuardFinder {
         return result;
     }
 
-    private boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
+    private static boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
         switch (abstractInsnNode.getOpcode()) {
         case LCMP:
         case FCMPL:
@@ -404,7 +533,7 @@ public final class AssignmentGuardFinder {
         }
     }
 
-    private boolean isLoadInstructionForAlias(final String variableName,
+    private static boolean isLoadInstructionForAlias(final String variableName,
             final ControlFlowBlock blockWithJumpInsn,
             final AbstractInsnNode insn) {
         final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
@@ -412,7 +541,7 @@ public final class AssignmentGuardFinder {
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
 
-    private boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
+    private static boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
         boolean result = false;
         if (AbstractInsnNode.VAR_INSN == insn.getType()) {
             final VarInsnNode loadInstruction = (VarInsnNode) insn;
@@ -421,22 +550,22 @@ public final class AssignmentGuardFinder {
         return result;
     }
 
-    private UnknownTypeValue getComparativeValue(final AbstractInsnNode insn) {
+    private static UnknownTypeValue getComparativeValue(final AbstractInsnNode insn) {
         UnknownTypeValue result = null;
         if (AbstractInsnNode.INSN == insn.getType()) {
             final Opcode opcode = Opcode.forInt(insn.getOpcode());
             result = opcode.stackValue();
         } else if (AbstractInsnNode.LDC_INSN == insn.getType()) {
             final LdcInsnNode ldcInsn = (LdcInsnNode) insn;
-            result = UnknownTypeValueDefault.getInstance(ldcInsn.cst);
+            result = DefaultUnknownTypeValue.getInstance(ldcInsn.cst);
         } else if (AbstractInsnNode.INT_INSN == insn.getType()) {
             final IntInsnNode intInsnNode = (IntInsnNode) insn;
-            result = UnknownTypeValueDefault.getInstance(intInsnNode.operand);
+            result = DefaultUnknownTypeValue.getInstance(intInsnNode.operand);
         }
         return result;
     }
 
-    private boolean isOneValueJumpInstruction(final JumpInsn jumpInstruction) {
+    private static boolean isOneValueJumpInstruction(final JumpInsn jumpInstruction) {
         switch (getOpcode(jumpInstruction)) {
         case IFEQ:
         case IFNE:
@@ -458,7 +587,7 @@ public final class AssignmentGuardFinder {
         return jumpInsnNode.getOpcode();
     }
 
-    private boolean checksAgainstZero(final JumpInsn jumpInstruction) {
+    private static boolean checksAgainstZero(final JumpInsn jumpInstruction) {
         switch (getOpcode(jumpInstruction)) {
         case IFEQ:
         case IFNE:
@@ -472,15 +601,15 @@ public final class AssignmentGuardFinder {
         }
     }
 
-    private boolean checksAgainstNull(final JumpInsn jumpInstruction) {
+    private static boolean checksAgainstNull(final JumpInsn jumpInstruction) {
         return IFNULL == getOpcode(jumpInstruction);
     }
 
-    private boolean checksAgainstNonNull(final JumpInsn jumpInstruction) {
+    private static boolean checksAgainstNonNull(final JumpInsn jumpInstruction) {
         return IFNONNULL == getOpcode(jumpInstruction);
     }
 
-    private boolean isTwoValuesJumpInstruction(final JumpInsn jumpInstruction) {
+    private static boolean isTwoValuesJumpInstruction(final JumpInsn jumpInstruction) {
         switch (getOpcode(jumpInstruction)) {
         case IF_ICMPEQ:
         case IF_ICMPNE:

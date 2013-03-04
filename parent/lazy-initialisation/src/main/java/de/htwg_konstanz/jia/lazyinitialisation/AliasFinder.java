@@ -107,15 +107,16 @@ final class AliasFinder {
     }
 
     private static boolean isStoreInstruction(final AbstractInsnNode insn) {
-        final Set<Integer> storeInstructions = getStoreInstructions();
-        final Integer opcode = Integer.valueOf(insn.getOpcode());
-        return storeInstructions.contains(opcode);
-    }
-
-    private static Set<Integer> getStoreInstructions() {
-        final IntegerSetBuilder b = IntegerSetBuilder.getInstance();
-        b.add(ISTORE).add(LSTORE).add(FSTORE).add(DSTORE).add(ASTORE);
-        return b.build();
+        switch (insn.getOpcode()) {
+        case ISTORE:
+        case LSTORE:
+        case FSTORE:
+        case DSTORE:
+        case ASTORE:
+            return true;
+        default:
+            return false;
+        }
     }
 
     @Override

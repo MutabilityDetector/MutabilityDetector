@@ -26,6 +26,10 @@ public interface TypeInformation {
 
     boolean isObject();
 
+    boolean isZero();
+
+    boolean isNotZero();
+
     boolean isNull();
 
     boolean isNotNull();

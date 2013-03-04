@@ -289,7 +289,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     private void findEffectiveJumpInstructionsForVariableInThisBlock(final String variableName) {
         final EffectiveJumpInstructionFinder jif = EffectiveJumpInstructionFinder.newInstance(variableName, this);
         for (final JumpInsn jumpInsn : getConditionCheckInstructions()) {
-            if (jif.isRelevantJumpInstruction(jumpInsn.getIndexWithinBlock())) {
+            if (jif.isEffectiveJumpInstruction(jumpInsn.getIndexWithinBlock())) {
                 addToEffectiveJumpInstructions(variableName, jumpInsn);
             }
         }

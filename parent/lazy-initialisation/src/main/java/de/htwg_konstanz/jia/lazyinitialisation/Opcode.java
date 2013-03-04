@@ -264,7 +264,7 @@ public enum Opcode implements OpcodeInformation {
         category = theCategory;
         opcodeAsInt = theOpcodeAsInt;
         opcodeAsHex = Integer.toHexString(theOpcodeAsInt);
-        stackValue = UnknownTypeValueDefault.getInstance(theStackValue);
+        stackValue = DefaultUnknownTypeValue.getInstance(theStackValue);
         description = theDescription;
     }
 

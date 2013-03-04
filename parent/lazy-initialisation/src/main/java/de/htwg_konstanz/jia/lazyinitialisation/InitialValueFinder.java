@@ -43,7 +43,7 @@ final class InitialValueFinder implements Runnable {
         private static UnknownTypeValue getInitialValueOfLdcInsn(final AbstractInsnNode variableValueSetupInsn) {
             final LdcInsnNode ldcInsn = (LdcInsnNode) variableValueSetupInsn;
             final Object cst = ldcInsn.cst;
-            return UnknownTypeValueDefault.getInstance(cst);
+            return DefaultUnknownTypeValue.getInstance(cst);
         }
 
         private static boolean isIntInsn(final AbstractInsnNode abstractInsnNode) {
@@ -53,7 +53,7 @@ final class InitialValueFinder implements Runnable {
         private static UnknownTypeValue getInitialValueOfIntInsn(final AbstractInsnNode variableValueSetupInsn) {
             final IntInsnNode singleIntOperandInsn = (IntInsnNode) variableValueSetupInsn;
             final int operand = singleIntOperandInsn.operand;
-            return UnknownTypeValueDefault.getInstance(Integer.valueOf(operand));
+            return DefaultUnknownTypeValue.getInstance(Integer.valueOf(operand));
         }
 
         private static boolean isStackConstantPushInsn(final AbstractInsnNode abstractInsnNode) {
@@ -77,23 +77,23 @@ final class InitialValueFinder implements Runnable {
             final UnknownTypeValue result;
             final int sort = type.getSort();
             if (Type.BOOLEAN == sort) {
-                result = UnknownTypeValueDefault.getInstance(Boolean.FALSE);
+                result = DefaultUnknownTypeValue.getInstance(Boolean.FALSE);
             } else if (Type.BYTE == sort) {
-                result = UnknownTypeValueDefault.getInstance(Byte.valueOf((byte) 0));
+                result = DefaultUnknownTypeValue.getInstance(Byte.valueOf((byte) 0));
             } else if (Type.CHAR == sort) {
-                result = UnknownTypeValueDefault.getInstance(Character.valueOf((char) 0));
+                result = DefaultUnknownTypeValue.getInstance(Character.valueOf((char) 0));
             } else if (Type.SHORT == sort) {
-                result = UnknownTypeValueDefault.getInstance(Short.valueOf((short) 0));
+                result = DefaultUnknownTypeValue.getInstance(Short.valueOf((short) 0));
             } else if (Type.INT == sort) {
-                result = UnknownTypeValueDefault.getInstance(Integer.valueOf(0));
+                result = DefaultUnknownTypeValue.getInstance(Integer.valueOf(0));
             } else if (Type.LONG == sort) {
-                result = UnknownTypeValueDefault.getInstance(Long.valueOf(0L));
+                result = DefaultUnknownTypeValue.getInstance(Long.valueOf(0L));
             } else if (Type.FLOAT == sort) {
-                result = UnknownTypeValueDefault.getInstance(Float.valueOf(0.0F));
+                result = DefaultUnknownTypeValue.getInstance(Float.valueOf(0.0F));
             } else if (Type.DOUBLE == sort) {
-                result = UnknownTypeValueDefault.getInstance(Double.valueOf(0.0D));
+                result = DefaultUnknownTypeValue.getInstance(Double.valueOf(0.0D));
             } else {
-                result = UnknownTypeValueDefault.getInstanceForNull();
+                result = DefaultUnknownTypeValue.getInstanceForNull();
             }
             return result;
         }

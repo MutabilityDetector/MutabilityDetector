@@ -2,48 +2,52 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @NotThreadSafe
-final class UnknownTypeValueDefault implements UnknownTypeValue {
+final class DefaultUnknownTypeValue implements UnknownTypeValue {
 
     private final Object value;
 
-    private UnknownTypeValueDefault(final Object theBaseValue) {
+    private DefaultUnknownTypeValue(final Object theBaseValue) {
         value = theBaseValue;
     }
 
     public static UnknownTypeValue getInstance(final Object baseValue) {
-        if (baseValue instanceof UnknownTypeValueDefault) {
-            return (UnknownTypeValueDefault) baseValue;
+        final UnknownTypeValue result;
+        if (baseValue instanceof DefaultUnknownTypeValue) {
+            result = (DefaultUnknownTypeValue) baseValue;
+        } else if (null == baseValue) {
+            result = getInstanceForNull();
+        } else {
+            result = new DefaultUnknownTypeValue(baseValue);
         }
-        return new UnknownTypeValueDefault(baseValue);
+        return result;
     }
 
     public static UnknownTypeValue getInstanceForNull() {
-        return new UnknownTypeValueDefault(Null.INSTANCE);
+        return new DefaultUnknownTypeValue(Null.INSTANCE);
     }
 
     @Override
     public boolean asBoolean() {
-        final Boolean result = tryToCast(value, Boolean.class);
+        final Boolean result = tryToCast(Boolean.class);
         return result.booleanValue();
     }
 
-    private static <T> T tryToCast(final Object value, final Class<T> targetClass) {
+    private <T> T tryToCast(final Class<T> targetClass) {
         try {
-            return cast(value, targetClass);
+            return cast(targetClass);
         } catch (final ClassCastException e) {
             final String msg = String.format("Unable to cast '%s' to target class '%s'.", value, targetClass);
-            final Logger logger = LoggerFactory.getLogger(UnknownTypeValueDefault.class);
+            final Logger logger = LoggerFactory.getLogger(DefaultUnknownTypeValue.class);
             logger.error(msg, e);
         }
         return null;
     }
 
-    private static <T> T cast(final Object value, final Class<T> targetClass) {
+    private <T> T cast(final Class<T> targetClass) {
         final T result = targetClass.cast(value);
         if (null == result) {
             final String msg = String.format("Unable to cast '%s' to target class '%s'.", value, targetClass);
@@ -58,12 +62,12 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
     }
 
     private Number tryToCastToNumber() {
-        return tryToCast(value, Number.class);
+        return tryToCast(Number.class);
     }
 
     @Override
     public char asChar() {
-        final Character result = tryToCast(value, Character.class);
+        final Character result = tryToCast(Character.class);
         return result.charValue();
     }
 
@@ -94,7 +98,7 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
 
     @Override
     public String asString() {
-        final String result = tryToCast(value, String.class);
+        final String result = tryToCast(String.class);
         return result;
     }
 
@@ -105,7 +109,7 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
 
     @Override
     public <T> T asType(final Class<T> targetTypeClass) {
-        final T result = tryToCast(value, targetTypeClass);
+        final T result = tryToCast(targetTypeClass);
         return result;
     }
 
@@ -156,7 +160,35 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
 
     @Override
     public boolean isObject() {
-        return true;
+        final boolean result;
+        if (isBoolean() || isChar() || isString()) {
+            result = false;
+        } else {
+            result = (null == tryToCastToNumber());
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isZero() {
+        final boolean result;
+        if (isObject() || isString()) {
+            result = false;
+        } else if (isBoolean()) {
+            result = asBoolean() ? false : true;
+        } else if (isChar()) {
+            result = Character.MIN_VALUE == asChar();
+        } else {
+            final Number valueAsNumber = tryToCastToNumber();
+            final int valueAsInt = valueAsNumber.intValue();
+            result = (0 == valueAsInt);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isNotZero() {
+        return !isZero();
     }
 
     @Override
@@ -185,10 +217,10 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof UnknownTypeValueDefault)) {
+        if (!(obj instanceof DefaultUnknownTypeValue)) {
             return false;
         }
-        final UnknownTypeValueDefault other = (UnknownTypeValueDefault) obj;
+        final DefaultUnknownTypeValue other = (DefaultUnknownTypeValue) obj;
         if (value == null) {
             if (other.value != null) {
                 return false;
@@ -201,9 +233,34 @@ final class UnknownTypeValueDefault implements UnknownTypeValue {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append(value);
-        return builder.toString();
+        final StringBuilder b = new StringBuilder();
+        b.append(getClass().getSimpleName()).append(" [").append("value=(").append(getValueTypeAsString());
+        b.append(") ").append(value).append("]");
+        return b.toString();
+    }
+
+    private String getValueTypeAsString() {
+        final String result;
+        if (isBoolean()) {
+            result = "boolean";
+        } else if (isChar()) {
+            result = "char";
+        } else if (isShort()) {
+            result = "short";
+        } else if (isInt()) {
+            result = "int";
+        } else if (isLong()) {
+            result = "long";
+        } else if (isFloat()) {
+            result = "float";
+        } else if (isDouble()) {
+            result = "double";
+        } else if (isString()) {
+            result = "String";
+        } else {
+            result = "unknown/Object";
+        }
+        return result;
     }
 
 }

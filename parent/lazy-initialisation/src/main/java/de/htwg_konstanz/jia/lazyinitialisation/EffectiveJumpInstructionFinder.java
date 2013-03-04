@@ -2,19 +2,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
-import static org.objectweb.asm.Opcodes.DCMPG;
-import static org.objectweb.asm.Opcodes.DCMPL;
-import static org.objectweb.asm.Opcodes.FCMPG;
-import static org.objectweb.asm.Opcodes.FCMPL;
-import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ACMPNE;
-import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ICMPGE;
-import static org.objectweb.asm.Opcodes.IF_ICMPGT;
-import static org.objectweb.asm.Opcodes.IF_ICMPLE;
-import static org.objectweb.asm.Opcodes.IF_ICMPLT;
-import static org.objectweb.asm.Opcodes.IF_ICMPNE;
-import static org.objectweb.asm.Opcodes.LCMP;
+import static org.objectweb.asm.Opcodes.*;
 
 import java.util.List;
 
@@ -23,6 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 /**
@@ -76,17 +65,21 @@ final class EffectiveJumpInstructionFinder {
      *                 *Implementiert*
      *
      */
-    public boolean isRelevantJumpInstruction(final int indexOfInstructionToAnalyse) {
+    public boolean isEffectiveJumpInstruction(final int indexOfInstructionToAnalyse) {
         boolean result = false;
         final List<AbstractInsnNode> instructions = controlFlowBlock.getBlockInstructions();
         final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;
         final AbstractInsnNode predecessorInstruction = instructions.get(indexOfPredecessorInstruction);
         if (isGetfieldForVariable(predecessorInstruction)) {
             result = true;
-        } else if (isLoadInstructionForAlias(controlFlowBlock, predecessorInstruction)) {
+        } else if (isLoadInstructionForAlias(predecessorInstruction)) {
             result = true;
-        } else if (isComparisonInsn(predecessorInstruction)) {
-            result = isRelevantJumpInstruction(indexOfPredecessorInstruction);
+        } else if (isPushNullOntoStackInstruction(predecessorInstruction)) {
+            result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
+        } else if (isComparisonInstruction(predecessorInstruction)) {
+            result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
+        } else if (isEqualsInstruction(predecessorInstruction)) {
+            result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
         }
         return result;
     }
@@ -100,8 +93,12 @@ final class EffectiveJumpInstructionFinder {
         return result;
     }
 
-    private static boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
-        switch (abstractInsnNode.getOpcode()) {
+    private static boolean isPushNullOntoStackInstruction(final AbstractInsnNode insn) {
+        return ACONST_NULL == insn.getOpcode();
+    }
+
+    private static boolean isComparisonInstruction(final AbstractInsnNode insn) {
+        switch (insn.getOpcode()) {
         case LCMP:
         case FCMPL:
         case FCMPG:
@@ -121,9 +118,9 @@ final class EffectiveJumpInstructionFinder {
         }
     }
 
-    private boolean isLoadInstructionForAlias(final ControlFlowBlock blockWithJumpInsn, final AbstractInsnNode insn) {
+    private boolean isLoadInstructionForAlias(final AbstractInsnNode insn) {
         final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
-        final Alias alias = aliasFinder.searchForAliasInBlock(blockWithJumpInsn);
+        final Alias alias = aliasFinder.searchForAliasInBlock(controlFlowBlock);
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
 
@@ -132,6 +129,17 @@ final class EffectiveJumpInstructionFinder {
         if (AbstractInsnNode.VAR_INSN == insn.getType()) {
             final VarInsnNode loadInstruction = (VarInsnNode) insn;
             result = loadInstruction.var == alias.localVariable;
+        }
+        return result;
+    }
+
+    private static boolean isEqualsInstruction(final AbstractInsnNode insn) {
+        final boolean result;
+        if (AbstractInsnNode.METHOD_INSN == insn.getType()) {
+            final MethodInsnNode methodInsnNode = (MethodInsnNode) insn;
+            result = methodInsnNode.name.equals("equals");
+        } else {
+            result = false;
         }
         return result;
     }

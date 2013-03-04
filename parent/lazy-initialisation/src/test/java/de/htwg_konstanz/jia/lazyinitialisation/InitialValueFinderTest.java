@@ -126,9 +126,9 @@ public final class InitialValueFinderTest {
 
     private static Set<UnknownTypeValue> createExpected(final Object first, final Object ... further)  {
         final Set<UnknownTypeValue> result = new HashSet<UnknownTypeValue>();
-        result.add(UnknownTypeValueDefault.getInstance(first));
+        result.add(DefaultUnknownTypeValue.getInstance(first));
         for (final Object next : further) {
-            result.add(UnknownTypeValueDefault.getInstance(next));
+            result.add(DefaultUnknownTypeValue.getInstance(next));
         }
         return result;
     }
@@ -158,7 +158,7 @@ public final class InitialValueFinderTest {
 
     @Test
     public void validStringWithJvmInitialValue() {
-        final Set<UnknownTypeValue> expected = createExpected(UnknownTypeValueDefault.getInstanceForNull());
+        final Set<UnknownTypeValue> expected = createExpected(DefaultUnknownTypeValue.getInstanceForNull());
         final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
                 WithoutAlias.WithJvmInitialValue.StringValid.class, "hash");
         assertThat(actual, is(expected));
@@ -174,7 +174,7 @@ public final class InitialValueFinderTest {
 
     @Test
     public void validCustomObjectWithNullAsInitialValue() {
-        final Set<UnknownTypeValue> expected = createExpected(UnknownTypeValueDefault.getInstanceForNull());
+        final Set<UnknownTypeValue> expected = createExpected(DefaultUnknownTypeValue.getInstanceForNull());
         final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
                 WithoutAlias.WithJvmInitialValue.CustomObjectValid.class, "someObject");
         assertThat(actual, is(expected));
