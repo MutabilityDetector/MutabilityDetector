@@ -58,9 +58,9 @@ public final class CheckerRunner {
     public CheckerResult run(AsmMutabilityChecker checker, Dotted className, AnalysisErrorReporter errorReporter, Iterable<AnalysisResult> resultsSoFar) {
         try {
             try {
-                analyseAsStream(checker, className.asString());
+                analyseFromStream(checker, className);
             } catch (Exception e) {
-                analyseFromDefaultClassLoader(checker, className.asString());
+                analyseFromClassLoader(checker, className);
             }
         } catch (Throwable e) {
             attemptRecovery(checker, className, errorReporter, resultsSoFar, e);
@@ -68,6 +68,25 @@ public final class CheckerRunner {
         return checker.checkerResult();
     }
 
+
+    private void analyseFromStream(AsmMutabilityChecker checker, Dotted dottedClassPath) throws IOException {
+        InputStream classStream = classpath.getResourceAsStream(asResourceName(dottedClassPath));
+        analyse(checker, classStream);
+    }
+
+    private void analyseFromClassLoader(AsmMutabilityChecker checker, Dotted className) throws Exception {
+        InputStream classStream = getClass().getClassLoader().getResourceAsStream(asResourceName(className));
+        analyse(checker, classStream);
+    }
+
+    private void analyse(AsmMutabilityChecker checker, InputStream classStream) throws IOException {
+        ClassReader cr = new ClassReader(classStream);
+        cr.accept(checker, 0);
+    }
+
+    private String asResourceName(Dotted className) {
+        return className.asString().replace(".", "/").concat(".class");
+    }
 
     private void attemptRecovery(AsmMutabilityChecker checker,
                                  Dotted className,
@@ -93,18 +112,6 @@ public final class CheckerRunner {
             rootCause = rootCause.getCause();
         }
         return rootCause;
-    }
-
-    private void analyseFromDefaultClassLoader(AsmMutabilityChecker checker, String className) throws IOException {
-        ClassReader cr = new ClassReader(className);
-        cr.accept(checker, 0);
-    }
-
-    private void analyseAsStream(AsmMutabilityChecker checker, String dottedClassPath) throws IOException {
-        String slashedClassPath = dottedClassPath.replace(".", "/").concat(".class");
-        InputStream classStream = classpath.getResourceAsStream(slashedClassPath);
-        ClassReader cr = new ClassReader(classStream);
-        cr.accept(checker, 0);
     }
 
     private void handleException(AnalysisErrorReporter errorReporter, AsmMutabilityChecker checker, String dottedClassPath, Throwable e) {
