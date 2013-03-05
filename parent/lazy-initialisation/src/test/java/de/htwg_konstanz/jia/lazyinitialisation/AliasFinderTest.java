@@ -48,7 +48,7 @@ public final class AliasFinderTest {
         }
 
         public Asserter ofMethod(final String theMethodName) {
-            final String owner = classNode.name();
+            final String owner = classNode.getName();
             final List<MethodNode> setters = classNode.findMethodByName(theMethodName);
             final MethodNode setter = setters.get(0);
             final ControlFlowBlockFactory controlFlowBlockFactory = ControlFlowBlockFactory.newInstance(owner, setter);

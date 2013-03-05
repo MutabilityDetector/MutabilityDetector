@@ -74,11 +74,11 @@ final class EffectiveJumpInstructionFinder {
             result = true;
         } else if (isLoadInstructionForAlias(predecessorInstruction)) {
             result = true;
+        } else if (isEqualsInstruction(predecessorInstruction)) {
+            result = false;
         } else if (isPushNullOntoStackInstruction(predecessorInstruction)) {
             result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
         } else if (isComparisonInstruction(predecessorInstruction)) {
-            result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
-        } else if (isEqualsInstruction(predecessorInstruction)) {
             result = isEffectiveJumpInstruction(indexOfPredecessorInstruction);
         }
         return result;

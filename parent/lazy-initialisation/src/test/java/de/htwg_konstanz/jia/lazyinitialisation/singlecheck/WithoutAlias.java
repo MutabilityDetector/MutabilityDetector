@@ -14,7 +14,14 @@ public final class WithoutAlias {
      * appropriately to their type.
      */
     public static final class WithJvmInitialValue {
-        
+
+        public static final class Stateless {
+            public static int sum(final int firstAddend, final int secondAddend) {
+                return firstAddend + secondAddend;
+            }
+        } // class Stateless
+
+
         public static final class CharValid {
             private char hash;
             public char hashCodeChar() {
@@ -28,6 +35,22 @@ public final class WithoutAlias {
 
         public static final class CharInvalid {
             private char hash;
+            public char hashCodeChar() {
+                if ("".equals(hash)) {
+                    hash = 'a';
+                }
+                return hash;
+            }
+        } // class CharInvalid
+
+
+        public static final class CharInvalid2 {
+            @SuppressWarnings("unused")
+            private boolean initialised;
+            private char hash;
+            public CharInvalid2() {
+                initialised = false;
+            }
             public char hashCodeChar() {
                 if ("".equals(hash)) {
                     hash = 'a';
@@ -69,7 +92,6 @@ public final class WithoutAlias {
                 return hash;
             }
         } // class IntegerWithDefault
-
 
 
         public static final class IntegerInvalid {
@@ -129,6 +151,17 @@ public final class WithoutAlias {
         } // class StringValid
 
 
+        public static final class StringStaticValid {
+            private static String hash;
+            public String hashCodeString() {
+                if (null == hash) {
+                    hash = "Hash code";
+                }
+                return hash;
+            }
+        } // class StringStaticValid
+
+
         public static final class StringInvalid {
             private String hash;
             public String hashCodeString() {
@@ -149,7 +182,7 @@ public final class WithoutAlias {
             }
             private SomeObject someObject;
             public SomeObject hashCodeSomeObject() {
-                if (someObject.equals(null)) {
+                if (someObject == null) {
                     someObject = SomeObject.getInstance();;
                 }
                 return someObject;
@@ -204,6 +237,20 @@ public final class WithoutAlias {
         } // class FloatValid
 
 
+        public static final class FloatInvalid {
+            private float hash = -1.0F;
+            public float hashCodeFloat() {
+                if (-1.0F == hash) {
+                    hash = 2342.0F;
+                }
+                return hash;
+            }
+            public void setHash(final float newValue) {
+                hash = newValue;
+            }
+        } // class FloatInvalid
+
+
         public static final class FloatInvalidWithMultipleInitialValues {
             private float hash = 0.0F;
             public FloatInvalidWithMultipleInitialValues() {
@@ -233,6 +280,20 @@ public final class WithoutAlias {
                 return hash;
             }
         } // class StringValid
+
+
+        public static final class StringValid2 {
+            {
+                hash = "";
+            }
+            private String hash;
+            public String hashCodeString() {
+                if ("".equals(hash)) {
+                    hash = "Hash code";
+                }
+                return hash;
+            }
+        } // class StringValid2
 
 
         public static final class StringInvalid {

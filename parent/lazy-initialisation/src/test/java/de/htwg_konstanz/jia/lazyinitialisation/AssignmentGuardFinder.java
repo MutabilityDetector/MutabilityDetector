@@ -76,7 +76,6 @@ public final class AssignmentGuardFinder {
             final FieldNode variable = ccn.findVariableWithName(variableName);
             final Setters setters = variableSetterCollection.getSettersFor(variable);
             final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-            initialValueFinder.run();
             possibleInitialValuesForVariable.addAll(initialValueFinder.getPossibleInitialValues());
         }
 
@@ -211,7 +210,6 @@ public final class AssignmentGuardFinder {
                     "hashCodeSomeObject", Type.getType(SomeObject.class)).andVariable("someObject");
             assertThat(r.numberOfRelevantJumpInstructions(), is(1));
             assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-            // FIXME
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -248,9 +246,9 @@ public final class AssignmentGuardFinder {
 
         @Test
         public void objectWithJvmInitialValue() {
-            // FIXME
             final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectInvalid.class).forMethod(
                     "hashCodeObject", Type.getType(Object.class)).andVariable("hash");
+            // FIXME
             assertThat(r.numberOfRelevantJumpInstructions(), is(0));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
@@ -285,7 +283,7 @@ public final class AssignmentGuardFinder {
         public void stringWithCustomInitialValue() {
             final Reason r = new Reason(WithoutAlias.WithCustomInitialValue.StringInvalid.class).forMethod(
                     "hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
 //            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
@@ -409,6 +407,15 @@ public final class AssignmentGuardFinder {
                             } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
                                 result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
                             }
+                        } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
+                            if (isOtherObjectAnInitialValue(relevantJumpInsn, blockInstructions)) {
+                                System.out.println("Passt.");
+                                result = true;
+                            } else {
+                                // nicht korrekt verzoegert initialisiert
+                                System.out.println("Nicht korrekt verzoegert initialisiert.");
+                                result = false;
+                            }
                         }
                     } else if (checksAgainstNull(relevantJumpInsn)) {
                         // TODO Was passiert hier?
@@ -432,7 +439,7 @@ public final class AssignmentGuardFinder {
                             // passt
                             System.out.println("Passt.");
                             result = true;
-                        } else if (checksAgainstOtherObject(relevantJumpInsn)) {
+                        } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
                             // TODO Block implementieren.
                         }
                     }
@@ -448,10 +455,41 @@ public final class AssignmentGuardFinder {
         return result;
     }
 
-    private static boolean checksAgainstOtherObject(final JumpInsn jumpInsn) {
-        
-        // TODO Methode implementieren.
-        return false;
+    private static boolean isOtherObjectAnInitialValue(JumpInsn jumpInsn,
+            List<AbstractInsnNode> blockInstructions) {
+        final int indexWithinBlock = jumpInsn.getIndexWithinBlock();
+        final AbstractInsnNode predecessorInsn = blockInstructions.get(indexWithinBlock - 2);
+        final boolean result;
+        if (ACONST_NULL == predecessorInsn.getOpcode()) {
+            result = true;
+        } else {
+            result = false;
+            // TODO Auto-generated method stub
+        }
+        return result;
+    }
+
+    private static boolean checksAgainstOtherObject(final JumpInsn jumpInsn,
+            final List<AbstractInsnNode> blockInstructions, String variableName) {
+        final int indexWithinBlock = jumpInsn.getIndexWithinBlock();
+        final AbstractInsnNode possibleEqualsInsn = blockInstructions.get(indexWithinBlock - 1);
+        boolean result = false;
+        if (isEqualsInstruction(possibleEqualsInsn)) {
+            final AbstractInsnNode possibleGetfieldInsnForVariable = blockInstructions.get(indexWithinBlock - 3);
+            result = isGetfieldForVariable(possibleGetfieldInsnForVariable, variableName);
+        }
+        return result;
+    }
+
+    private static boolean isEqualsInstruction(final AbstractInsnNode insn) {
+        final boolean result;
+        if (AbstractInsnNode.METHOD_INSN == insn.getType()) {
+            final MethodInsnNode methodInsnNode = (MethodInsnNode) insn;
+            result = methodInsnNode.name.equals("equals");
+        } else {
+            result = false;
+        }
+        return result;
     }
 
     private static boolean isZeroOnlyPossibleInitialValueForVariable(

@@ -51,7 +51,7 @@ public final class ControlFlowBlockTest {
             final List<MethodNode> methods = ccn.findMethodByName(methodName);
             final MethodNode method = methods.get(0);
             if (isNotNull(method)) {
-                result = createControlFlowBlocksFor(ccn.name(), method);
+                result = createControlFlowBlocksFor(ccn.getName(), method);
             }
             return result;
         }

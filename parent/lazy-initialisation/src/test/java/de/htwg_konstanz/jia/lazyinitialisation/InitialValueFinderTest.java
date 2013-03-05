@@ -47,7 +47,6 @@ public final class InitialValueFinderTest {
                 if (variable.name.equals(variableName)) {
                     final Setters setters = entry.getValue();
                     final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-                    initialValueFinder.run();
                     return initialValueFinder.getPossibleInitialValues();
                 }
             }
@@ -110,6 +109,22 @@ public final class InitialValueFinderTest {
 
     } // class InitialValuesFactory
 
+
+    
+
+    private static VariableSetterCollection findCandidatesForLazyVariablesIn(final Class<?> klasse) {
+        final CandidatesForLazyVariablesFinder f = getFinderForClass(klasse);
+        return f.getCandidatesForLazyVariables();
+    }
+
+    private static CandidatesForLazyVariablesFinder getFinderForClass(final Class<?> klasse) {
+        return CandidatesForLazyVariablesFinder.newInstance(createConvenienceClassNodeFor(klasse));
+    }
+
+    private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+        final ClassNodeFactory factory = ClassNodeFactory.getInstance();
+        return factory.convenienceClassNodeFor(klasse);
+    }
 
     @Test
     public void invalidFloatWithMultipleCustomInitialValues() {

@@ -27,6 +27,19 @@ public final class WithAlias {
         } // class ByteValid
 
 
+        public static final class ByteStaticValid {
+            private static byte hash;
+            public static byte hashCodeByte() {
+                byte result = hash;
+                if (0 == result) {
+                    result = (byte) 128;
+                    hash = result;
+                }
+                return result;
+            }
+        } // class ByteStaticValid
+
+
         public static final class FloatValid {
             private float hash;
             public float hashCodeFloat() {

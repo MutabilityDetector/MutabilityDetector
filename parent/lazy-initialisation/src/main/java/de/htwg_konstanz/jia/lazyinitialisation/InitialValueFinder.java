@@ -18,7 +18,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
  * @version 14.02.2013
  */
 @NotThreadSafe
-final class InitialValueFinder implements Runnable {
+final class InitialValueFinder {
 
     @Immutable
     private static final class InitialValueFactory {
@@ -30,8 +30,6 @@ final class InitialValueFinder implements Runnable {
                 result = getInitialValueOfIntInsn(variableValueSetupInsn);
             } else if (isStackConstantPushInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfStackConstantInsn(variableValueSetupInsn);
-//            } else if (is()) {
-//                
             }
             return result;
         }
@@ -67,12 +65,6 @@ final class InitialValueFinder implements Runnable {
             return opcode.stackValue();
         }
 
-        private static boolean isSetterParameterLoadInsn(final AbstractInsnNode abstractInsnNode) {
-            // TODO Methode implementieren (evtl. unter Zuhilfenahme von `AliasFinder`).
-//            AbstractInsnNode.
-            return false;
-        }
-
         public UnknownTypeValue getJvmDefaultInitialValueFor(final Type type) {
             final UnknownTypeValue result;
             final int sort = type.getSort();
@@ -100,17 +92,17 @@ final class InitialValueFinder implements Runnable {
     } // class JvmInitialValueFactory
 
 
-    private volatile boolean isRun;
     private final FieldNode variable;
     private final Setters setters;
     private final Set<UnknownTypeValue> possibleInitialValues;
+    private volatile boolean arePossibleInitialValuesAlreadyFound;
 
     private InitialValueFinder(final FieldNode theVariable, final Setters theSetters) {
-        isRun = false;
         variable = theVariable;
         setters = theSetters;
         final byte supposedMaximumOfPossibleInitialValues = 5;
         possibleInitialValues = new HashSet<UnknownTypeValue>(supposedMaximumOfPossibleInitialValues);
+        arePossibleInitialValuesAlreadyFound = false;
     }
 
     /**
@@ -127,18 +119,35 @@ final class InitialValueFinder implements Runnable {
         return new InitialValueFinder(notNull(variable), notNull(setters));
     }
 
-    @Override
-    public void run() {
+    /**
+     * Gets all possible values the given variable may have after
+     * initialisation of its class. {@link #run()} has to be invoked
+     * beforehand!
+     * 
+     * @return all possible values the given variable may have after
+     *         initialisation of its class. This is never {@code null}
+     *         .
+     * @throws IllegalStateException
+     *             if {@code run} was not invoked before this method.
+     */
+    public Set<UnknownTypeValue> getPossibleInitialValues() {
+        if (!arePossibleInitialValuesAlreadyFound) {
+            findPossibleInitialValues();
+            arePossibleInitialValuesAlreadyFound = true;
+        }
+        return Collections.unmodifiableSet(possibleInitialValues);
+    }
+
+    public void findPossibleInitialValues() {
         if (hasNoConstructors()) {
             addJvmInitialValueForVariable();
         } else {
             addConcreteInitialValuesByConstructor();
         }
-        isRun = true;
     }
 
     private boolean hasNoConstructors() {
-        final List<MethodNode> constructors = setters.constructors();
+        final List<MethodNode> constructors = setters.getConstructors();
         return constructors.isEmpty();
     }
 
@@ -149,10 +158,10 @@ final class InitialValueFinder implements Runnable {
     }
 
     private void addConcreteInitialValuesByConstructor() {
-        for (final MethodNode constructor : setters.constructors()) {
+        for (final MethodNode constructor : setters.getConstructors()) {
             final AbstractInsnNode[] insns = constructor.instructions.toArray();
-            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.newInstance(
-                    variable, constructor.instructions);
+            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.newInstance(variable,
+                    constructor.instructions);
             final AssignmentInsn effectivePutfieldInstruction = putfieldFinder.getEffectivePutfieldInstruction();
             final int indexOfAssignmentInstruction = effectivePutfieldInstruction.getIndexOfAssignmentInstruction();
             addPossibleInitialValueFor(insns[indexOfAssignmentInstruction - 1]);
@@ -165,22 +174,6 @@ final class InitialValueFinder implements Runnable {
         if (null != initialValue) {
             possibleInitialValues.add(initialValue);
         }
-    }
-
-    /**
-     * Gets all possible values the given variable may have after initialisation
-     * of its class. {@link #run()} has to be invoked beforehand!
-     * 
-     * @return all possible values the given variable may have after
-     *         initialisation of its class. This is never {@code null}.
-     * @throws IllegalStateException
-     *             if {@code run} was not invoked before this method.
-     */
-    public Set<UnknownTypeValue> getPossibleInitialValues() {
-        if (!isRun) {
-            throw new IllegalStateException("Method 'run' has to be invoked before 'getPossibleInitialValues'!");
-        }
-        return Collections.unmodifiableSet(possibleInitialValues);
     }
 
     @Override

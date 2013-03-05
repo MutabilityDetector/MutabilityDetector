@@ -52,9 +52,8 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 final FieldNode variable = entry.getKey();
                 final Setters setters = entry.getValue();
                 final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-                initialValueFinder.run();
                 final Set<UnknownTypeValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
-                final List<MethodNode> setterMethods = setters.methods();
+                final List<MethodNode> setterMethods = setters.getMethods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
                     final ControlFlowBlockFactory controlFlowBlockFactory = ControlFlowBlockFactory.newInstance(owner,
@@ -143,10 +142,10 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
                 final FieldNode instanceVariable = entry.getKey();
                 final Setters setters = entry.getValue();
                 System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
-                for (final MethodNode constructor : setters.constructors()) {
+                for (final MethodNode constructor : setters.getConstructors()) {
                     System.out.println(String.format("  Constructor: '%s'.", constructor.name));
                 }
-                for (final MethodNode setterMethod : setters.methods()) {
+                for (final MethodNode setterMethod : setters.getMethods()) {
                     System.out.println(String.format("  Setter method: '%s'.", setterMethod.name));
                 }
             }

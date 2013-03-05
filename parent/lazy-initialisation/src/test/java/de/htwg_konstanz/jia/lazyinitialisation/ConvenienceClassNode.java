@@ -65,21 +65,21 @@ final class ConvenienceClassNode {
         return new ConvenienceClassNode(notNull(classNode));
     }
 
-    public String name() {
+    public String getName() {
         return classNode.name;
     }
 
-    public List<FieldNode> fields() {
+    public List<FieldNode> getFields() {
         return classNode.fields;
     }
 
-    public List<MethodNode> methods() {
+    public List<MethodNode> getMethods() {
         return classNode.methods;
     }
 
     public FieldNode findVariableWithName(final String variableName) {
         notEmpty(variableName);
-        for (final FieldNode variable : fields()) {
+        for (final FieldNode variable : getFields()) {
             if (variableName.equals(variable.name)) {
 //                return deepCopy(variable);
                 return variable;
@@ -100,7 +100,7 @@ final class ConvenienceClassNode {
     public List<MethodNode> findMethodByName(final String methodName) {
         notEmpty(methodName);
         final ArrayList<MethodNode> result = new ArrayList<MethodNode>();
-        for (final MethodNode method : methods()) {
+        for (final MethodNode method : getMethods()) {
             if (methodName.equals(method.name)) {
                 result.add(method);
             }
@@ -114,7 +114,7 @@ final class ConvenienceClassNode {
         notEmpty(methodName, "Parameter 'methodName' must neither be null nor empty!");
         notNull(returnType, "Parameter 'returnType' must not be null!");
         final String desc = createDescriptorFor(methodName, returnType, argumentTypes);
-        for (final MethodNode method : methods()) {
+        for (final MethodNode method : getMethods()) {
             if (method.name.equals(methodName) && method.desc.equals(desc)) {
                 return method;
             }
@@ -141,6 +141,7 @@ final class ConvenienceClassNode {
         return result;
     }
 
+    // TODO Methode loeschen.
     public synchronized VariableSetterCollection getVariableSetterCollection() {
         VariableSetterCollection result = variableSetterCollection;
         if (null == result) {
