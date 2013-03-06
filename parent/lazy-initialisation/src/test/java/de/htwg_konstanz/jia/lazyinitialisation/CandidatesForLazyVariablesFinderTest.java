@@ -59,7 +59,8 @@ public final class CandidatesForLazyVariablesFinderTest {
     }
 
     private static CandidatesForLazyVariablesFinder getFinderForClass(final Class<?> klasse) {
-        return CandidatesForLazyVariablesFinder.newInstance(createConvenienceClassNodeFor(klasse));
+        final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
+        return CandidatesForLazyVariablesFinder.newInstance(c.getFields());
     }
 
     private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
@@ -80,7 +81,7 @@ public final class CandidatesForLazyVariablesFinderTest {
 
     @Test
     public void factoryMethodChecksArgument() {
-        final String exp = "Argument 'convenienceClassNode' must not be null!";
+        final String exp = "Argument 'variablesOfAnalysedClass' must not be null!";
         try {
             CandidatesForLazyVariablesFinder.newInstance(null);
             fail(String.format("Expected NullPointerException with message '%s'.", exp));

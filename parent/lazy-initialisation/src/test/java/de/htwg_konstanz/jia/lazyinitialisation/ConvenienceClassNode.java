@@ -141,21 +141,25 @@ final class ConvenienceClassNode {
         return result;
     }
 
-    // TODO Methode loeschen.
     public synchronized VariableSetterCollection getVariableSetterCollection() {
-        VariableSetterCollection result = variableSetterCollection;
-        if (null == result) {
-            result = VariableSetterCollection.newInstance();
-            for (final FieldNode variable : classNode.fields) {
-                result.addVariable(variable);
-            }
-            for (final MethodNode method : classNode.methods) {
-                addMethodIfSetterForInstanceVariable(method, result);
-            }
-            result.removeUnassociatedVariables();
-            variableSetterCollection = result;
-        }
-        return result;
+        final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(getFields());
+        final VariableSetterCollection result = cf.getCandidatesForLazyVariables();
+        final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(getMethods(), result);
+        return imf.getVariablesAndTheirInitialisingMethods();
+        // TODO Kommentare loeschen.
+//        VariableSetterCollection result = variableSetterCollection;
+//        if (null == result) {
+//            result = VariableSetterCollection.newInstance();
+//            for (final FieldNode variable : classNode.fields) {
+//                result.addVariable(variable);
+//            }
+//            for (final MethodNode method : classNode.methods) {
+//                addMethodIfSetterForInstanceVariable(method, result);
+//            }
+//            result.removeUnassociatedVariables();
+//            variableSetterCollection = result;
+//        }
+//        return result;
     }
 
     private static void addMethodIfSetterForInstanceVariable(final MethodNode method,

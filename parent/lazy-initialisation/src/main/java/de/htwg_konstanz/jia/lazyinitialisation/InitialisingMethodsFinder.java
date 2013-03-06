@@ -3,6 +3,9 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.notNull;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.objectweb.asm.Opcodes;
@@ -18,39 +21,38 @@ import org.objectweb.asm.tree.MethodNode;
 @ThreadSafe
 final class InitialisingMethodsFinder {
 
-    private final ConvenienceClassNode classNode;
+    private final List<MethodNode> methods;
     private final VariableSetterCollection variableSetterCollection;
     private volatile boolean areMethodsAlreadyExamined;
 
-    public InitialisingMethodsFinder(final ConvenienceClassNode theClassNode,
+    public InitialisingMethodsFinder(final List<MethodNode> theMethods,
             final VariableSetterCollection theVariableSetterCollection) {
-        classNode = theClassNode;
+        methods = Collections.unmodifiableList(theMethods);
         variableSetterCollection = theVariableSetterCollection.copy();
         areMethodsAlreadyExamined = false;
     }
 
     /**
-     * Creates a new instance of this class. None of the arguments
-     * must be {@code null}.
+     * Creates a new instance of this class. None of the arguments must be
+     * {@code null}.
      * 
-     * @param classNode
-     *            an instance of {@link ConvenienceClassNode} which
-     *            contains all information about the class under
-     *            examination.
+     * @param methodsOfAnalysedClass
+     *            {@link List} containing all methods ({@code MethodNode}) of
+     *            the class under examination.
      * @param variableSetterCollection
-     *            an instance of {@link VariableSetterCollection}
-     *            which contains all candidates for lazy variables of
-     *            {@code classNode}. This object should be obtained by
+     *            an instance of {@link VariableSetterCollection} which contains
+     *            all candidates for lazy variables of {@code classNode}. This
+     *            object should be obtained by
      *            {@link CandidatesForLazyVariablesFinder#getCandidatesForLazyVariables()}
      *            .
      * @return a new instance of this class.
      */
-    public static InitialisingMethodsFinder newInstance(final ConvenienceClassNode classNode,
+    public static InitialisingMethodsFinder newInstance(final List<MethodNode> methodsOfAnalysedClass,
             final VariableSetterCollection variableSetterCollection) {
         final String msgTemplate = "Argument '%s' must not be null!";
-        notNull(classNode, format(msgTemplate, "classNode"));
+        notNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
         notNull(variableSetterCollection, format(msgTemplate, "variableSetterCollection"));
-        return new InitialisingMethodsFinder(classNode, variableSetterCollection);
+        return new InitialisingMethodsFinder(methodsOfAnalysedClass, variableSetterCollection);
     }
 
     public VariableSetterCollection getVariablesAndTheirInitialisingMethods() {
@@ -67,7 +69,7 @@ final class InitialisingMethodsFinder {
     }
 
     private void collectAllInitialisingMethodsForAllLazyVariableCandidates() {
-        for (final MethodNode methodNode : classNode.getMethods()) {
+        for (final MethodNode methodNode : methods) {
             addMethodNodeIfIsInitialiserForVariable(methodNode);
         }
     }
@@ -97,7 +99,7 @@ final class InitialisingMethodsFinder {
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder();
-        b.append(getClass().getSimpleName()).append(" [classNode=").append(classNode);
+        b.append(getClass().getSimpleName()).append(" [methods=").append(methods);
         b.append(", variableSetterCollection=").append(variableSetterCollection);
         b.append(", areMethodsAlreadyExamined=").append(areMethodsAlreadyExamined).append("]");
         return b.toString();

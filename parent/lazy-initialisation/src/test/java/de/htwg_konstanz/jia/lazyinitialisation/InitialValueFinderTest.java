@@ -118,7 +118,8 @@ public final class InitialValueFinderTest {
     }
 
     private static CandidatesForLazyVariablesFinder getFinderForClass(final Class<?> klasse) {
-        return CandidatesForLazyVariablesFinder.newInstance(createConvenienceClassNodeFor(klasse));
+        final ConvenienceClassNode cf = createConvenienceClassNodeFor(klasse);
+        return CandidatesForLazyVariablesFinder.newInstance(cf.getFields());
     }
 
     private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {

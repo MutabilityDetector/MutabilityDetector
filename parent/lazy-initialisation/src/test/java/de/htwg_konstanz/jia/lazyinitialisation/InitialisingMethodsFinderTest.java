@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -16,7 +17,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
-import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithCustomInitialValue.IntegerValid;
@@ -106,9 +106,9 @@ public final class InitialisingMethodsFinderTest {
 
     private static VariableSetterCollection createVariableSetterCollectionFor(final Class<?> klasse) {
         final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
-        final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(c);
+        final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(c.getFields());
         final VariableSetterCollection v = cf.getCandidatesForLazyVariables();
-        final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(c, v);
+        final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(c.getMethods(), v);
         return imf.getVariablesAndTheirInitialisingMethods();
     }
 
@@ -119,7 +119,7 @@ public final class InitialisingMethodsFinderTest {
 
     @Test
     public void exceptionIfFirstArgumentIsNull() {
-        final String expMsg = "Argument 'classNode' must not be null!";
+        final String expMsg = "Argument 'methodsOfAnalysedClass' must not be null!";
         try {
             InitialisingMethodsFinder.newInstance(null, VariableSetterCollection.newInstance());
             fail(format("Expected NullPointerException with message '%s'.", expMsg));
@@ -132,7 +132,7 @@ public final class InitialisingMethodsFinderTest {
     public void exceptionIfSecondArgumentIsNull() {
         final String expMsg = "Argument 'variableSetterCollection' must not be null!";
         try {
-            InitialisingMethodsFinder.newInstance(ConvenienceClassNode.newInstance(new ClassNode()), null);
+            InitialisingMethodsFinder.newInstance(Collections.<MethodNode> emptyList(), null);
             fail(format("Expected NullPointerException with message '%s'.", expMsg));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(expMsg)));

@@ -5,6 +5,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinder.CoversMatcher.covers;
 import static org.apache.commons.lang3.Validate.notEmpty;
+import static org.apache.commons.lang3.Validate.notNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -373,8 +374,26 @@ public final class AssignmentGuardFinder {
 
 
     // Ueberpruefung der Sprunganweisung
-
     
+    static final class AssignmentGuardChecker {
+        private String variableName;
+        private ConvenienceClassNode classNode;
+        private Set<UnknownTypeValue> possibleInitialValuesForVariable;
+        
+        private AssignmentGuardChecker(final String theVariableName, final ConvenienceClassNode theClassNode) {
+            variableName = theVariableName;
+            classNode = theClassNode;
+        }
+
+        public static AssignmentGuardChecker newInstance(final String variableName, final ConvenienceClassNode classNode) {
+            notEmpty(variableName, "Argument 'variableName' must not be empty!");
+            notNull(classNode, "Argument 'classNode' must not be null!");
+            return new AssignmentGuardChecker(variableName, classNode);
+        }
+
+        
+    } // class AssignmentGuardChecker
+
     public static boolean checksAgainstAppropriateComparativeValue(final Reason r) {
         boolean result = false;
         final Set<UnknownTypeValue> possibleInitialValuesForVariable = r.initialValues();

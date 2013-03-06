@@ -36,40 +36,11 @@ final class EffectiveJumpInstructionFinder {
         return new EffectiveJumpInstructionFinder(notEmpty(variableName), notNull(controlFlowBlock));
     }
 
-
-    /* Im aktuellen und in allen Vorgaengerbloecken:
-     *     GETFIELD fuer `variableName` suchen.
-     *     Lokale Variable fuer den Wert von `variableName` suchen (`?STORE x`).
-     *     *Implementiert*
-     * 
-     * 
-     * In Block mit Sprunganweisung:
-     * Typ der Vorgaenger-Anweisung ermitteln:
-     *     `?LOAD` x
-     *         Alias suchen
-     *         ? Stimmt x überein
-     *             ? Bedingungspruefung entscheidet evtl. ueber Zuweisung
-     *             : aktueller Block scheidet aus
-     *         : `GETFIELD` fuer `variableName`
-     *             ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-     *             : mit naechster Sprunganweisung fortfahren.
-     *         : Ist Anweisung n - 1 eine Vergleichsanweisung (z. B. `FCMPL`)
-     *             ? Ist n - 2 `GETFIELD` fuer `variableName`
-     *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-     *                 : mit naechster Sprunganweisung fortfahren.
-     *                 *Implementiert*
-     *
-     *             : Ist n - 2 `?LOAD` fuer Alias x
-     *                 ? relevantJumpInsns.put(jumpInsnWithIndex.getKey(), jumpInsnWithIndex.getValue());
-     *                 : mit naechster Sprunganweisung fortfahren.
-     *                 *Implementiert*
-     *
-     */
     public boolean isEffectiveJumpInstruction(final int indexOfInstructionToAnalyse) {
         boolean result = false;
-        final List<AbstractInsnNode> instructions = controlFlowBlock.getBlockInstructions();
+        final List<AbstractInsnNode> blockInstructions = controlFlowBlock.getBlockInstructions();
         final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;
-        final AbstractInsnNode predecessorInstruction = instructions.get(indexOfPredecessorInstruction);
+        final AbstractInsnNode predecessorInstruction = blockInstructions.get(indexOfPredecessorInstruction);
         if (isGetfieldForVariable(predecessorInstruction)) {
             result = true;
         } else if (isLoadInstructionForAlias(predecessorInstruction)) {
@@ -89,6 +60,32 @@ final class EffectiveJumpInstructionFinder {
         if (Opcodes.GETFIELD == insn.getOpcode()) {
             final FieldInsnNode getfield = (FieldInsnNode) insn;
             result = variableName.equals(getfield.name);
+        }
+        return result;
+    }
+
+    private boolean isLoadInstructionForAlias(final AbstractInsnNode insn) {
+        final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
+        final Alias alias = aliasFinder.searchForAliasInBlock(controlFlowBlock);
+        return alias.doesExist && isLoadInstructionForAlias(insn, alias);
+    }
+
+    private static boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
+        boolean result = false;
+        if (AbstractInsnNode.VAR_INSN == insn.getType()) {
+            final VarInsnNode loadInstruction = (VarInsnNode) insn;
+            result = loadInstruction.var == alias.localVariable;
+        }
+        return result;
+    }
+
+    private static boolean isEqualsInstruction(final AbstractInsnNode insn) {
+        final boolean result;
+        if (AbstractInsnNode.METHOD_INSN == insn.getType()) {
+            final MethodInsnNode methodInsnNode = (MethodInsnNode) insn;
+            result = methodInsnNode.name.equals("equals");
+        } else {
+            result = false;
         }
         return result;
     }
@@ -118,38 +115,11 @@ final class EffectiveJumpInstructionFinder {
         }
     }
 
-    private boolean isLoadInstructionForAlias(final AbstractInsnNode insn) {
-        final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
-        final Alias alias = aliasFinder.searchForAliasInBlock(controlFlowBlock);
-        return alias.doesExist && isLoadInstructionForAlias(insn, alias);
-    }
-
-    private static boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
-        boolean result = false;
-        if (AbstractInsnNode.VAR_INSN == insn.getType()) {
-            final VarInsnNode loadInstruction = (VarInsnNode) insn;
-            result = loadInstruction.var == alias.localVariable;
-        }
-        return result;
-    }
-
-    private static boolean isEqualsInstruction(final AbstractInsnNode insn) {
-        final boolean result;
-        if (AbstractInsnNode.METHOD_INSN == insn.getType()) {
-            final MethodInsnNode methodInsnNode = (MethodInsnNode) insn;
-            result = methodInsnNode.name.equals("equals");
-        } else {
-            result = false;
-        }
-        return result;
-    }
-
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder();
-        b.append(getClass().getSimpleName()).append(" [");
-        b.append("variableName=").append(variableName).append(", controlFlowBlock=").append(controlFlowBlock);
-        b.append("]");
+        b.append(getClass().getSimpleName()).append(" [variableName=").append(variableName);
+        b.append(", controlFlowBlock=").append(controlFlowBlock).append("]");
         return b.toString();
     }
 

@@ -3,32 +3,35 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static org.apache.commons.lang3.Validate.notNull;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.objectweb.asm.tree.FieldNode;
 
 /**
  * 
- *
+ * 
  * @author Juergen Fickel
  * @version 05.03.2013
  */
 @ThreadSafe
 final class CandidatesForLazyVariablesFinder {
 
-    private final ConvenienceClassNode classNode;
+    private final List<FieldNode> variables;
     private final VariableSetterCollection candidatesForLazyVariables;
     private volatile boolean isCandidatesAlreadyFound;
 
-    private CandidatesForLazyVariablesFinder(final ConvenienceClassNode theClassNode) {
-        classNode = theClassNode;
+    private CandidatesForLazyVariablesFinder(final List<FieldNode> theVariables) {
+        variables = Collections.unmodifiableList(theVariables);
         candidatesForLazyVariables = VariableSetterCollection.newInstance();
         isCandidatesAlreadyFound = false;
     }
 
-    public static CandidatesForLazyVariablesFinder newInstance(final ConvenienceClassNode classNode) {
-        final String msg = "Argument 'convenienceClassNode' must not be null!";
-        return new CandidatesForLazyVariablesFinder(notNull(classNode, msg));
+    public static CandidatesForLazyVariablesFinder newInstance(final List<FieldNode> variablesOfAnalysedClass) {
+        final String msg = "Argument 'variablesOfAnalysedClass' must not be null!";
+        return new CandidatesForLazyVariablesFinder(notNull(variablesOfAnalysedClass, msg));
     }
 
     public VariableSetterCollection getCandidatesForLazyVariables() {
@@ -40,7 +43,7 @@ final class CandidatesForLazyVariablesFinder {
     }
 
     private void findCandidatesForLazyVariables() {
-        for (final FieldNode variable : classNode.getFields()) {
+        for (final FieldNode variable : variables) {
             if (isPrivateAndNonFinalVariable(variable.access)) {
                 candidatesForLazyVariables.addVariable(variable);
             }
@@ -48,14 +51,14 @@ final class CandidatesForLazyVariablesFinder {
     }
 
     private boolean isPrivateAndNonFinalVariable(final int access) {
-        return field(access).isPrivate() && field(access).isNotFinal(); 
+        return field(access).isPrivate() && field(access).isNotFinal();
     }
 
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [");
-        b.append("classNode=").append(classNode).append(", candidatesForLazyVariables=");
+        b.append("variables=").append(variables).append(", candidatesForLazyVariables=");
         b.append(candidatesForLazyVariables).append(", isCandidatesAlreadyFound=").append(isCandidatesAlreadyFound);
         b.append("]");
         return b.toString();
