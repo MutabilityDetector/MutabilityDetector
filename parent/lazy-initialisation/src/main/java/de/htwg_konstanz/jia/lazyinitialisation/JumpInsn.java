@@ -22,4 +22,12 @@ interface JumpInsn extends Comparable<JumpInsn> {
 
     boolean isNull();
 
+    boolean isAssignmentGuard();
+
+    @Override
+    int hashCode();
+
+    @Override
+    boolean equals(Object o);
+
 }

@@ -3,7 +3,7 @@
  */
 package de.htwg_konstanz.jia.lazyinitialisation;
 
-import static de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinder.CoversMatcher.covers;
+import static de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinderTest.CoversMatcher.covers;
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +36,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmI
  * @version 20.02.2013
  */
 @RunWith(Enclosed.class)
-public final class AssignmentGuardFinder {
+public final class AssignmentGuardFinderTest {
 
     @NotThreadSafe
     private static final class Reason {
@@ -75,7 +75,7 @@ public final class AssignmentGuardFinder {
         private void findPossibleInitialValuesForVariable() {
             final VariableSetterCollection variableSetterCollection = ccn.getVariableSetterCollection();
             final FieldNode variable = ccn.findVariableWithName(variableName);
-            final Setters setters = variableSetterCollection.getSettersFor(variable);
+            final Setters setters = variableSetterCollection.getAllSettersFor(variable);
             final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
             possibleInitialValuesForVariable.addAll(initialValueFinder.getPossibleInitialValues());
         }
@@ -88,14 +88,14 @@ public final class AssignmentGuardFinder {
             return possibleInitialValuesForVariable;
         }
 
-        public int numberOfRelevantJumpInstructions() {
+        public int numberOfAssignmentGuards() {
             collectIndicesOfRelevantJumpInstructions();
             return indicesOfRelevantJumpInstructions.size();
         }
 
         private void collectIndicesOfRelevantJumpInstructions() {
             for (final ControlFlowBlock cfb : cfbs) {
-                for (final JumpInsn jumpInsn : cfb.getEffectiveJumpInstructionsForVariable(variableName)) {
+                for (final JumpInsn jumpInsn : cfb.getAssignmentGuardsForVariable(variableName)) {
                     indicesOfRelevantJumpInstructions.add(jumpInsn.getIndexWithinMethod());
                 }
             }
@@ -109,7 +109,7 @@ public final class AssignmentGuardFinder {
             return cfbs;
         }
 
-        public Collection<Integer> relevantJumpInstructions() {
+        public Collection<Integer> indicesOfAssignmentGuards() {
             return indicesOfRelevantJumpInstructions;
         }
 
@@ -149,14 +149,48 @@ public final class AssignmentGuardFinder {
     } // class CoversMatcher
 
 
+    @ThreadSafe
+    static final class ContainsMatcher extends TypeSafeMatcher<ControlFlowBlock> {
+
+        private static final ContainsMatcher INSTANCE = new ContainsMatcher();
+
+        private ContainsMatcher() {
+            super();
+        }
+
+        public static CoversMatcher covers(final int indexOfRelevantJumpInstruction) {
+            final Set<Integer> integerSet = new HashSet<Integer>(1);
+            integerSet.add(Integer.valueOf(indexOfRelevantJumpInstruction));
+            return new CoversMatcher(integerSet);
+        }
+
+        public static ContainsMatcher containsAssignmentGuard() {
+            return INSTANCE;
+        }
+
+        @Override
+        public void describeTo(final Description description) {
+            description.appendText("block covers all instructions with block indices ");
+            description.appendValue(indicesOfRelevantJumpInstructions);            
+        }
+
+        @Override
+        protected boolean matchesSafely(final ControlFlowBlock controlFlowBlock) {
+            
+            return controlFlowBlock.coversOneOf(indicesOfRelevantJumpInstructions);
+        }
+
+    } // class ContainsMatcher
+
+
     public static final class ValidSingleCheckLazyInitialisationWithoutAlias {
 
         @Test
         public void integerWithJvmInitial() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -164,8 +198,8 @@ public final class AssignmentGuardFinder {
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -173,8 +207,8 @@ public final class AssignmentGuardFinder {
         public void charWithJvmInitial() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeChar", Type.CHAR_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -182,8 +216,8 @@ public final class AssignmentGuardFinder {
         public void objectWithJvmInitialValue() {
             final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectValid.class).forMethod("hashCodeObject",
                     Type.getType(Object.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -191,8 +225,8 @@ public final class AssignmentGuardFinder {
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -200,8 +234,8 @@ public final class AssignmentGuardFinder {
         public void floatWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -209,8 +243,8 @@ public final class AssignmentGuardFinder {
         public void customObjectWithJvmInitialValue() {
             final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.CustomObjectValid.class).forMethod(
                     "hashCodeSomeObject", Type.getType(SomeObject.class)).andVariable("someObject");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -223,7 +257,7 @@ public final class AssignmentGuardFinder {
         public void charWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharInvalid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeChar", Type.CHAR_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertThat(r.numberOfAssignmentGuards(), is(0));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -231,8 +265,8 @@ public final class AssignmentGuardFinder {
         public void integerWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerInvalid.class;
             final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -240,8 +274,8 @@ public final class AssignmentGuardFinder {
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatInvalid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -250,7 +284,7 @@ public final class AssignmentGuardFinder {
             final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectInvalid.class).forMethod(
                     "hashCodeObject", Type.getType(Object.class)).andVariable("hash");
             // FIXME
-            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertThat(r.numberOfAssignmentGuards(), is(0));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -258,7 +292,7 @@ public final class AssignmentGuardFinder {
         public void stringWithJvmInitialValue() {
             final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.StringInvalid.class).forMethod(
                     "hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertThat(r.numberOfAssignmentGuards(), is(0));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -266,8 +300,8 @@ public final class AssignmentGuardFinder {
         public void floatWithMultipleCustomInitialValues() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -275,8 +309,8 @@ public final class AssignmentGuardFinder {
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerInvalid.class;
             final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(0), covers(r.indicesOfAssignmentGuards()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -284,7 +318,7 @@ public final class AssignmentGuardFinder {
         public void stringWithCustomInitialValue() {
             final Reason r = new Reason(WithoutAlias.WithCustomInitialValue.StringInvalid.class).forMethod(
                     "hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(0));
+            assertThat(r.numberOfAssignmentGuards(), is(0));
 //            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
             assertFalse(checksAgainstAppropriateComparativeValue(r));
         }
@@ -298,8 +332,8 @@ public final class AssignmentGuardFinder {
         public void byteWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.ByteValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeByte", Type.BYTE_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -307,8 +341,8 @@ public final class AssignmentGuardFinder {
         public void shortWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.ShortValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeShort", Type.SHORT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -316,8 +350,8 @@ public final class AssignmentGuardFinder {
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.FloatValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -325,15 +359,15 @@ public final class AssignmentGuardFinder {
         public void javaLangString() {
             final Class<?> klasse = String.class;
             final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
         }
 
         @Test
         public void stringWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.StringValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -341,8 +375,8 @@ public final class AssignmentGuardFinder {
         public void stringWithCustomInitialValue() {
             final Class<?> klasse = WithAlias.WithCustomInitialValue.StringValid.class;
             final Reason r = new Reason(klasse).forMethod("hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -350,8 +384,8 @@ public final class AssignmentGuardFinder {
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithAlias.WithCustomInitialValue.IntegerValid.class;
             final Reason r = new Reason(klasse).forMethod("getMessageLength", Type.INT_TYPE).andVariable("cachedValue");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(1));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(1));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
         }
 
@@ -364,9 +398,14 @@ public final class AssignmentGuardFinder {
         public void findAssignmentGuardForAliasedValidIntegerWithDefaultDcli() {
             final Reason r = new Reason(de.htwg_konstanz.jia.lazyinitialisation.doublecheck.AliasedIntegerWithDefault.class)
                     .forMethod("getSomeNumber", Type.INT_TYPE).andVariable("someNumber");
-            assertThat(r.numberOfRelevantJumpInstructions(), is(2));
-            assertThat(r.block(1), covers(r.relevantJumpInstructions()));
+            assertThat(r.numberOfAssignmentGuards(), is(2));
+            assertThat(r.block(1), covers(r.indicesOfAssignmentGuards()));
             assertTrue(checksAgainstAppropriateComparativeValue(r));
+            
+            // TODO Loeschen.
+            final AssignmentGuardFinder f = AssignmentGuardFinder.newInstance("someNumber", r.block(1));
+            final JumpInsn assignmentGuard = f.findAssignmentGuardForVariableInBlock();
+            assertTrue(assignmentGuard.isAssignmentGuard());
         }
 
     } // ValidDoubleCheckLazyInitialisationWithAlias
@@ -399,7 +438,7 @@ public final class AssignmentGuardFinder {
         final Set<UnknownTypeValue> possibleInitialValuesForVariable = r.initialValues();
         for (final ControlFlowBlock cfb : r.blocks()) {
             final List<AbstractInsnNode> blockInstructions = cfb.getBlockInstructions();
-            for (final JumpInsn relevantJumpInsn : cfb.getEffectiveJumpInstructionsForVariable(r.variableName())) {
+            for (final JumpInsn relevantJumpInsn : cfb.getAssignmentGuardsForVariable(r.variableName())) {
                 final int indexOfPredecessorInstruction = relevantJumpInsn.getIndexWithinBlock() - 1;
                 final AbstractInsnNode predecessorInstruction = cfb.getBlockInstructionForIndex(indexOfPredecessorInstruction);
 

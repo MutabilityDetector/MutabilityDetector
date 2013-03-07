@@ -32,7 +32,7 @@ public class EffectiveJumpInstructionFinderTest {
         private final List<ControlFlowBlock> cfbs;
         private String variableName;
         private int index;
-        private EffectiveJumpInstructionFinder finder;
+        private AssignmentGuardFinder finder;
 
         public Reason(final Class<?> klasse) {
             ccn = createConvenienceClassNodeFor(klasse);
@@ -66,12 +66,12 @@ public class EffectiveJumpInstructionFinderTest {
 
         public Reason ofBlock(final int theBlockNumber) {
             final ControlFlowBlock b = cfbs.get(theBlockNumber);
-            finder = EffectiveJumpInstructionFinder.newInstance(variableName, b);
+            finder = AssignmentGuardFinder.newInstance(variableName, b);
             return this;
         }
 
         public boolean isEffectiveJumpInstruction() {
-            return finder.isEffectiveJumpInstruction(index);
+            return finder.isAssignmentGuard(index);
         }
 
     } // class Reason

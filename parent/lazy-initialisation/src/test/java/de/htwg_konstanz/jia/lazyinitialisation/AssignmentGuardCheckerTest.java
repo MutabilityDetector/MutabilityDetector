@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.objectweb.asm.tree.ClassNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinder.AssignmentGuardChecker;
+import de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinderTest.AssignmentGuardChecker;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)

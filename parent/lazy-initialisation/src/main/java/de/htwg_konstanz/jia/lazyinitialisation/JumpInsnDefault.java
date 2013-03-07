@@ -69,6 +69,11 @@ final class JumpInsnDefault implements JumpInsn {
     }
 
     @Override
+    public boolean isAssignmentGuard() {
+        return false;
+    }
+
+    @Override
     public int compareTo(final JumpInsn o) {
         final Integer thisIndexWithinMethod = Integer.valueOf(indexWithinMethod);
         final Integer otherIndexWithinMethod = Integer.valueOf(o.getIndexWithinMethod());

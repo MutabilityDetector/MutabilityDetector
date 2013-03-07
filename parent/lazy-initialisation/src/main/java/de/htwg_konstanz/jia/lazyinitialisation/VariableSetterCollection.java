@@ -262,7 +262,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
         return new ArrayList<FieldNode>(variableSetters.keySet());
     }
 
-    public Setters getSettersFor(final FieldNode variable) {
+    public Setters getAllSettersFor(final FieldNode variable) {
         notNull(variable);
         Setters result = variableSetters.get(variable);
         if (null == result) {

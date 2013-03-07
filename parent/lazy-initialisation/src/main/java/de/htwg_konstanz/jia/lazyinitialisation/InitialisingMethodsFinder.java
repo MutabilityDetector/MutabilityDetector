@@ -77,9 +77,8 @@ final class InitialisingMethodsFinder {
     private void addMethodNodeIfIsInitialiserForVariable(final MethodNode methodNode) {
         for (final AbstractInsnNode insn : methodNode.instructions.toArray()) {
             if (isInitialiserForVariable(insn)) {
-                final FieldInsnNode putfield = (FieldInsnNode) insn;
-                variableSetterCollection.addSetterForVariable(putfield.name, methodNode);
-                break;
+                final FieldInsnNode assignmentInstruction = (FieldInsnNode) insn;
+                variableSetterCollection.addSetterForVariable(assignmentInstruction.name, methodNode);
             }
         }
     }

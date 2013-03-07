@@ -51,4 +51,9 @@ final class NullJumpInsn implements JumpInsn {
         return true;
     }
 
+    @Override
+    public boolean isAssignmentGuard() {
+        return false;
+    }
+
 }

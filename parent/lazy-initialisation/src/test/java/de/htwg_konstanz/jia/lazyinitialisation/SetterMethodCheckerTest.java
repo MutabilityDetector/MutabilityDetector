@@ -12,6 +12,7 @@ import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
@@ -162,6 +164,18 @@ public final class SetterMethodCheckerTest {
 
     } // class SetterMethodChecker
 
+
+    static abstract class CustomSetterMethodChecker {
+        private final VariableSetterCollection variableSetterCollection;
+        private CustomSetterMethodChecker(final VariableSetterCollection theVariableSetterCollection) {
+            variableSetterCollection = theVariableSetterCollection;
+        }
+//        public abstract VariableSetterCollection findCandidatesForLazyInitialisation();
+//        public abstract VariableSetterCollection associateSettersForEachCandidate(VariableSetterCollection variableSetterCollection);
+        public abstract boolean doesOnlyOneSetterMethodExistForEachCandidate();
+        public abstract void foo(String variableName, MethodNode associatedSetterMethod);
+    } // class CustomSetterMethodChecker
+    
 
     private org.mutabilitydetector.checkers.SetterMethodChecker checker;
     private CheckerRunner checkerRunner;

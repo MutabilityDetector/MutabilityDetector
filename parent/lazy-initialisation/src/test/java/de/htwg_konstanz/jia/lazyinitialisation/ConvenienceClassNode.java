@@ -142,13 +142,16 @@ final class ConvenienceClassNode {
     }
 
     public synchronized VariableSetterCollection getVariableSetterCollection() {
-        final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(getFields());
-        final VariableSetterCollection result = cf.getCandidatesForLazyVariables();
-        final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(getMethods(), result);
-        return imf.getVariablesAndTheirInitialisingMethods();
+        VariableSetterCollection result = variableSetterCollection;
+        if (null == result) {
+            final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(getFields());
+            final VariableSetterCollection candidates = cf.getCandidatesForLazyVariables();
+            final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(getMethods(), candidates);
+            result = imf.getVariablesAndTheirInitialisingMethods();
+            variableSetterCollection = result;
+        }
+        return result;
         // TODO Kommentare loeschen.
-//        VariableSetterCollection result = variableSetterCollection;
-//        if (null == result) {
 //            result = VariableSetterCollection.newInstance();
 //            for (final FieldNode variable : classNode.fields) {
 //                result.addVariable(variable);
