@@ -1,5 +1,6 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
@@ -12,6 +13,8 @@ final class NullJumpInsn implements JumpInsn {
     private static final class InstanceHolder {
         private static final JumpInsn INSTANCE = new NullJumpInsn();
     }
+
+    private static final JumpInsnNode EMPTY_JUMP_INSN_NODE = new JumpInsnNode(Opcodes.NOP, null);
 
     private NullJumpInsn() {
         super();
@@ -28,7 +31,7 @@ final class NullJumpInsn implements JumpInsn {
 
     @Override
     public JumpInsnNode getJumpInsnNode() {
-        return null;
+        return EMPTY_JUMP_INSN_NODE;
     }
 
     @Override
@@ -54,6 +57,11 @@ final class NullJumpInsn implements JumpInsn {
     @Override
     public boolean isAssignmentGuard() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "NullJumpInsn []";
     }
 
 }

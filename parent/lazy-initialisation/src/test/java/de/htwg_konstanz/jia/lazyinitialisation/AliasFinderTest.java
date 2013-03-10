@@ -34,7 +34,7 @@ public final class AliasFinderTest {
         
         public Asserter(final Class<?> dieKlasse) {
             final ClassNodeFactory classNodeFactory = ClassNodeFactory.getInstance();
-            classNode = classNodeFactory.convenienceClassNodeFor(dieKlasse);
+            classNode = classNodeFactory.getConvenienceClassNodeFor(dieKlasse);
         }
 
         public void assertThat(final Asserter theAsserter) {

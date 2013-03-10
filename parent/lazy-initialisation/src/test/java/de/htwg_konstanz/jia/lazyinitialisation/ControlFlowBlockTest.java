@@ -58,7 +58,7 @@ public final class ControlFlowBlockTest {
 
         private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.convenienceClassNodeFor(klasse);
+            return factory.getConvenienceClassNodeFor(klasse);
         }
 
         private static boolean isNotNull(final Object ref) {

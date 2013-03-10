@@ -271,6 +271,43 @@ public final class WithoutAlias {
         } // class FloatValidWithMultipleInitialValues
 
 
+        public static final class ObjectInvalidWithMultipleInitialValues {
+            private static Object obj;
+            public ObjectInvalidWithMultipleInitialValues() {
+                obj = new Object();
+            }
+            public ObjectInvalidWithMultipleInitialValues(final int foo) {
+                obj = Integer.valueOf(foo);
+            }
+            public ObjectInvalidWithMultipleInitialValues(final String bar) {
+                obj = new String(bar);
+            }
+            public static Object getObject() {
+                if (null == obj) {
+                    obj = new Object();
+                }
+                return obj;
+            }
+        } // class ObjectInvalidWithMultipleInitialValues
+
+
+        public static final class ObjectInvalidWithMultipleInitialValues2 {
+            private static Object obj;
+            public ObjectInvalidWithMultipleInitialValues2() {
+                obj = null;
+            }
+            public ObjectInvalidWithMultipleInitialValues2(final String bar) {
+                obj = new String(bar);
+            }
+            public static Object getObject() {
+                if (null == obj) {
+                    obj = new Object();
+                }
+                return obj;
+            }
+        } // class ObjectInvalidWithMultipleInitialValues2
+
+
         public static final class StringValid {
             private String hash = "";
             public String hashCodeString() {
@@ -300,6 +337,17 @@ public final class WithoutAlias {
             private String hash = "abc";
             public String hashCodeString() {
                 if ("".equals(hash) && 3 == hash.length()) {
+                    hash = "Hash code";
+                }
+                return hash;
+            }
+        } // class StringInvalid
+
+
+        public static final class StringInvalid2 {
+            private String hash = new String();
+            public String hashCodeString() {
+                if (null == hash) {
                     hash = "Hash code";
                 }
                 return hash;

@@ -34,4 +34,8 @@ public interface TypeInformation {
 
     boolean isNotNull();
 
+    boolean isUnknownPrimitive();
+
+    boolean isUnknownReference();
+
 }

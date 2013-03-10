@@ -5,20 +5,28 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.junit.Test;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.FieldNode;
 
+import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Default;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithCustomInitialValue.IntegerValid2;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithJvmInitialValue.SynchronizedObjectValid;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.IntegerInvalid;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.ObjectInvalidWithMultipleInitialValues;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.ObjectInvalidWithMultipleInitialValues2;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.StringInvalid2;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.Stateless;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.StringStaticValid;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -40,8 +48,8 @@ public final class InitialValueFinderTest {
         }
 
         public Set<UnknownTypeValue> getPossibleInitialValuesFor(final Class<?> targetClass, final String variableName) {
-            final ClassNode classNode = createAppropriateClassNode(targetClass);
-            final VariableSetterCollection varSetters = createVariableSetterCollection(classNode);
+            final ConvenienceClassNode classNode = createAppropriateClassNode(targetClass);
+            final VariableSetterCollection varSetters = classNode.getVariableSetterCollection();
             for (final Entry<FieldNode, Setters> entry : varSetters) {
                 final FieldNode variable = entry.getKey();
                 if (variable.name.equals(variableName)) {
@@ -53,83 +61,18 @@ public final class InitialValueFinderTest {
             return Collections.emptySet();
         }
 
-        private static ClassNode createAppropriateClassNode(final Class<?> targetClass) {
+        private static ConvenienceClassNode createAppropriateClassNode(final Class<?> targetClass) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.classNodeFor(targetClass);
-        }
-
-        private static VariableSetterCollection createVariableSetterCollection(final ClassNode classNode) {
-            final VariableSetterCollection result = collectPrivateNonFinalInstanceVariables(classNode.fields);
-            collectSetters(result, classNode.methods);
-            result.removeUnassociatedVariables();
-            return result;
-        }
-
-        private static VariableSetterCollection
-                collectPrivateNonFinalInstanceVariables(final List<FieldNode> variables) {
-            final VariableSetterCollection result = VariableSetterCollection.newInstance();
-            for (final FieldNode variable : variables) {
-                if (isPrivateAndNonFinalInstanceVariable(variable.access)) {
-                    result.addVariable(variable);
-                }
-            }
-            return result;
-        }
-
-        private static boolean isPrivateAndNonFinalInstanceVariable(final int access) {
-            return field(access).isNotStatic() && field(access).isPrivate() && field(access).isNotFinal(); 
-        }
-
-        private static void collectSetters(final VariableSetterCollection instanceVariableSetters,
-                final List<MethodNode> methods) {
-            for (final MethodNode methodNode : methods) {
-                for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
-                    final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
-                    instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
-                }
-            }
-        }
-
-        private static List<AssignmentInsn> getPutfieldInstructions(final InsnList instructionsOfMethod) {
-            final List<AssignmentInsn> result = new ArrayList<AssignmentInsn>(
-                    instructionsOfMethod.size());
-            final AbstractInsnNode[] instructions = instructionsOfMethod.toArray();
-            for (int i = 0; i < instructions.length; i++) {
-                final AbstractInsnNode abstractInsn = instructions[i];
-                if (isPutfieldOpcode(abstractInsn)) {
-                    result.add(DefaultAssignmentInsn.getInstance((FieldInsnNode) abstractInsn, i));
-                }
-            }
-            return result;
-        }
-
-        private static boolean isPutfieldOpcode(final AbstractInsnNode abstractInstructionNode) {
-            return Opcodes.PUTFIELD == abstractInstructionNode.getOpcode();
+            return factory.getConvenienceClassNodeFor(targetClass);
         }
 
     } // class InitialValuesFactory
 
 
-    
-
-    private static VariableSetterCollection findCandidatesForLazyVariablesIn(final Class<?> klasse) {
-        final CandidatesForLazyVariablesFinder f = getFinderForClass(klasse);
-        return f.getCandidatesForLazyVariables();
-    }
-
-    private static CandidatesForLazyVariablesFinder getFinderForClass(final Class<?> klasse) {
-        final ConvenienceClassNode cf = createConvenienceClassNodeFor(klasse);
-        return CandidatesForLazyVariablesFinder.newInstance(cf.getFields());
-    }
-
-    private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
-        final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-        return factory.convenienceClassNodeFor(klasse);
-    }
-
     @Test
     public void invalidFloatWithMultipleCustomInitialValues() {
-        final Set<UnknownTypeValue> expected = createExpected(Float.valueOf(-1.0F), Float.valueOf(23.0F));
+        final Set<UnknownTypeValue> expected = createExpected(Float.valueOf(-1.0F), Float.valueOf(23.0F),
+                Default.UNKNOWN_PRIMITIVE);
         final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
                 WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class, "hash");
         assertThat(actual, is(expected));
@@ -147,6 +90,13 @@ public final class InitialValueFinderTest {
             result.add(DefaultUnknownTypeValue.getInstance(next));
         }
         return result;
+    }
+
+    @Test
+    public void objectTypeWithNullAsInitialValue() {
+        final Set<UnknownTypeValue> expected = createExpected(null);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(SynchronizedObjectValid.class, "hash");
+        assertThat(actual, is(expected));
     }
 
     @Test
@@ -193,6 +143,57 @@ public final class InitialValueFinderTest {
         final Set<UnknownTypeValue> expected = createExpected(DefaultUnknownTypeValue.getInstanceForNull());
         final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
                 WithoutAlias.WithJvmInitialValue.CustomObjectValid.class, "someObject");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void statelessClass() {
+        final Set<UnknownTypeValue> expected = Collections.emptySet();
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(Stateless.class, null);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void staticStringWithJvmInitialValue() {
+        final Set<UnknownTypeValue> expected = createExpected(null);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringStaticValid.class, "hash");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void invalidStringWithEmptyStringObjectAsInitialValue() {
+        final Set<UnknownTypeValue> expected = createExpected(Default.UNKNOWN_REFERENCE);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(StringInvalid2.class, "hash");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void invalidIntegerWithTwoDifferntCustomInitialValues() {
+        final Set<UnknownTypeValue> expected = createExpected(-2);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(IntegerInvalid.class, "hash");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void invalidObjectWithDifferentCustomInitialValues() {
+        final Set<UnknownTypeValue> expected = createExpected(Default.UNKNOWN_REFERENCE);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(ObjectInvalidWithMultipleInitialValues.class,
+                "obj");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void invalidObject2WithDifferentCustomInitialValues() {
+        final Set<UnknownTypeValue> expected = createExpected(Default.UNKNOWN_REFERENCE, Default.NULL);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(ObjectInvalidWithMultipleInitialValues2.class,
+                "obj");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void validIntegerWithInitialisingMethodAtConstruction() {
+        final Set<UnknownTypeValue> expected = createExpected(Default.UNKNOWN_PRIMITIVE);
+        final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(IntegerValid2.class, "cached");
         assertThat(actual, is(expected));
     }
 

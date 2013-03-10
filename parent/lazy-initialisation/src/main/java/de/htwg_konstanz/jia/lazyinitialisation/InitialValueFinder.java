@@ -22,14 +22,23 @@ final class InitialValueFinder {
 
     @Immutable
     private static final class InitialValueFactory {
+
+        private final FieldNode variable;
+
+        public InitialValueFactory(final FieldNode theVariable) {
+            variable = theVariable;
+        }
+
         public UnknownTypeValue getConcreteInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
-            UnknownTypeValue result = null;
+            final UnknownTypeValue result;
             if (isLdcInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfLdcInsn(variableValueSetupInsn);
             } else if (isIntInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfIntInsn(variableValueSetupInsn);
             } else if (isStackConstantPushInsn(variableValueSetupInsn)) {
                 result = getInitialValueOfStackConstantInsn(variableValueSetupInsn);
+            } else {
+                result = getInitialValueOfUnknownTypeOfVariable();
             }
             return result;
         }
@@ -38,8 +47,8 @@ final class InitialValueFinder {
             return AbstractInsnNode.LDC_INSN == abstractInsnNode.getType();
         }
 
-        private static UnknownTypeValue getInitialValueOfLdcInsn(final AbstractInsnNode variableValueSetupInsn) {
-            final LdcInsnNode ldcInsn = (LdcInsnNode) variableValueSetupInsn;
+        private static UnknownTypeValue getInitialValueOfLdcInsn(final AbstractInsnNode setupInsn) {
+            final LdcInsnNode ldcInsn = (LdcInsnNode) setupInsn;
             final Object cst = ldcInsn.cst;
             return DefaultUnknownTypeValue.getInstance(cst);
         }
@@ -48,21 +57,33 @@ final class InitialValueFinder {
             return AbstractInsnNode.INT_INSN == abstractInsnNode.getType();
         }
 
-        private static UnknownTypeValue getInitialValueOfIntInsn(final AbstractInsnNode variableValueSetupInsn) {
-            final IntInsnNode singleIntOperandInsn = (IntInsnNode) variableValueSetupInsn;
+        private static UnknownTypeValue getInitialValueOfIntInsn(final AbstractInsnNode setupInsn) {
+            final IntInsnNode singleIntOperandInsn = (IntInsnNode) setupInsn;
             final int operand = singleIntOperandInsn.operand;
             return DefaultUnknownTypeValue.getInstance(Integer.valueOf(operand));
         }
 
-        private static boolean isStackConstantPushInsn(final AbstractInsnNode abstractInsnNode) {
+        private static boolean isStackConstantPushInsn(final AbstractInsnNode setupInsn) {
             final SortedSet<Opcode> constantsInstructions = Opcode.constants();
-            final Opcode opcode = Opcode.forInt(abstractInsnNode.getOpcode());
+            final Opcode opcode = Opcode.forInt(setupInsn.getOpcode());
             return constantsInstructions.contains(opcode);
         }
 
-        private static UnknownTypeValue getInitialValueOfStackConstantInsn(final AbstractInsnNode variableValueSetupInsn) {
-            final Opcode opcode = Opcode.forInt(variableValueSetupInsn.getOpcode());
+        private static UnknownTypeValue getInitialValueOfStackConstantInsn(final AbstractInsnNode setupInsn) {
+            final Opcode opcode = Opcode.forInt(setupInsn.getOpcode());
             return opcode.stackValue();
+        }
+
+        private UnknownTypeValue getInitialValueOfUnknownTypeOfVariable() {
+            final Type variableType = Type.getType(variable.desc);
+            final int typeSort = variableType.getSort();
+            final UnknownTypeValue result;
+            if (Type.OBJECT == typeSort || Type.ARRAY == typeSort || Type.METHOD == typeSort) {
+                result = DefaultUnknownTypeValue.getInstanceForUnknownReference();
+            } else {
+                result = DefaultUnknownTypeValue.getInstanceForUnknownPrimitive();
+            }
+            return result;
         }
 
         public UnknownTypeValue getJvmDefaultInitialValueFor(final Type type) {
@@ -89,6 +110,7 @@ final class InitialValueFinder {
             }
             return result;
         }
+
     } // class JvmInitialValueFactory
 
 
@@ -138,7 +160,7 @@ final class InitialValueFinder {
         return Collections.unmodifiableSet(possibleInitialValues);
     }
 
-    public void findPossibleInitialValues() {
+    private void findPossibleInitialValues() {
         if (hasNoConstructors()) {
             addJvmInitialValueForVariable();
         } else {
@@ -152,28 +174,31 @@ final class InitialValueFinder {
     }
 
     private void addJvmInitialValueForVariable() {
-        final InitialValueFactory factory = new InitialValueFactory();
+        final InitialValueFactory factory = new InitialValueFactory(variable);
         final Type type = Type.getType(variable.desc);
         possibleInitialValues.add(factory.getJvmDefaultInitialValueFor(type));
     }
 
     private void addConcreteInitialValuesByConstructor() {
         for (final MethodNode constructor : setters.getConstructors()) {
-            final AbstractInsnNode[] insns = constructor.instructions.toArray();
-            final EffectivePutfieldInsnFinder putfieldFinder = EffectivePutfieldInsnFinder.newInstance(variable,
-                    constructor.instructions);
-            final AssignmentInsn effectivePutfieldInstruction = putfieldFinder.getEffectivePutfieldInstruction();
-            final int indexOfAssignmentInstruction = effectivePutfieldInstruction.getIndexOfAssignmentInstruction();
-            addPossibleInitialValueFor(insns[indexOfAssignmentInstruction - 1]);
+            final AbstractInsnNode valueSetUpInsn = findValueSetUpInsnIn(constructor.instructions);
+            addSupposedInitialValueFor(valueSetUpInsn);
         }
     }
 
-    private void addPossibleInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
-        final InitialValueFactory factory = new InitialValueFactory();
+    private AbstractInsnNode findValueSetUpInsnIn(final InsnList constructorInsns) {
+        final EffectiveAssignmentInsnFinder eaf = EffectiveAssignmentInsnFinder.newInstance(variable,
+                constructorInsns);
+        final AssignmentInsn effectiveAssignmentInsn = eaf.getEffectiveAssignmentInstruction();
+        final int indexOfAssignmentInstruction = effectiveAssignmentInsn.getIndexOfAssignmentInstruction();
+        final AbstractInsnNode result = constructorInsns.get(indexOfAssignmentInstruction - 1);
+        return result;
+    }
+
+    private void addSupposedInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
+        final InitialValueFactory factory = new InitialValueFactory(variable);
         final UnknownTypeValue initialValue = factory.getConcreteInitialValueFor(variableValueSetupInsn);
-        if (null != initialValue) {
-            possibleInitialValues.add(initialValue);
-        }
+        possibleInitialValues.add(initialValue);
     }
 
     @Override

@@ -5,15 +5,16 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
+import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.*;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -69,6 +70,225 @@ final class AssignmentGuard implements JumpInsn {
     } // class AssignmentGuardBuilder
 
 
+    @Immutable
+    private static final class InstructionNodeHashCodeCalculator {
+
+        private static final byte INITIAL_RESULT = 1;
+
+        private final int prime;
+
+        public InstructionNodeHashCodeCalculator(final int thePrime) {
+            prime = thePrime;
+        }
+
+        public int hashCode(final AbstractInsnNode insn) {
+            final int result;
+            final int nodeType = insn.getType();
+            if (FIELD_INSN == nodeType) {
+                result = hashCode((FieldInsnNode) insn);
+            } else if (VAR_INSN == nodeType) {
+                result = hashCode((VarInsnNode) insn);
+            } else if (INSN == nodeType) {
+                result = hashCode((InsnNode) insn);
+            } else if (INT_INSN == nodeType) {
+                result = hashCode((IntInsnNode) insn);
+            } else if (INVOKE_DYNAMIC_INSN == nodeType) {
+                result = hashCode((InvokeDynamicInsnNode) insn);
+            } else if (JUMP_INSN == nodeType) {
+                result = hashCode((JumpInsnNode) insn);
+            } else if (LABEL == nodeType) {
+                result = hashCode((LabelNode) insn);
+            } else if (LDC_INSN == nodeType) {
+                result = hashCode((LdcInsnNode) insn);
+            } else if (LINE == nodeType) {
+                result = hashCode((LineNumberNode) insn);
+            } else if (METHOD_INSN == nodeType) {
+                result = hashCode((MethodInsnNode) insn);
+            } else if (IINC_INSN == nodeType) {
+                result = hashCode((IincInsnNode) insn);
+            } else if (LOOKUPSWITCH_INSN == nodeType) {
+                result = hashCode((LookupSwitchInsnNode) insn);
+            } else if (FRAME == nodeType) {
+                result = hashCode((FrameNode) insn);
+            } else if (TYPE_INSN == nodeType) {
+                result = hashCode((TypeInsnNode) insn);
+            } else if (MULTIANEWARRAY_INSN == nodeType) {
+                result = hashCode((MultiANewArrayInsnNode) insn);
+            } else if (TABLESWITCH_INSN == nodeType) {
+                result = hashCode((TableSwitchInsnNode) insn);
+            } else {
+                result = insn.hashCode();
+            }
+            return result;
+        }
+
+        private int hashCode(final FieldInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.desc.hashCode());
+            result = hashCode(result, insn.name.hashCode());
+            result = hashCode(result, insn.owner.hashCode());
+            return result;
+        }
+
+        private final int hashCode(final int preliminaryResult, final int hashCode) {
+            return prime * preliminaryResult + hashCode;
+        }
+
+        private int hashCode(final VarInsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.var);
+        }
+
+        private int hashCode(final InsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.hashCode());
+        }
+
+        private int hashCode(final IntInsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.operand);
+        }
+
+        private int hashCode(final InvokeDynamicInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.name.hashCode());
+            result = hashCode(result, insn.desc.hashCode());
+            result = hashCode(result, insn.bsm.hashCode());
+            result = hashCode(result, insn.hashCode());
+            return result;
+        }
+
+        private int hashCode(final JumpInsnNode insn) {
+            return hashCode(INITIAL_RESULT, 0);
+        }
+
+        private int hashCode(final LabelNode insn) {
+            return hashCode(INITIAL_RESULT, 0);
+        }
+
+        private int hashCode(final LdcInsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.cst.hashCode());
+        }
+
+        private int hashCode(final LineNumberNode insn) {
+            return hashCode(INITIAL_RESULT, 0);
+        }
+
+        private int hashCode(final MethodInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.desc.hashCode());
+            result = hashCode(result, insn.name.hashCode());
+            result = hashCode(result, insn.owner.hashCode());
+            return result;
+        }
+
+        private int hashCode(final IincInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.var);
+            result = hashCode(result, insn.incr);
+            return result;
+        }
+
+        private int hashCode(final LookupSwitchInsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.keys.hashCode());
+        }
+
+        private int hashCode(final FrameNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.local.hashCode());
+            result = hashCode(result, insn.stack.hashCode());
+            return result;
+        }
+
+        private int hashCode(final TypeInsnNode insn) {
+            return hashCode(INITIAL_RESULT, insn.desc.hashCode());
+        }
+
+        private int hashCode(final MultiANewArrayInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.dims);
+            result = hashCode(result, insn.desc.hashCode());
+            return result;
+        }
+
+        private int hashCode(final TableSwitchInsnNode insn) {
+            int result = INITIAL_RESULT;
+            result = hashCode(result, insn.min);
+            result = hashCode(result, insn.max);
+            return result;
+        }
+
+    } // class InstructionNodeHashCodeCalculator
+
+
+    @Immutable
+    private static final class InstructionNodesComparator {
+
+        public boolean equals(final FieldInsnNode f1, final FieldInsnNode f2) {
+            return f1.desc.equals(f2.desc) && f1.name.equals(f2.name) && f1.owner.equals(f2.owner);
+        }
+
+        public boolean equals(final VarInsnNode insnThis, final VarInsnNode insnOther) {
+            return insnThis.var == insnOther.var;
+        }
+
+        public boolean equals(final InsnNode insnThis, final InsnNode insnOther) {
+            return true;
+        }
+
+        public boolean equals(final IntInsnNode insnThis, final IntInsnNode insnOther) {
+            return insnThis.operand == insnOther.operand;
+        }
+
+        public boolean equals(final InvokeDynamicInsnNode i1, final InvokeDynamicInsnNode i2) {
+            return i1.name.equals(i2.name) && i1.desc.equals(i2.desc) && i1.bsm.equals(i2.bsm)
+                    && Arrays.equals(i1.bsmArgs, i2.bsmArgs);
+        }
+
+        public boolean equals(final JumpInsnNode insnThis, final JumpInsnNode insnOther) {
+            return true;
+        }
+
+        public boolean equals(final LabelNode insnThis, final LabelNode insnOther) {
+            return true;
+        }
+
+        public boolean equals(final LdcInsnNode insnThis, final LdcInsnNode insnOther) {
+            return insnThis.cst.equals(insnOther.cst);
+        }
+
+        public boolean equals(final LineNumberNode insnThis, final LineNumberNode insnOther) {
+            return true;
+        }
+
+        public boolean equals(final MethodInsnNode m1, final MethodInsnNode m2) {
+            return m1.desc.equals(m2.name) && m1.name.equals(m2.name) && m1.owner.equals(m2.owner);
+        }
+
+        public boolean equals(final IincInsnNode i1, final IincInsnNode i2) {
+            return i1.var == i2.var && i1.incr == i2.incr;
+        }
+
+        public boolean equals(final LookupSwitchInsnNode l1, final LookupSwitchInsnNode l2) {
+            return l1.keys.equals(l2.keys);
+        }
+
+        public boolean equals(final FrameNode f1, final FrameNode f2) {
+            return f1.local.equals(f2.local) && f1.stack.equals(f2.stack);
+        }
+
+        public boolean equals(final TypeInsnNode t1, final TypeInsnNode t2) {
+            return t1.desc.equals(t2.desc);
+        }
+
+        public boolean equals(final MultiANewArrayInsnNode m1, final MultiANewArrayInsnNode m2) {
+            return m1.desc.equals(m2.desc) && m1.dims == m2.dims;
+        }
+
+        public boolean equals(final TableSwitchInsnNode t1, final TableSwitchInsnNode t2) {
+            return t1.min == t2.min && t1.max == t2.max;
+        }
+
+    } // class InstructionNodesComparator
+
+
     private final JumpInsn delegationTarget;
     private final List<AbstractInsnNode> predecessorInstructions;
 
@@ -86,7 +306,7 @@ final class AssignmentGuard implements JumpInsn {
 
     private static void validateArguments(final JumpInsn delegationTarget,
             final List<AbstractInsnNode> predecessorInstructions) {
-        final String msg = "Argument '{}' must not be {}!";
+        final String msg = "Argument '%s' must not be %s!";
         notNull(delegationTarget, msg, "delegationTarget", "null");
         notNull(predecessorInstructions, msg, "predecessorInstructions", "null");
         notEmpty(predecessorInstructions, msg, "predecessorInstructions", "empty");
@@ -131,8 +351,13 @@ final class AssignmentGuard implements JumpInsn {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + delegationTarget.hashCode();
-        result = prime * result + predecessorInstructions.hashCode();
+        final JumpInsnNode jumpInsnNode = getJumpInsnNode();
+        result = prime * result + jumpInsnNode.getOpcode();
+        final InstructionNodeHashCodeCalculator hcc = new InstructionNodeHashCodeCalculator(prime);
+        for (final AbstractInsnNode predecessor : predecessorInstructions) {
+            final int hashCodeOfPredecessor = hcc.hashCode(predecessor);
+            result = prime * result + hashCodeOfPredecessor;
+        }
         return result;
     }
 
@@ -148,13 +373,69 @@ final class AssignmentGuard implements JumpInsn {
             return false;
         }
         final AssignmentGuard other = (AssignmentGuard) obj;
-        if (!delegationTarget.equals(other.delegationTarget)) {
+        final JumpInsnNode jumpInsnNodeThis = delegationTarget.getJumpInsnNode();
+        final JumpInsnNode jumpInsnNodeOther = other.getJumpInsnNode();
+        if (jumpInsnNodeThis.getOpcode() != jumpInsnNodeOther.getOpcode()) {
             return false;
         }
-        if (!predecessorInstructions.equals(other.predecessorInstructions)) {
+        if (predecessorInstructions.size() != other.predecessorInstructions.size()) {
             return false;
+        }
+        final InstructionNodesComparator inc = new InstructionNodesComparator();
+        for (int i = 0; i < predecessorInstructions.size(); i++) {
+            final AbstractInsnNode insnThis = predecessorInstructions.get(i);
+            final AbstractInsnNode insnOther = other.predecessorInstructions.get(i);
+            if (insnThis.getOpcode() != insnOther.getOpcode()) {
+                return false;
+            }
+            if (instructionsAreUnequal(insnThis, insnOther, inc)) {
+                return false;
+            }
         }
         return true;
+    }
+
+    private static boolean instructionsAreUnequal(final AbstractInsnNode insnThis,
+            final AbstractInsnNode insnOther,
+            final InstructionNodesComparator inc) {
+        final int nodeType = insnThis.getType();
+        final boolean result;
+        if (FIELD_INSN == nodeType) {
+            result = inc.equals((FieldInsnNode) insnThis, (FieldInsnNode) insnOther);
+        } else if (VAR_INSN == nodeType) {
+            result = inc.equals((VarInsnNode) insnThis, (VarInsnNode) insnOther);
+        } else if (INSN == nodeType) {
+            result = inc.equals((InsnNode) insnThis, (InsnNode) insnOther);
+        } else if (INT_INSN == nodeType) {
+            result = inc.equals((IntInsnNode) insnThis, (IntInsnNode) insnOther);
+        } else if (INVOKE_DYNAMIC_INSN == nodeType) {
+            result = inc.equals((InvokeDynamicInsnNode) insnThis, (InvokeDynamicInsnNode) insnOther);
+        } else if (JUMP_INSN == nodeType) {
+            result = inc.equals((JumpInsnNode) insnThis, (JumpInsnNode) insnOther);
+        } else if (LABEL == nodeType) {
+            result = inc.equals((LabelNode) insnThis, (LabelNode) insnOther);
+        } else if (LDC_INSN == nodeType) {
+            result = inc.equals((LdcInsnNode) insnThis, (LdcInsnNode) insnOther);
+        } else if (LINE == nodeType) {
+            result = inc.equals((LineNumberNode) insnThis, (LineNumberNode) insnOther);
+        } else if (METHOD_INSN == nodeType) {
+            result = inc.equals((MethodInsnNode) insnThis, (MethodInsnNode) insnOther);
+        } else if (IINC_INSN == nodeType) {
+            result = inc.equals((IincInsnNode) insnThis, (IincInsnNode) insnOther);
+        } else if (LOOKUPSWITCH_INSN == nodeType) {
+            result = inc.equals((LookupSwitchInsnNode) insnThis, (LookupSwitchInsnNode) insnOther);
+        } else if (FRAME == nodeType) {
+            result = inc.equals((FrameNode) insnThis, (FrameNode) insnOther);
+        } else if (TYPE_INSN == nodeType) {
+            result = inc.equals((TypeInsnNode) insnThis, (TypeInsnNode) insnOther);
+        } else if (MULTIANEWARRAY_INSN == nodeType) {
+            result = inc.equals((MultiANewArrayInsnNode) insnThis, (MultiANewArrayInsnNode) insnOther);
+        } else if (TABLESWITCH_INSN == nodeType) {
+            result = inc.equals((TableSwitchInsnNode) insnThis, (TableSwitchInsnNode) insnOther);
+        } else {
+            result = false;
+        }
+        return !result;
     }
 
     @Override

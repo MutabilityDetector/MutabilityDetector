@@ -133,6 +133,25 @@ public final class WithAlias {
             }
         } // class IntegerValid
 
+        
+        public static final class IntegerValid2 {
+            private int cached;
+            public IntegerValid2() {
+                cached = getIinitialiseCached();
+            }
+            private int getIinitialiseCached() {
+                return -1;
+            }
+            public int getCached() {
+                int result = cached;
+                if (0 == result) {
+                    result = 12;
+                    cached = result;
+                }
+                return result;
+            }
+        } // class IntegerValid
+
 
         public static final class StringValid {
             private String hash = "";

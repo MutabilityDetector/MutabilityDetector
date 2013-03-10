@@ -7,7 +7,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 import java.util.*;
 
-import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Null;
+import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Default;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -15,7 +15,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Null;
  */
 public enum Opcode implements OpcodeInformation {
     NOP(0, Category.NOP),
-    ACONST_NULL(1, Category.CONSTANTS, Null.INSTANCE),
+    ACONST_NULL(1, Category.CONSTANTS, Default.NULL),
     ICONST_M1(2, Category.CONSTANTS, Integer.valueOf(-1), "Pushes the integer constant -1 onto the stack."),
     ICONST_0(3, Category.CONSTANTS, Integer.valueOf(0), "Pushes the integer constant 0 onto the stack."),
     ICONST_1(4, Category.CONSTANTS, Integer.valueOf(1), "Pushes the integer constant 1 onto the stack."),

@@ -30,7 +30,7 @@ public final class ConvenienceClassNodeTest {
 
     private static ConvenienceClassNode createAppropriateClassNode(final Class<?> targetClass) {
         final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-        return factory.convenienceClassNodeFor(targetClass);
+        return factory.getConvenienceClassNodeFor(targetClass);
     }
 
     @Test

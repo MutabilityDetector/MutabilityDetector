@@ -44,9 +44,9 @@ public final class EffectivePutfieldInsnFinderTest {
                 final List<MethodNode> setters = classNode.findMethodByName(setterName);
                 final MethodNode setter = setters.get(0);
                 if (isNotNull(setter)) {
-                    final EffectivePutfieldInsnFinder epif = EffectivePutfieldInsnFinder.newInstance(variable,
+                    final EffectiveAssignmentInsnFinder epif = EffectiveAssignmentInsnFinder.newInstance(variable,
                             setter.instructions);
-                    result = epif.getEffectivePutfieldInstruction();
+                    result = epif.getEffectiveAssignmentInstruction();
                 }
             }
             return result;
@@ -54,7 +54,7 @@ public final class EffectivePutfieldInsnFinderTest {
 
         private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.convenienceClassNodeFor(klasse);
+            return factory.getConvenienceClassNodeFor(klasse);
         }
 
         private static boolean isNotNull(final Object ref) {

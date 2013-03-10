@@ -7,7 +7,6 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -140,9 +139,12 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("labelNode", labelNode).append("indexOfAssignmentInstruction", indexOfAssignmentInsn);
-        builder.append("assignmentInstructionNode", assignmentInsnNode);
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getSimpleName()).append(" [labelNode=").append(labelNode.getLabel());
+        builder.append(", indexOfAssignmentInstruction=").append(indexOfAssignmentInsn);
+        builder.append(", assignmentInstructionNode=");
+        final Opcode opcode = Opcode.forInt(assignmentInsnNode.getOpcode());
+        builder.append(opcode.name()).append(" ").append(assignmentInsnNode.name).append("]");
         return builder.toString();
     }
 

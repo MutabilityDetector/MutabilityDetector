@@ -6,8 +6,10 @@ package de.htwg_konstanz.jia.lazyinitialisation;
  */
 public interface UnknownTypeValue extends TypeInformation, Convertible {
 
-    enum Null {
-        INSTANCE
-    };
+    enum Default {
+        NULL,
+        UNKNOWN_PRIMITIVE,
+        UNKNOWN_REFERENCE
+    }
     
 }

@@ -15,7 +15,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -261,14 +260,14 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return result;
     }
 
-    public boolean containsEffectiveAssignmentInstruction(final FieldNode assignedVariable) {
-        final AbstractInsnNode[] blockInstructions = Arrays.copyOfRange(methodInstructions,
-                rangeOfBlockInstructions.lowerBoundary, rangeOfBlockInstructions.upperBoundary + 1);
-        final EffectivePutfieldInsnFinder f = EffectivePutfieldInsnFinder.newInstance(assignedVariable,
-                blockInstructions);
-        final AssignmentInsn effectivePutfieldInstruction = f.getEffectivePutfieldInstruction();
-        return !effectivePutfieldInstruction.isNull();
-    }
+//    public boolean containsEffectiveAssignmentInstruction(final FieldNode assignedVariable) {
+//        final AbstractInsnNode[] blockInstructions = Arrays.copyOfRange(methodInstructions,
+//                rangeOfBlockInstructions.lowerBoundary, rangeOfBlockInstructions.upperBoundary + 1);
+//        final EffectivePutfieldInsnFinder f = EffectivePutfieldInsnFinder.newInstance(assignedVariable,
+//                blockInstructions);
+//        final AssignmentInsn effectivePutfieldInstruction = f.getEffectivePutfieldInstruction();
+//        return !effectivePutfieldInstruction.isNull();
+//    }
 
     public synchronized boolean containsAssignmentGuardsForVariable(final String variableName) {
         final boolean result;
@@ -289,6 +288,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     private void findAssignmentGuardsForVariableInThisBlock(final String variableName) {
         // TODO Auf neuen AssignmentGuard umstellen.
+        final AssignmentGuardFinder f = AssignmentGuardFinder.newInstance(variableName, this);
         for (final JumpInsn jumpInsn : getJumpInstructions()) {
             if (f.isAssignmentGuard(jumpInsn.getIndexWithinBlock())) {
                 addToAssignmentGuards(variableName, jumpInsn);
@@ -311,7 +311,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     public JumpInsn getAssignmentGuardForVariable(final String variableName) {
         final AssignmentGuardFinder f = AssignmentGuardFinder.newInstance(variableName, this);
-        final JumpInsn assignmentGuardForVariableInBlock = f.findAssignmentGuardForVariableInBlock();
+        return f.findAssignmentGuardForVariableInBlock();
     }
 
     public List<JumpInsn> getAssignmentGuardsForVariable(final String variableName) {

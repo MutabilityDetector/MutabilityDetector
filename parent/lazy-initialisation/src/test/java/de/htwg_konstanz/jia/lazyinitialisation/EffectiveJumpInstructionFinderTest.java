@@ -44,7 +44,7 @@ public class EffectiveJumpInstructionFinderTest {
 
         private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.convenienceClassNodeFor(klasse);
+            return factory.getConvenienceClassNodeFor(klasse);
         }
 
         public Reason forMethod(final String methodName, final Type returnType,

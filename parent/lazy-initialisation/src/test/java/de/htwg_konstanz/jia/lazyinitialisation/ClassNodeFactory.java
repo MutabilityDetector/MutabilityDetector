@@ -36,12 +36,12 @@ final class ClassNodeFactory {
         return InstanceHolder.INSTANCE;
     }
 
-    public ConvenienceClassNode convenienceClassNodeFor(final Class<?> klasse) {
-        final ClassNode classNodeToWrap = classNodeFor(notNull(klasse));
+    public ConvenienceClassNode getConvenienceClassNodeFor(final Class<?> klasse) {
+        final ClassNode classNodeToWrap = getClassNodeFor(notNull(klasse));
         return ConvenienceClassNode.newInstance(classNodeToWrap);
     }
 
-    public ClassNode classNodeFor(final Class<?> klasse) {
+    public ClassNode getClassNodeFor(final Class<?> klasse) {
         final ClassName dotted = Dotted.fromClass(notNull(klasse));
         final ClassReader cr = tryToCreateClassReaderFor(dotted.asString());
         final ClassNode result = new ClassNode();

@@ -27,7 +27,15 @@ final class DefaultUnknownTypeValue implements UnknownTypeValue {
     }
 
     public static UnknownTypeValue getInstanceForNull() {
-        return new DefaultUnknownTypeValue(Null.INSTANCE);
+        return new DefaultUnknownTypeValue(Default.NULL);
+    }
+    
+    public static UnknownTypeValue getInstanceForUnknownPrimitive() {
+        return getInstance(Default.UNKNOWN_PRIMITIVE);
+    }
+
+    public static UnknownTypeValue getInstanceForUnknownReference() {
+        return getInstance(Default.UNKNOWN_REFERENCE);
     }
 
     @Override
@@ -193,12 +201,22 @@ final class DefaultUnknownTypeValue implements UnknownTypeValue {
 
     @Override
     public boolean isNull() {
-        return Null.INSTANCE == value;
+        return Default.NULL == value;
     }
 
     @Override
     public boolean isNotNull() {
         return !isNull();
+    }
+
+    @Override
+    public boolean isUnknownPrimitive() {
+        return Default.UNKNOWN_PRIMITIVE == value;
+    }
+
+    @Override
+    public boolean isUnknownReference() {
+        return Default.UNKNOWN_REFERENCE == value;
     }
 
     @Override

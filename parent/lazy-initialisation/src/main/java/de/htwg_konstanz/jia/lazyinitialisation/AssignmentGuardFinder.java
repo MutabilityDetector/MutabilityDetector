@@ -85,7 +85,7 @@ final class AssignmentGuardFinder {
         return result;
     }
 
-    public boolean isAssignmentGuard(final int indexOfInstructionToAnalyse) {
+    boolean isAssignmentGuard(final int indexOfInstructionToAnalyse) {
         boolean result = false;
         final List<AbstractInsnNode> blockInstructions = controlFlowBlock.getBlockInstructions();
         final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;

@@ -65,7 +65,7 @@ public final class CandidatesForLazyVariablesFinderTest {
 
     private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
         final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-        return factory.convenienceClassNodeFor(klasse);
+        return factory.getConvenienceClassNodeFor(klasse);
     }
 
 

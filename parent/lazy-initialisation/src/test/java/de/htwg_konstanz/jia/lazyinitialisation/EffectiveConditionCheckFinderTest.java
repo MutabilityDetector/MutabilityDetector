@@ -58,7 +58,7 @@ public final class EffectiveConditionCheckFinderTest {
 
         private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
-            return factory.convenienceClassNodeFor(klasse);
+            return factory.getConvenienceClassNodeFor(klasse);
         }
 
         private static boolean isNotNull(final Object ref) {
@@ -72,9 +72,9 @@ public final class EffectiveConditionCheckFinderTest {
 
             final FieldNode variable = classNode.findVariableWithName(variableName);
             if (isNotNull(variable)) {
-                final EffectivePutfieldInsnFinder epif = EffectivePutfieldInsnFinder.newInstance(variable,
+                final EffectiveAssignmentInsnFinder epif = EffectiveAssignmentInsnFinder.newInstance(variable,
                         setterInstructions);
-                result = epif.getEffectivePutfieldInstruction();
+                result = epif.getEffectiveAssignmentInstruction();
             }
             return result;
         }
