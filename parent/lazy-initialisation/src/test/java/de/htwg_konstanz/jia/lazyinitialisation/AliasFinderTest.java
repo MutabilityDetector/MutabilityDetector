@@ -28,7 +28,7 @@ public final class AliasFinderTest {
 
         private final ConvenienceClassNode classNode;
         private int blockNumber = -1;
-        private ControlFlowBlock controlFlowBlockToCheck = null;
+        private ControlFlowBlock controlFlowBlockToExamine = null;
         private Alias alias = Alias.newInstance(false, Integer.MIN_VALUE);
         private int indexOfLocalVariable = -1;
         
@@ -54,13 +54,13 @@ public final class AliasFinderTest {
             final ControlFlowBlockFactory controlFlowBlockFactory = ControlFlowBlockFactory.newInstance(owner, setter);
             final Map<Integer, ControlFlowBlock> allControlFlowBlocksForMethod = controlFlowBlockFactory
                         .getAllControlFlowBlocksForMethodInMap();
-            controlFlowBlockToCheck = allControlFlowBlocksForMethod.get(blockNumber);
+            controlFlowBlockToExamine = allControlFlowBlocksForMethod.get(blockNumber);
             return this;
         }
 
         public Asserter storesAliasForVariable(final String theVariableName) {
-            final AliasFinder aliasFinder = AliasFinder.newInstance(theVariableName);
-            alias = aliasFinder.searchForAliasInBlock(controlFlowBlockToCheck);
+            final Finder<Alias> f = AliasFinder.newInstance(theVariableName, controlFlowBlockToExamine);
+            alias = f.find();
             return this;
         }
 

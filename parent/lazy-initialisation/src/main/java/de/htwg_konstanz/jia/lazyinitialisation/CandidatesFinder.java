@@ -3,8 +3,8 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static org.apache.commons.lang3.Validate.notNull;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -17,24 +17,25 @@ import org.objectweb.asm.tree.FieldNode;
  * @version 05.03.2013
  */
 @ThreadSafe
-final class CandidatesForLazyVariablesFinder {
+final class CandidatesFinder implements Finder<VariableInitialisersAssociation> {
 
-    private final List<FieldNode> variables;
-    private final VariableSetterCollection candidatesForLazyVariables;
+    private final Collection<FieldNode> variables;
+    private final VariableInitialisersAssociation candidatesForLazyVariables;
     private volatile boolean isCandidatesAlreadyFound;
 
-    private CandidatesForLazyVariablesFinder(final List<FieldNode> theVariables) {
-        variables = Collections.unmodifiableList(theVariables);
-        candidatesForLazyVariables = VariableSetterCollection.newInstance();
+    private CandidatesFinder(final Collection<FieldNode> theVariables) {
+        variables = Collections.unmodifiableCollection(theVariables);
+        candidatesForLazyVariables = VariableInitialisersAssociation.newInstance();
         isCandidatesAlreadyFound = false;
     }
 
-    public static CandidatesForLazyVariablesFinder newInstance(final List<FieldNode> variablesOfAnalysedClass) {
+    public static CandidatesFinder newInstance(final Collection<FieldNode> variablesOfAnalysedClass) {
         final String msg = "Argument 'variablesOfAnalysedClass' must not be null!";
-        return new CandidatesForLazyVariablesFinder(notNull(variablesOfAnalysedClass, msg));
+        return new CandidatesFinder(notNull(variablesOfAnalysedClass, msg));
     }
 
-    public VariableSetterCollection getCandidatesForLazyVariables() {
+    @Override
+    public VariableInitialisersAssociation find() {
         if (!isCandidatesAlreadyFound) {
             findCandidatesForLazyVariables();
             isCandidatesAlreadyFound = true;

@@ -23,7 +23,7 @@ import org.objectweb.asm.tree.VarInsnNode;
  * @version 02.03.2013
  */
 @Immutable
-final class AssignmentGuardFinder {
+final class AssignmentGuardFinder implements Finder<JumpInsn> {
 
     private final String variableName;
     private final ControlFlowBlock controlFlowBlock;
@@ -38,7 +38,8 @@ final class AssignmentGuardFinder {
         return new AssignmentGuardFinder(notEmpty(variableName), notNull(controlFlowBlock));
     }
 
-    public JumpInsn findAssignmentGuardForVariableInBlock() {
+    @Override
+    public JumpInsn find() {
         final Set<JumpInsn> supposedAssignmentGuards = collectSupposedAssignmentGuards();
         JumpInsn result = NullJumpInsn.getInstance();
         if (1 < supposedAssignmentGuards.size()) {
@@ -114,8 +115,8 @@ final class AssignmentGuardFinder {
     }
 
     private boolean isLoadInstructionForAlias(final AbstractInsnNode insn) {
-        final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
-        final Alias alias = aliasFinder.searchForAliasInBlock(controlFlowBlock);
+        final Finder<Alias> f = AliasFinder.newInstance(variableName, controlFlowBlock);
+        final Alias alias = f.find();
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
 

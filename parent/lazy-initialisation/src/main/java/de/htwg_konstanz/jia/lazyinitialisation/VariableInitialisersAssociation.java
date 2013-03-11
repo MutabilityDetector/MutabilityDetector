@@ -16,16 +16,16 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 /**
- * Collection to hold relations of variables and setter methods for
- * those.
+ * Collection to hold relations of variables and initialising methods for those.
  * 
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 06.02.2013
  */
 @NotThreadSafe
-final class VariableSetterCollection implements Iterable<Entry<FieldNode, VariableSetterCollection.Setters>> {
+final class VariableInitialisersAssociation implements
+        Iterable<Entry<FieldNode, VariableInitialisersAssociation.Initialisers>> {
 
-    public interface Setters {
+    public interface Initialisers {
 
         boolean add(MethodNode setter);
 
@@ -35,19 +35,19 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
 
         List<MethodNode> getMethods();
 
-        Setters copy();
+        Initialisers copy();
 
     } // interface Setters
 
     @Immutable
-    private static final class NullSetters implements Setters {
-        private static final NullSetters INSTANCE = new NullSetters();
+    private static final class NullInitialisers implements Initialisers {
+        private static final NullInitialisers INSTANCE = new NullInitialisers();
 
-        private NullSetters() {
+        private NullInitialisers() {
             super();
         }
 
-        public static Setters getInstance() {
+        public static Initialisers getInstance() {
             return INSTANCE;
         }
 
@@ -72,7 +72,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
         }
 
         @Override
-        public Setters copy() {
+        public Initialisers copy() {
             return this;
         }
 
@@ -84,18 +84,18 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
     } // class NullSetters
 
     @NotThreadSafe
-    private static final class SettersDefault implements Setters {
+    private static final class DefaultInitialisers implements Initialisers {
         private final List<MethodNode> constructors;
         private final List<MethodNode> methods;
 
-        private SettersDefault() {
+        private DefaultInitialisers() {
             final byte initialSize = 2;
             constructors = new ArrayList<MethodNode>(initialSize);
             methods = new ArrayList<MethodNode>(initialSize);
         }
 
-        public static Setters getInstance() {
-            return new SettersDefault();
+        public static Initialisers getInstance() {
+            return new DefaultInitialisers();
         }
 
         @Override
@@ -129,8 +129,8 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
         }
 
         @Override
-        public Setters copy() {
-            final SettersDefault result = new SettersDefault();
+        public Initialisers copy() {
+            final DefaultInitialisers result = new DefaultInitialisers();
             result.constructors.addAll(constructors);
             result.methods.addAll(methods);
             return result;
@@ -153,10 +153,10 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
             if (obj == null) {
                 return false;
             }
-            if (!(obj instanceof SettersDefault)) {
+            if (!(obj instanceof DefaultInitialisers)) {
                 return false;
             }
-            final SettersDefault other = (SettersDefault) obj;
+            final DefaultInitialisers other = (DefaultInitialisers) obj;
             if (!constructors.equals(other.constructors)) {
                 return false;
             }
@@ -191,21 +191,21 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
 
     } // class Setters
 
-    private final ConcurrentMap<FieldNode, Setters> variableSetters;
+    private final ConcurrentMap<FieldNode, Initialisers> variableInitialisers;
 
-    private VariableSetterCollection() {
-        this(new ConcurrentHashMap<FieldNode, Setters>());
+    private VariableInitialisersAssociation() {
+        this(new ConcurrentHashMap<FieldNode, Initialisers>());
     }
 
-    private VariableSetterCollection(final Map<FieldNode, Setters> otherVariableSetters) {
-        variableSetters = new ConcurrentHashMap<FieldNode, Setters>(otherVariableSetters);
+    private VariableInitialisersAssociation(final Map<FieldNode, Initialisers> otherVariableSetters) {
+        variableInitialisers = new ConcurrentHashMap<FieldNode, Initialisers>(otherVariableSetters);
     }
 
     /**
      * @return a new instance of this class.
      */
-    public static VariableSetterCollection newInstance() {
-        return new VariableSetterCollection();
+    public static VariableInitialisersAssociation newInstance() {
+        return new VariableInitialisersAssociation();
     }
 
     /**
@@ -217,34 +217,34 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
      */
     public boolean addVariable(final FieldNode variableNode) {
         notNull(variableNode);
-        final boolean result = !variableSetters.containsKey(variableNode);
-        variableSetters.put(variableNode, SettersDefault.getInstance());
+        final boolean result = !variableInitialisers.containsKey(variableNode);
+        variableInitialisers.put(variableNode, DefaultInitialisers.getInstance());
         return result;
     }
 
     /**
      * @param variableName
-     *            name of the variable to associate the setter method
-     *            with. Must neither be {@code null} nor {@code ""}.
-     * @param setter
-     *            setter to be associated with {@code variableName}
-     *            Must not be {@code null}.
-     * @return {@code true} if {@code variableName} was already part
-     *         of this collection, {@code false} else.
+     *            name of the variable to associate the setter method with. Must
+     *            neither be {@code null} nor {@code ""}.
+     * @param initialiser
+     *            initialiser to be associated with {@code variableName} Must
+     *            not be {@code null}.
+     * @return {@code true} if {@code variableName} was already part of this
+     *         collection, {@code false} else.
      */
-    public boolean addSetterForVariable(final String variableName, final MethodNode setter) {
+    public boolean addInitialiserForVariable(final String variableName, final MethodNode initialiser) {
         notEmpty(variableName);
-        notNull(setter);
+        notNull(initialiser);
         boolean result = false;
         final FieldNode variableNode = getVariableNodeForName(variableName);
         if (null != variableNode) {
-            result = addSetterForVariable(variableNode, setter);
+            result = addSetterForVariable(variableNode, initialiser);
         }
         return result;
     }
 
     private FieldNode getVariableNodeForName(final String variableName) {
-        for (final Map.Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
+        for (final Map.Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             final FieldNode variableNode = entry.getKey();
             if (variableNode.name.equals(variableName)) {
                 return variableNode;
@@ -254,37 +254,37 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
     }
 
     private boolean addSetterForVariable(final FieldNode variableNode, final MethodNode setter) {
-        final Setters settersForvariable = variableSetters.get(variableNode);
+        final Initialisers settersForvariable = variableInitialisers.get(variableNode);
         return settersForvariable.add(setter);
     }
 
     public List<FieldNode> getVariables() {
-        return new ArrayList<FieldNode>(variableSetters.keySet());
+        return new ArrayList<FieldNode>(variableInitialisers.keySet());
     }
 
-    public Setters getAllSettersFor(final FieldNode variable) {
+    public Initialisers getInitialisersFor(final FieldNode variable) {
         notNull(variable);
-        Setters result = variableSetters.get(variable);
+        Initialisers result = variableInitialisers.get(variable);
         if (null == result) {
-            result = NullSetters.getInstance();
+            result = NullInitialisers.getInstance();
         }
         return result;
     }
 
     /**
      * @param variableName
-     *            name of the variable to get all setter methods for.
-     *            Must neither be {@code null} nor {@code ""}.
-     * @return all setter methods (not constructors) for the variable
-     *         with name {@code variableName}. If none are found an
-     *         empty {@code List} is returned.
+     *            name of the variable to get all initialising methods for. Must
+     *            neither be {@code null} nor {@code ""}.
+     * @return all initialising methods (not constructors) for the variable with
+     *         name {@code variableName}. If none are found an empty
+     *         {@code List} is returned.
      */
-    public List<MethodNode> getSetterMethodsFor(final String variableName) {
+    public List<MethodNode> getInitialisingMethodsFor(final String variableName) {
         notEmpty(variableName);
         List<MethodNode> result = Collections.emptyList();
         final FieldNode variableNode = getVariableNodeForName(variableName);
         if (null != variableNode) {
-            final Setters settersForVariable = variableSetters.get(variableNode);
+            final Initialisers settersForVariable = variableInitialisers.get(variableNode);
             result = settersForVariable.getMethods();
         }
         return result;
@@ -300,41 +300,41 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
      */
     public List<FieldNode> removeUnassociatedVariables() {
         final List<FieldNode> result = new ArrayList<FieldNode>();
-        for (final Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
-            final Setters setters = entry.getValue();
+        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
+            final Initialisers setters = entry.getValue();
             if (setters.isEmpty()) {
                 result.add(entry.getKey());
             }
         }
         for (final FieldNode unassociatedVariable : result) {
-            variableSetters.remove(unassociatedVariable);
+            variableInitialisers.remove(unassociatedVariable);
         }
         return result;
     }
 
     public boolean isEmpty() {
-        return variableSetters.isEmpty();
+        return variableInitialisers.isEmpty();
     }
 
     public int getSize() {
-        return variableSetters.size();
+        return variableInitialisers.size();
     }
 
     @Override
-    public Iterator<Entry<FieldNode, Setters>> iterator() {
-        final Set<Entry<FieldNode, Setters>> entrySet = new HashSet<Entry<FieldNode, Setters>>(variableSetters.size());
-        for (final Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
+    public Iterator<Entry<FieldNode, Initialisers>> iterator() {
+        final Set<Entry<FieldNode, Initialisers>> entrySet = new HashSet<Entry<FieldNode, Initialisers>>(variableInitialisers.size());
+        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             entrySet.add(entry);
         }
         return entrySet.iterator();
     }
 
-    public VariableSetterCollection copy() {
-        final VariableSetterCollection result = new VariableSetterCollection();
-        for (final Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
+    public VariableInitialisersAssociation copy() {
+        final VariableInitialisersAssociation result = new VariableInitialisersAssociation();
+        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             final FieldNode variable = entry.getKey();
-            final Setters setters = entry.getValue();
-            result.variableSetters.put(variable, setters.copy());
+            final Initialisers setters = entry.getValue();
+            result.variableInitialisers.put(variable, setters.copy());
         }
         return result;
     }
@@ -343,7 +343,7 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + variableSetters.hashCode();
+        result = prime * result + variableInitialisers.hashCode();
         return result;
     }
 
@@ -355,11 +355,11 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
         if (o == null) {
             return false;
         }
-        if (!(o instanceof VariableSetterCollection)) {
+        if (!(o instanceof VariableInitialisersAssociation)) {
             return false;
         }
-        final VariableSetterCollection other = (VariableSetterCollection) o;
-        if (!variableSetters.equals(other.variableSetters)) {
+        final VariableInitialisersAssociation other = (VariableInitialisersAssociation) o;
+        if (!variableInitialisers.equals(other.variableInitialisers)) {
             return false;
         }
         return true;
@@ -369,16 +369,16 @@ final class VariableSetterCollection implements Iterable<Entry<FieldNode, Variab
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" [");
-        builder.append("variableSetterMethods=").append(variableSettersToString()).append("]");
+        builder.append("variableInitialisers=").append(variableInitialisersToString()).append("]");
         return builder.toString();
     }
 
-    private String variableSettersToString() {
+    private String variableInitialisersToString() {
         final StringBuilder result = new StringBuilder();
         result.append("{");
         final String separator = ", ";
         String sep = "";
-        for (final Entry<FieldNode, Setters> entry : variableSetters.entrySet()) {
+        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             final FieldNode variable = entry.getKey();
             result.append(sep).append(variable.name).append(": ").append(entry.getValue());
             sep = separator;

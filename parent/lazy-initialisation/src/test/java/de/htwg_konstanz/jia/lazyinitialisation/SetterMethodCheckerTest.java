@@ -12,7 +12,6 @@ import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -166,9 +165,9 @@ public final class SetterMethodCheckerTest {
 
 
     static abstract class CustomSetterMethodChecker {
-        private final VariableSetterCollection variableSetterCollection;
-        private CustomSetterMethodChecker(final VariableSetterCollection theVariableSetterCollection) {
-            variableSetterCollection = theVariableSetterCollection;
+        private final VariableInitialisersAssociation variableInitialisersAssociation;
+        private CustomSetterMethodChecker(final VariableInitialisersAssociation theVariableInitialisersAssociation) {
+            variableInitialisersAssociation = theVariableInitialisersAssociation;
         }
 //        public abstract VariableSetterCollection findCandidatesForLazyInitialisation();
 //        public abstract VariableSetterCollection associateSettersForEachCandidate(VariableSetterCollection variableSetterCollection);

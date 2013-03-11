@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.objectweb.asm.tree.FieldNode;
 
 import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Default;
-import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithCustomInitialValue.IntegerValid2;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithJvmInitialValue.SynchronizedObjectValid;
@@ -49,13 +49,13 @@ public final class InitialValueFinderTest {
 
         public Set<UnknownTypeValue> getPossibleInitialValuesFor(final Class<?> targetClass, final String variableName) {
             final ConvenienceClassNode classNode = createAppropriateClassNode(targetClass);
-            final VariableSetterCollection varSetters = classNode.getVariableSetterCollection();
-            for (final Entry<FieldNode, Setters> entry : varSetters) {
+            final VariableInitialisersAssociation varInitialisers = classNode.getVariableInitialisersAssociation();
+            for (final Entry<FieldNode, Initialisers> entry : varInitialisers) {
                 final FieldNode variable = entry.getKey();
                 if (variable.name.equals(variableName)) {
-                    final Setters setters = entry.getValue();
+                    final Initialisers setters = entry.getValue();
                     final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-                    return initialValueFinder.getPossibleInitialValues();
+                    return initialValueFinder.find();
                 }
             }
             return Collections.emptySet();

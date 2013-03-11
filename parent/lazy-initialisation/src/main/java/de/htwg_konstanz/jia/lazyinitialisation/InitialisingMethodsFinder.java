@@ -3,8 +3,8 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.notNull;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -19,16 +19,16 @@ import org.objectweb.asm.tree.MethodNode;
  * @version 05.03.2013
  */
 @ThreadSafe
-final class InitialisingMethodsFinder {
+final class InitialisingMethodsFinder implements Finder<VariableInitialisersAssociation> {
 
-    private final List<MethodNode> methods;
-    private final VariableSetterCollection variableSetterCollection;
+    private final Collection<MethodNode> methods;
+    private final VariableInitialisersAssociation variableInitialisers;
     private volatile boolean areMethodsAlreadyExamined;
 
-    public InitialisingMethodsFinder(final List<MethodNode> theMethods,
-            final VariableSetterCollection theVariableSetterCollection) {
-        methods = Collections.unmodifiableList(theMethods);
-        variableSetterCollection = theVariableSetterCollection.copy();
+    private InitialisingMethodsFinder(final Collection<MethodNode> theMethods,
+            final VariableInitialisersAssociation theVariableSetterCollection) {
+        methods = Collections.unmodifiableCollection(theMethods);
+        variableInitialisers = theVariableSetterCollection.copy();
         areMethodsAlreadyExamined = false;
     }
 
@@ -37,31 +37,33 @@ final class InitialisingMethodsFinder {
      * {@code null}.
      * 
      * @param methodsOfAnalysedClass
-     *            {@link List} containing all methods ({@code MethodNode}) of
-     *            the class under examination.
-     * @param variableSetterCollection
-     *            an instance of {@link VariableSetterCollection} which contains
-     *            all candidates for lazy variables of {@code classNode}. This
-     *            object should be obtained by
-     *            {@link CandidatesForLazyVariablesFinder#getCandidatesForLazyVariables()}
+     *            {@link Collection} containing all methods ({@code MethodNode})
+     *            of the class under examination.
+     * @param variableInitialiserAssociation
+     *            an instance of
+     *            {@link VariableInitialiserAssociation} which
+     *            contains all candidates for lazy variables of
+     *            {@code classNode}. This object should be obtained by
+     *            {@link CandidatesFinder#find()}
      *            .
      * @return a new instance of this class.
      */
-    public static InitialisingMethodsFinder newInstance(final List<MethodNode> methodsOfAnalysedClass,
-            final VariableSetterCollection variableSetterCollection) {
+    public static InitialisingMethodsFinder newInstance(final Collection<MethodNode> methodsOfAnalysedClass,
+            final VariableInitialisersAssociation variableInitialiserAssociation) {
         final String msgTemplate = "Argument '%s' must not be null!";
         notNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
-        notNull(variableSetterCollection, format(msgTemplate, "variableSetterCollection"));
-        return new InitialisingMethodsFinder(methodsOfAnalysedClass, variableSetterCollection);
+        notNull(variableInitialiserAssociation, format(msgTemplate, "variableInitialiserAssociation"));
+        return new InitialisingMethodsFinder(methodsOfAnalysedClass, variableInitialiserAssociation);
     }
 
-    public VariableSetterCollection getVariablesAndTheirInitialisingMethods() {
+    @Override
+    public VariableInitialisersAssociation find() {
         if (areMethodsToBeExamined()) {
             collectAllInitialisingMethodsForAllLazyVariableCandidates();
-            variableSetterCollection.removeUnassociatedVariables();
+            variableInitialisers.removeUnassociatedVariables();
             areMethodsAlreadyExamined = true;
         }
-        return variableSetterCollection.copy();
+        return variableInitialisers.copy();
     }
 
     private boolean areMethodsToBeExamined() {
@@ -78,7 +80,7 @@ final class InitialisingMethodsFinder {
         for (final AbstractInsnNode insn : methodNode.instructions.toArray()) {
             if (isInitialiserForAVariable(insn)) {
                 final FieldInsnNode assignmentInstruction = (FieldInsnNode) insn;
-                variableSetterCollection.addSetterForVariable(assignmentInstruction.name, methodNode);
+                variableInitialisers.addInitialiserForVariable(assignmentInstruction.name, methodNode);
             }
         }
     }
@@ -99,7 +101,7 @@ final class InitialisingMethodsFinder {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [methods=").append(methods);
-        b.append(", variableSetterCollection=").append(variableSetterCollection);
+        b.append(", variableSetterCollection=").append(variableInitialisers);
         b.append(", areMethodsAlreadyExamined=").append(areMethodsAlreadyExamined).append("]");
         return b.toString();
     }

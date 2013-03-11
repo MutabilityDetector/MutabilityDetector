@@ -95,7 +95,7 @@ public final class ControlFlowBlockTest {
         public void assertBlockContainsEffectiveAssignmentInsn(final int blockNumber) {
             final ControlFlowBlock b = getBlockWithNumber(blockNumber);
             final FieldNode assignedVariable = convenienceClassNode.findVariableWithName(variableName);
-            assertTrue(b.containsEffectiveAssignmentInstruction(assignedVariable));
+            assertTrue(b.containsAssignmentGuardForVariable(assignedVariable.name));
         }
 
         public void assertBlockContainsConditionCheck(final int blockNumber) {

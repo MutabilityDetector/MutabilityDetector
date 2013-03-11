@@ -56,8 +56,8 @@ public final class InitialisingMethodsFinderTest {
             return this;
         }
 
-        public VariableSetterCollection getVariableSetterCollection() {
-            return createVariableSetterCollectionFor(klasse);
+        public VariableInitialisersAssociation getVariableInitialisersAssociation() {
+            return createVariableInitialisersAssociationFor(klasse);
         }
         
         public String getVariableName() {
@@ -95,8 +95,8 @@ public final class InitialisingMethodsFinderTest {
 
         @Override
         protected boolean matchesSafely(final Reason reason) {
-            final VariableSetterCollection c = reason.getVariableSetterCollection();
-            final List<MethodNode> setterMethods = c.getSetterMethodsFor(reason.getVariableName());
+            final VariableInitialisersAssociation c = reason.getVariableInitialisersAssociation();
+            final List<MethodNode> setterMethods = c.getInitialisingMethodsFor(reason.getVariableName());
             actualNumber = setterMethods.size();
             return expectedNumber == actualNumber;
         }
@@ -104,12 +104,12 @@ public final class InitialisingMethodsFinderTest {
     } // class CandidatesSizeMatcher
 
 
-    private static VariableSetterCollection createVariableSetterCollectionFor(final Class<?> klasse) {
+    private static VariableInitialisersAssociation createVariableInitialisersAssociationFor(final Class<?> klasse) {
         final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
-        final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(c.getFields());
-        final VariableSetterCollection v = cf.getCandidatesForLazyVariables();
+        final CandidatesFinder cf = CandidatesFinder.newInstance(c.getFields());
+        final VariableInitialisersAssociation v = cf.find();
         final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(c.getMethods(), v);
-        return imf.getVariablesAndTheirInitialisingMethods();
+        return imf.find();
     }
 
     private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
@@ -121,7 +121,7 @@ public final class InitialisingMethodsFinderTest {
     public void exceptionIfFirstArgumentIsNull() {
         final String expMsg = "Argument 'methodsOfAnalysedClass' must not be null!";
         try {
-            InitialisingMethodsFinder.newInstance(null, VariableSetterCollection.newInstance());
+            InitialisingMethodsFinder.newInstance(null, VariableInitialisersAssociation.newInstance());
             fail(format("Expected NullPointerException with message '%s'.", expMsg));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(expMsg)));

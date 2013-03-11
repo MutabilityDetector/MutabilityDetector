@@ -24,14 +24,16 @@ import org.objectweb.asm.tree.VarInsnNode;
  * @version 27.02.2013
  */
 @Immutable
-final class AliasFinder {
+final class AliasFinder implements Finder<Alias> {
 
     private final Set<ControlFlowBlock> alreadyVisited;
     private final String variableName;
+    private final ControlFlowBlock controlFlowBlockToExamine;
 
-    private AliasFinder(final String theVariableName) {
+    private AliasFinder(final String theVariableName, final ControlFlowBlock theControlFlowBlockToExamine) {
         alreadyVisited = new HashSet<ControlFlowBlock>();
         variableName = theVariableName;
+        controlFlowBlockToExamine = theControlFlowBlockToExamine;
     }
 
     /**
@@ -40,23 +42,28 @@ final class AliasFinder {
      * @param variableName
      *            name of the instance variable to search aliases for. Must
      *            neither be {@code null} nor empty.
-     * @return a new instance of this class.
-     */
-    public static AliasFinder newInstance(final String variableName) {
-        return new AliasFinder(notEmpty(variableName));
-    }
-
-    /**
-     * @param block
+     * @param controlFlowBlockToExamine
      *            a {@link ControlFlowBlock} which possibly contains the setup
      *            of an alias for a lazy variable. This method thereby examines
      *            predecessors of {@code block}, too. This parameter must not be
-     *            {@code null}.
+     *            {@code null}. 
+     * @return a new instance of this class.
+     */
+    public static AliasFinder newInstance(final String variableName, final ControlFlowBlock controlFlowBlockToExamine) {
+        return new AliasFinder(notEmpty(variableName), notNull(controlFlowBlockToExamine));
+    }
+
+    /**
      * @return an {@link Alias}. This is never {@code null}. If {@code block}
      *         does not contain an alias, the following is being returned:
      *         {@code Alias [doesExist=false, localVariable=Integer.MIN_VALUE]}.
      */
-    public Alias searchForAliasInBlock(final ControlFlowBlock block) {
+    @Override
+    public Alias find() {
+        return searchForAliasInBlock(controlFlowBlockToExamine);
+    }
+
+    private Alias searchForAliasInBlock(final ControlFlowBlock block) {
         notNull(block);
         Alias result = Alias.newInstance(false, Integer.MIN_VALUE);
         if (alreadyVisited.contains(block)) {
@@ -123,6 +130,7 @@ final class AliasFinder {
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("AliasFinder [").append("variableName=").append(variableName);
+        builder.append(", controlFlowBlockToExamine=").append(controlFlowBlockToExamine);
         builder.append(", alreadyVisited=").append(alreadyVisited).append("]");
         return builder.toString();
     }

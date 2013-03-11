@@ -2,7 +2,11 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -11,14 +15,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 14.02.2013
  */
 @NotThreadSafe
-final class InitialValueFinder {
+final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
 
     @Immutable
     private static final class InitialValueFactory {
@@ -115,11 +119,11 @@ final class InitialValueFinder {
 
 
     private final FieldNode variable;
-    private final Setters setters;
+    private final Initialisers setters;
     private final Set<UnknownTypeValue> possibleInitialValues;
     private volatile boolean arePossibleInitialValuesAlreadyFound;
 
-    private InitialValueFinder(final FieldNode theVariable, final Setters theSetters) {
+    private InitialValueFinder(final FieldNode theVariable, final Initialisers theSetters) {
         variable = theVariable;
         setters = theSetters;
         final byte supposedMaximumOfPossibleInitialValues = 5;
@@ -137,22 +141,21 @@ final class InitialValueFinder {
      *            the setters for {@code variable}.
      * @return a new instance of this class.
      */
-    public static InitialValueFinder newInstance(final FieldNode variable, final Setters setters) {
+    public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers setters) {
         return new InitialValueFinder(notNull(variable), notNull(setters));
     }
 
     /**
-     * Gets all possible values the given variable may have after
-     * initialisation of its class. {@link #run()} has to be invoked
-     * beforehand!
+     * Gets all possible values the given variable may have after initialisation
+     * of its class. {@link #run()} has to be invoked beforehand!
      * 
      * @return all possible values the given variable may have after
-     *         initialisation of its class. This is never {@code null}
-     *         .
+     *         initialisation of its class. This is never {@code null} .
      * @throws IllegalStateException
      *             if {@code run} was not invoked before this method.
      */
-    public Set<UnknownTypeValue> getPossibleInitialValues() {
+    @Override
+    public Set<UnknownTypeValue> find() {
         if (!arePossibleInitialValuesAlreadyFound) {
             findPossibleInitialValues();
             arePossibleInitialValuesAlreadyFound = true;
@@ -187,8 +190,7 @@ final class InitialValueFinder {
     }
 
     private AbstractInsnNode findValueSetUpInsnIn(final InsnList constructorInsns) {
-        final EffectiveAssignmentInsnFinder eaf = EffectiveAssignmentInsnFinder.newInstance(variable,
-                constructorInsns);
+        final EffectiveAssignmentInsnFinder eaf = EffectiveAssignmentInsnFinder.newInstance(variable, constructorInsns);
         final AssignmentInsn effectiveAssignmentInsn = eaf.getEffectiveAssignmentInstruction();
         final int indexOfAssignmentInstruction = effectiveAssignmentInsn.getIndexOfAssignmentInstruction();
         final AbstractInsnNode result = constructorInsns.get(indexOfAssignmentInstruction - 1);

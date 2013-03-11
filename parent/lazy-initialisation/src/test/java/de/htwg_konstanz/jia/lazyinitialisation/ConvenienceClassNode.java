@@ -27,11 +27,11 @@ import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlock
 final class ConvenienceClassNode {
 
     private final ClassNode classNode;
-    private VariableSetterCollection variableSetterCollection;
+    private VariableInitialisersAssociation variableInitialisersAssociation;
 
     private ConvenienceClassNode(final ClassNode theClassNode) {
         classNode = flatCopy(theClassNode);
-        variableSetterCollection = null;
+        variableInitialisersAssociation = null;
     }
 
     private static ClassNode flatCopy(final ClassNode source) {
@@ -133,14 +133,14 @@ final class ConvenienceClassNode {
         return result;
     }
 
-    public synchronized VariableSetterCollection getVariableSetterCollection() {
-        VariableSetterCollection result = variableSetterCollection;
+    public synchronized VariableInitialisersAssociation getVariableInitialisersAssociation() {
+        VariableInitialisersAssociation result = variableInitialisersAssociation;
         if (null == result) {
-            final CandidatesForLazyVariablesFinder cf = CandidatesForLazyVariablesFinder.newInstance(getFields());
-            final VariableSetterCollection candidates = cf.getCandidatesForLazyVariables();
+            final CandidatesFinder cf = CandidatesFinder.newInstance(getFields());
+            final VariableInitialisersAssociation candidates = cf.find();
             final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(getMethods(), candidates);
-            result = imf.getVariablesAndTheirInitialisingMethods();
-            variableSetterCollection = result;
+            result = imf.find();
+            variableInitialisersAssociation = result;
         }
         return result;
     }

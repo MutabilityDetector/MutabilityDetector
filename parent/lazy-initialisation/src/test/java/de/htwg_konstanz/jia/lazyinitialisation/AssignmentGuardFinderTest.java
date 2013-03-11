@@ -26,7 +26,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectValid.SomeObject;
@@ -71,11 +71,11 @@ public final class AssignmentGuardFinderTest {
         }
 
         private void findPossibleInitialValuesForVariable() {
-            final VariableSetterCollection variableSetterCollection = ccn.getVariableSetterCollection();
+            final VariableInitialisersAssociation variableInitialisers = ccn.getVariableInitialisersAssociation();
             final FieldNode variable = ccn.findVariableWithName(variableName);
-            final Setters setters = variableSetterCollection.getAllSettersFor(variable);
+            final Initialisers setters = variableInitialisers.getInitialisersFor(variable);
             final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-            possibleInitialValuesForVariable.addAll(initialValueFinder.getPossibleInitialValues());
+            possibleInitialValuesForVariable.addAll(initialValueFinder.find());
         }
 
         public String variableName() {
@@ -419,75 +419,75 @@ public final class AssignmentGuardFinderTest {
         final Set<UnknownTypeValue> possibleInitialValuesForVariable = r.initialValues();
         for (final ControlFlowBlock cfb : r.blocks()) {
             final List<AbstractInsnNode> blockInstructions = cfb.getBlockInstructions();
-            for (final JumpInsn relevantJumpInsn : cfb.getAssignmentGuardsForVariable(r.variableName())) {
-                final int indexOfPredecessorInstruction = relevantJumpInsn.getIndexWithinBlock() - 1;
-                final AbstractInsnNode predecessorInstruction = cfb.getBlockInstructionForIndex(indexOfPredecessorInstruction);
 
-                if (isOneValueJumpInstruction(relevantJumpInsn)) {
-                    if (checksAgainstZero(relevantJumpInsn)) {
-                        if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                            if (isZeroOnlyPossibleInitialValueForVariable(possibleInitialValuesForVariable)) {
-                                // passt
-                                System.out.println("Passt.");
-                                result = true;
-                            } else {
-                                System.out.println("Nicht korrekt verzoegert initialisiert.");
-                                result = false;
-                            }
-                        } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
+            final JumpInsn relevantJumpInsn = cfb.getAssignmentGuardForVariable(r.variableName());
+            final int indexOfPredecessorInstruction = relevantJumpInsn.getIndexWithinBlock() - 1;
+            final AbstractInsnNode predecessorInstruction = cfb.getBlockInstructionForIndex(indexOfPredecessorInstruction);
+
+            if (isOneValueJumpInstruction(relevantJumpInsn)) {
+                if (checksAgainstZero(relevantJumpInsn)) {
+                    if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
+                        if (isZeroOnlyPossibleInitialValueForVariable(possibleInitialValuesForVariable)) {
                             // passt
                             System.out.println("Passt.");
                             result = true;
-                        } else if (isComparisonInsn(predecessorInstruction)) {
-                            final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
-                            final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
-                            if (isGetfieldForVariable(predecessorOfComparisonInsn, r.variableName())) {
-                                result = foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
-                            } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
-                                result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
-                            }
-                        } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
-                            if (isOtherObjectAnInitialValue(relevantJumpInsn, blockInstructions)) {
-                                System.out.println("Passt.");
-                                result = true;
-                            } else {
-                                // nicht korrekt verzoegert initialisiert
-                                System.out.println("Nicht korrekt verzoegert initialisiert.");
-                                result = false;
-                            }
+                        } else {
+                            System.out.println("Nicht korrekt verzoegert initialisiert.");
+                            result = false;
                         }
-                    } else if (checksAgainstNull(relevantJumpInsn)) {
-                        // TODO Was passiert hier?
-                    } else if (checksAgainstNonNull(relevantJumpInsn)) {
-                        if (!possibleInitialValuesForVariable.contains(DefaultUnknownTypeValue.getInstanceForNull())) {
+                    } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
+                        // passt
+                        System.out.println("Passt.");
+                        result = true;
+                    } else if (isComparisonInsn(predecessorInstruction)) {
+                        final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
+                        final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
+                        if (isGetfieldForVariable(predecessorOfComparisonInsn, r.variableName())) {
+                            result = foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                        } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
+                            result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                        }
+                    } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
+                        if (isOtherObjectAnInitialValue(relevantJumpInsn, blockInstructions)) {
+                            System.out.println("Passt.");
+                            result = true;
+                        } else {
                             // nicht korrekt verzoegert initialisiert
                             System.out.println("Nicht korrekt verzoegert initialisiert.");
                             result = false;
-                        } else if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                            final UnknownTypeValue nullValue = DefaultUnknownTypeValue.getInstanceForNull();
-                            if (possibleInitialValuesForVariable.contains(nullValue)) {
-                                // passt
-                                System.out.println("Passt.");
-                                result = true;
-                            } else {
-                                // nicht korrekt verzoegert initialisiert
-                                System.out.println("Nicht korrekt verzoegert initialisiert.");
-                                result = false;
-                            }
-                        } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
+                        }
+                    }
+                } else if (checksAgainstNull(relevantJumpInsn)) {
+                    // TODO Was passiert hier?
+                } else if (checksAgainstNonNull(relevantJumpInsn)) {
+                    if (!possibleInitialValuesForVariable.contains(DefaultUnknownTypeValue.getInstanceForNull())) {
+                        // nicht korrekt verzoegert initialisiert
+                        System.out.println("Nicht korrekt verzoegert initialisiert.");
+                        result = false;
+                    } else if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
+                        final UnknownTypeValue nullValue = DefaultUnknownTypeValue.getInstanceForNull();
+                        if (possibleInitialValuesForVariable.contains(nullValue)) {
                             // passt
                             System.out.println("Passt.");
                             result = true;
-                        } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
-                            // TODO Block implementieren.
+                        } else {
+                            // nicht korrekt verzoegert initialisiert
+                            System.out.println("Nicht korrekt verzoegert initialisiert.");
+                            result = false;
                         }
-                    }
-                } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {
-                    if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
-                        result = foo(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
                     } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
-                        result = bar(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
+                        // passt
+                        System.out.println("Passt.");
+                        result = true;
+                    } else if (checksAgainstOtherObject(relevantJumpInsn, blockInstructions, r.variableName())) {
+                        // TODO Block implementieren.
                     }
+                }
+            } else if (isTwoValuesJumpInstruction(relevantJumpInsn)) {
+                if (isGetfieldForVariable(predecessorInstruction, r.variableName())) {
+                    result = foo(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
+                } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorInstruction)) {
+                    result = bar(indexOfPredecessorInstruction, blockInstructions, possibleInitialValuesForVariable);
                 }
             }
         }
@@ -613,8 +613,8 @@ public final class AssignmentGuardFinderTest {
     private static boolean isLoadInstructionForAlias(final String variableName,
             final ControlFlowBlock blockWithJumpInsn,
             final AbstractInsnNode insn) {
-        final AliasFinder aliasFinder = AliasFinder.newInstance(variableName);
-        final Alias alias = aliasFinder.searchForAliasInBlock(blockWithJumpInsn);
+        final Finder<Alias> f = AliasFinder.newInstance(variableName, blockWithJumpInsn);
+        final Alias alias = f.find();
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
 

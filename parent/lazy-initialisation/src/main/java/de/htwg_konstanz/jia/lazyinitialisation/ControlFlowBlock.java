@@ -187,7 +187,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     private final Range rangeOfBlockInstructions;
     private final Set<ControlFlowBlock> predecessors;
     private final Set<ControlFlowBlock> successors;
-    @GuardedBy("this") private final Map<String, List<JumpInsn>> assignmentGuards;
+    @GuardedBy("this") private final Map<String, JumpInsn> assignmentGuards;
     private int hashCode;
     private String stringRepresentation;
 
@@ -201,7 +201,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         rangeOfBlockInstructions = theRangeOfBlockInstructionIndices;
         predecessors = new HashSet<ControlFlowBlock>();
         successors = new HashSet<ControlFlowBlock>();
-        assignmentGuards = new WeakHashMap<String, List<JumpInsn>>();
+        assignmentGuards = new WeakHashMap<String, JumpInsn>();
         hashCode = 0;
         stringRepresentation = null;
     }
@@ -260,24 +260,17 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return result;
     }
 
-//    public boolean containsEffectiveAssignmentInstruction(final FieldNode assignedVariable) {
-//        final AbstractInsnNode[] blockInstructions = Arrays.copyOfRange(methodInstructions,
-//                rangeOfBlockInstructions.lowerBoundary, rangeOfBlockInstructions.upperBoundary + 1);
-//        final EffectivePutfieldInsnFinder f = EffectivePutfieldInsnFinder.newInstance(assignedVariable,
-//                blockInstructions);
-//        final AssignmentInsn effectivePutfieldInstruction = f.getEffectivePutfieldInstruction();
-//        return !effectivePutfieldInstruction.isNull();
-//    }
-
-    public synchronized boolean containsAssignmentGuardsForVariable(final String variableName) {
+    public synchronized boolean containsAssignmentGuardForVariable(final String variableName) {
         final boolean result;
         if (variableNameIsNotSuitable(variableName)) {
             result = false;
         } else if (assignmentGuards.containsKey(variableName)) {
-            result = true;
+            final JumpInsn supposedAssignmentGuard = assignmentGuards.get(variableName);
+            result = supposedAssignmentGuard.isAssignmentGuard();
         } else {
-            findAssignmentGuardsForVariableInThisBlock(variableName);
-            result = assignmentGuards.containsKey(variableName);
+            findAssignmentGuardForVariableInThisBlock(variableName);
+//            result = assignmentGuards.containsKey(variableName);
+            result = containsAssignmentGuardForVariable(variableName);
         }
         return result;
     }
@@ -286,42 +279,26 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return null == variableName || variableName.isEmpty();
     }
 
-    private void findAssignmentGuardsForVariableInThisBlock(final String variableName) {
-        // TODO Auf neuen AssignmentGuard umstellen.
-        final AssignmentGuardFinder f = AssignmentGuardFinder.newInstance(variableName, this);
-        for (final JumpInsn jumpInsn : getJumpInstructions()) {
-            if (f.isAssignmentGuard(jumpInsn.getIndexWithinBlock())) {
-                addToAssignmentGuards(variableName, jumpInsn);
-            }
-        }
+    private void findAssignmentGuardForVariableInThisBlock(final String variableName) {
+        final Finder<JumpInsn> f = AssignmentGuardFinder.newInstance(variableName, this);
+        final JumpInsn supposedAssignmentGuard = f.find();
+        addToAssignmentGuardsIfNecessary(variableName, supposedAssignmentGuard);
     }
 
-    private void addToAssignmentGuards(final String variableName, final JumpInsn jumpInstruction) {
-        final List<JumpInsn> l;
-        if (assignmentGuards.containsKey(variableName)) {
-            l = assignmentGuards.get(variableName);
-            l.add(jumpInstruction);
-        } else {
-            final byte expectedMaximumOfEffectiveJumpInstructions = 3;
-            l = new ArrayList<JumpInsn>(expectedMaximumOfEffectiveJumpInstructions);
-            l.add(jumpInstruction);
-            assignmentGuards.put(variableName, l);
+    private void addToAssignmentGuardsIfNecessary(final String variableName, final JumpInsn assignmentGuard) {
+        if (!assignmentGuards.containsKey(variableName)) {
+            assignmentGuards.put(variableName, assignmentGuard);
         }
     }
 
     public JumpInsn getAssignmentGuardForVariable(final String variableName) {
-        final AssignmentGuardFinder f = AssignmentGuardFinder.newInstance(variableName, this);
-        return f.findAssignmentGuardForVariableInBlock();
-    }
-
-    public List<JumpInsn> getAssignmentGuardsForVariable(final String variableName) {
-        final List<JumpInsn> result;
-        if (containsAssignmentGuardsForVariable(variableName)) {
+        final JumpInsn result;
+        if (containsAssignmentGuardForVariable(variableName)) {
             synchronized (this) {
-                result = Collections.unmodifiableList(assignmentGuards.get(variableName));
+                result = assignmentGuards.get(variableName);
             }
         } else {
-            result = Collections.emptyList();
+            result = NullJumpInsn.getInstance();
         }
         return result;
     }

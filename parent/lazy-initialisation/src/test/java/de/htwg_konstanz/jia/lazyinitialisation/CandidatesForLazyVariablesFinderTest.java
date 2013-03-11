@@ -46,21 +46,21 @@ public final class CandidatesForLazyVariablesFinderTest {
 
         @Override
         protected boolean matchesSafely(final Class<?> klasse) {
-            final VariableSetterCollection c = findCandidatesForLazyVariablesIn(klasse);
+            final VariableInitialisersAssociation c = findCandidatesForLazyVariablesIn(klasse);
             return expectedNumber == c.getSize();
         }
 
     } // class CandidatesSizeMatcher
 
 
-    private static VariableSetterCollection findCandidatesForLazyVariablesIn(final Class<?> klasse) {
-        final CandidatesForLazyVariablesFinder f = getFinderForClass(klasse);
-        return f.getCandidatesForLazyVariables();
+    private static VariableInitialisersAssociation findCandidatesForLazyVariablesIn(final Class<?> klasse) {
+        final CandidatesFinder f = getFinderForClass(klasse);
+        return f.find();
     }
 
-    private static CandidatesForLazyVariablesFinder getFinderForClass(final Class<?> klasse) {
+    private static CandidatesFinder getFinderForClass(final Class<?> klasse) {
         final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
-        return CandidatesForLazyVariablesFinder.newInstance(c.getFields());
+        return CandidatesFinder.newInstance(c.getFields());
     }
 
     private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
@@ -83,7 +83,7 @@ public final class CandidatesForLazyVariablesFinderTest {
     public void factoryMethodChecksArgument() {
         final String exp = "Argument 'variablesOfAnalysedClass' must not be null!";
         try {
-            CandidatesForLazyVariablesFinder.newInstance(null);
+            CandidatesFinder.newInstance(null);
             fail(String.format("Expected NullPointerException with message '%s'.", exp));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(exp)));
@@ -92,10 +92,10 @@ public final class CandidatesForLazyVariablesFinderTest {
 
     @Test
     public void plurallyGettingResultDeliversAlwaysSameObject() {
-        final CandidatesForLazyVariablesFinder f = getFinderForClass(FloatValid.class);
-        final VariableSetterCollection r1 = f.getCandidatesForLazyVariables();
-        final VariableSetterCollection r2 = f.getCandidatesForLazyVariables();
-        final VariableSetterCollection r3 = f.getCandidatesForLazyVariables();
+        final CandidatesFinder f = getFinderForClass(FloatValid.class);
+        final VariableInitialisersAssociation r1 = f.find();
+        final VariableInitialisersAssociation r2 = f.find();
+        final VariableInitialisersAssociation r3 = f.find();
         assertThat(r1, is(equalTo(r2)));
         assertThat(r2, is(equalTo(r3)));
         assertThat(r1, is(equalTo(r3)));

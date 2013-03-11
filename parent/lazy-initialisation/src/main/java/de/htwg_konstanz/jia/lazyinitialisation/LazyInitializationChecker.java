@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
-import de.htwg_konstanz.jia.lazyinitialisation.VariableSetterCollection.Setters;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 
 /**
  * 
@@ -31,12 +31,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
 
     private final class InstanceVerifier implements Runnable {
 
-        private final VariableSetterCollection instanceVariableSetters;
+        private final VariableInitialisersAssociation instanceVariableInitialisers;
         private final List<AssignmentInsn> putfieldInstructions;
         private final String owner;
 
         public InstanceVerifier() {
-            instanceVariableSetters = VariableSetterCollection.newInstance();
+            instanceVariableInitialisers = VariableInitialisersAssociation.newInstance();
             putfieldInstructions = new ArrayList<AssignmentInsn>();
             owner = classNode.name;
         }
@@ -45,14 +45,14 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         public void run() {
             // TODO Auto-generated method stub
             collectAndAssociateLazyVariablesAndLazyMethods();
-            if (instanceVariableSetters.isEmpty()) {
+            if (instanceVariableInitialisers.isEmpty()) {
                 // Klasse ist evtl. unveraenderlich.
             }
-            for (final Entry<FieldNode, Setters> entry : instanceVariableSetters) {
+            for (final Entry<FieldNode, Initialisers> entry : instanceVariableInitialisers) {
                 final FieldNode variable = entry.getKey();
-                final Setters setters = entry.getValue();
+                final Initialisers setters = entry.getValue();
                 final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-                final Set<UnknownTypeValue> possibleInitialValuesForVar = initialValueFinder.getPossibleInitialValues();
+                final Set<UnknownTypeValue> possibleInitialValuesForVar = initialValueFinder.find();
                 final List<MethodNode> setterMethods = setters.getMethods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
@@ -72,13 +72,13 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         private void collectAndAssociateLazyVariablesAndLazyMethods() {
             collectPrivateNonFinalInstanceVariables();
             collectSetters();
-            instanceVariableSetters.removeUnassociatedVariables();
+            instanceVariableInitialisers.removeUnassociatedVariables();
         }
 
         private void collectPrivateNonFinalInstanceVariables() {
             for (final FieldNode fieldNode : (List<FieldNode>) classNode.fields) {
                 if (isPrivateAndNonFinalInstanceVariable(fieldNode.access)) {
-                    instanceVariableSetters.addVariable(fieldNode);
+                    instanceVariableInitialisers.addVariable(fieldNode);
                 }
             }
         }
@@ -98,7 +98,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         private void collectAllPutfieldInsnsOf(final MethodNode methodNode) {
             for (final AssignmentInsn putfieldInstruction : getPutfieldInstructions(methodNode.instructions)) {
                 final String nameOfInstanceVariable = putfieldInstruction.getNameOfAssignedVariable();
-                instanceVariableSetters.addSetterForVariable(nameOfInstanceVariable, methodNode);
+                instanceVariableInitialisers.addInitialiserForVariable(nameOfInstanceVariable, methodNode);
                 break;
             }
         }
@@ -137,10 +137,10 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         }
 
         private void printAllInstanceVariableSetters() {
-            instanceVariableSetters.removeUnassociatedVariables();
-            for (final Map.Entry<FieldNode, Setters> entry : instanceVariableSetters) {
+            instanceVariableInitialisers.removeUnassociatedVariables();
+            for (final Map.Entry<FieldNode, Initialisers> entry : instanceVariableInitialisers) {
                 final FieldNode instanceVariable = entry.getKey();
-                final Setters setters = entry.getValue();
+                final Initialisers setters = entry.getValue();
                 System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
                 for (final MethodNode constructor : setters.getConstructors()) {
                     System.out.println(String.format("  Constructor: '%s'.", constructor.name));
