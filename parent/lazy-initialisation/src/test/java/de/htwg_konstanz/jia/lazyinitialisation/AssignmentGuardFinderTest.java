@@ -501,9 +501,10 @@ public final class AssignmentGuardFinderTest {
                 } else if (isLoadInstructionForAlias(candidate, block, predecessor)) {
                     // passt
                 } else if (isComparisonInsn(predecessor)) {
-                    final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
-                    final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
-                    if (isGetfieldForVariable(predecessorOfComparisonInsn, r.variableName())) {
+                    final int indexOfPreComparisonInsn = indexOfPredecessor - 1;
+                    final AbstractInsnNode predecessorOfComparisonInsn = block
+                            .getBlockInstructionForIndex(indexOfPreComparisonInsn);
+                    if (isGetfieldForVariable(predecessorOfComparisonInsn, candidate)) {
                         result = foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
                     } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
                         result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
@@ -575,6 +576,25 @@ public final class AssignmentGuardFinderTest {
             default:
                 return false;
             }
+        }
+
+        private static boolean foo(final int indexOfPreComparisonInsn,
+                final List<AbstractInsnNode> blockInstructions,
+                final Set<UnknownTypeValue> possibleInitialValuesForVariable) {
+            final boolean result;
+            final int indexOfGetfieldPredecessorInsn = indexOfPreComparisonInsn - 2;
+            final AbstractInsnNode predecessorOfGetfieldInsn = blockInstructions.get(indexOfGetfieldPredecessorInsn);
+            final UnknownTypeValue comparativeValue = getComparativeValue(predecessorOfGetfieldInsn);
+            if (possibleInitialValuesForVariable.contains(comparativeValue)) {
+                // passt
+                System.out.println("Passt.");
+                result = true;
+            } else {
+                // nicht korrekt verzoegert initialisiert
+                System.out.println("Nicht korrekt verzoegert initialisiert.");
+                result = false;
+            }
+            return result;
         }
 
         private static boolean checksAgainstNull(final JumpInsn jumpInstruction) {
