@@ -42,7 +42,7 @@ public final class EffectiveConditionCheckFinderTest {
         private static EffectiveConditionCheckFinder createEffectiveJumpInsnFinder(final Class<?> klasse,
                 final String variableName, final String setterName) {
             EffectiveConditionCheckFinder result = null;
-            final ConvenienceClassNode classNode = createConvenienceClassNodeFor(klasse);
+            final EnhancedClassNode classNode = createConvenienceClassNodeFor(klasse);
             final List<MethodNode> setters = classNode.findMethodByName(setterName);
             final MethodNode setter = setters.get(0);
             final InsnList setterInstructions = setter.instructions;
@@ -56,7 +56,7 @@ public final class EffectiveConditionCheckFinderTest {
             return result;
         }
 
-        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+        private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.getConvenienceClassNodeFor(klasse);
         }
@@ -65,7 +65,7 @@ public final class EffectiveConditionCheckFinderTest {
             return null != ref;
         }
 
-        private static AssignmentInsn findEffectivePutfieldInsnFor(final ConvenienceClassNode classNode,
+        private static AssignmentInsn findEffectivePutfieldInsnFor(final EnhancedClassNode classNode,
                 final String variableName,
                 final InsnList setterInstructions) {
             AssignmentInsn result = NullAssignmentInsn.getInstance();

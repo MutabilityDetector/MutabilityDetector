@@ -26,6 +26,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Entry;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
@@ -41,7 +42,7 @@ public final class AssignmentGuardFinderTest {
     @NotThreadSafe
     private static final class Reason {
 
-        private final ConvenienceClassNode ccn;
+        private final EnhancedClassNode ccn;
         private final List<ControlFlowBlock> cfbs;
         private String variableName;
         private final Set<UnknownTypeValue> possibleInitialValuesForVariable;
@@ -53,7 +54,7 @@ public final class AssignmentGuardFinderTest {
             possibleInitialValuesForVariable = new HashSet<UnknownTypeValue>();
         }
 
-        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+        private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.getConvenienceClassNodeFor(klasse);
         }
@@ -74,8 +75,8 @@ public final class AssignmentGuardFinderTest {
             final VariableInitialisersAssociation variableInitialisers = ccn.getVariableInitialisersAssociation();
             final FieldNode variable = ccn.findVariableWithName(variableName);
             final Initialisers setters = variableInitialisers.getInitialisersFor(variable);
-            final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
-            possibleInitialValuesForVariable.addAll(initialValueFinder.find());
+            final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(variable, setters);
+            possibleInitialValuesForVariable.addAll(f.find());
         }
 
         public String variableName() {
@@ -395,24 +396,203 @@ public final class AssignmentGuardFinderTest {
 
     // Ueberpruefung der Sprunganweisung
     
-    static final class AssignmentGuardChecker {
-        private String variableName;
-        private ConvenienceClassNode classNode;
-        private Set<UnknownTypeValue> possibleInitialValuesForVariable;
+    static final class AssignmentGuardVerifier {
+
+        private Map<FieldNode, Collection<UnknownTypeValue>> initialValues;
+        private Map<FieldNode, Collection<JumpInsn>> assignmentGuards;
+        private VariableInitialisersAssociation variableInitialisersAssociation;
         
-        private AssignmentGuardChecker(final String theVariableName, final ConvenienceClassNode theClassNode) {
+        private String variableName;
+        private EnhancedClassNode classNode;
+        private Set<UnknownTypeValue> candidates;
+        
+        private AssignmentGuardVerifier(final String theVariableName, final EnhancedClassNode theClassNode) {
             variableName = theVariableName;
             classNode = theClassNode;
         }
 
-        public static AssignmentGuardChecker newInstance(final String variableName, final ConvenienceClassNode classNode) {
+        public static AssignmentGuardVerifier newInstance(final String variableName, final EnhancedClassNode classNode) {
             notEmpty(variableName, "Argument 'variableName' must not be empty!");
             notNull(classNode, "Argument 'classNode' must not be null!");
-            return new AssignmentGuardChecker(variableName, classNode);
+            return new AssignmentGuardVerifier(variableName, classNode);
         }
 
+        public void verify() {
+            for (final Entry e : variableInitialisersAssociation) {
+                final Initialisers initialisers = e.getInitialisers();
+                final Collection<MethodNode> initialisingMethods = initialisers.getMethods();
+                final Collection<JumpInsn> assignmentGuardsForCandidate = assignmentGuards.get(e.getCandidate());
+                for (final MethodNode initialisingMethod : initialisingMethods) {
+                    final EnhancedClassNode cn = getEnhancedClassNode();
+                    final List<ControlFlowBlock> blocks = cn.getControlFlowBlocksForMethod(initialisingMethod);
+                    for (final JumpInsn assignmentGuard : assignmentGuardsForCandidate) {
+                        final ControlFlowBlock block = getControlFlowBlockWhichCovers(blocks, assignmentGuard);
+                        if (isOneValueJumpInstruction(assignmentGuard)) {
+                            verifyOneValueAssignmentGuard(e.getCandidate(), assignmentGuard, block);
+                        }
+                    }
+                    
+                }
+            }
+        }
+
+        private ControlFlowBlock getControlFlowBlockWhichCovers(final Collection<ControlFlowBlock> controlFlowBlocks,
+                final JumpInsn assignmentGuard) {
+            for (final ControlFlowBlock controlFlowBlock : controlFlowBlocks) {
+                if (controlFlowBlock.covers(assignmentGuard.getIndexWithinMethod())) {
+                    return controlFlowBlock;
+                }
+            }
+            return null;
+        }
+
+        private static boolean isOneValueJumpInstruction(final JumpInsn jumpInstruction) {
+            switch (getOpcode(jumpInstruction)) {
+            case IFEQ:
+            case IFNE:
+            case IFLT:
+            case IFGE:
+            case IFGT:
+            case IFLE:
+            case IFNULL:
+            case IFNONNULL:
+                return true;
+
+            default:
+                return false;
+            }
+        }
         
-    } // class AssignmentGuardChecker
+        private void verifyOneValueAssignmentGuard(final FieldNode candidate, final JumpInsn assignmentGuard,
+                final ControlFlowBlock block) {
+            if (checksAgainstZero(assignmentGuard)) {
+                verifyZeroCheckAssignmentGuard(candidate, assignmentGuard, block);
+            } else if (checksAgainstNull(assignmentGuard)) {
+                
+            } else if (checksAgainstNonNull(assignmentGuard)) {
+                
+            }
+            // TODO Auto-generated method stub
+            
+        }
+
+        private static boolean checksAgainstZero(final JumpInsn jumpInstruction) {
+            switch (getOpcode(jumpInstruction)) {
+            case IFEQ:
+            case IFNE:
+            case IFLT:
+            case IFGE:
+            case IFGT:
+            case IFLE:
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        // TODO Methode ueberarbeiten.
+        private void verifyZeroCheckAssignmentGuard(final FieldNode candidate, final JumpInsn assignmentGuard,
+                final ControlFlowBlock block) {
+            final int indexOfPredecessor = assignmentGuard.getIndexWithinBlock() - 1;
+            final AbstractInsnNode predecessor = block.getBlockInstructionForIndex(indexOfPredecessor);
+            if (isGetfieldForVariable(predecessor, candidate)) {
+                if (!isZeroOnlyPossibleInitialValueForVariable(candidate)) {
+                    // TODO Meldung machen.
+                } else if (isLoadInstructionForAlias(candidate, block, predecessor)) {
+                    // passt
+                } else if (isComparisonInsn(predecessor)) {
+                    final int indexOfPreComparisonInsn = indexOfPredecessorInstruction - 1;
+                    final AbstractInsnNode predecessorOfComparisonInsn = blockInstructions.get(indexOfPreComparisonInsn);
+                    if (isGetfieldForVariable(predecessorOfComparisonInsn, r.variableName())) {
+                        result = foo(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                    } else if (isLoadInstructionForAlias(r.variableName(), cfb, predecessorOfComparisonInsn)) {
+                        result = bar(indexOfPreComparisonInsn, blockInstructions, possibleInitialValuesForVariable);
+                    }
+                } else if (checksAgainstOtherObject(assignmentGuard, blockInstructions, r.variableName())) {
+                    if (isOtherObjectAnInitialValue(relevantJumpInsn, blockInstructions)) {
+                        System.out.println("Passt.");
+                        result = true;
+                    } else {
+                        // TODO Meldung machen.
+                    }
+                }
+            }
+        }
+
+        private static boolean isGetfieldForVariable(final AbstractInsnNode insn, final FieldNode candidate) {
+            boolean result = false;
+            if (GETFIELD == insn.getOpcode()) {
+                final FieldInsnNode getfield = (FieldInsnNode) insn;
+                result = candidate.name.equals(getfield.name);
+            }
+            return result;
+        }
+
+        private boolean isZeroOnlyPossibleInitialValueForVariable(final FieldNode candidate) {
+            boolean result = true;
+            final Collection<UnknownTypeValue> possibleInitialValuesForVariable = initialValues.get(candidate);
+            final Iterator<UnknownTypeValue> i = possibleInitialValuesForVariable.iterator();
+            while (result && i.hasNext()) {
+                final UnknownTypeValue u = i.next();
+                result = u.isZero();
+            }
+            return result;
+        }
+
+        private static boolean isLoadInstructionForAlias(final FieldNode candidate,
+                final ControlFlowBlock blockWithAssignmentGuard,
+                final AbstractInsnNode insn) {
+            final Finder<Alias> f = AliasFinder.newInstance(candidate.name, blockWithAssignmentGuard);
+            final Alias alias = f.find();
+            return alias.doesExist && isLoadInstructionForAlias(insn, alias);
+        }
+
+        private static boolean isLoadInstructionForAlias(final AbstractInsnNode insn, final Alias alias) {
+            boolean result = false;
+            if (AbstractInsnNode.VAR_INSN == insn.getType()) {
+                final VarInsnNode loadInstruction = (VarInsnNode) insn;
+                result = loadInstruction.var == alias.localVariable;
+            }
+            return result;
+        }
+
+        private static boolean isComparisonInsn(final AbstractInsnNode abstractInsnNode) {
+            switch (abstractInsnNode.getOpcode()) {
+            case LCMP:
+            case FCMPL:
+            case FCMPG:
+            case DCMPL:
+            case DCMPG:
+            case IF_ICMPEQ:
+            case IF_ICMPNE:
+            case IF_ICMPLT:
+            case IF_ICMPGE:
+            case IF_ICMPGT:
+            case IF_ICMPLE:
+            case IF_ACMPEQ:
+            case IF_ACMPNE:
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        private static boolean checksAgainstNull(final JumpInsn jumpInstruction) {
+            return IFNULL == getOpcode(jumpInstruction);
+        }
+
+        private static boolean checksAgainstNonNull(final JumpInsn jumpInstruction) {
+            return IFNONNULL == getOpcode(jumpInstruction);
+        }
+
+        /*
+         * Mock.
+         */
+        private static EnhancedClassNode getEnhancedClassNode() {
+            return null;
+        }
+        
+    } // class AssignmentGuardVerifier
 
     public static boolean checksAgainstAppropriateComparativeValue(final Reason r) {
         boolean result = false;

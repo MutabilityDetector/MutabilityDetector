@@ -36,9 +36,9 @@ final class ClassNodeFactory {
         return InstanceHolder.INSTANCE;
     }
 
-    public ConvenienceClassNode getConvenienceClassNodeFor(final Class<?> klasse) {
+    public EnhancedClassNode getConvenienceClassNodeFor(final Class<?> klasse) {
         final ClassNode classNodeToWrap = getClassNodeFor(notNull(klasse));
-        return ConvenienceClassNode.newInstance(classNodeToWrap);
+        return EnhancedClassNode.newInstance(classNodeToWrap);
     }
 
     public ClassNode getClassNodeFor(final Class<?> klasse) {

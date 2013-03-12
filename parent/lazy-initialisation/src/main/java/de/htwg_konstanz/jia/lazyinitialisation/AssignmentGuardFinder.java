@@ -4,15 +4,17 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 import static org.objectweb.asm.Opcodes.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
@@ -25,36 +27,45 @@ import org.objectweb.asm.tree.VarInsnNode;
 @Immutable
 final class AssignmentGuardFinder implements Finder<JumpInsn> {
 
-    private final String variableName;
+    private final String candidateName;
     private final ControlFlowBlock controlFlowBlock;
 
-    private AssignmentGuardFinder(final String theVariableName, final ControlFlowBlock theControlFlowBlock) {
-        variableName = theVariableName;
+    private AssignmentGuardFinder(final String theCandidateName, final ControlFlowBlock theControlFlowBlock) {
+        candidateName = theCandidateName;
         controlFlowBlock = theControlFlowBlock;
     }
 
-    public static AssignmentGuardFinder newInstance(final String variableName,
+    /**
+     * Creates a new instance of this class. None of the arguments must be
+     * {@code null}.
+     * 
+     * @param candidateName
+     *            name of the lazy variable. Must not be empty!
+     * @param controlFlowBlock
+     *            the control flow block which is supposed to contain an
+     *            {@link AssignmentGuard}.
+     * @return a new instance of this class.
+     */
+    public static AssignmentGuardFinder newInstance(final String candidateName,
             final ControlFlowBlock controlFlowBlock) {
-        return new AssignmentGuardFinder(notEmpty(variableName), notNull(controlFlowBlock));
+        return new AssignmentGuardFinder(notEmpty(candidateName), notNull(controlFlowBlock));
     }
 
     @Override
     public JumpInsn find() {
-        final Set<JumpInsn> supposedAssignmentGuards = collectSupposedAssignmentGuards();
-        JumpInsn result = NullJumpInsn.getInstance();
+        final Collection<JumpInsn> supposedAssignmentGuards = collectSupposedAssignmentGuards();
         if (1 < supposedAssignmentGuards.size()) {
             throw new IllegalStateException("There exists more than one assignment guard in this block.");
         }
         for (final JumpInsn jumpInsn : supposedAssignmentGuards) {
-            result = jumpInsn;
-            break;
+            return jumpInsn;
         }
-        return result;
+        return NullJumpInsn.getInstance();
     }
 
-    private Set<JumpInsn> collectSupposedAssignmentGuards() {
+    private Collection<JumpInsn> collectSupposedAssignmentGuards() {
         final Set<JumpInsn> result = new HashSet<JumpInsn>();
-        for (final JumpInsn jumpInsn : controlFlowBlock.getJumpInstructions()) {
+        for (final JumpInsn jumpInsn : collectAllJumpInstructionsOfBlock()) {
             final AssignmentGuard.Builder builder = new AssignmentGuard.Builder(jumpInsn);
             final JumpInsn possibleAssignmentGuard = getAssignmentGuard(jumpInsn.getIndexWithinBlock(), builder);
             if (possibleAssignmentGuard.isAssignmentGuard()) {
@@ -62,6 +73,25 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
             }
         }
         return result;
+    }
+
+    private Collection<JumpInsn> collectAllJumpInstructionsOfBlock() {
+        final ArrayList<JumpInsn> result = new ArrayList<JumpInsn>();
+        int indexWithinBlock = 0;
+        for (final AbstractInsnNode insn : controlFlowBlock.getBlockInstructions()) {
+            if (isJumpInsnNode(insn)) {
+                final JumpInsnNode jumpInsnNode = (JumpInsnNode) insn;
+                final int indexWithinMethod = controlFlowBlock.getIndexWithinMethod(indexWithinBlock);
+                result.add(JumpInsnDefault.newInstance(jumpInsnNode, indexWithinBlock, indexWithinMethod));
+            }
+            indexWithinBlock++;
+        }
+        result.trimToSize();
+        return result;
+    }
+
+    private static boolean isJumpInsnNode(final AbstractInsnNode insn) {
+        return AbstractInsnNode.JUMP_INSN == insn.getType();
     }
 
     private JumpInsn getAssignmentGuard(final int indexOfInstructionToAnalyse, final AssignmentGuard.Builder builder) {
@@ -86,36 +116,17 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
         return result;
     }
 
-    boolean isAssignmentGuard(final int indexOfInstructionToAnalyse) {
-        boolean result = false;
-        final List<AbstractInsnNode> blockInstructions = controlFlowBlock.getBlockInstructions();
-        final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;
-        final AbstractInsnNode predecessorInstruction = blockInstructions.get(indexOfPredecessorInstruction);
-        if (isGetfieldForVariable(predecessorInstruction)) {
-            result = true;
-        } else if (isLoadInstructionForAlias(predecessorInstruction)) {
-            result = true;
-        } else if (isEqualsInstruction(predecessorInstruction)) {
-            result = false;
-        } else if (isPushNullOntoStackInstruction(predecessorInstruction)) {
-            result = isAssignmentGuard(indexOfPredecessorInstruction);
-        } else if (isComparisonInstruction(predecessorInstruction)) {
-            result = isAssignmentGuard(indexOfPredecessorInstruction);
-        }
-        return result;
-    }
-
     private boolean isGetfieldForVariable(final AbstractInsnNode insn) {
         boolean result = false;
-        if (Opcodes.GETFIELD == insn.getOpcode()) {
+        if (GETFIELD == insn.getOpcode()) {
             final FieldInsnNode getfield = (FieldInsnNode) insn;
-            result = variableName.equals(getfield.name);
+            result = candidateName.equals(getfield.name);
         }
         return result;
     }
 
     private boolean isLoadInstructionForAlias(final AbstractInsnNode insn) {
-        final Finder<Alias> f = AliasFinder.newInstance(variableName, controlFlowBlock);
+        final Finder<Alias> f = AliasFinder.newInstance(candidateName, controlFlowBlock);
         final Alias alias = f.find();
         return alias.doesExist && isLoadInstructionForAlias(insn, alias);
     }
@@ -168,7 +179,7 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder();
-        b.append(getClass().getSimpleName()).append(" [variableName=").append(variableName);
+        b.append(getClass().getSimpleName()).append(" [candidateName=").append(candidateName);
         b.append(", controlFlowBlock=").append(controlFlowBlock).append("]");
         return b.toString();
     }

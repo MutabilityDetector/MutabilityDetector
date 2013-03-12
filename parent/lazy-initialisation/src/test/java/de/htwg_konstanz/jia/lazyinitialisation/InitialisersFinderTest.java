@@ -1,15 +1,15 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
-import static de.htwg_konstanz.jia.lazyinitialisation.InitialisingMethodsFinderTest.Reason.variable;
-import static de.htwg_konstanz.jia.lazyinitialisation.InitialisingMethodsFinderTest.SettersSizeMatcher.hasNumberOfSetters;
+import static de.htwg_konstanz.jia.lazyinitialisation.InitialisersFinderTest.Reason.variable;
+import static de.htwg_konstanz.jia.lazyinitialisation.InitialisersFinderTest.SettersSizeMatcher.hasNumberOfSetters;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
@@ -34,7 +34,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmI
  * @author Juergen Fickel
  * @version 05.03.2013
  */
-public final class InitialisingMethodsFinderTest {
+public final class InitialisersFinderTest {
 
     @NotThreadSafe
     static final class Reason {
@@ -96,7 +96,7 @@ public final class InitialisingMethodsFinderTest {
         @Override
         protected boolean matchesSafely(final Reason reason) {
             final VariableInitialisersAssociation c = reason.getVariableInitialisersAssociation();
-            final List<MethodNode> setterMethods = c.getInitialisingMethodsFor(reason.getVariableName());
+            final Collection<MethodNode> setterMethods = c.getInitialisingMethodsFor(reason.getVariableName());
             actualNumber = setterMethods.size();
             return expectedNumber == actualNumber;
         }
@@ -105,14 +105,14 @@ public final class InitialisingMethodsFinderTest {
 
 
     private static VariableInitialisersAssociation createVariableInitialisersAssociationFor(final Class<?> klasse) {
-        final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
+        final EnhancedClassNode c = createConvenienceClassNodeFor(klasse);
         final CandidatesFinder cf = CandidatesFinder.newInstance(c.getFields());
         final VariableInitialisersAssociation v = cf.find();
-        final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(c.getMethods(), v);
+        final InitialisersFinder imf = InitialisersFinder.newInstance(c.getMethods(), v);
         return imf.find();
     }
 
-    private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+    private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
         final ClassNodeFactory factory = ClassNodeFactory.getInstance();
         return factory.getConvenienceClassNodeFor(klasse);
     }
@@ -121,7 +121,7 @@ public final class InitialisingMethodsFinderTest {
     public void exceptionIfFirstArgumentIsNull() {
         final String expMsg = "Argument 'methodsOfAnalysedClass' must not be null!";
         try {
-            InitialisingMethodsFinder.newInstance(null, VariableInitialisersAssociation.newInstance());
+            InitialisersFinder.newInstance(null, VariableInitialisersAssociation.newInstance());
             fail(format("Expected NullPointerException with message '%s'.", expMsg));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(expMsg)));
@@ -132,7 +132,7 @@ public final class InitialisingMethodsFinderTest {
     public void exceptionIfSecondArgumentIsNull() {
         final String expMsg = "Argument 'variableSetterCollection' must not be null!";
         try {
-            InitialisingMethodsFinder.newInstance(Collections.<MethodNode> emptyList(), null);
+            InitialisersFinder.newInstance(Collections.<MethodNode> emptyList(), null);
             fail(format("Expected NullPointerException with message '%s'.", expMsg));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(expMsg)));

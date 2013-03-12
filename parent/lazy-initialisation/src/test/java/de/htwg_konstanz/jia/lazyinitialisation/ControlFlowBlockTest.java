@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
@@ -33,7 +33,7 @@ public final class ControlFlowBlockTest {
         private final Class<?> klasse;
         private final String variableName;
         private final String methodName;
-        private final ConvenienceClassNode convenienceClassNode;
+        private final EnhancedClassNode convenienceClassNode;
         private final List<ControlFlowBlock> controlFlowBlocks;
 
         private Helper(final Class<?> theKlasse, final String theVariableName, final String theMethodName) {
@@ -47,7 +47,7 @@ public final class ControlFlowBlockTest {
 
         private static List<ControlFlowBlock> getControlFlowBlocksFor(final Class<?> klasse, final String methodName) {
             List<ControlFlowBlock> result = Collections.emptyList();
-            final ConvenienceClassNode ccn = createConvenienceClassNodeFor(klasse);
+            final EnhancedClassNode ccn = createConvenienceClassNodeFor(klasse);
             final List<MethodNode> methods = ccn.findMethodByName(methodName);
             final MethodNode method = methods.get(0);
             if (isNotNull(method)) {
@@ -56,7 +56,7 @@ public final class ControlFlowBlockTest {
             return result;
         }
 
-        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+        private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.getConvenienceClassNodeFor(klasse);
         }
@@ -98,9 +98,9 @@ public final class ControlFlowBlockTest {
             assertTrue(b.containsAssignmentGuardForVariable(assignedVariable.name));
         }
 
-        public void assertBlockContainsConditionCheck(final int blockNumber) {
+        public void assertBlockContainsAssignmentGuardCheck(final int blockNumber) {
             final ControlFlowBlock b = getBlockWithNumber(blockNumber);
-            assertTrue(b.containsConditionCheck());
+            assertTrue(b.containsAssignmentGuardForVariable(variableName));
         }
 
         private ControlFlowBlock getBlockWithNumber(final int blockNumber) {
@@ -139,7 +139,7 @@ public final class ControlFlowBlockTest {
         for (final int f : further) {
             rb.add(f);
         }
-        cfb = ControlFlowBlock.newInstance(0, id, new AbstractInsnNode[0], rb.build());
+        cfb = ControlFlowBlock.newInstance(0, id, new InsnList(), rb.build());
     }
 
     private void assertCfbDoesNotCover(final int notCovered) {
@@ -171,7 +171,7 @@ public final class ControlFlowBlockTest {
     @Test
     public void findBlockWithConditionCheckForValidIntegerWithJvmInitialValue() {
         final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.IntegerValid.class, "hash", "hashCode");
-        h.assertBlockContainsConditionCheck(0);
+        h.assertBlockContainsAssignmentGuardCheck(0);
     }
 
     @Test
@@ -203,8 +203,8 @@ public final class ControlFlowBlockTest {
     @Ignore("Bytecode of String seems to be platform dependent.")
     public void findBlocksWithConditionCheckForJavaLangString() {
         final Helper h = new Helper(String.class, "hash", "hashCode");
-        h.assertBlockContainsConditionCheck(0);
-        h.assertBlockContainsConditionCheck(1);
+        h.assertBlockContainsAssignmentGuardCheck(0);
+        h.assertBlockContainsAssignmentGuardCheck(1);
     }
 
     @Test
@@ -228,7 +228,7 @@ public final class ControlFlowBlockTest {
     @Test
     public void findblockWithConditionCheckForValidFloatWithJvmInitialValue() {
         final Helper h = new Helper(WithoutAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
-        h.assertBlockContainsConditionCheck(0);
+        h.assertBlockContainsAssignmentGuardCheck(0);
     }
 
     @Test
@@ -255,7 +255,7 @@ public final class ControlFlowBlockTest {
     @Test
     public void findblockWithConditionCheckForAliasedValidFloatWithJvmInitialValue() {
         final Helper h = new Helper(WithAlias.WithJvmInitialValue.FloatValid.class, "hash", "hashCodeFloat");
-        h.assertBlockContainsConditionCheck(1);
+        h.assertBlockContainsAssignmentGuardCheck(1);
     }
 
 }

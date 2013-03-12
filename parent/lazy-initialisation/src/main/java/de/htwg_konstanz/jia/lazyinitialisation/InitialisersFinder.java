@@ -19,13 +19,13 @@ import org.objectweb.asm.tree.MethodNode;
  * @version 05.03.2013
  */
 @ThreadSafe
-final class InitialisingMethodsFinder implements Finder<VariableInitialisersAssociation> {
+final class InitialisersFinder implements Finder<VariableInitialisersAssociation> {
 
     private final Collection<MethodNode> methods;
     private final VariableInitialisersAssociation variableInitialisers;
     private volatile boolean areMethodsAlreadyExamined;
 
-    private InitialisingMethodsFinder(final Collection<MethodNode> theMethods,
+    private InitialisersFinder(final Collection<MethodNode> theMethods,
             final VariableInitialisersAssociation theVariableSetterCollection) {
         methods = Collections.unmodifiableCollection(theMethods);
         variableInitialisers = theVariableSetterCollection.copy();
@@ -39,7 +39,7 @@ final class InitialisingMethodsFinder implements Finder<VariableInitialisersAsso
      * @param methodsOfAnalysedClass
      *            {@link Collection} containing all methods ({@code MethodNode})
      *            of the class under examination.
-     * @param variableInitialiserAssociation
+     * @param variableInitialisersAssociation
      *            an instance of
      *            {@link VariableInitialiserAssociation} which
      *            contains all candidates for lazy variables of
@@ -48,19 +48,18 @@ final class InitialisingMethodsFinder implements Finder<VariableInitialisersAsso
      *            .
      * @return a new instance of this class.
      */
-    public static InitialisingMethodsFinder newInstance(final Collection<MethodNode> methodsOfAnalysedClass,
-            final VariableInitialisersAssociation variableInitialiserAssociation) {
+    public static InitialisersFinder newInstance(final Collection<MethodNode> methodsOfAnalysedClass,
+            final VariableInitialisersAssociation variableInitialisersAssociation) {
         final String msgTemplate = "Argument '%s' must not be null!";
         notNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
-        notNull(variableInitialiserAssociation, format(msgTemplate, "variableInitialiserAssociation"));
-        return new InitialisingMethodsFinder(methodsOfAnalysedClass, variableInitialiserAssociation);
+        notNull(variableInitialisersAssociation, format(msgTemplate, "variableInitialiserAssociation"));
+        return new InitialisersFinder(methodsOfAnalysedClass, variableInitialisersAssociation);
     }
 
     @Override
     public VariableInitialisersAssociation find() {
         if (areMethodsToBeExamined()) {
             collectAllInitialisingMethodsForAllLazyVariableCandidates();
-            variableInitialisers.removeUnassociatedVariables();
             areMethodsAlreadyExamined = true;
         }
         return variableInitialisers.copy();

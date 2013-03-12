@@ -59,11 +59,11 @@ public final class CandidatesForLazyVariablesFinderTest {
     }
 
     private static CandidatesFinder getFinderForClass(final Class<?> klasse) {
-        final ConvenienceClassNode c = createConvenienceClassNodeFor(klasse);
+        final EnhancedClassNode c = createConvenienceClassNodeFor(klasse);
         return CandidatesFinder.newInstance(c.getFields());
     }
 
-    private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+    private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
         final ClassNodeFactory factory = ClassNodeFactory.getInstance();
         return factory.getConvenienceClassNodeFor(klasse);
     }

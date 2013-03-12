@@ -26,7 +26,7 @@ public final class AliasFinderTest {
     @NotThreadSafe
     public static final class Asserter {
 
-        private final ConvenienceClassNode classNode;
+        private final EnhancedClassNode classNode;
         private int blockNumber = -1;
         private ControlFlowBlock controlFlowBlockToExamine = null;
         private Alias alias = Alias.newInstance(false, Integer.MIN_VALUE);

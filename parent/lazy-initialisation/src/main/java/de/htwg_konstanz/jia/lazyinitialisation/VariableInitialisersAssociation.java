@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,8 +21,7 @@ import org.objectweb.asm.tree.MethodNode;
  * @version 06.02.2013
  */
 @NotThreadSafe
-final class VariableInitialisersAssociation implements
-        Iterable<Entry<FieldNode, VariableInitialisersAssociation.Initialisers>> {
+final class VariableInitialisersAssociation implements Iterable<VariableInitialisersAssociation.Entry> {
 
     public interface Initialisers {
 
@@ -189,7 +187,38 @@ final class VariableInitialisersAssociation implements
 
         }
 
-    } // class Setters
+    } // class DefaultInitialisers
+
+
+    public interface Entry {
+
+        FieldNode getCandidate();
+
+        Initialisers getInitialisers();
+
+    } // interface Entry
+
+
+    private static final class DefaultEntry implements Entry {
+        private final FieldNode candidate;
+        private final Initialisers initialisers;
+
+        public DefaultEntry(final FieldNode theCandidate, final Initialisers theInitialisers) {
+            candidate = theCandidate;
+            initialisers = theInitialisers;
+        }
+
+        @Override
+        public FieldNode getCandidate() {
+            return candidate;
+        }
+
+        @Override
+        public Initialisers getInitialisers() {
+            return initialisers;
+        }
+    } // class DefaultEntry
+
 
     private final ConcurrentMap<FieldNode, Initialisers> variableInitialisers;
 
@@ -279,9 +308,9 @@ final class VariableInitialisersAssociation implements
      *         name {@code variableName}. If none are found an empty
      *         {@code List} is returned.
      */
-    public List<MethodNode> getInitialisingMethodsFor(final String variableName) {
+    public Collection<MethodNode> getInitialisingMethodsFor(final String variableName) {
         notEmpty(variableName);
-        List<MethodNode> result = Collections.emptyList();
+        Collection<MethodNode> result = Collections.emptyList();
         final FieldNode variableNode = getVariableNodeForName(variableName);
         if (null != variableNode) {
             final Initialisers settersForVariable = variableInitialisers.get(variableNode);
@@ -291,16 +320,16 @@ final class VariableInitialisersAssociation implements
     }
 
     /**
-     * Removes all variables from this collection which are not
-     * associated with any setters.
+     * Removes all variables from this collection which are not associated with
+     * any setters.
      * 
-     * @return a {@code List} containing the removed unassociated
-     *         variables. This list is empty if none were removed, i.
-     *         e. the result is never {@code null}.
+     * @return a {@code Collection} containing the removed unassociated
+     *         variables. This list is empty if none were removed, i. e. the
+     *         result is never {@code null}.
      */
-    public List<FieldNode> removeUnassociatedVariables() {
+    public Collection<FieldNode> removeAndGetUnassociatedVariables() {
         final List<FieldNode> result = new ArrayList<FieldNode>();
-        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
+        for (final Map.Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             final Initialisers setters = entry.getValue();
             if (setters.isEmpty()) {
                 result.add(entry.getKey());
@@ -321,17 +350,17 @@ final class VariableInitialisersAssociation implements
     }
 
     @Override
-    public Iterator<Entry<FieldNode, Initialisers>> iterator() {
-        final Set<Entry<FieldNode, Initialisers>> entrySet = new HashSet<Entry<FieldNode, Initialisers>>(variableInitialisers.size());
-        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
-            entrySet.add(entry);
+    public Iterator<Entry> iterator() {
+        final Set<Entry> entrySet = new HashSet<Entry>(variableInitialisers.size());
+        for (final Map.Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
+            entrySet.add(new DefaultEntry(entry.getKey(), entry.getValue()));
         }
         return entrySet.iterator();
     }
 
     public VariableInitialisersAssociation copy() {
         final VariableInitialisersAssociation result = new VariableInitialisersAssociation();
-        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
+        for (final Map.Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
             final FieldNode variable = entry.getKey();
             final Initialisers setters = entry.getValue();
             result.variableInitialisers.put(variable, setters.copy());
@@ -378,9 +407,9 @@ final class VariableInitialisersAssociation implements
         result.append("{");
         final String separator = ", ";
         String sep = "";
-        for (final Entry<FieldNode, Initialisers> entry : variableInitialisers.entrySet()) {
-            final FieldNode variable = entry.getKey();
-            result.append(sep).append(variable.name).append(": ").append(entry.getValue());
+        for (final Entry entry : this) {
+            final FieldNode variable = entry.getCandidate();
+            result.append(sep).append(variable.name).append(": ").append(entry.getInitialisers());
             sep = separator;
         }
         result.append("}");

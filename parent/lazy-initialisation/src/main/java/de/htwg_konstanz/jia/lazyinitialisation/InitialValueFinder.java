@@ -137,12 +137,12 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
      * 
      * @param variable
      *            the variable to find the initial value for.
-     * @param setters
-     *            the setters for {@code variable}.
+     * @param initialisers
+     *            the initialisers for {@code variable}.
      * @return a new instance of this class.
      */
-    public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers setters) {
-        return new InitialValueFinder(notNull(variable), notNull(setters));
+    public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers initialisers) {
+        return new InitialValueFinder(notNull(variable), notNull(initialisers));
     }
 
     /**

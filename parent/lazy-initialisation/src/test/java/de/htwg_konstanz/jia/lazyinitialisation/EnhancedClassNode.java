@@ -3,7 +3,6 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 
-import java.lang.Object;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,12 +23,12 @@ import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlock
  * @version 17.02.2013
  */
 @NotThreadSafe
-final class ConvenienceClassNode {
+final class EnhancedClassNode {
 
     private final ClassNode classNode;
     private VariableInitialisersAssociation variableInitialisersAssociation;
 
-    private ConvenienceClassNode(final ClassNode theClassNode) {
+    private EnhancedClassNode(final ClassNode theClassNode) {
         classNode = flatCopy(theClassNode);
         variableInitialisersAssociation = null;
     }
@@ -63,8 +62,8 @@ final class ConvenienceClassNode {
         return result;
     }
 
-    public static ConvenienceClassNode newInstance(final ClassNode classNode) {
-        return new ConvenienceClassNode(notNull(classNode));
+    public static EnhancedClassNode newInstance(final ClassNode classNode) {
+        return new EnhancedClassNode(notNull(classNode));
     }
 
     public String getName() {
@@ -138,7 +137,7 @@ final class ConvenienceClassNode {
         if (null == result) {
             final CandidatesFinder cf = CandidatesFinder.newInstance(getFields());
             final VariableInitialisersAssociation candidates = cf.find();
-            final InitialisingMethodsFinder imf = InitialisingMethodsFinder.newInstance(getMethods(), candidates);
+            final InitialisersFinder imf = InitialisersFinder.newInstance(getMethods(), candidates);
             result = imf.find();
             variableInitialisersAssociation = result;
         }
@@ -157,16 +156,15 @@ final class ConvenienceClassNode {
      * @see #getControlFlowBlocksForMethod(String, Type, Type...)
      */
     public List<ControlFlowBlock> getControlFlowBlocksForMethod(final MethodNode method) {
-        List<ControlFlowBlock> result = Collections.emptyList();
-        if (isNotNull(method)) {
+        final List<ControlFlowBlock> result;
+        if (null != method) {
             final ControlFlowBlockFactory cfbFactory = ControlFlowBlockFactory.newInstance(classNode.name, method);
             result = cfbFactory.getAllControlFlowBlocksForMethod();
+            Collections.sort(result);
+        } else {
+            result =  Collections.emptyList();
         }
         return result;
-    }
-
-    private static boolean isNotNull(final Object ref) {
-        return null != ref;
     }
 
     /**
@@ -192,10 +190,17 @@ final class ConvenienceClassNode {
         return getControlFlowBlocksForMethod(method);
     }
 
+//    public ControlFlowBlock getControlFlowBlockWhichCovers(final JumpInsn assignmentGuard) {
+//        final ControlFlowBlock result;
+//        for (iterable_type iterable_element : iterable) {
+//            
+//        }
+//    }
+
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("ConvenienceClassNode [").append("classNode=").append(classNode).append("]");
+        builder.append(getClass().getSimpleName()).append(" [").append("classNode=").append(classNode).append("]");
         return builder.toString();
     }
 

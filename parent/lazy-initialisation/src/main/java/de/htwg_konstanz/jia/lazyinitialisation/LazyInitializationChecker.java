@@ -6,7 +6,6 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.htwg_konstanz.jia.lazyinitialisation.ControlFlowBlock.ControlFlowBlockFactory;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Entry;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 
 /**
@@ -48,12 +48,12 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
             if (instanceVariableInitialisers.isEmpty()) {
                 // Klasse ist evtl. unveraenderlich.
             }
-            for (final Entry<FieldNode, Initialisers> entry : instanceVariableInitialisers) {
-                final FieldNode variable = entry.getKey();
-                final Initialisers setters = entry.getValue();
-                final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
+            for (final Entry entry : instanceVariableInitialisers) {
+                final FieldNode variable = entry.getCandidate();
+                final Initialisers initialisers = entry.getInitialisers();
+                final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, initialisers);
                 final Set<UnknownTypeValue> possibleInitialValuesForVar = initialValueFinder.find();
-                final List<MethodNode> setterMethods = setters.getMethods();
+                final List<MethodNode> setterMethods = initialisers.getMethods();
                 if (1 == setterMethods.size()) {
                     // Setter-Methode analysieren.
                     final ControlFlowBlockFactory controlFlowBlockFactory = ControlFlowBlockFactory.newInstance(owner,
@@ -72,7 +72,7 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         private void collectAndAssociateLazyVariablesAndLazyMethods() {
             collectPrivateNonFinalInstanceVariables();
             collectSetters();
-            instanceVariableInitialisers.removeUnassociatedVariables();
+            instanceVariableInitialisers.removeAndGetUnassociatedVariables();
         }
 
         private void collectPrivateNonFinalInstanceVariables() {
@@ -137,10 +137,10 @@ public final class LazyInitializationChecker extends AbstractMutabilityChecker {
         }
 
         private void printAllInstanceVariableSetters() {
-            instanceVariableInitialisers.removeUnassociatedVariables();
-            for (final Map.Entry<FieldNode, Initialisers> entry : instanceVariableInitialisers) {
-                final FieldNode instanceVariable = entry.getKey();
-                final Initialisers setters = entry.getValue();
+            instanceVariableInitialisers.removeAndGetUnassociatedVariables();
+            for (final Entry entry : instanceVariableInitialisers) {
+                final FieldNode instanceVariable = entry.getCandidate();
+                final Initialisers setters = entry.getInitialisers();
                 System.out.println(String.format("Instance variable: '%s'", instanceVariable.name));
                 for (final MethodNode constructor : setters.getConstructors()) {
                     System.out.println(String.format("  Constructor: '%s'.", constructor.name));

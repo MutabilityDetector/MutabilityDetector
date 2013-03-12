@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.objectweb.asm.tree.ClassNode;
 
-import de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinderTest.AssignmentGuardChecker;
+import de.htwg_konstanz.jia.lazyinitialisation.AssignmentGuardFinderTest.AssignmentGuardVerifier;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -21,14 +21,14 @@ public final class AssignmentGuardCheckerTest {
 
     @Test(expected = NullPointerException.class)
     public void factoryMethodAssertsThatVariableNameIsNotNull() {
-        AssignmentGuardChecker.newInstance(null, ConvenienceClassNode.newInstance(null));
+        AssignmentGuardVerifier.newInstance(null, EnhancedClassNode.newInstance(null));
     }
 
     @Test
     public void factoryMethodAssertsThatVariableNameIsNotEmpty() {
         final String exp = "Argument 'variableName' must not be empty!";
         try {
-            AssignmentGuardChecker.newInstance("", ConvenienceClassNode.newInstance(new ClassNode()));
+            AssignmentGuardVerifier.newInstance("", EnhancedClassNode.newInstance(new ClassNode()));
             fail(String.format("Expected IllegalArgumentException with message '%s'.", exp));
         } catch (final IllegalArgumentException e) {
             assertThat(e.getMessage(), is(equalTo(exp)));
@@ -39,7 +39,7 @@ public final class AssignmentGuardCheckerTest {
     public void factoryMethodAssertsThatClassNodeIsNotNull() {
         final String exp = "Argument 'classNode' must not be null!";
         try {
-            AssignmentGuardChecker.newInstance("foo", null);
+            AssignmentGuardVerifier.newInstance("foo", null);
             fail(String.format("Expected NullPointerException with message '%s'.", exp));
         } catch (final NullPointerException e) {
             assertThat(e.getMessage(), is(equalTo(exp)));

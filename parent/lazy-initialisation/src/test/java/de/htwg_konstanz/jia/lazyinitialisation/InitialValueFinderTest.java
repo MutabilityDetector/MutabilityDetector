@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -17,6 +16,7 @@ import org.junit.Test;
 import org.objectweb.asm.tree.FieldNode;
 
 import de.htwg_konstanz.jia.lazyinitialisation.UnknownTypeValue.Default;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Entry;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.*;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithCustomInitialValue.IntegerValid2;
@@ -48,20 +48,20 @@ public final class InitialValueFinderTest {
         }
 
         public Set<UnknownTypeValue> getPossibleInitialValuesFor(final Class<?> targetClass, final String variableName) {
-            final ConvenienceClassNode classNode = createAppropriateClassNode(targetClass);
+            final EnhancedClassNode classNode = createAppropriateClassNode(targetClass);
             final VariableInitialisersAssociation varInitialisers = classNode.getVariableInitialisersAssociation();
-            for (final Entry<FieldNode, Initialisers> entry : varInitialisers) {
-                final FieldNode variable = entry.getKey();
-                if (variable.name.equals(variableName)) {
-                    final Initialisers setters = entry.getValue();
-                    final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(variable, setters);
+            for (final Entry entry : varInitialisers) {
+                final FieldNode candidate = entry.getCandidate();
+                if (candidate.name.equals(variableName)) {
+                    final Initialisers setters = entry.getInitialisers();
+                    final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(candidate, setters);
                     return initialValueFinder.find();
                 }
             }
             return Collections.emptySet();
         }
 
-        private static ConvenienceClassNode createAppropriateClassNode(final Class<?> targetClass) {
+        private static EnhancedClassNode createAppropriateClassNode(final Class<?> targetClass) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.getConvenienceClassNodeFor(targetClass);
         }

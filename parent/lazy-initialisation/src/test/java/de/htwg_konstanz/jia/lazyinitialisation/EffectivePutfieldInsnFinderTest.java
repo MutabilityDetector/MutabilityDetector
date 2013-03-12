@@ -38,7 +38,7 @@ public final class EffectivePutfieldInsnFinderTest {
                 final String variableName,
                 final String setterName) {
             AssignmentInsn result = NullAssignmentInsn.getInstance();
-            final ConvenienceClassNode classNode = createConvenienceClassNodeFor(klasse);
+            final EnhancedClassNode classNode = createConvenienceClassNodeFor(klasse);
             final FieldNode variable = classNode.findVariableWithName(variableName);
             if (isNotNull(variable)) {
                 final List<MethodNode> setters = classNode.findMethodByName(setterName);
@@ -52,7 +52,7 @@ public final class EffectivePutfieldInsnFinderTest {
             return result;
         }
 
-        private static ConvenienceClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
+        private static EnhancedClassNode createConvenienceClassNodeFor(final Class<?> klasse) {
             final ClassNodeFactory factory = ClassNodeFactory.getInstance();
             return factory.getConvenienceClassNodeFor(klasse);
         }

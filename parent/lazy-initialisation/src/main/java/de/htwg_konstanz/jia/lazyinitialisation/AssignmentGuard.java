@@ -71,13 +71,13 @@ final class AssignmentGuard implements JumpInsn {
 
 
     @Immutable
-    private static final class InstructionNodeHashCodeCalculator {
+    private static final class InstructionNodesHashCodeCalculator {
 
         private static final byte INITIAL_RESULT = 1;
 
         private final int prime;
 
-        public InstructionNodeHashCodeCalculator(final int thePrime) {
+        public InstructionNodesHashCodeCalculator(final int thePrime) {
             prime = thePrime;
         }
 
@@ -353,7 +353,7 @@ final class AssignmentGuard implements JumpInsn {
         int result = 1;
         final JumpInsnNode jumpInsnNode = getJumpInsnNode();
         result = prime * result + jumpInsnNode.getOpcode();
-        final InstructionNodeHashCodeCalculator hcc = new InstructionNodeHashCodeCalculator(prime);
+        final InstructionNodesHashCodeCalculator hcc = new InstructionNodesHashCodeCalculator(prime);
         for (final AbstractInsnNode predecessor : predecessorInstructions) {
             final int hashCodeOfPredecessor = hcc.hashCode(predecessor);
             result = prime * result + hashCodeOfPredecessor;

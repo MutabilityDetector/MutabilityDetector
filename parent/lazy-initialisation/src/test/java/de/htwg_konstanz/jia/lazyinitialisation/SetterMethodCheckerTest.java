@@ -8,10 +8,14 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.*;
+
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,41 +25,43 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
-import org.mutabilitydetector.checkers.FieldAssignmentVisitor;
-import org.mutabilitydetector.checkers.MethodIs;
-import org.mutabilitydetector.checkers.VarStack;
+import org.mutabilitydetector.checkers.*;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.ClassName;
 import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.mutabilitydetector.locations.FieldLocation;
+import org.objectweb.asm.*;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Entry;
+import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
+
 public final class SetterMethodCheckerTest {
 
-    public static final class SetterMethodChecker extends AbstractMutabilityChecker {
+    public static final class OriginalSetterMethodChecker extends AbstractMutabilityChecker {
 
         private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
         private final AsmVerifierFactory verifierFactory;
 
-        private SetterMethodChecker(final PrivateMethodInvocationInformation privateMethodInvocationInfo,
+        private OriginalSetterMethodChecker(final PrivateMethodInvocationInformation privateMethodInvocationInfo,
                 final AsmVerifierFactory verifierFactory) {
             this.privateMethodInvocationInfo = privateMethodInvocationInfo;
             this.verifierFactory = verifierFactory;
         }
 
-        public static SetterMethodChecker newSetterMethodChecker(
+        public static OriginalSetterMethodChecker newSetterMethodChecker(
                 final PrivateMethodInvocationInformation privateMethodInvocationInfo,
                 final AsmVerifierFactory verifierFactory) {
-            return new SetterMethodChecker(privateMethodInvocationInfo, verifierFactory);
+            return new OriginalSetterMethodChecker(privateMethodInvocationInfo, verifierFactory);
         }
 
         @Override
@@ -163,18 +169,300 @@ public final class SetterMethodCheckerTest {
 
     } // class SetterMethodChecker
 
-
-    static abstract class CustomSetterMethodChecker {
-        private final VariableInitialisersAssociation variableInitialisersAssociation;
-        private CustomSetterMethodChecker(final VariableInitialisersAssociation theVariableInitialisersAssociation) {
-            variableInitialisersAssociation = theVariableInitialisersAssociation;
-        }
-//        public abstract VariableSetterCollection findCandidatesForLazyInitialisation();
-//        public abstract VariableSetterCollection associateSettersForEachCandidate(VariableSetterCollection variableSetterCollection);
-        public abstract boolean doesOnlyOneSetterMethodExistForEachCandidate();
-        public abstract void foo(String variableName, MethodNode associatedSetterMethod);
-    } // class CustomSetterMethodChecker
     
+    static abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
+
+        private final ClassNode classNode;
+        @GuardedBy("this") private volatile EnhancedClassNode enhancedClassNode;
+
+        public AbstractSetterMethodChecker() {
+            classNode = new ClassNode();
+            enhancedClassNode = null;
+        }
+
+        public final void check(int api) {
+            classNode.check(api);
+        }
+
+        public final void accept(final ClassVisitor cv) {
+            classNode.accept(cv);
+        }
+
+        public final void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            super.visit(version, access, name, signature, superName, interfaces);
+            classNode.visit(version, access, name, signature, superName, interfaces);
+        }
+
+        public final void visitSource(String file, String debug) {
+            classNode.visitSource(file, debug);
+        }
+
+        public final void visitOuterClass(String owner, String name, String desc) {
+            classNode.visitOuterClass(owner, name, desc);
+        }
+
+        public final AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            return classNode.visitAnnotation(desc, visible);
+        }
+
+        public final void visitAttribute(Attribute attr) {
+            classNode.visitAttribute(attr);
+        }
+
+        public final void visitInnerClass(String name, String outerName, String innerName, int access) {
+            classNode.visitInnerClass(name, outerName, innerName, access);
+        }
+
+        public final FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+            return classNode.visitField(access, name, desc, signature, value);
+        }
+
+        public final MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            return classNode.visitMethod(access, name, desc, signature, exceptions);
+        }
+
+        public final void visitEnd() {
+            classNode.visitEnd();
+            verify();
+        }
+
+        /**
+         * Template method for verification of lazy initialisation.
+         */
+        protected final void verify() {
+            collectCandidates();
+            collectInitialisers();
+            verifyCandidates();
+            verifyInitialisers();
+            collectPossibleInitialValues();
+            verifyPossibleInitialValues();
+            collectAssignmentGuards();
+            verifyAssignmentGuards();
+            collectAssignmentInstructions();
+            verifyAssignmentInstructions();
+        }
+
+        protected abstract void collectCandidates();
+        protected abstract void collectInitialisers();
+        protected abstract void verifyCandidates();
+        protected abstract void verifyInitialisers();
+        protected abstract void collectPossibleInitialValues();
+        protected abstract void verifyPossibleInitialValues();
+        protected abstract void collectAssignmentGuards();
+        protected abstract void verifyAssignmentGuards();
+        protected abstract void collectAssignmentInstructions();
+        protected abstract void verifyAssignmentInstructions();
+
+        protected final EnhancedClassNode getEnhancedClassNode() {
+            EnhancedClassNode result = enhancedClassNode;
+            if (null == result) {
+                synchronized (this) {
+                    result = enhancedClassNode;
+                    if (null == result) {
+                        result = EnhancedClassNode.newInstance(classNode);
+                        enhancedClassNode = result;
+                    }
+                }
+            }
+            return result;
+        }
+
+    } // class AbstractSetterMethodChecker
+
+
+    @NotThreadSafe
+    static final class SetterMethodChecker extends AbstractSetterMethodChecker {
+
+        private final Map<FieldNode, Collection<UnknownTypeValue>> initialValues;
+        private final Map<FieldNode, Collection<JumpInsn>> assignmentGuards;
+        private VariableInitialisersAssociation variableInitialisersAssociation;
+
+        private SetterMethodChecker() {
+            super();
+            initialValues = new HashMap<FieldNode, Collection<UnknownTypeValue>>();
+            assignmentGuards = new HashMap<FieldNode, Collection<JumpInsn>>();
+            variableInitialisersAssociation = null;
+        }
+
+        public static AsmMutabilityChecker newInstance() {
+            return new SetterMethodChecker();
+        }
+
+        @Override
+        protected void collectCandidates() {
+            final Collection<FieldNode> variablesOfAnalysedClass = getEnhancedClassNode().getFields();
+            final Finder<VariableInitialisersAssociation> f = CandidatesFinder.newInstance(variablesOfAnalysedClass);
+            variableInitialisersAssociation = f.find();
+        }
+
+        @Override
+        protected void collectInitialisers() {
+            final Collection<MethodNode> methodsOfAnalysedClass = getEnhancedClassNode().getMethods();
+            final Finder<VariableInitialisersAssociation> f = InitialisersFinder.newInstance(methodsOfAnalysedClass,
+                    variableInitialisersAssociation);
+            variableInitialisersAssociation = f.find();
+        }
+
+        @Override
+        protected void verifyCandidates() {
+            final Collection<FieldNode> unassociatedVariables = variableInitialisersAssociation
+                    .removeAndGetUnassociatedVariables();
+            for (final FieldNode unassociatedVariable : unassociatedVariables) {
+                setNonFinalFieldResult(unassociatedVariable.name);
+            }
+        }
+
+        private void setNonFinalFieldResult(final String variableName) {
+            final String msg = "Field is not final, if shared across threads the Java Memory Model will not" +
+            		" guarantee it is initialised before it is read.";
+            final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
+            setResult(msg, location, MutabilityReason.NON_FINAL_FIELD);
+        }
+
+        @Override
+        protected void verifyInitialisers() {
+            for (final Entry entry : variableInitialisersAssociation) {
+                verifyInitialisersFor(entry.getCandidate(), entry.getInitialisers());
+            }
+        }
+
+        private void verifyInitialisersFor(final FieldNode candidate, final Initialisers allInitialisersForCandidate) {
+            final Collection<MethodNode> methodInitialisers = allInitialisersForCandidate.getMethods();    
+            if (containsMoreThanOne(methodInitialisers)) {
+                setFieldCanBeReassignedResultForEachMethodInitialiser(candidate.name, methodInitialisers);
+            }
+        }
+
+        private static boolean containsMoreThanOne(final Collection<?> aCollection) {
+            return 1 < aCollection.size();
+        }
+
+        private void setFieldCanBeReassignedResultForEachMethodInitialiser(final String candidateName,
+                final Collection<MethodNode> methodInitialisers) {
+            for (final MethodNode methodInitialiser : methodInitialisers) {
+                final String msgTemplate = "Field [%s] can be reassigned within method [%s]";
+                final String msg = format(msgTemplate, candidateName, methodInitialiser.name);
+                setFieldCanBeReassignedResult(msg);
+            }
+        }
+
+        private void setFieldCanBeReassignedResult(final String message) {
+            final String className = getEnhancedClassNode().getName();
+            setResult(message, fromInternalName(className), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+        }
+
+        @Override
+        protected void collectPossibleInitialValues() {
+            for (final Entry entry : variableInitialisersAssociation) {
+                final FieldNode candidate = entry.getCandidate();
+                final Initialisers initialisers = entry.getInitialisers();
+                final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(candidate, initialisers);
+                initialValues.put(candidate, f.find());
+            }
+        }
+
+        @Override
+        protected void verifyPossibleInitialValues() {
+            if (containsMoreThanOne(initialValues)) {
+                setFieldCanBeReassignedResultForEachInitialValue();
+            }
+        }
+
+        private void setFieldCanBeReassignedResultForEachInitialValue() {
+            for (final Map.Entry<FieldNode, Collection<UnknownTypeValue>> e : initialValues.entrySet()) {
+                final Collection<UnknownTypeValue> initialValuesForCandidate = e.getValue();
+                final String msgTmpl = "Field [%s] has too many possible initial values for lazy initialisation: [%s]";
+                final String candidateName = e.getKey().name;
+                final String initialValues = initialValuesToString(initialValuesForCandidate);
+                final String msg = format(msgTmpl, candidateName, initialValues);
+                setFieldCanBeReassignedResult(msg);
+            }
+        }
+
+        private static String initialValuesToString(final Collection<UnknownTypeValue> initialValuesForCandidate) {
+            final StringBuilder result = new StringBuilder();
+            final String separatorValue = ", ";
+            String separator = "";
+            for (final UnknownTypeValue initialValue : initialValuesForCandidate) {
+                result.append(separator).append(initialValue);
+                separator = separatorValue;
+            }
+            return result.toString();
+        }
+
+        private static boolean containsMoreThanOne(Map<?, ?> aMap) {
+            return 1 < aMap.size();
+        }
+
+        @Override
+        protected void collectAssignmentGuards() {
+            for (final Entry e : variableInitialisersAssociation) {
+                final Initialisers initialisers = e.getInitialisers();
+                collectAssignmentGuardsForEachInitialisingMethod(e.getCandidate(), initialisers.getMethods());
+            }
+        }
+
+        private void collectAssignmentGuardsForEachInitialisingMethod(final FieldNode candidate,
+                final Collection<MethodNode> initialisingMethods) {
+            for (final MethodNode initialisingMethod : initialisingMethods) {
+                final EnhancedClassNode cn = getEnhancedClassNode();
+                final Collection<ControlFlowBlock> blocks = cn.getControlFlowBlocksForMethod(initialisingMethod);
+                collectAssignmentGuardsForEachControlFlowBlock(candidate, blocks);
+            }
+        }
+
+        private void collectAssignmentGuardsForEachControlFlowBlock(final FieldNode candidate,
+                final Collection<ControlFlowBlock> controlFlowBlocks) {
+            for (final ControlFlowBlock controlFlowBlock : controlFlowBlocks) {
+                final Finder<JumpInsn> f = AssignmentGuardFinder.newInstance(candidate.name, controlFlowBlock);
+                final JumpInsn supposedAssignmentGuard = f.find();
+                addToAssignmentGuards(candidate, supposedAssignmentGuard);
+            }
+        }
+
+        private void addToAssignmentGuards(final FieldNode candidate, final JumpInsn supposedAssignmentGuard) {
+            if (supposedAssignmentGuard.isAssignmentGuard()) {
+                final Collection<JumpInsn> assignmentGuardsForCandidate;
+                if (assignmentGuards.containsKey(candidate)) {
+                    assignmentGuardsForCandidate = assignmentGuards.get(candidate);
+                } else {
+                    final byte expectedMaximum = 3;
+                    assignmentGuardsForCandidate = new ArrayList<JumpInsn>(expectedMaximum);
+                    assignmentGuards.put(candidate, assignmentGuardsForCandidate);
+                }
+                assignmentGuardsForCandidate.add(supposedAssignmentGuard);
+            }
+        }
+
+        @Override
+        protected void verifyAssignmentGuards() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        protected void collectAssignmentInstructions() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        protected void verifyAssignmentInstructions() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder b = new StringBuilder();
+            b.append(getClass().getSimpleName()).append(" [");
+            // TODO Methodenrumpf korrekt implementieren.
+            b.append("]");
+            return b.toString();
+        }
+        
+    } // class SetterMethodChecker
+
 
     private org.mutabilitydetector.checkers.SetterMethodChecker checker;
     private CheckerRunner checkerRunner;
