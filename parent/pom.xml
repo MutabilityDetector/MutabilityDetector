@@ -91,6 +91,11 @@
             <artifactId>MutabilityDetector</artifactId>
             <version>0.9-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>4.0</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -82,7 +82,7 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
             if (isJumpInsnNode(insn)) {
                 final JumpInsnNode jumpInsnNode = (JumpInsnNode) insn;
                 final int indexWithinMethod = controlFlowBlock.getIndexWithinMethod(indexWithinBlock);
-                result.add(JumpInsnDefault.newInstance(jumpInsnNode, indexWithinBlock, indexWithinMethod));
+                result.add(DefaultJumpInsn.newInstance(jumpInsnNode, indexWithinBlock, indexWithinMethod));
             }
             indexWithinBlock++;
         }

@@ -16,13 +16,13 @@ import org.objectweb.asm.tree.LabelNode;
  * @version 15.02.2013
  */
 @Immutable
-final class JumpInsnDefault implements JumpInsn {
+final class DefaultJumpInsn implements JumpInsn {
 
     private final JumpInsnNode jumpInsnNode;
     private final int indexWithinBlock;
     private final int indexWithinMethod;
 
-    private JumpInsnDefault(final JumpInsnNode theJumpInsnNode,
+    private DefaultJumpInsn(final JumpInsnNode theJumpInsnNode,
             final int theIndexWithinBlock,
             final int theIndexWithinMethod) {
         jumpInsnNode = deepCopy(theJumpInsnNode);
@@ -37,10 +37,10 @@ final class JumpInsnDefault implements JumpInsn {
         return new JumpInsnNode(resultOpcode, resultLabelNode);
     }
 
-    public static JumpInsnDefault newInstance(final JumpInsnNode jumpInsnNode,
+    public static DefaultJumpInsn newInstance(final JumpInsnNode jumpInsnNode,
             final int indexWithinBlock,
             final int indexWithinMethod) {
-        return new JumpInsnDefault(notNull(jumpInsnNode), indexWithinBlock, indexWithinMethod);
+        return new DefaultJumpInsn(notNull(jumpInsnNode), indexWithinBlock, indexWithinMethod);
     }
 
     @Override
@@ -98,10 +98,10 @@ final class JumpInsnDefault implements JumpInsn {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof JumpInsnDefault)) {
+        if (!(obj instanceof DefaultJumpInsn)) {
             return false;
         }
-        final JumpInsnDefault other = (JumpInsnDefault) obj;
+        final DefaultJumpInsn other = (DefaultJumpInsn) obj;
         if (indexWithinMethod != other.indexWithinMethod) {
             return false;
         }

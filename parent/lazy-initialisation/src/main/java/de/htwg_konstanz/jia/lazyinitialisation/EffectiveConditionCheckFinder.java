@@ -82,7 +82,7 @@ final class EffectiveConditionCheckFinder {
             final int i,
             final JumpInsnNode jumpInsn) {
         if (null != predecessor && isGetfieldInstructionForLazyVariable(predecessor)) {
-            associatedJumpInstructions.add(JumpInsnDefault.newInstance(jumpInsn, i, Integer.MIN_VALUE));
+            associatedJumpInstructions.add(DefaultJumpInsn.newInstance(jumpInsn, i, Integer.MIN_VALUE));
         }
     }
 
