@@ -120,12 +120,15 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
 
     private final FieldNode variable;
     private final Initialisers setters;
+    private final EnhancedClassNode enhancedClassNode;
     private final Set<UnknownTypeValue> possibleInitialValues;
     private volatile boolean arePossibleInitialValuesAlreadyFound;
 
-    private InitialValueFinder(final FieldNode theVariable, final Initialisers theSetters) {
+    private InitialValueFinder(final FieldNode theVariable, final Initialisers theSetters,
+            final EnhancedClassNode theEnhancedClassNode) {
         variable = theVariable;
         setters = theSetters;
+        enhancedClassNode = theEnhancedClassNode;
         final byte supposedMaximumOfPossibleInitialValues = 5;
         possibleInitialValues = new HashSet<UnknownTypeValue>(supposedMaximumOfPossibleInitialValues);
         arePossibleInitialValuesAlreadyFound = false;
@@ -141,8 +144,9 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
      *            the initialisers for {@code variable}.
      * @return a new instance of this class.
      */
-    public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers initialisers) {
-        return new InitialValueFinder(notNull(variable), notNull(initialisers));
+    public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers initialisers,
+            final EnhancedClassNode enhancedClassNode) {
+        return new InitialValueFinder(notNull(variable), notNull(initialisers), notNull(enhancedClassNode));
     }
 
     /**
@@ -184,16 +188,18 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
 
     private void addConcreteInitialValuesByConstructor() {
         for (final MethodNode constructor : setters.getConstructors()) {
-            final AbstractInsnNode valueSetUpInsn = findValueSetUpInsnIn(constructor.instructions);
+            final AbstractInsnNode valueSetUpInsn = findValueSetUpInsnIn(constructor);
             addSupposedInitialValueFor(valueSetUpInsn);
         }
     }
 
-    private AbstractInsnNode findValueSetUpInsnIn(final InsnList constructorInsns) {
-        final EffectiveAssignmentInsnFinder eaf = EffectiveAssignmentInsnFinder.newInstance(variable, constructorInsns);
-        final AssignmentInsn effectiveAssignmentInsn = eaf.getEffectiveAssignmentInstruction();
-        final int indexOfAssignmentInstruction = effectiveAssignmentInsn.getIndexOfAssignmentInstruction();
-        final AbstractInsnNode result = constructorInsns.get(indexOfAssignmentInstruction - 1);
+    private AbstractInsnNode findValueSetUpInsnIn(final MethodNode constructor) {
+        final List<ControlFlowBlock> blocks = enhancedClassNode.getControlFlowBlocksForMethod(constructor);
+        final Finder<AssignmentInsn> f = EffectiveAssignmentInsnFinder.newInstance(variable, blocks);
+        final AssignmentInsn effectiveAssignmentInsn = f.find();
+        final int indexOfAssignmentInstruction = effectiveAssignmentInsn.getIndexWithinMethod();
+        final InsnList instructions = constructor.instructions;
+        final AbstractInsnNode result = instructions.get(indexOfAssignmentInstruction - 1);
         return result;
     }
 

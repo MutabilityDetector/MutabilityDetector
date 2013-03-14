@@ -5,60 +5,37 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 
-import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 11.02.2013
  */
-@Immutable
+@NotThreadSafe
 final class DefaultAssignmentInsn implements AssignmentInsn {
 
-    private final LabelNode labelNode;
-    private final int indexOfAssignmentInsn;
+    private final ControlFlowBlock surroundingControlFlowBlock;
+    private final int indexWithinMethod;
     private final FieldInsnNode assignmentInsnNode;
 
-    private DefaultAssignmentInsn(final LabelNode theLabelNode, final int theIndexOfAssignmentInsn,
+    private DefaultAssignmentInsn(final ControlFlowBlock theSurroundingControlFlowBlock, final int theIndexWithinMethod,
             final FieldInsnNode theAssignmentInsnNode) {
-        labelNode = deepCopy(theLabelNode);
-        indexOfAssignmentInsn = theIndexOfAssignmentInsn;
+        surroundingControlFlowBlock = theSurroundingControlFlowBlock;
+        indexWithinMethod = theIndexWithinMethod;
         assignmentInsnNode = deepCopy(theAssignmentInsnNode);
-    }
-
-    private static LabelNode deepCopy(final LabelNode source) {
-        final LabelNode result;
-        if (null == source) {
-            result = new LabelNode(null);
-        } else {
-            result = new LabelNode(source.getLabel());
-        }
-        return result;
     }
 
     private static FieldInsnNode deepCopy(final FieldInsnNode source) {
         return new FieldInsnNode(source.getOpcode(), source.owner, source.name, source.desc);
     }
 
-    public static AssignmentInsn getInstance(final FieldInsnNode assignmentInsnNode) {
-        return new DefaultAssignmentInsn(null, Integer.MIN_VALUE, notNull(assignmentInsnNode));
-    }
-
-    public static AssignmentInsn getInstance(final FieldInsnNode assignmentInsnNode,
-            final int indexOfAssignmentInsn) {
-        return new DefaultAssignmentInsn(null, indexOfAssignmentInsn, notNull(assignmentInsnNode));
-    }
-
-    public static AssignmentInsn getInstance(final LabelNode labelNode, final FieldInsnNode assignmentInsnNode) {
-        return new DefaultAssignmentInsn(labelNode, Integer.MIN_VALUE, notNull(assignmentInsnNode));
-    }
-
-    public static AssignmentInsn getInstance(final LabelNode labelNode, final int indexOfAssignmentInsn,
+    public static AssignmentInsn newInstance(final ControlFlowBlock surroundingControlFlowBlock,
+            final int indexWithinMethod,
             final FieldInsnNode assignmentInsnNode) {
-        return new DefaultAssignmentInsn(labelNode, indexOfAssignmentInsn, notNull(assignmentInsnNode));
+        return new DefaultAssignmentInsn(notNull(surroundingControlFlowBlock), indexWithinMethod,
+                notNull(assignmentInsnNode));
     }
 
     /**
@@ -66,8 +43,8 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
      *         instructions of a setter (method oder constructor).
      */
     @Override
-    public int getIndexOfAssignmentInstruction() {
-        return indexOfAssignmentInsn;
+    public int getIndexWithinMethod() {
+        return indexWithinMethod;
     }
 
     @Override
@@ -80,18 +57,9 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
         return deepCopy(assignmentInsnNode);
     }
 
-    /**
-     * @param labelNodeToCheckFor
-     *            the {@code LabelNode} for which it is checked whether this
-     *            assignment instruction is placed under this label.
-     * @return {@code true} if this assignment instruction is placed under
-     *         {@code labelNodeToCheckFor}, {@code false} else.
-     */
     @Override
-    public boolean isUnderLabel(final LabelNode labelNodeToCheckFor) {
-        final Label thisLabel = labelNode.getLabel();
-        final Label otherLabel = labelNodeToCheckFor.getLabel();
-        return thisLabel.equals(otherLabel);
+    public ControlFlowBlock getSurroundingControlFlowBlock() {
+        return surroundingControlFlowBlock;
     }
 
     @Override
@@ -103,9 +71,9 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + surroundingControlFlowBlock.hashCode();
         result = prime * result + assignmentInsnNode.hashCode();
-        result = prime * result + indexOfAssignmentInsn;
-        result = prime * result + labelNode.hashCode();
+        result = prime * result + indexWithinMethod;
         return result;
     }
 
@@ -121,6 +89,9 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
             return false;
         }
         final DefaultAssignmentInsn other = (DefaultAssignmentInsn) obj;
+        if (!surroundingControlFlowBlock.equals(other.surroundingControlFlowBlock)) {
+            return false;
+        }
         if (assignmentInsnNode == null) {
             if (other.assignmentInsnNode != null) {
                 return false;
@@ -128,10 +99,7 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
         } else if (!assignmentInsnNode.equals(other.assignmentInsnNode)) {
             return false;
         }
-        if (indexOfAssignmentInsn != other.indexOfAssignmentInsn) {
-            return false;
-        }
-        if (!labelNode.equals(other.labelNode)) {
+        if (indexWithinMethod != other.indexWithinMethod) {
             return false;
         }
         return true;
@@ -140,8 +108,9 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName()).append(" [labelNode=").append(labelNode.getLabel());
-        builder.append(", indexOfAssignmentInstruction=").append(indexOfAssignmentInsn);
+        builder.append(getClass().getSimpleName());
+        builder.append(" [surroundingControlFlowBlock=").append(surroundingControlFlowBlock);
+        builder.append(", indexWithinMethod=").append(indexWithinMethod);
         builder.append(", assignmentInstructionNode=");
         final Opcode opcode = Opcode.forInt(assignmentInsnNode.getOpcode());
         builder.append(opcode.name()).append(" ").append(assignmentInsnNode.name).append("]");

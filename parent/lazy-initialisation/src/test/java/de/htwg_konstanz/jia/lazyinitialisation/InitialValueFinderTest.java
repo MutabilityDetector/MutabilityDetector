@@ -54,8 +54,8 @@ public final class InitialValueFinderTest {
                 final FieldNode candidate = entry.getCandidate();
                 if (candidate.name.equals(variableName)) {
                     final Initialisers setters = entry.getInitialisers();
-                    final InitialValueFinder initialValueFinder = InitialValueFinder.newInstance(candidate, setters);
-                    return initialValueFinder.find();
+                    final InitialValueFinder f = InitialValueFinder.newInstance(candidate, setters, classNode);
+                    return f.find();
                 }
             }
             return Collections.emptySet();
@@ -99,6 +99,7 @@ public final class InitialValueFinderTest {
         assertThat(actual, is(expected));
     }
 
+    // FIXME: Das tatsaechliche Ergebnis ist UNKNOWN_PRIMITIVE
     @Test
     public void testForJavaLangString() {
         final Set<UnknownTypeValue> expected = createExpected(Integer.valueOf(0));
@@ -142,7 +143,7 @@ public final class InitialValueFinderTest {
     public void validCustomObjectWithNullAsInitialValue() {
         final Set<UnknownTypeValue> expected = createExpected(DefaultUnknownTypeValue.getInstanceForNull());
         final Set<UnknownTypeValue> actual = getPossibleInitialValuesFor(
-                WithoutAlias.WithJvmInitialValue.CustomObjectValid.class, "someObject");
+                WithoutAlias.WithJvmInitialValue.CustomObjectInvalid.class, "someObject");
         assertThat(actual, is(expected));
     }
 

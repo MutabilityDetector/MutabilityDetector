@@ -5,7 +5,10 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -14,78 +17,72 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 15.02.2013
  */
 @NotThreadSafe
-final class EffectiveAssignmentInsnFinder {
+final class EffectiveAssignmentInsnFinder implements Finder<AssignmentInsn> {
 
     private final FieldNode targetVariable;
-    private final InsnList setterInstructions;
+    private final Collection<ControlFlowBlock> controlFlowBlocks;
 
-    private EffectiveAssignmentInsnFinder(final FieldNode theTargetVariable, final InsnList instructions) {
+    private EffectiveAssignmentInsnFinder(final FieldNode theTargetVariable,
+            final Collection<ControlFlowBlock> theControlFlowBlocks) {
         targetVariable = theTargetVariable;
-        setterInstructions = instructions;
-
+        controlFlowBlocks = Collections.unmodifiableCollection(theControlFlowBlocks);
     }
 
     /**
      * Static factory method.
      * 
      * @param targetVariable
-     *            the variable to find the effective {@code putfield}
-     *            or {@code putstatic} instruction for.
-     * @param setterInstructions
-     *            all instructions of a constructor or setter method.
+     *            the variable to find the effective {@code putfield} or
+     *            {@code putstatic} instruction for.
+     * @param controlFlowBlocks
+     *            all control flow blocks of an initialising constructor or
+     *            method.
      * @return a new instance of this class.
      */
     public static EffectiveAssignmentInsnFinder newInstance(final FieldNode targetVariable,
-            final InsnList setterInstructions) {
-        return new EffectiveAssignmentInsnFinder(notNull(targetVariable), notNull(setterInstructions));
+            final Collection<ControlFlowBlock> controlFlowBlocks) {
+        return new EffectiveAssignmentInsnFinder(notNull(targetVariable), notNull(controlFlowBlocks));
     }
 
     /**
-     * @return an instance of {@link AssignmentInsn} which contains
-     *         the particular {@code putfield} or {@code putstatic}
-     *         instruction which effectively sets the value for the
-     *         provided targetVariable. The result ist never
-     *         {@code null} instead {@code isNull} should be invoked.
+     * @return an instance of {@link AssignmentInsn} which contains the
+     *         particular {@code putfield} or {@code putstatic} instruction
+     *         which effectively sets the value for the provided targetVariable.
+     *         The result ist never {@code null} instead {@code isNull} should
+     *         be invoked.
      */
-    public AssignmentInsn getEffectiveAssignmentInstruction() {
-        final Set<AssignmentInsn> assignmentInstructions = findAssignmentInstructionsForVariable();
+    @Override
+    public AssignmentInsn find() {
+        final Collection<AssignmentInsn> assignmentInstructions = findAssignmentInstructionsForVariable();
         return getEffectiveAssignmentInstruction(assignmentInstructions);
     }
 
-    private Set<AssignmentInsn> findAssignmentInstructionsForVariable() {
-        final Set<AssignmentInsn> result = new HashSet<AssignmentInsn>(setterInstructions.size());
-        LabelNode label = null;
-        for (int i = 0; i < setterInstructions.size(); i++) {
-            final AbstractInsnNode abstractInsnNode = setterInstructions.get(i);
-            if (isLabelNode(abstractInsnNode)) {
-                label = (LabelNode) abstractInsnNode;
-            } else {
-                addIfAssignmentInstructionForVariable(label, i, abstractInsnNode, result);
-            }
+    private Collection<AssignmentInsn> findAssignmentInstructionsForVariable() {
+        final Set<AssignmentInsn> result = new HashSet<AssignmentInsn>();
+        for (final ControlFlowBlock controlFlowBlock : controlFlowBlocks) {
+            result.addAll(findInAllBlockInstructions(controlFlowBlock));
         }
         return result;
     }
 
-    private static boolean isLabelNode(final AbstractInsnNode abstractInsnNode) {
-        return AbstractInsnNode.LABEL == abstractInsnNode.getType();
-    }
-
-    private void addIfAssignmentInstructionForVariable(final LabelNode label,
-            final int numberOfInsn,
-            final AbstractInsnNode insn,
-            final Set<AssignmentInsn> assignmentInsnsForVariable) {
-        if (isInitialiserForTargetVariable(insn)) {
-            assignmentInsnsForVariable.add(DefaultAssignmentInsn.getInstance(label, numberOfInsn,
-                    (FieldInsnNode) insn));
+    private Collection<AssignmentInsn> findInAllBlockInstructions(final ControlFlowBlock controlFlowBlock) {
+        final Set<AssignmentInsn> result = new HashSet<AssignmentInsn>();
+        final List<AbstractInsnNode> blockInstructions = controlFlowBlock.getBlockInstructions();
+        for (int i = 0; i < blockInstructions.size(); i++) {
+            final AbstractInsnNode insn = blockInstructions.get(i);
+            if (isInitialiserForTargetVariable(insn)) {
+                final FieldInsnNode assignmentInsnNode = (FieldInsnNode) insn;
+                final int indexWithinMethod = controlFlowBlock.getIndexWithinMethod(i);
+                result.add(DefaultAssignmentInsn.newInstance(controlFlowBlock, indexWithinMethod, assignmentInsnNode));
+            }
         }
+        return result;
     }
 
     private boolean isInitialiserForTargetVariable(final AbstractInsnNode insn) {
@@ -108,16 +105,16 @@ final class EffectiveAssignmentInsnFinder {
     }
 
     /*
-     * The effective assignment instruction is the last one in the
-     * sequence of instructions which puts a value to the target
-     * variable. Thus the highest instruction number indicates the
-     * position of the effective assignment instruction.
+     * The effective assignment instruction is the last one in the sequence of
+     * instructions which puts a value to the target variable. Thus the highest
+     * instruction number indicates the position of the effective assignment
+     * instruction.
      */
-    private AssignmentInsn getEffectiveAssignmentInstruction(final Set<AssignmentInsn> assignmentInstructions) {
+    private AssignmentInsn getEffectiveAssignmentInstruction(final Collection<AssignmentInsn> assignmentInstructions) {
         AssignmentInsn result = NullAssignmentInsn.getInstance();
         int maxInstructionNumber = -1;
         for (final AssignmentInsn assignmentInsn : assignmentInstructions) {
-            final int indexOfAssignmentInstruction = assignmentInsn.getIndexOfAssignmentInstruction();
+            final int indexOfAssignmentInstruction = assignmentInsn.getIndexWithinMethod();
             if (indexOfAssignmentInstruction > maxInstructionNumber) {
                 maxInstructionNumber = indexOfAssignmentInstruction;
                 result = assignmentInsn;
@@ -130,7 +127,7 @@ final class EffectiveAssignmentInsnFinder {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [targetVariable=").append(targetVariable.name);
-        b.append(", setterInstructions=").append(setterInstructions).append("]");
+        b.append(", controlFlowBlocks=").append(controlFlowBlocks).append("]");
         return b.toString();
     }
 

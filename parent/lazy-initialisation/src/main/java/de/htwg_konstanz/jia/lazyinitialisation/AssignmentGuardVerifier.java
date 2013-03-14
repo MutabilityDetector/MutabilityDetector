@@ -262,6 +262,10 @@ final class AssignmentGuardVerifier {
         final UnknownTypeValue comparativeValue = getComparativeValue(insn);
         if (isNotPossibleInitialValueOfCandidate(comparativeValue, candidate)) {
             // TODO Meldung machen.
+            final String msgTemplate = "Assignment for field [%s] guard does not check against a possible "
+                    + "initial value";
+            final String msg = String.format(msgTemplate, candidate.name);
+            setterMethodChecker.setResultForClass(msg, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
     }
 

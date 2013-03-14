@@ -64,7 +64,7 @@ public final class WithoutAlias {
             private float hash;
             public float hashCodeFloat() {
                 if (0.0F == hash) {
-                    hash = 2342.0F;
+                    hash = 2342.0F / 23;
                 }
                 return hash;
             }
@@ -171,7 +171,7 @@ public final class WithoutAlias {
         } // class StringInvalid
 
 
-        public static final class CustomObjectValid {
+        public static final class CustomObjectInvalid {
             public static final class SomeObject {
                 private SomeObject() {
                     super();
@@ -187,7 +187,7 @@ public final class WithoutAlias {
                 }
                 return someObject;
             }
-        } // class CustomObjectValid
+        } // class CustomObjectInvalid
 
 
     } // class WithJvmInitialValue

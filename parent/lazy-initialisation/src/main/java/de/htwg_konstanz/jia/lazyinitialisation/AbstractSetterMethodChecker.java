@@ -32,10 +32,6 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
         enhancedClassNode = null;
     }
 
-    public final void check(final int api) {
-        classNode.check(api);
-    }
-
     public final void accept(final ClassVisitor cv) {
         classNode.accept(cv);
     }
@@ -101,10 +97,11 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
         verifyInitialisers();
         collectPossibleInitialValues();
         verifyPossibleInitialValues();
+        collectEffectiveAssignmentInstructions();
+        verifyEffectiveAssignmentInstructions();
         collectAssignmentGuards();
         verifyAssignmentGuards();
-        collectAssignmentInstructions();
-        verifyAssignmentInstructions();
+        end();
     }
 
     protected abstract void collectCandidates();
@@ -118,14 +115,16 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
     protected abstract void collectPossibleInitialValues();
 
     protected abstract void verifyPossibleInitialValues();
+    
+    protected abstract void collectEffectiveAssignmentInstructions();
+    
+    protected abstract void verifyEffectiveAssignmentInstructions();
 
     protected abstract void collectAssignmentGuards();
 
     protected abstract void verifyAssignmentGuards();
 
-    protected abstract void collectAssignmentInstructions();
-
-    protected abstract void verifyAssignmentInstructions();
+    protected void end() {}
 
     /**
      * @return

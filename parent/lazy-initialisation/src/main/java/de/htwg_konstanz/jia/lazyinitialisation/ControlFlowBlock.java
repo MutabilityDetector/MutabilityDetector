@@ -24,6 +24,8 @@ import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 
 /**
+ * Range of a method's instructions which is delimited by label nodes.
+ * 
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 18.02.2013
  */
@@ -369,7 +371,23 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     }
 
     public int getIndexWithinMethod(final int indexWithinBlock) {
-        return indexWithinBlock + rangeOfBlockInstructions.lowerBoundary;
+        final int result = indexWithinBlock + rangeOfBlockInstructions.lowerBoundary;
+        if (rangeOfBlockInstructions.upperBoundary < result) {
+            final String msgTemplate = "Index would be %d which is bigger than the maximum index of method (%d).";
+            final String msg = String.format(msgTemplate, result, rangeOfBlockInstructions.upperBoundary);
+            throw new IndexOutOfBoundsException(msg);
+        }
+        return result;
+    }
+
+    public int getIndexWithinBlock(final int indexWithinMethod) {
+        final int result = indexWithinMethod - rangeOfBlockInstructions.lowerBoundary;
+//        if (rangeOfBlockInstructions.lowerBoundary > result) {
+//            final String msgTemplate = "Index would be %d which is below the minimum index of this block's range (%d).";
+//            final String msg = String.format(msgTemplate, result, rangeOfBlockInstructions.lowerBoundary);
+//            throw new IndexOutOfBoundsException(msg);
+//        }
+        return result;
     }
 
     public Set<ControlFlowBlock> getPredecessors() {

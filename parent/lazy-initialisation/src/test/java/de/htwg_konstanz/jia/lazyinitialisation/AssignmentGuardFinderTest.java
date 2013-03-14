@@ -24,7 +24,7 @@ import org.objectweb.asm.tree.*;
 import de.htwg_konstanz.jia.lazyinitialisation.VariableInitialisersAssociation.Initialisers;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectValid.SomeObject;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectInvalid.SomeObject;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -69,7 +69,7 @@ public final class AssignmentGuardFinderTest {
             final VariableInitialisersAssociation variableInitialisers = ccn.getVariableInitialisersAssociation();
             final FieldNode variable = ccn.findVariableWithName(variableName);
             final Initialisers setters = variableInitialisers.getInitialisersFor(variable);
-            final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(variable, setters);
+            final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(variable, setters, ccn);
             possibleInitialValuesForVariable.addAll(f.find());
         }
 
@@ -77,17 +77,9 @@ public final class AssignmentGuardFinderTest {
             return variableName;
         }
 
-//        public Set<UnknownTypeValue> initialValues() {
-//            return possibleInitialValuesForVariable;
-//        }
-
         public ControlFlowBlock block(final int theBlockNumber) {
             return cfbs.get(theBlockNumber);
         }
-
-//        public List<ControlFlowBlock> blocks() {
-//            return cfbs;
-//        }
 
         public int numberOfAssignmentGuards() {
             final Set<JumpInsn> assignmentGuards = new HashSet<JumpInsn>();
@@ -183,7 +175,7 @@ public final class AssignmentGuardFinderTest {
 
         @Test
         public void customObjectWithJvmInitialValue() {
-            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.CustomObjectValid.class).forMethod(
+            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.CustomObjectInvalid.class).forMethod(
                     "hashCodeSomeObject", Type.getType(SomeObject.class)).andVariable("someObject");
             assertThat(r.numberOfAssignmentGuards(), is(1));
             assertThat(r.block(0), containsAssignmentGuardFor(r.variableName()));

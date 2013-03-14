@@ -2,52 +2,26 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 
 import static de.htwg_konstanz.jia.lazyinitialisation.SetterMethodCheckerTest.IsImmutableMatcher.isImmutable;
 import static de.htwg_konstanz.jia.lazyinitialisation.SetterMethodCheckerTest.IsMutableMatcher.isMutable;
-import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.notNull;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
-import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
-import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
-import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
-import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.io.IOException;
-import java.util.*;
 
 import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
-import org.mutabilitydetector.*;
-import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.*;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker.CheckerResult;
-import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
-import org.mutabilitydetector.checkers.info.MethodIdentifier;
-import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.ClassName;
 import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.*;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.analysis.BasicValue;
-import org.objectweb.asm.tree.analysis.Frame;
+import org.objectweb.asm.ClassReader;
 
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectValid.SomeObject;
 
 @RunWith(Enclosed.class)
 public final class SetterMethodCheckerTest {
@@ -92,10 +66,10 @@ public final class SetterMethodCheckerTest {
                 throw new IllegalStateException(msg, e);
             }
         }
-        
+
     } // class IsImmutableMatcher
 
-    
+
     @Immutable
     static final class IsMutableMatcher extends TypeSafeMatcher<Class<?>> {
 
@@ -186,7 +160,7 @@ public final class SetterMethodCheckerTest {
 
         @Test
         public void customObjectWithJvmInitialValue() {
-            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CustomObjectValid.class;
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CustomObjectInvalid.class;
             assertThat(klasse, isImmutable());
         }
 
@@ -201,67 +175,46 @@ public final class SetterMethodCheckerTest {
             assertThat(klasse, isMutable());
         }
 
-
         @Test
         public void integerWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerInvalid.class;
-            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(1));
-            assertThat(r.block(0), containsAssignmentGuardFor(r.variableName()));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatInvalid.class;
-            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(1));
-            assertThat(r.block(0), containsAssignmentGuardFor(r.variableName()));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void objectWithJvmInitialValue() {
-            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.ObjectInvalid.class).forMethod(
-                    "hashCodeObject", Type.getType(Object.class)).andVariable("hash");
-            // FIXME
-            assertThat(r.numberOfAssignmentGuards(), is(0));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.ObjectInvalid.class;
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void stringWithJvmInitialValue() {
-            final Reason r = new Reason(WithoutAlias.WithJvmInitialValue.StringInvalid.class).forMethod(
-                    "hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(0));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            final Class<?> klasse = WithoutAlias.WithJvmInitialValue.StringInvalid.class;
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void floatWithMultipleCustomInitialValues() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class;
-            final Reason r = new Reason(klasse).forMethod("hashCodeFloat", Type.FLOAT_TYPE).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(1));
-            assertThat(r.block(0), containsAssignmentGuardFor(r.variableName()));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerInvalid.class;
-            final Reason r = new Reason(klasse).forMethod("hashCode", Type.INT_TYPE).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(1));
-            assertThat(r.block(0), containsAssignmentGuardFor(r.variableName()));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            assertThat(klasse, isMutable());
         }
 
         @Test
         public void stringWithCustomInitialValue() {
-            final Reason r = new Reason(WithoutAlias.WithCustomInitialValue.StringInvalid.class).forMethod(
-                    "hashCodeString", Type.getType(String.class)).andVariable("hash");
-            assertThat(r.numberOfAssignmentGuards(), is(0));
-//            assertThat(r.block(0), covers(r.relevantJumpInstructions()));
-            assertFalse(checksAgainstAppropriateComparativeValue(r));
+            final Class<?> klasse = WithoutAlias.WithCustomInitialValue.StringInvalid.class;
+            assertThat(klasse, isMutable());
         }
 
     } // class InvalidSingleCheckLazyInitialisationWithoutAlias

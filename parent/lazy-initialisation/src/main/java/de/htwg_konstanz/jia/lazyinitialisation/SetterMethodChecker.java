@@ -3,11 +3,7 @@ package de.htwg_konstanz.jia.lazyinitialisation;
 import static java.lang.String.format;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -30,12 +26,14 @@ final class SetterMethodChecker extends AbstractSetterMethodChecker {
 
     private final Map<FieldNode, Collection<UnknownTypeValue>> initialValues;
     private final Map<FieldNode, Collection<JumpInsn>> assignmentGuards;
+    private final Map<FieldNode, AssignmentInsn> effectiveAssignmentInstructions;
     private VariableInitialisersAssociation variableInitialisersAssociation;
 
     private SetterMethodChecker() {
         super();
         initialValues = new HashMap<FieldNode, Collection<UnknownTypeValue>>();
         assignmentGuards = new HashMap<FieldNode, Collection<JumpInsn>>();
+        effectiveAssignmentInstructions = new HashMap<FieldNode, AssignmentInsn>();
         variableInitialisersAssociation = null;
     }
 
@@ -82,9 +80,9 @@ final class SetterMethodChecker extends AbstractSetterMethodChecker {
     }
 
     private void verifyInitialisersFor(final FieldNode candidate, final Initialisers allInitialisersForCandidate) {
-        final Collection<MethodNode> methodInitialisers = allInitialisersForCandidate.getMethods();
-        if (containsMoreThanOne(methodInitialisers)) {
-            setFieldCanBeReassignedResultForEachMethodInitialiser(candidate.name, methodInitialisers);
+        final Collection<MethodNode> initialisingMethods = allInitialisersForCandidate.getMethods();
+        if (containsMoreThanOne(initialisingMethods)) {
+            setFieldCanBeReassignedResultForEachMethodInitialiser(candidate.name, initialisingMethods);
         }
     }
 
@@ -104,7 +102,8 @@ final class SetterMethodChecker extends AbstractSetterMethodChecker {
         for (final Entry entry : variableInitialisersAssociation) {
             final FieldNode candidate = entry.getCandidate();
             final Initialisers initialisers = entry.getInitialisers();
-            final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(candidate, initialisers);
+            final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(candidate, initialisers,
+                    getEnhancedClassNode());
             initialValues.put(candidate, f.find());
         }
     }
@@ -140,6 +139,42 @@ final class SetterMethodChecker extends AbstractSetterMethodChecker {
 
     private static boolean containsMoreThanOne(final Map<?, ?> aMap) {
         return 1 < aMap.size();
+    }
+
+    @Override
+    protected void collectEffectiveAssignmentInstructions() {
+        for (final Entry e : variableInitialisersAssociation) {
+            final FieldNode candidate = e.getCandidate();
+            final MethodNode initialisingMethod = getSoleInitialisingMethod(e.getInitialisers());
+            addEffectiveAssignmentInstructionForCandidateIfPossible(candidate, initialisingMethod);
+        }
+    }
+
+    /*
+     * There must be at most one initialising method.
+     * This is verified by `verifyInitialisers()`.
+     */
+    private MethodNode getSoleInitialisingMethod(final Initialisers initialisers) {
+        final List<MethodNode> initialisingMethods = initialisers.getMethods();
+        return initialisingMethods.get(0);
+    }
+
+    private void addEffectiveAssignmentInstructionForCandidateIfPossible(final FieldNode candidate,
+            final MethodNode initialisingMethod) {
+        if (null != initialisingMethod) {
+            final EnhancedClassNode cn = getEnhancedClassNode();
+            final Collection<ControlFlowBlock> blocks = cn.getControlFlowBlocksForMethod(initialisingMethod);
+            final Finder<AssignmentInsn> f = EffectiveAssignmentInsnFinder.newInstance(candidate, blocks);
+            effectiveAssignmentInstructions.put(candidate, f.find());
+        }
+    }
+
+    @Override
+    protected void verifyEffectiveAssignmentInstructions() {
+        for (final Map.Entry<FieldNode, AssignmentInsn> e : effectiveAssignmentInstructions.entrySet()) {
+            final EffectiveAssignmentInsnVerifier v = EffectiveAssignmentInsnVerifier.newInstance(e.getValue(), this);
+            v.verify();
+        }
     }
 
     @Override
@@ -190,22 +225,13 @@ final class SetterMethodChecker extends AbstractSetterMethodChecker {
     }
 
     @Override
-    protected void collectAssignmentInstructions() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void verifyAssignmentInstructions() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [initialValues=");
         b.append(initialValues);
+        b.append(", assignmentGuards=").append(assignmentGuards);
+        b.append(", effectiveAssignmentInstructions=").append(effectiveAssignmentInstructions);
+        b.append(", variableInitialisersAssociation=").append(variableInitialisersAssociation);
         // TODO Methodenrumpf korrekt implementieren.
         b.append("]");
         return b.toString();

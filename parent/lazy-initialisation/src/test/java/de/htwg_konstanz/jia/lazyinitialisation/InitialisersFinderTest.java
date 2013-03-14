@@ -24,7 +24,7 @@ import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithJvmInit
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithAlias.WithJvmInitialValue.ShortValid;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.FloatInvalid;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithCustomInitialValue.StringValid2;
-import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectValid;
+import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.CustomObjectInvalid;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.Stateless;
 import de.htwg_konstanz.jia.lazyinitialisation.singlecheck.WithoutAlias.WithJvmInitialValue.StringStaticValid;
 
@@ -156,7 +156,7 @@ public final class InitialisersFinderTest {
 
     @Test
     public void variableWithCustomTypeHasOneSetter() {
-        assertThat(variable("someObject").ofClass(CustomObjectValid.class), hasNumberOfSetters(1));
+        assertThat(variable("someObject").ofClass(CustomObjectInvalid.class), hasNumberOfSetters(1));
     }
 
     @Test

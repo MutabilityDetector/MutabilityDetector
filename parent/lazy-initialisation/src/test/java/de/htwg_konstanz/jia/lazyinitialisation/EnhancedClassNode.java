@@ -105,8 +105,14 @@ final class EnhancedClassNode {
         notEmpty(methodName, "Parameter 'methodName' must neither be null nor empty!");
         notNull(returnType, "Parameter 'returnType' must not be null!");
         final String desc = createDescriptorFor(methodName, returnType, argumentTypes);
+        return findMethodByDescriptor(methodName, desc);
+    }
+
+    public MethodNode findMethodByDescriptor(final String methodName, final String descriptor) {
+        notEmpty(methodName, "Parameter 'methodName' must neither be null nor empty!");
+        notEmpty(descriptor, "Parameter 'descriptor' must neither be null nor empty!");
         for (final MethodNode method : getMethods()) {
-            if (method.name.equals(methodName) && method.desc.equals(desc)) {
+            if (method.name.equals(methodName) && method.desc.equals(descriptor)) {
                 return method;
             }
         }

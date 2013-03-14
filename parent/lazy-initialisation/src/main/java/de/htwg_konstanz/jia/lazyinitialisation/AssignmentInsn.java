@@ -1,7 +1,6 @@
 package de.htwg_konstanz.jia.lazyinitialisation;
 
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -13,20 +12,13 @@ interface AssignmentInsn {
      * @return the index of this assignment instruction within the set of
      *         instructions of a setter (method oder constructor).
      */
-    int getIndexOfAssignmentInstruction();
+    int getIndexWithinMethod();
 
     String getNameOfAssignedVariable();
 
     FieldInsnNode getAssignmentInstructionNode();
 
-    /**
-     * @param labelNodeToCheckFor
-     *            the {@code LabelNode} for which it is checked whether this
-     *            assignment instruction is placed under this label.
-     * @return {@code true} if this assignment instruction is placed under
-     *         {@code labelNodeToCheckFor}, {@code false} else.
-     */
-    boolean isUnderLabel(LabelNode labelNodeToCheckFor);
+    ControlFlowBlock getSurroundingControlFlowBlock();
 
     boolean isNull();
 

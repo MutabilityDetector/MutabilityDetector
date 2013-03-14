@@ -3,9 +3,7 @@
  */
 package de.htwg_konstanz.jia.lazyinitialisation;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -26,7 +24,7 @@ public final class NullAssignmentInsn implements AssignmentInsn {
     }
 
     @Override
-    public int getIndexOfAssignmentInstruction() {
+    public int getIndexWithinMethod() {
         return Integer.MIN_VALUE;
     }
 
@@ -41,8 +39,8 @@ public final class NullAssignmentInsn implements AssignmentInsn {
     }
 
     @Override
-    public boolean isUnderLabel(final LabelNode labelNodeToCheckFor) {
-        return false;
+    public ControlFlowBlock getSurroundingControlFlowBlock() {
+        return null;
     }
 
     @Override
@@ -52,8 +50,9 @@ public final class NullAssignmentInsn implements AssignmentInsn {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        return builder.toString();
+        final StringBuilder b = new StringBuilder();
+        b.append(getClass().getSimpleName()).append(" []");
+        return b.toString();
     }
 
 }
