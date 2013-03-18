@@ -68,9 +68,12 @@ public class TestUtil {
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
-        AnalysisSession analysisSession = testAnalysisSession();
-        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.errorReporter(), analysisSession.getResults());
-        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+        final AnalysisSession analysisSession = testAnalysisSession();
+        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse),
+                analysisSession.errorReporter(), analysisSession.getResults());
+        final AnalysisResult result = AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(),
+                checker.reasons());
+        return result;
     }
 
     public static SessionCheckerRunner sessionCheckerRunner() {

@@ -16,7 +16,7 @@
  */
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.checkers.SetterMethodChecker.newSetterMethodChecker;
+import static org.mutabilitydetector.checkers.SetterMethodCheckerOriginal.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 

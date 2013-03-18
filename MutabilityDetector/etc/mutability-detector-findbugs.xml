@@ -407,7 +407,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArrayArray" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsReference" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsShort" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
-      <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest" sourceFile="SetterMethodCheckerTest.java" interface="false" size="78" bugs="0"/>
+      <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerOriginalTest" sourceFile="SetterMethodCheckerTest.java" interface="false" size="78" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass" sourceFile="StillMutableSubclass.java" interface="false" size="8" bugs="0"/>
     </PackageStats>
     <PackageStats package="org.mutabilitydetector.benchmarks.types" total_bugs="0" total_types="15" total_size="472">
@@ -444,7 +444,7 @@
       <ClassStats class="org.mutabilitydetector.checkers.NullMutabilityChecker" sourceFile="NullMutabilityChecker.java" interface="false" size="5" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker" sourceFile="PublishedNonFinalFieldChecker.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.ResultCalculator" sourceFile="ResultCalculator.java" interface="false" size="21" bugs="0"/>
-      <ClassStats class="org.mutabilitydetector.checkers.SetterMethodChecker" sourceFile="SetterMethodChecker.java" interface="false" size="13" bugs="0"/>
+      <ClassStats class="org.mutabilitydetector.checkers.SetterMethodCheckerOriginal" sourceFile="SetterMethodChecker.java" interface="false" size="13" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.SetterMethodChecker$SetterAssignmentVisitor" sourceFile="SetterMethodChecker.java" interface="false" size="55" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.VarStack" sourceFile="VarStack.java" interface="false" size="18" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.checkers.VarStack$VarStackSnapshot" sourceFile="VarStack.java" interface="false" size="11" bugs="0"/>

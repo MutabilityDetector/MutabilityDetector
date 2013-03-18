@@ -41,19 +41,19 @@ import org.objectweb.asm.tree.analysis.Frame;
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
  */
-public final class SetterMethodChecker extends AbstractMutabilityChecker {
+public final class SetterMethodCheckerOriginal extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
     private final AsmVerifierFactory verifierFactory;
 
-    private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
+    private SetterMethodCheckerOriginal(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
                                  AsmVerifierFactory verifierFactory) {
         this.privateMethodInvocationInfo = privateMethodInvocationInfo;
         this.verifierFactory = verifierFactory;
     }
 
-    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AsmVerifierFactory verifierFactory) {
-        return new SetterMethodChecker(privateMethodInvocationInfo, verifierFactory);
+    public static SetterMethodCheckerOriginal newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AsmVerifierFactory verifierFactory) {
+        return new SetterMethodCheckerOriginal(privateMethodInvocationInfo, verifierFactory);
     }
 
     @Override
