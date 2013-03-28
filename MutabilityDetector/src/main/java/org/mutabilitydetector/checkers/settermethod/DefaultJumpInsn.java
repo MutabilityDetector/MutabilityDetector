@@ -5,7 +5,7 @@ package org.mutabilitydetector.checkers.settermethod;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -15,7 +15,7 @@ import org.objectweb.asm.tree.LabelNode;
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 15.02.2013
  */
-@Immutable
+@NotThreadSafe
 final class DefaultJumpInsn implements JumpInsn {
 
     private final JumpInsnNode jumpInsnNode;
@@ -25,16 +25,9 @@ final class DefaultJumpInsn implements JumpInsn {
     private DefaultJumpInsn(final JumpInsnNode theJumpInsnNode,
             final int theIndexWithinBlock,
             final int theIndexWithinMethod) {
-        jumpInsnNode = deepCopy(theJumpInsnNode);
+        jumpInsnNode = theJumpInsnNode;
         indexWithinBlock = theIndexWithinBlock;
         indexWithinMethod = theIndexWithinMethod;
-    }
-
-    private static JumpInsnNode deepCopy(final JumpInsnNode source) {
-        final int resultOpcode = source.getOpcode();
-        final LabelNode sourceLabelNode = source.label;
-        final LabelNode resultLabelNode = new LabelNode(sourceLabelNode.getLabel());
-        return new JumpInsnNode(resultOpcode, resultLabelNode);
     }
 
     public static DefaultJumpInsn newInstance(final JumpInsnNode jumpInsnNode,
@@ -45,7 +38,7 @@ final class DefaultJumpInsn implements JumpInsn {
 
     @Override
     public JumpInsnNode getJumpInsnNode() {
-        return deepCopy(jumpInsnNode);
+        return jumpInsnNode;
     }
 
     @Override
@@ -59,13 +52,8 @@ final class DefaultJumpInsn implements JumpInsn {
     }
 
     @Override
-    public LabelNode getLabelNodeOfJumpTarget() {
-        return new LabelNode(jumpInsnNode.label.getLabel());
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
+    public Opcode getOpcode() {
+        return Opcode.forInt(jumpInsnNode.getOpcode());
     }
 
     @Override

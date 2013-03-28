@@ -18,35 +18,34 @@ package org.mutabilitydetector.benchmarks.visibility;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
+import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 
-public class NonFinalFieldsCheckerTest {
+public class NonFinalFieldsCheckerOriginalTest {
 
-    private final AsmMutabilityChecker checker = SetterMethodChecker.newInstance();
+    
+    private final AsmMutabilityChecker checker = new NonFinalFieldChecker();
+
 
     @Test
     public void remainsImmutableWhenFieldIsFinal() throws Exception {
         assertThat(runChecker(checker, ImmutableExample.class), areImmutable());
     }
-
+    
+    
     @Test
     public void isEffectivelyImmutableWhenTheFieldIsNotDeclaredFinal() throws Exception {
-        assertInstancesOf(HasNonFinalField.class, areEffectivelyImmutable(), allowingNonFinalFields());
+        assertThat(runChecker(checker, HasNonFinalField.class), areEffectivelyImmutable());
     }
-
+    
     @Test
     public void isMutableForNonFinalFieldsSetOnlyInConstructor() throws Exception {
-        assertThat(runChecker(checker, ImmutableUsingPrivateFieldSettingMethod.class), areNotImmutable());
+        assertThat(runChecker(checker, ImmutableUsingPrivateFieldSettingMethod.class), areEffectivelyImmutable());
     }
-
 }

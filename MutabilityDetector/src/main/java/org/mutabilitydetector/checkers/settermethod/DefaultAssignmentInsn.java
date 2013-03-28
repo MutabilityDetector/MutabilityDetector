@@ -24,11 +24,7 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
             final FieldInsnNode theAssignmentInsnNode) {
         surroundingControlFlowBlock = theSurroundingControlFlowBlock;
         indexWithinMethod = theIndexWithinMethod;
-        assignmentInsnNode = deepCopy(theAssignmentInsnNode);
-    }
-
-    private static FieldInsnNode deepCopy(final FieldInsnNode source) {
-        return new FieldInsnNode(source.getOpcode(), source.owner, source.name, source.desc);
+        assignmentInsnNode = theAssignmentInsnNode;
     }
 
     public static AssignmentInsn newInstance(final ControlFlowBlock surroundingControlFlowBlock,
@@ -50,11 +46,6 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
     @Override
     public String getNameOfAssignedVariable() {
         return assignmentInsnNode.name;
-    }
-
-    @Override
-    public FieldInsnNode getAssignmentInstructionNode() {
-        return deepCopy(assignmentInsnNode);
     }
 
     @Override

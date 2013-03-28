@@ -17,6 +17,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.objectweb.asm.tree.*;
 
 /**
+ * An Assignment Guard is the condition check which decides whether or
+ * not to initialise a certain lazy variable.
+ * 
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 07.03.2013
  */
@@ -119,7 +122,7 @@ final class AssignmentGuard implements JumpInsn {
             } else {
                 result = insn.hashCode();
             }
-            return result;
+            return hashCode(result, insn.getOpcode());
         }
 
         private int hashCode(final FieldInsnNode insn) {
@@ -328,13 +331,8 @@ final class AssignmentGuard implements JumpInsn {
     }
 
     @Override
-    public LabelNode getLabelNodeOfJumpTarget() {
-        return delegationTarget.getLabelNodeOfJumpTarget();
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
+    public Opcode getOpcode() {
+        return delegationTarget.getOpcode();
     }
 
     @Override
@@ -383,12 +381,12 @@ final class AssignmentGuard implements JumpInsn {
         }
         final InstructionNodesComparator inc = new InstructionNodesComparator();
         for (int i = 0; i < predecessorInstructions.size(); i++) {
-            final AbstractInsnNode insnThis = predecessorInstructions.get(i);
-            final AbstractInsnNode insnOther = other.predecessorInstructions.get(i);
-            if (insnThis.getOpcode() != insnOther.getOpcode()) {
+            final AbstractInsnNode insnsThis = predecessorInstructions.get(i);
+            final AbstractInsnNode insnsOther = other.predecessorInstructions.get(i);
+            if (insnsThis.getOpcode() != insnsOther.getOpcode()) {
                 return false;
             }
-            if (instructionsAreUnequal(insnThis, insnOther, inc)) {
+            if (instructionsAreUnequal(insnsThis, insnsOther, inc)) {
                 return false;
             }
         }

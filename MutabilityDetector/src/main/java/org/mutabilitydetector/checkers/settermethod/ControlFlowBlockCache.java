@@ -3,8 +3,6 @@ package org.mutabilitydetector.checkers.settermethod;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -17,69 +15,7 @@ import org.objectweb.asm.tree.MethodNode;
  * @version 21.02.2013
  */
 @ThreadSafe
-final class ControlFlowBlockCache implements Iterable<Map.Entry<MethodNode, Collection<ControlFlowBlock>>> {
-
-    private static final class IteratorEntry implements Entry<MethodNode, Collection<ControlFlowBlock>> {
-
-        private final MethodNode key;
-        private final Collection<ControlFlowBlock> value;
-
-        public IteratorEntry(final MethodNode theKey, final Collection<ControlFlowBlock> theValue) {
-            key = theKey;
-            value = theValue;
-        }
-
-        @Override
-        public MethodNode getKey() {
-            return key;
-        }
-
-        @Override
-        public Collection<ControlFlowBlock> getValue() {
-            return value;
-        }
-
-        @Override
-        public Collection<ControlFlowBlock> setValue(final Collection<ControlFlowBlock> value) {
-            return value;
-        }
-
-    } // class IteratorEntry
-
-
-    private static final class CfbIterator implements Iterator<Map.Entry<MethodNode, Collection<ControlFlowBlock>>> {
-
-        private final List<Entry<MethodNode, Collection<ControlFlowBlock>>> entries;
-        private final AtomicInteger currentPosition;
-
-        public CfbIterator() {
-            entries = new ArrayList<Entry<MethodNode, Collection<ControlFlowBlock>>>();
-            currentPosition = new AtomicInteger(0);
-        }
-
-        void addEntry(final MethodNode key, final Collection<ControlFlowBlock> value) {
-            final Entry<MethodNode, Collection<ControlFlowBlock>> entry = new IteratorEntry(key, value);
-            entries.add(entry);
-        }
-
-        @Override
-        public boolean hasNext() {
-            final int amountOfEntries = entries.size();
-            return currentPosition.get() < amountOfEntries;
-        }
-
-        @Override
-        public Entry<MethodNode, Collection<ControlFlowBlock>> next() {
-            return entries.get(currentPosition.getAndIncrement());
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-    } // class CfbIterator
-
+final class ControlFlowBlockCache {
 
     private final String owner;
     @GuardedBy("this") private final Map<String, MethodNode> methodNodes;
@@ -122,22 +58,6 @@ final class ControlFlowBlockCache implements Iterable<Map.Entry<MethodNode, Coll
         final List<ControlFlowBlock> result = Collections.unmodifiableList(allControlFlowBlocksForMethod);
         controlFlowBlocks.put(mapKey, result);
         return result;
-    }
-
-    @Override
-    public Iterator<Entry<MethodNode, Collection<ControlFlowBlock>>> iterator() {
-        final CfbIterator result = new CfbIterator();
-        for (final Entry<String, List<ControlFlowBlock>> controlFlowBlocksEntry : controlFlowBlocks.entrySet()) {
-            final String mapKey = controlFlowBlocksEntry.getKey();
-            final MethodNode method = getMethodForKey(mapKey);
-            final List<ControlFlowBlock> controlFlowBlocks = controlFlowBlocksEntry.getValue();
-            result.addEntry(method, controlFlowBlocks);
-        }
-        return result;
-    }
-
-    private MethodNode getMethodForKey(final String mapKey) {
-        return methodNodes.get(mapKey);
     }
 
     @Override

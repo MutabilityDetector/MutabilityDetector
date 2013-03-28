@@ -1,7 +1,9 @@
 package org.mutabilitydetector.checkers.settermethod;
 
 import static java.lang.String.format;
+import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -9,12 +11,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
+import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.FieldLocation;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -23,11 +24,13 @@ import org.objectweb.asm.tree.ClassNode;
 @NotThreadSafe
 abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
 
+    protected CandidatesInitialisersMapping candidatesInitialisersMapping;
     private final ClassNode classNode;
     @GuardedBy("this")
     private volatile EnhancedClassNode enhancedClassNode;
 
     public AbstractSetterMethodChecker() {
+        candidatesInitialisersMapping = CandidatesInitialisersMapping.newInstance();
         classNode = new ClassNode();
         enhancedClassNode = null;
     }
@@ -72,7 +75,21 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
     @Override
     public final FieldVisitor visitField(final int access, final String name, final String desc,
             final String signature, final Object value) {
-        return classNode.visitField(access, name, desc, signature, value);
+        FieldVisitor result = null;
+        if (isCandidate(access)) {
+            result = new FieldNode(access, name, desc, signature, value);
+            candidatesInitialisersMapping.addCandidate((FieldNode) result);
+        } else if (field(access).isNotFinal() && field(access).isNotStatic()) {
+            setNonFinalFieldResult(name);
+        }
+        if (null == result) {
+            result = classNode.visitField(access, name, desc, signature, value);
+        }
+        return result;
+    }
+
+    private static boolean isCandidate(final int access) {
+        return field(access).isPrivate() && field(access).isNotFinal();
     }
 
     @Override
@@ -91,7 +108,6 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
      * Template method for verification of lazy initialisation.
      */
     protected final void verify() {
-        collectCandidates();
         collectInitialisers();
         verifyCandidates();
         verifyInitialisers();
@@ -103,8 +119,6 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
         verifyAssignmentGuards();
         end();
     }
-
-    protected abstract void collectCandidates();
 
     protected abstract void collectInitialisers();
 
@@ -147,16 +161,38 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
         super.setResult(message, fromInternalName(classNode.name), reason);
     }
 
-    protected void setFieldCanBeReassignedResult(final String variableName, final String methodName) {
+    final void setNonFinalFieldResult(final String variableName) {
+        final String msg = "Field is not final, if shared across threads the Java Memory Model will not"
+                + " guarantee it is initialised before it is read.";
+        setNonFinalFieldResult(msg, variableName);
+    }
+
+    final void setNonFinalFieldResult(final String message, final String variableName) {
+        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
+        setResult(message, location, MutabilityReason.NON_FINAL_FIELD);
+    }
+
+    final void setFieldCanBeReassignedResult(final String variableName, final String methodName) {
         final String msgTemplate = "Field [%s] can be reassigned within method [%s]";
         final String msg = format(msgTemplate, variableName, methodName);
-        setResultForClass(msg, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+        setFieldCanBeReassignedResult(msg);
+    }
+
+    final void setFieldCanBeReassignedResult(final String message) {
+        setResultForClass(message, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+    }
+
+    final void setMutableTypeToFieldResult(final String message, final String variableName) {
+        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
+        setResult(message, location, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
     }
 
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName()).append(" [classNode=").append(classNode);
+        builder.append(getClass().getSimpleName());
+        builder.append(", [candidatesInitialisersMapping=").append(candidatesInitialisersMapping);
+        builder.append(", classNode=").append(classNode);
         builder.append(", enhancedClassNode=").append(enhancedClassNode).append("]");
         return builder.toString();
     }

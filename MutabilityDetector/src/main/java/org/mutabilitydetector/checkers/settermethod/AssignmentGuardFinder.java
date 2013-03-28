@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -65,7 +66,7 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
 
     private Collection<JumpInsn> collectSupposedAssignmentGuards() {
         final Set<JumpInsn> result = new HashSet<JumpInsn>();
-        for (final JumpInsn jumpInsn : collectAllJumpInstructionsOfBlock()) {
+        for (final JumpInsn jumpInsn : collectAllConditionCheckInstructionsOfBlock()) {
             final AssignmentGuard.Builder builder = new AssignmentGuard.Builder(jumpInsn);
             final JumpInsn possibleAssignmentGuard = getAssignmentGuard(jumpInsn.getIndexWithinBlock(), builder);
             if (possibleAssignmentGuard.isAssignmentGuard()) {
@@ -75,11 +76,11 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
         return result;
     }
 
-    private Collection<JumpInsn> collectAllJumpInstructionsOfBlock() {
+    private Collection<JumpInsn> collectAllConditionCheckInstructionsOfBlock() {
         final ArrayList<JumpInsn> result = new ArrayList<JumpInsn>();
         int indexWithinBlock = 0;
         for (final AbstractInsnNode insn : controlFlowBlock.getBlockInstructions()) {
-            if (isJumpInsnNode(insn)) {
+            if (isConditionCheckInstruction(insn)) {
                 final JumpInsnNode jumpInsnNode = (JumpInsnNode) insn;
                 final int indexWithinMethod = controlFlowBlock.getIndexWithinMethod(indexWithinBlock);
                 result.add(DefaultJumpInsn.newInstance(jumpInsnNode, indexWithinBlock, indexWithinMethod));
@@ -90,8 +91,10 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
         return result;
     }
 
-    private static boolean isJumpInsnNode(final AbstractInsnNode insn) {
-        return AbstractInsnNode.JUMP_INSN == insn.getType();
+    private static boolean isConditionCheckInstruction(final AbstractInsnNode insn) {
+        final int opcode = insn.getOpcode();
+        return AbstractInsnNode.JUMP_INSN == insn.getType() && opcode != Opcodes.GOTO && opcode != Opcodes.JSR
+                && opcode != Opcodes.RET;
     }
 
     private JumpInsn getAssignmentGuard(final int indexOfInstructionToAnalyse, final AssignmentGuard.Builder builder) {
@@ -100,7 +103,7 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
         final int indexOfPredecessorInstruction = indexOfInstructionToAnalyse - 1;
         final AbstractInsnNode predecessorInstruction = blockInstructions.get(indexOfPredecessorInstruction);
         builder.addPredecessorInstruction(predecessorInstruction);
-        if (isGetfieldForVariable(predecessorInstruction)) {
+        if (isGetfieldOrGetstaticForCandidate(predecessorInstruction)) {
             result = builder.build();
         } else if (isLoadInstructionForAlias(predecessorInstruction)) {
             result = builder.build();
@@ -116,11 +119,11 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
         return result;
     }
 
-    private boolean isGetfieldForVariable(final AbstractInsnNode insn) {
+    private boolean isGetfieldOrGetstaticForCandidate(final AbstractInsnNode insn) {
         boolean result = false;
-        if (GETFIELD == insn.getOpcode()) {
-            final FieldInsnNode getfield = (FieldInsnNode) insn;
-            result = candidateName.equals(getfield.name);
+        if (GETFIELD == insn.getOpcode() || GETSTATIC == insn.getOpcode()) {
+            final FieldInsnNode getInstruction = (FieldInsnNode) insn;
+            result = candidateName.equals(getInstruction.name);
         }
         return result;
     }

@@ -8,10 +8,10 @@ import static org.apache.commons.lang3.Validate.notNull;
 import java.util.Collection;
 import java.util.List;
 
-import org.mutabilitydetector.MutabilityReason;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
@@ -22,27 +22,30 @@ import org.objectweb.asm.tree.VarInsnNode;
 final class EffectiveAssignmentInsnVerifier {
 
     private final AssignmentInsn effectiveAssignmentInstruction;
+    private final FieldNode candidate;
     private final AbstractSetterMethodChecker setterMethodChecker;
 
     private EffectiveAssignmentInsnVerifier(final AssignmentInsn theAssignmentInsn,
+            final FieldNode theCandidate,
             final AbstractSetterMethodChecker theSetterMethodChecker) {
         effectiveAssignmentInstruction = theAssignmentInsn;
+        candidate = theCandidate;
         setterMethodChecker = theSetterMethodChecker;
     }
 
     public static EffectiveAssignmentInsnVerifier newInstance(final AssignmentInsn assignmentInsn,
+            final FieldNode candidate,
             final AbstractSetterMethodChecker setterMethodChecker) {
-        return new EffectiveAssignmentInsnVerifier(notNull(assignmentInsn), notNull(setterMethodChecker));
+        return new EffectiveAssignmentInsnVerifier(notNull(assignmentInsn), notNull(candidate),
+                notNull(setterMethodChecker));
     }
 
     public void verify() {
         if (effectiveAssignmentInstruction.isNull()) {
             return;
         }
+        final Alias alias = findAlias();
         final AbstractInsnNode p = getPredecessorOfAssignmentInstruction();
-        final Finder<Alias> f = AliasFinder.newInstance(effectiveAssignmentInstruction.getNameOfAssignedVariable(),
-                effectiveAssignmentInstruction.getSurroundingControlFlowBlock());
-        final Alias alias = f.find();
         if (alias.doesExist) {
             verifyWithAlias(p, alias.localVariable);
         } else {
@@ -50,14 +53,19 @@ final class EffectiveAssignmentInsnVerifier {
         }
     }
 
-    private void recognizeAsMutableIfNecessary(final AbstractInsnNode insn) {
-        if (isNotPushConstantOntoStackInstruction(insn) && isNotInvokationOfParameterlessInstanceOrClassMethod(insn)) {
-            final String msgTemplate = "Assigned value to field [%s] is neither a constant nor does it stem from "
-                    + "invokation of a parameterless method of this class.";
-            final String candidateName = effectiveAssignmentInstruction.getNameOfAssignedVariable();
-            final String msg = String.format(msgTemplate, candidateName);
-            setterMethodChecker.setResultForClass(msg, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
-        }
+    private Alias findAlias() {
+        final String nameOfAssignedVariable = effectiveAssignmentInstruction.getNameOfAssignedVariable();
+        final ControlFlowBlock surroundingBlock = effectiveAssignmentInstruction.getSurroundingControlFlowBlock();
+        final Finder<Alias> f = AliasFinder.newInstance(nameOfAssignedVariable, surroundingBlock);
+        return f.find();
+    }
+
+    private AbstractInsnNode getPredecessorOfAssignmentInstruction() {
+        final ControlFlowBlock surroundingBlock = effectiveAssignmentInstruction.getSurroundingControlFlowBlock();
+        final int indexWithinMethod = effectiveAssignmentInstruction.getIndexWithinMethod();
+        final int predecessorIndexWithinMethod = indexWithinMethod - 1;
+        final int predecessorIndexWithinBlock = surroundingBlock.getIndexWithinBlock(predecessorIndexWithinMethod);
+        return surroundingBlock.getBlockInstructionForIndex(predecessorIndexWithinBlock);
     }
 
     private void verifyWithAlias(final AbstractInsnNode p, final int aliasLocalVariable) {
@@ -65,18 +73,6 @@ final class EffectiveAssignmentInsnVerifier {
             final ControlFlowBlock block = effectiveAssignmentInstruction.getSurroundingControlFlowBlock();
             for (final ControlFlowBlock predecessorBlock : block.getPredecessors()) {
                 verifyWithAliasForEachBlock(aliasLocalVariable, predecessorBlock);
-            }
-        }
-    }
-
-    private void verifyWithAliasForEachBlock(final int aliasLocalVariable, final ControlFlowBlock predecessorBlock) {
-        final List<AbstractInsnNode> blockInstructions = predecessorBlock.getBlockInstructions();
-        for (int i = 0; i < blockInstructions.size(); i++) {
-            final AbstractInsnNode insn = blockInstructions.get(i);
-            if (isAliasStoreInstruction(insn, aliasLocalVariable)) {
-                final AbstractInsnNode predecessor = blockInstructions.get(i - 1);
-                recognizeAsMutableIfNecessary(predecessor);
-                break;
             }
         }
     }
@@ -95,6 +91,18 @@ final class EffectiveAssignmentInsnVerifier {
         }
     }
 
+    private void verifyWithAliasForEachBlock(final int aliasLocalVariable, final ControlFlowBlock predecessorBlock) {
+        final List<AbstractInsnNode> blockInstructions = predecessorBlock.getBlockInstructions();
+        for (int i = 0; i < blockInstructions.size(); i++) {
+            final AbstractInsnNode insn = blockInstructions.get(i);
+            if (isAliasStoreInstruction(insn, aliasLocalVariable)) {
+                final AbstractInsnNode predecessor = blockInstructions.get(i - 1);
+                recognizeAsMutableIfNecessary(predecessor);
+                break;
+            }
+        }
+    }
+
     private static boolean isAliasStoreInstruction(final AbstractInsnNode insn, final int aliasLocalVariable) {
         switch (insn.getOpcode()) {
         case Opcodes.ISTORE:
@@ -109,12 +117,19 @@ final class EffectiveAssignmentInsnVerifier {
         }
     }
 
-    private AbstractInsnNode getPredecessorOfAssignmentInstruction() {
-        final ControlFlowBlock surroundingBlock = effectiveAssignmentInstruction.getSurroundingControlFlowBlock();
-        final int indexWithinMethod = effectiveAssignmentInstruction.getIndexWithinMethod();
-        final int predecessorIndexWithinMethod = indexWithinMethod - 1;
-        final int predecessorIndexWithinBlock = surroundingBlock.getIndexWithinBlock(predecessorIndexWithinMethod);
-        return surroundingBlock.getBlockInstructionForIndex(predecessorIndexWithinBlock);
+    private void recognizeAsMutableIfNecessary(final AbstractInsnNode p) {
+        if (isNotPushConstantOntoStackInstruction(p) && isNotInvokationOfParameterlessInstanceOrClassMethod(p)) {
+            final String candidateName = effectiveAssignmentInstruction.getNameOfAssignedVariable();
+            if (isCandidateOfPrimitiveType()) {
+                final String msgTemplate = "Value for lazy field [%s] is not a constant but stems from a method which "
+                        + "is neither parameterless nor an instance or class method.";
+                setterMethodChecker.setFieldCanBeReassignedResult(String.format(msgTemplate, candidateName));
+            } else {
+                final String message = "Value for lazy field is not a constant but stems from a method which is "
+                        + "neither parameterless nor an instance or class method.";
+                setterMethodChecker.setMutableTypeToFieldResult(message, candidateName);
+            }
+        }
     }
 
     private boolean isNotPushConstantOntoStackInstruction(final AbstractInsnNode insn) {
@@ -148,11 +163,19 @@ final class EffectiveAssignmentInsnVerifier {
         return !invokedMethodOwner.equals(internalClassName);
     }
 
+    private boolean isCandidateOfPrimitiveType() {
+        final Type typeOfCandidate = Type.getType(candidate.desc);
+        final int sortOfType = typeOfCandidate.getSort();
+        return Type.ARRAY != sortOfType && Type.METHOD != sortOfType && Type.OBJECT != sortOfType;
+    }
+
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" [effectiveAssignmentInstruction=");
-        builder.append(effectiveAssignmentInstruction).append(", setterMethodChecker=").append(setterMethodChecker);
+        builder.append(effectiveAssignmentInstruction);
+        builder.append(", candidate=").append(candidate.name);
+        builder.append(", setterMethodChecker=").append(setterMethodChecker);
         builder.append("]");
         return builder.toString();
     }

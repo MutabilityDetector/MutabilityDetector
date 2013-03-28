@@ -21,6 +21,48 @@ public final class WithoutAlias {
             }
         } // class Stateless
 
+        
+        public static final class BooleanFlag {
+
+            public static final String CLASS_NAME = "BooleanStandardIdiom";
+
+            private volatile boolean flag = false;
+
+            public void printClassNameAtMostOneTime() {
+                synchronized (this) {
+                    if (!flag) {
+                        printClassName();
+                        flag = true;
+                    }
+                }
+            }
+
+            private void printClassName() {
+                System.out.println(CLASS_NAME);
+            }
+        } // class BooleanFlag
+
+
+        public static final class BooleanFlagWithFalseAssignmentGuard {
+
+            public static final String CLASS_NAME = "BooleanStandardIdiom";
+
+            private volatile boolean flag = false;
+
+            public void printClassNameAtMostOneTime() {
+                synchronized (this) {
+                    if (flag) {
+                        printClassName();
+                        flag = true;
+                    }
+                }
+            }
+
+            private void printClassName() {
+                System.out.println(CLASS_NAME);
+            }
+        } // class BooleanFlag
+
 
         public static final class CharValid {
             private char hash;
@@ -106,6 +148,22 @@ public final class WithoutAlias {
         } // class IntegerInvalid
 
 
+        public static final class IntegerWithInvalidValueCalculationMethod {
+            private int hash;
+            @Override
+            public int hashCode() {
+                if (0 == hash) {
+                    hash = calculateValue(2342);
+                }
+                return hash;
+            }
+
+            public int calculateValue(final int input) {
+                return input;
+            }
+        } // class IntegerInvalid
+
+
         public static final class ObjectValid {
             private Object hash = null;
             public Object hashCodeObject() {
@@ -150,6 +208,22 @@ public final class WithoutAlias {
                     hash = "Hash code";
                 }
                 return hash;
+            }
+        } // class StringValid
+
+
+        public static final class StringWithInvalidValueCalculationMethod {
+            public String mutable;
+            private String hash;
+            public String hashCodeString() {
+                if (null == hash) {
+                    hash = getValue(mutable);
+                }
+                return hash;
+            }
+
+            private String getValue(final String input) {
+                return input;
             }
         } // class StringValid
 
@@ -227,6 +301,25 @@ public final class WithoutAlias {
                 return hash;
             }
         } // class IntegerInvalid
+
+
+        public static final class IntegerWithNonCandidateVariable {
+            private int hash = -1;
+            @SuppressWarnings("unused")
+            private int useless = Integer.MAX_VALUE;
+
+            public IntegerWithNonCandidateVariable() {
+                hash = -2;
+            }
+
+            @Override
+            public int hashCode() {
+                if (-2 == hash) {
+                    hash = 2342;
+                }
+                return hash;
+            }
+        } // class IntegerWithNonCandidateVariable
 
 
         public static final class FloatValid {

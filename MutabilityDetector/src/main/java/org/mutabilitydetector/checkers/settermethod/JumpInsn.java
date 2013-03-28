@@ -4,7 +4,6 @@
 package org.mutabilitydetector.checkers.settermethod;
 
 import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -18,16 +17,8 @@ interface JumpInsn extends Comparable<JumpInsn> {
 
     int getIndexWithinMethod();
 
-    LabelNode getLabelNodeOfJumpTarget();
-
-    boolean isNull();
+    Opcode getOpcode();
 
     boolean isAssignmentGuard();
-
-    @Override
-    int hashCode();
-
-    @Override
-    boolean equals(Object o);
 
 }

@@ -13,11 +13,9 @@ public interface OpcodeInformation {
 
     int asInt();
 
-    String asHex();
-
     Category category();
 
-    Object stackValue();
+    UnknownTypeValue stackValue();
 
     String description();
 

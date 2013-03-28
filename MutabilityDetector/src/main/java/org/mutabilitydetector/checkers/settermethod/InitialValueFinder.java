@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.mutabilitydetector.checkers.settermethod.VariableInitialisersAssociation.Initialisers;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 

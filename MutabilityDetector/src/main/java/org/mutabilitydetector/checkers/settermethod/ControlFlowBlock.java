@@ -9,7 +9,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -32,8 +32,85 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 @ThreadSafe
 final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
+    @Immutable
+    static final class Range {
+
+        /** Value of this range's lower boundary. */
+        public final int lowerBoundary;
+
+        /** Value of this range's upper boundary. */
+        public final int upperBoundary;
+
+        /** All items of this range. */
+        public final List<Integer> allItems;
+
+        private Range(final int theLowerBoundary, final int theUpperBoundary, final List<Integer> allItems) {
+            lowerBoundary = theLowerBoundary;
+            upperBoundary = theUpperBoundary;
+            this.allItems = Collections.unmodifiableList(allItems);
+        }
+
+        public static Range newInstance(final SortedSet<Integer> allItems) {
+            final List<Integer> allItemsList = new ArrayList<Integer>(allItems.size());
+            for (final Integer item : new TreeSet<Integer>(allItems)) {
+                allItemsList.add(item);
+            }
+            final Integer lowerBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(0);
+            final Integer upperBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(allItemsList.size() - 1);
+            return new Range(lowerBoundary, upperBoundary, allItemsList);
+        }
+
+        public boolean covers(final int index) {
+            return allItems.contains(Integer.valueOf(index));
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + allItems.hashCode();
+            result = prime * result + lowerBoundary;
+            result = prime * result + upperBoundary;
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof Range)) {
+                return false;
+            }
+            final Range other = (Range) obj;
+            if (!allItems.equals(other.allItems)) {
+                return false;
+            }
+            if (lowerBoundary != other.lowerBoundary) {
+                return false;
+            }
+            if (upperBoundary != other.upperBoundary) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder();
+            builder.append(getClass().getSimpleName());
+            builder.append(" [lowerBoundary=").append(lowerBoundary).append(", upperBoundary=").append(upperBoundary);
+            builder.append(", allItems=").append(allItems).append("]");
+            return builder.toString();
+        }
+    } // class Range
+
+
     @NotThreadSafe
-    public static final class Builder {
+    private static final class Builder {
         private final int blockNumber;
         private final String identifier;
         private final InsnList allInstructions;
@@ -48,10 +125,6 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
         public void addInstruction(final int instructionIndex) {
             rangeItems.add(Integer.valueOf(instructionIndex));
-        }
-
-        public boolean isBuilderForBlockNumber(final int aBlockNumber) {
-            return blockNumber == aBlockNumber;
         }
 
         public ControlFlowBlock build() {
@@ -170,15 +243,6 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             result.trimToSize();
             return result;
         }
-
-        public Map<Integer, ControlFlowBlock> getAllControlFlowBlocksForMethodInMap() {
-            final List<ControlFlowBlock> allControlFlowBlocks = getAllControlFlowBlocksForMethod();
-            final Map<Integer, ControlFlowBlock> result = new HashMap<Integer, ControlFlowBlock>();
-            for (final ControlFlowBlock controlFlowBlock : allControlFlowBlocks) {
-                result.put(Integer.valueOf(controlFlowBlock.getBlockNumber()), controlFlowBlock);
-            }
-            return result;
-        }
     } // class ControlFlowFactory
 
 
@@ -188,7 +252,6 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     private final Range rangeOfBlockInstructions;
     private final Set<ControlFlowBlock> predecessors;
     private final Set<ControlFlowBlock> successors;
-    @GuardedBy("this") private final Map<String, JumpInsn> assignmentGuards;
     private int hashCode;
     private String stringRepresentation;
 
@@ -202,7 +265,6 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         rangeOfBlockInstructions = theRangeOfBlockInstructionIndices;
         predecessors = new HashSet<ControlFlowBlock>();
         successors = new HashSet<ControlFlowBlock>();
-        assignmentGuards = new WeakHashMap<String, JumpInsn>();
         hashCode = 0;
         stringRepresentation = null;
     }
@@ -252,95 +314,21 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return blockNumber;
     }
 
-//    public boolean containsConditionCheck() {
-//        boolean result = false;
-//        for (int i = rangeOfBlockInstructions.lowerBoundary; i <= rangeOfBlockInstructions.upperBoundary; i++) {
-//            if (isJumpInsnNode(methodInstructions[i])) {
-//                result = true;
-//                break;
-//            }
-//        }
-//        return result;
-//    }
-
-//    private static boolean isJumpInsnNode(final AbstractInsnNode insn) {
-//        return AbstractInsnNode.JUMP_INSN == insn.getType();
-//    }
-
-//    public List<JumpInsn> getJumpInstructions() {
-//        final ArrayList<JumpInsn> result = new ArrayList<JumpInsn>();
-//        int indexWithinBlock = 0;
-//        for (int i = rangeOfBlockInstructions.lowerBoundary; i <= rangeOfBlockInstructions.upperBoundary; i++) {
-//            final AbstractInsnNode abstractInsnNode = methodInstructions[i];
-//            if (isJumpInsnNode(abstractInsnNode)) {
-//                final JumpInsnNode jumpInsnNode = (JumpInsnNode) abstractInsnNode;
-//                result.add(JumpInsnDefault.newInstance(jumpInsnNode, indexWithinBlock, i));
-//            }
-//            indexWithinBlock++;
-//        }
-//        result.trimToSize();
-//        return result;
-//    }
-
-    public synchronized boolean containsAssignmentGuardForVariable(final String variableName) {
-        final boolean result;
-        if (variableNameIsNotSuitable(variableName)) {
-            result = false;
-        } else if (assignmentGuards.containsKey(variableName)) {
-            final JumpInsn supposedAssignmentGuard = assignmentGuards.get(variableName);
-            result = supposedAssignmentGuard.isAssignmentGuard();
-        } else {
-            findAssignmentGuardForVariableInThisBlock(variableName);
-            result = containsAssignmentGuardForVariable(variableName);
-        }
-        return result;
-    }
-
-    private static boolean variableNameIsNotSuitable(final String variableName) {
-        return null == variableName || variableName.isEmpty();
-    }
-
-    private void findAssignmentGuardForVariableInThisBlock(final String variableName) {
-        final Finder<JumpInsn> f = AssignmentGuardFinder.newInstance(variableName, this);
-        final JumpInsn supposedAssignmentGuard = f.find();
-        addToAssignmentGuardsIfNecessary(variableName, supposedAssignmentGuard);
-    }
-
-    private void addToAssignmentGuardsIfNecessary(final String variableName, final JumpInsn assignmentGuard) {
-        if (!assignmentGuards.containsKey(variableName)) {
-            assignmentGuards.put(variableName, assignmentGuard);
-        }
-    }
-
-    public JumpInsn getAssignmentGuardForVariable(final String variableName) {
-        final JumpInsn result;
-        if (containsAssignmentGuardForVariable(variableName)) {
-            synchronized (this) {
-                result = assignmentGuards.get(variableName);
-            }
-        } else {
-            result = NullJumpInsn.getInstance();
-        }
-        return result;
-    }
-
     public boolean covers(final int someInstructionIndex) {
         return rangeOfBlockInstructions.covers(someInstructionIndex);
     }
 
-    public boolean coversAll(final Collection<Integer> indices) {
-        return rangeOfBlockInstructions.coversAll(indices);
-    }
-
-    public boolean coversOneOf(final Collection<Integer> indices) {
-        return rangeOfBlockInstructions.coversOneOf(indices);
-    }
-
-    public boolean isDirectPredecessorOf(final ControlFlowBlock successor) {
+    /*
+     * For test purposes only.
+     */
+    boolean isDirectPredecessorOf(final ControlFlowBlock successor) {
         return successors.contains(successor);
     }
 
-    public boolean isPredecessorOf(final ControlFlowBlock possibleSuccessor) {
+    /*
+     * For test purposes only.
+     */
+    boolean isPredecessorOf(final ControlFlowBlock possibleSuccessor) {
         boolean result = false;
         for (final ControlFlowBlock directSuccessor : successors) {
             if (directSuccessor.equals(possibleSuccessor) || directSuccessor.isPredecessorOf(possibleSuccessor)) {
@@ -351,11 +339,10 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         return result;
     }
 
-    public boolean isDirectSuccessorOf(final ControlFlowBlock possiblePredecessor) {
-        return predecessors.contains(possiblePredecessor);
-    }
-
-    public boolean isSuccessorOf(final ControlFlowBlock possiblePredecessor) {
+    /*
+     * For test purposes only.
+     */
+    boolean isSuccessorOf(final ControlFlowBlock possiblePredecessor) {
         return possiblePredecessor.isPredecessorOf(this);
     }
 

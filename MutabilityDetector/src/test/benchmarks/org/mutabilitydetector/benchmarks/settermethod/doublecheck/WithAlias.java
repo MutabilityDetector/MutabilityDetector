@@ -59,25 +59,74 @@ public final class WithAlias {
      */
     public static final class WithCustomInitialValue {
 
-        public static final class IntegerValid {
+        public static final class MessageHolder {
             private final String message;
-            private int cachedValue;
-            public IntegerValid(final String aMessage) {
+            private volatile int cachedValue;
+
+            public MessageHolder(final String aMessage) {
                 message = aMessage;
-                cachedValue = -2;
+                cachedValue = -1;
             }
+
             public String getMessage() {
                 return message;
             }
+
+            /**
+             * Lazy method.
+             */
             public int getMessageLength() {
                 int result = cachedValue;
-                if (-2 == result) {
-                    result = message.length();
-                    cachedValue = result;
+                if (-1 == result) {
+                    synchronized (this) {
+                        if (-1 == result) {
+                            result = calculateMessageLength();
+                            cachedValue = result;
+                        }
+                    }
                 }
                 return result;
             }
-        } // class IntegerValid
+
+            private int calculateMessageLength() {
+                return message.length();
+            }
+        } // class MessageHolder
+
+
+        public static final class MessageHolderWithWrongAssignmentGuard {
+            private final String message;
+            private volatile int cachedValue;
+
+            public MessageHolderWithWrongAssignmentGuard(final String aMessage) {
+                message = aMessage;
+                cachedValue = -1;
+            }
+
+            public String getMessage() {
+                return message;
+            }
+
+            /**
+             * Lazy method.
+             */
+            public int getMessageLength() {
+                int result = cachedValue;
+                if (-1 == result) {
+                    synchronized (this) {
+                        if (-2 == result) {
+                            result = calculateMessageLength();
+                            cachedValue = result;
+                        }
+                    }
+                }
+                return result;
+            }
+
+            private int calculateMessageLength() {
+                return message.length();
+            }
+        } // class MessageHolderWithWrongAssignmentGuard
 
 
         public static final class StringValid {

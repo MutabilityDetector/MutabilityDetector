@@ -16,7 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import static org.mutabilitydetector.checkers.SetterMethodCheckerOriginal.newSetterMethodChecker;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
@@ -31,19 +30,18 @@ import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
-import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
+import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
 
 public final class MutabilityCheckerFactory {
 
     public Iterable<AsmMutabilityChecker> createInstances(AnalysisDatabase database, AsmVerifierFactory verifierFactory, MutableTypeInformation mutableTypeInformation) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
-        checkers.add(new NonFinalFieldChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
-        checkers.add(newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION), verifierFactory));
+        checkers.add(SetterMethodChecker.newInstance(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
         checkers.add(new MutableTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), 
                                                    mutableTypeInformation, 
                                                    verifierFactory));

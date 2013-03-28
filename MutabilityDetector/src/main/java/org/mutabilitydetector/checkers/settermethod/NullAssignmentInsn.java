@@ -3,8 +3,6 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import org.objectweb.asm.tree.FieldInsnNode;
-
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 15.02.2013
@@ -31,11 +29,6 @@ public final class NullAssignmentInsn implements AssignmentInsn {
     @Override
     public String getNameOfAssignedVariable() {
         return "";
-    }
-
-    @Override
-    public FieldInsnNode getAssignmentInstructionNode() {
-        return new FieldInsnNode(Integer.MIN_VALUE, "", "", "");
     }
 
     @Override

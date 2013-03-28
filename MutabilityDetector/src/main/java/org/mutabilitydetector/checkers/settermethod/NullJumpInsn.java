@@ -2,7 +2,6 @@ package org.mutabilitydetector.checkers.settermethod;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
 
 /**
  * @author Juergen Fickel
@@ -45,13 +44,8 @@ final class NullJumpInsn implements JumpInsn {
     }
 
     @Override
-    public LabelNode getLabelNodeOfJumpTarget() {
-        return null;
-    }
-
-    @Override
-    public boolean isNull() {
-        return true;
+    public Opcode getOpcode() {
+        return Opcode.NOP;
     }
 
     @Override

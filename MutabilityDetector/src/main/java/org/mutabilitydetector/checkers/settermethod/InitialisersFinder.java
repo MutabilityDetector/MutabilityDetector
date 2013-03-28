@@ -19,16 +19,16 @@ import org.objectweb.asm.tree.MethodNode;
  * @version 05.03.2013
  */
 @ThreadSafe
-final class InitialisersFinder implements Finder<VariableInitialisersAssociation> {
+final class InitialisersFinder implements Finder<CandidatesInitialisersMapping> {
 
     private final Collection<MethodNode> methods;
-    private final VariableInitialisersAssociation variableInitialisers;
+    private final CandidatesInitialisersMapping candidatesInitialisersMapping;
     private volatile boolean areMethodsAlreadyExamined;
 
     private InitialisersFinder(final Collection<MethodNode> theMethods,
-            final VariableInitialisersAssociation theVariableSetterCollection) {
+            final CandidatesInitialisersMapping theVariableInitialisersMapping) {
         methods = Collections.unmodifiableCollection(theMethods);
-        variableInitialisers = theVariableSetterCollection.copy();
+        candidatesInitialisersMapping = theVariableInitialisersMapping;
         areMethodsAlreadyExamined = false;
     }
 
@@ -39,7 +39,7 @@ final class InitialisersFinder implements Finder<VariableInitialisersAssociation
      * @param methodsOfAnalysedClass
      *            {@link Collection} containing all methods ({@code MethodNode})
      *            of the class under examination.
-     * @param variableInitialisersAssociation
+     * @param candidatesInitialisersMapping
      *            an instance of
      *            {@link VariableInitialiserAssociation} which
      *            contains all candidates for lazy variables of
@@ -49,20 +49,20 @@ final class InitialisersFinder implements Finder<VariableInitialisersAssociation
      * @return a new instance of this class.
      */
     public static InitialisersFinder newInstance(final Collection<MethodNode> methodsOfAnalysedClass,
-            final VariableInitialisersAssociation variableInitialisersAssociation) {
+            final CandidatesInitialisersMapping candidatesInitialisersMapping) {
         final String msgTemplate = "Argument '%s' must not be null!";
         notNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
-        notNull(variableInitialisersAssociation, format(msgTemplate, "variableInitialiserAssociation"));
-        return new InitialisersFinder(methodsOfAnalysedClass, variableInitialisersAssociation);
+        notNull(candidatesInitialisersMapping, format(msgTemplate, "variableInitialiserMapping"));
+        return new InitialisersFinder(methodsOfAnalysedClass, candidatesInitialisersMapping);
     }
 
     @Override
-    public VariableInitialisersAssociation find() {
+    public CandidatesInitialisersMapping find() {
         if (areMethodsToBeExamined()) {
             collectAllInitialisingMethodsForAllLazyVariableCandidates();
             areMethodsAlreadyExamined = true;
         }
-        return variableInitialisers.copy();
+        return candidatesInitialisersMapping;
     }
 
     private boolean areMethodsToBeExamined() {
@@ -79,7 +79,7 @@ final class InitialisersFinder implements Finder<VariableInitialisersAssociation
         for (final AbstractInsnNode insn : methodNode.instructions.toArray()) {
             if (isInitialiserForAVariable(insn)) {
                 final FieldInsnNode assignmentInstruction = (FieldInsnNode) insn;
-                variableInitialisers.addInitialiserForVariable(assignmentInstruction.name, methodNode);
+                candidatesInitialisersMapping.addInitialiserForCandidate(assignmentInstruction.name, methodNode);
             }
         }
     }
@@ -100,7 +100,7 @@ final class InitialisersFinder implements Finder<VariableInitialisersAssociation
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [methods=").append(methods);
-        b.append(", variableSetterCollection=").append(variableInitialisers);
+        b.append(", variableSetterMapping=").append(candidatesInitialisersMapping);
         b.append(", areMethodsAlreadyExamined=").append(areMethodsAlreadyExamined).append("]");
         return b.toString();
     }

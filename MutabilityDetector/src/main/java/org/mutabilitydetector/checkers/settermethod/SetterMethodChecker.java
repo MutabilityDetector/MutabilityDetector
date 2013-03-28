@@ -1,7 +1,9 @@
 package org.mutabilitydetector.checkers.settermethod;
 
 import static java.lang.String.format;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.apache.commons.lang3.Validate.notNull;
+import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
+import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.util.*;
 
@@ -9,10 +11,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.settermethod.VariableInitialisersAssociation.Entry;
-import org.mutabilitydetector.checkers.settermethod.VariableInitialisersAssociation.Initialisers;
-import org.mutabilitydetector.locations.ClassLocation;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.checkers.info.MethodIdentifier;
+import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Entry;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
+import org.mutabilitydetector.locations.Slashed;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -23,65 +26,107 @@ import org.objectweb.asm.tree.MethodNode;
 @NotThreadSafe
 public final class SetterMethodChecker extends AbstractSetterMethodChecker {
 
+    private final class MethodIdentifierFactory {
+        private final MethodNode method;
+
+        public MethodIdentifierFactory(final MethodNode theMethod) {
+            method = notNull(theMethod);
+        }
+
+        public MethodIdentifier getMethodIdentifier() {
+            final Slashed className = getSlashedClassName();
+            final String methodDescriptor = getMethodDescriptor();
+            final MethodIdentifier result = forMethod(className, methodDescriptor);
+            return result;
+        }
+
+        private Slashed getSlashedClassName() {
+            final String owner = getEnhancedClassNode().getName();
+            final Slashed result = slashed(owner);
+            return result;
+        }
+
+        private String getMethodDescriptor() {
+            final String methodName = method.name;
+            final String methodDesc = method.desc;
+            final String result = String.format("%s:%s", methodName, methodDesc);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder();
+            builder.append(getClass().getSimpleName()).append(" [method=").append(method).append("]");
+            return builder.toString();
+        }
+    } // class MethodIdentifierFactory
+
+
+    private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
     private final Map<FieldNode, Collection<UnknownTypeValue>> initialValues;
     private final Map<FieldNode, Collection<JumpInsn>> assignmentGuards;
     private final Map<FieldNode, AssignmentInsn> effectiveAssignmentInstructions;
-    private VariableInitialisersAssociation variableInitialisersAssociation;
 
-    private SetterMethodChecker() {
+    private SetterMethodChecker(final PrivateMethodInvocationInformation thePrivateMethodInvocationInfo) {
         super();
+        privateMethodInvocationInfo = thePrivateMethodInvocationInfo;
         initialValues = new HashMap<FieldNode, Collection<UnknownTypeValue>>();
         assignmentGuards = new HashMap<FieldNode, Collection<JumpInsn>>();
         effectiveAssignmentInstructions = new HashMap<FieldNode, AssignmentInsn>();
-        variableInitialisersAssociation = null;
     }
 
     public static AsmMutabilityChecker newInstance() {
-        return new SetterMethodChecker();
+        return new SetterMethodChecker(null);
     }
 
-    @Override
-    protected void collectCandidates() {
-        final Collection<FieldNode> variablesOfAnalysedClass = getEnhancedClassNode().getFields();
-        final Finder<VariableInitialisersAssociation> f = CandidatesFinder.newInstance(variablesOfAnalysedClass);
-        variableInitialisersAssociation = f.find();
+    public static AsmMutabilityChecker newInstance(final PrivateMethodInvocationInformation privateMethodInvocationInfo) {
+        return new SetterMethodChecker(notNull(privateMethodInvocationInfo));
     }
 
     @Override
     protected void collectInitialisers() {
         final Collection<MethodNode> methodsOfAnalysedClass = getEnhancedClassNode().getMethods();
-        final Finder<VariableInitialisersAssociation> f = InitialisersFinder.newInstance(methodsOfAnalysedClass,
-                variableInitialisersAssociation);
-        variableInitialisersAssociation = f.find();
+        final Finder<CandidatesInitialisersMapping> f = InitialisersFinder.newInstance(methodsOfAnalysedClass,
+                candidatesInitialisersMapping);
+        candidatesInitialisersMapping = f.find();
     }
 
     @Override
     protected void verifyCandidates() {
-        final Collection<FieldNode> unassociatedVariables = variableInitialisersAssociation
-                .removeAndGetUnassociatedVariables();
+        final Collection<FieldNode> unassociatedVariables = candidatesInitialisersMapping
+                .removeAndGetCandidatesWithoutInitialisingMethod();
         for (final FieldNode unassociatedVariable : unassociatedVariables) {
             setNonFinalFieldResult(unassociatedVariable.name);
         }
     }
 
-    private void setNonFinalFieldResult(final String variableName) {
-        final String msg = "Field is not final, if shared across threads the Java Memory Model will not"
-                + " guarantee it is initialised before it is read.";
-        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
-        setResult(msg, location, MutabilityReason.NON_FINAL_FIELD);
-    }
-
     @Override
     protected void verifyInitialisers() {
-        for (final Entry entry : variableInitialisersAssociation) {
+        for (final Entry entry : candidatesInitialisersMapping) {
             verifyInitialisersFor(entry.getCandidate(), entry.getInitialisers());
         }
+        verifyVisibleSetterMethods();
     }
-
+    
     private void verifyInitialisersFor(final FieldNode candidate, final Initialisers allInitialisersForCandidate) {
         final Collection<MethodNode> initialisingMethods = allInitialisersForCandidate.getMethods();
         if (containsMoreThanOne(initialisingMethods)) {
             setFieldCanBeReassignedResultForEachMethodInitialiser(candidate.name, initialisingMethods);
+        } else if (hasPrivateMethodInvocationInfo()) {
+            for (final MethodNode initialisingMethod : initialisingMethods) {
+                removeCandidateIfInitialisingMethodIsOnlyCalledFromContructor(initialisingMethod);
+            }
+        }
+    }
+
+    private void verifyVisibleSetterMethods() {
+        final Map<String, Set<MethodNode>> allVisibleSetterMethods = candidatesInitialisersMapping
+                .getAllVisibleSetterMethods();
+        for (final Map.Entry<String, Set<MethodNode>> e : allVisibleSetterMethods.entrySet()) {
+            final String variableName = e.getKey();
+            for (final MethodNode visibleSetterMethod : e.getValue()) {
+                setFieldCanBeReassignedResult(variableName, visibleSetterMethod.name);
+            }
         }
     }
 
@@ -96,14 +141,31 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         }
     }
 
+    private boolean hasPrivateMethodInvocationInfo() {
+        return null != privateMethodInvocationInfo;
+    }
+
+    private void removeCandidateIfInitialisingMethodIsOnlyCalledFromContructor(final MethodNode initialisingMethod) {
+        if (isOnlyCalledFromConstructor(initialisingMethod)) {
+            candidatesInitialisersMapping.removeAndGetCandidateForInitialisingMethod(initialisingMethod);
+        }
+    }
+
+    private boolean isOnlyCalledFromConstructor(final MethodNode initialisingMethod) {
+        final MethodIdentifierFactory factory = new MethodIdentifierFactory(initialisingMethod);
+        final MethodIdentifier methodId = factory.getMethodIdentifier();
+        return privateMethodInvocationInfo.isOnlyCalledFromConstructor(methodId);
+    }
+
     @Override
     protected void collectPossibleInitialValues() {
-        for (final Entry entry : variableInitialisersAssociation) {
+        for (final Entry entry : candidatesInitialisersMapping) {
             final FieldNode candidate = entry.getCandidate();
             final Initialisers initialisers = entry.getInitialisers();
             final Finder<Set<UnknownTypeValue>> f = InitialValueFinder.newInstance(candidate, initialisers,
                     getEnhancedClassNode());
-            initialValues.put(candidate, f.find());
+            final Set<UnknownTypeValue> possibleInitialValues = f.find();
+            initialValues.put(candidate, possibleInitialValues);
         }
     }
 
@@ -148,7 +210,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
 
     @Override
     protected void collectEffectiveAssignmentInstructions() {
-        for (final Entry e : variableInitialisersAssociation) {
+        for (final Entry e : candidatesInitialisersMapping) {
             final FieldNode candidate = e.getCandidate();
             final MethodNode initialisingMethod = getSoleInitialisingMethod(e.getInitialisers());
             addEffectiveAssignmentInstructionForCandidateIfPossible(candidate, initialisingMethod);
@@ -161,7 +223,13 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
      */
     private MethodNode getSoleInitialisingMethod(final Initialisers initialisers) {
         final List<MethodNode> initialisingMethods = initialisers.getMethods();
-        return initialisingMethods.get(0);
+        final MethodNode result;
+        if (!initialisingMethods.isEmpty()) {
+            result = initialisingMethods.get(0);
+        } else {
+            result = null;
+        }
+        return result;
     }
 
     private void addEffectiveAssignmentInstructionForCandidateIfPossible(final FieldNode candidate,
@@ -177,14 +245,15 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
     @Override
     protected void verifyEffectiveAssignmentInstructions() {
         for (final Map.Entry<FieldNode, AssignmentInsn> e : effectiveAssignmentInstructions.entrySet()) {
-            final EffectiveAssignmentInsnVerifier v = EffectiveAssignmentInsnVerifier.newInstance(e.getValue(), this);
+            final EffectiveAssignmentInsnVerifier v = EffectiveAssignmentInsnVerifier.newInstance(e.getValue(),
+                    e.getKey(), this);
             v.verify();
         }
     }
 
     @Override
     protected void collectAssignmentGuards() {
-        for (final Entry e : variableInitialisersAssociation) {
+        for (final Entry e : candidatesInitialisersMapping) {
             final Initialisers initialisers = e.getInitialisers();
             collectAssignmentGuardsForEachInitialisingMethod(e.getCandidate(), initialisers.getMethods());
         }
@@ -225,7 +294,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
     @Override
     protected void verifyAssignmentGuards() {
         final AssignmentGuardVerifier v = AssignmentGuardVerifier.newInstance(initialValues, assignmentGuards,
-                variableInitialisersAssociation, this);
+                candidatesInitialisersMapping, this);
         v.verify();
     }
 
@@ -236,8 +305,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         b.append(initialValues);
         b.append(", assignmentGuards=").append(assignmentGuards);
         b.append(", effectiveAssignmentInstructions=").append(effectiveAssignmentInstructions);
-        b.append(", variableInitialisersAssociation=").append(variableInitialisersAssociation);
-        // TODO Methodenrumpf korrekt implementieren.
+        b.append(", candidatesInitialisersMapping=").append(candidatesInitialisersMapping);
         b.append("]");
         return b.toString();
     }

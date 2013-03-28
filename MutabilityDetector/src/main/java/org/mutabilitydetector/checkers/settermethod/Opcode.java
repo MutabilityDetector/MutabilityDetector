@@ -240,7 +240,6 @@ public enum Opcode implements OpcodeInformation {
     }
 
     private final int opcodeAsInt;
-    private final String opcodeAsHex;
     private final Category category;
     private final UnknownTypeValue stackValue;
     private final String description;
@@ -263,7 +262,6 @@ public enum Opcode implements OpcodeInformation {
             final String theDescription) {
         category = theCategory;
         opcodeAsInt = theOpcodeAsInt;
-        opcodeAsHex = Integer.toHexString(theOpcodeAsInt);
         stackValue = DefaultUnknownTypeValue.getInstance(theStackValue);
         description = theDescription;
     }
@@ -271,11 +269,6 @@ public enum Opcode implements OpcodeInformation {
     @Override
     public int asInt() {
         return opcodeAsInt;
-    }
-
-    @Override
-    public String asHex() {
-        return opcodeAsHex;
     }
 
     @Override

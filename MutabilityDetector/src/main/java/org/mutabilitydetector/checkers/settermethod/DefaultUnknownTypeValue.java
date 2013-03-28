@@ -61,60 +61,9 @@ final class DefaultUnknownTypeValue implements UnknownTypeValue {
     }
 
     @Override
-    public byte asByte() {
-        return tryToCastToNumber().byteValue();
-    }
-
-    private Number tryToCastToNumber() {
-        return tryToCast(Number.class);
-    }
-
-    @Override
     public char asChar() {
         final Character result = tryToCast(Character.class);
         return result.charValue();
-    }
-
-    @Override
-    public short asShort() {
-        return tryToCastToNumber().shortValue();
-    }
-
-    @Override
-    public int asInt() {
-        return tryToCastToNumber().intValue();
-    }
-
-    @Override
-    public long asLong() {
-        return tryToCastToNumber().longValue();
-    }
-
-    @Override
-    public float asFloat() {
-        return tryToCastToNumber().floatValue();
-    }
-
-    @Override
-    public double asDouble() {
-        return tryToCastToNumber().doubleValue();
-    }
-
-    @Override
-    public String asString() {
-        final String result = tryToCast(String.class);
-        return result;
-    }
-
-    @Override
-    public Object asObject() {
-        return value;
-    }
-
-    @Override
-    public <T> T asType(final Class<T> targetTypeClass) {
-        final T result = tryToCast(targetTypeClass);
-        return result;
     }
 
     @Override
@@ -171,6 +120,10 @@ final class DefaultUnknownTypeValue implements UnknownTypeValue {
             result = (null == tryToCastToNumber());
         }
         return result;
+    }
+
+    private Number tryToCastToNumber() {
+        return tryToCast(Number.class);
     }
 
     @Override

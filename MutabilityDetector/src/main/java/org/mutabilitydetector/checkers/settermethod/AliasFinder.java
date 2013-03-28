@@ -63,6 +63,9 @@ final class AliasFinder implements Finder<Alias> {
         return searchForAliasInBlock(controlFlowBlockToExamine);
     }
 
+    /*
+     * Uses method argument as this method works recursively.
+     */
     private Alias searchForAliasInBlock(final ControlFlowBlock block) {
         notNull(block);
         Alias result = Alias.newInstance(false, Integer.MIN_VALUE);

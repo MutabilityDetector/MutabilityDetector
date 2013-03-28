@@ -13,8 +13,8 @@ import java.util.Map;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.checkers.settermethod.VariableInitialisersAssociation.Entry;
-import org.mutabilitydetector.checkers.settermethod.VariableInitialisersAssociation.Initialisers;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Entry;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
 import org.objectweb.asm.tree.*;
 
 /**
@@ -39,21 +39,25 @@ final class AssignmentGuardVerifier {
         }
 
         public void verify() {
+            final String candidateName = candidate.name;
             final int indexOfPredecessor = assignmentGuard.getIndexWithinBlock() - 1;
             final AbstractInsnNode predecessor = controlFlowBlock.getBlockInstructionForIndex(indexOfPredecessor);
             if (isGetInstructionForVariable(predecessor, candidate)) {
-                if (!isZeroOnlyPossibleInitialValueForVariable()) {
-                    final String msgTemplate = "Field [%s] has possibly other initial values than zero.";
-                    final String msg = format(msgTemplate, candidate.name);
-                    setterMethodChecker.setResultForClass(msg, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+                final String msgTemplate = "The assignment guard for lazy field [%s] is not correct.";
+                final String msg = format(msgTemplate, candidateName);
+                if (isZeroOnlyPossibleInitialValueForVariable() && assignmentGuard.getOpcode() == Opcode.IFEQ) {
+                    setterMethodChecker.setFieldCanBeReassignedResult(msg);
+                } else if (!isZeroOnlyPossibleInitialValueForVariable() && assignmentGuard.getOpcode() == Opcode.IFNE) {
+                    setterMethodChecker.setFieldCanBeReassignedResult(msg);
                 }
             } else if (isComparisonInsn(predecessor)) {
                 verifyPredecessorOfComparisonInstruction(indexOfPredecessor - 1);
             } else if (checksAgainstOtherObject(assignmentGuard, controlFlowBlock, candidate)) {
                 if (isOtherObjectNotAnInitialValue(assignmentGuard, controlFlowBlock)) {
-                    final String msgTemplate = "The compared object is not a possible initial value of field [%s]";
-                    final String msg = format(msgTemplate, candidate.name);
-                    setterMethodChecker.setResultForClass(msg, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+                    final String msgTemplate = "The compared object is not a possible initial value of lazy field "
+                            + "[%s].";
+                    final String msg = format(msgTemplate, candidateName);
+                    setterMethodChecker.setFieldCanBeReassignedResult(msg);
                 }
             }
         }
@@ -82,31 +86,57 @@ final class AssignmentGuardVerifier {
     } // class ZeroCheckAssignmentGuardVerifier
 
 
+    private final class NonNullCheckAssignmentGuardVerifier {
+    
+        private final FieldNode candidate;
+        private final ControlFlowBlock controlFlowBlock;
+        private final JumpInsn assignmentGuard;
+    
+        public NonNullCheckAssignmentGuardVerifier(final FieldNode theCandidate,
+                final ControlFlowBlock theControlFlowBlock, final JumpInsn theAssignmentGuard) {
+            candidate = theCandidate;
+            controlFlowBlock = theControlFlowBlock;
+            assignmentGuard = theAssignmentGuard;
+        }
+    
+        public void verify() {
+            final String candidateName = candidate.name;
+            if (isNotPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
+                final String msgTemplate = "The assignment guard for lazy field [%s] should check against null. "
+                        + "Otherwise the field gets never initialised.";
+                setterMethodChecker.setNonFinalFieldResult(format(msgTemplate, candidateName), candidateName);
+            } else if (checksAgainstOtherObject(assignmentGuard, controlFlowBlock, candidate)) {
+            }
+        }
+    
+    } // class NonNullCheckAssignmentGuardVerifier
+
+
     private final Map<FieldNode, Collection<UnknownTypeValue>> initialValues;
     private final Map<FieldNode, Collection<JumpInsn>> assignmentGuards;
-    private final VariableInitialisersAssociation variableInitialisersAssociation;
+    private final CandidatesInitialisersMapping candidatesInitialisersMapping;
     private final AbstractSetterMethodChecker setterMethodChecker;
 
     private AssignmentGuardVerifier(final Map<FieldNode, Collection<UnknownTypeValue>> theInitialValues,
             final Map<FieldNode, Collection<JumpInsn>> theAssignmentGuards,
-            final VariableInitialisersAssociation theVariableInitialisersAssociation,
+            final CandidatesInitialisersMapping theVariableInitialisersAssociation,
             final AbstractSetterMethodChecker theSetterMethodChecker) {
         initialValues = new HashMap<FieldNode, Collection<UnknownTypeValue>>(theInitialValues);
         assignmentGuards = new HashMap<FieldNode, Collection<JumpInsn>>(theAssignmentGuards);
-        variableInitialisersAssociation = theVariableInitialisersAssociation;
+        candidatesInitialisersMapping = theVariableInitialisersAssociation;
         setterMethodChecker = theSetterMethodChecker;
     }
 
     public static AssignmentGuardVerifier newInstance(final Map<FieldNode, Collection<UnknownTypeValue>> initialValues,
             final Map<FieldNode, Collection<JumpInsn>> assignmentGuards,
-            final VariableInitialisersAssociation variableInitialisersAssociation,
+            final CandidatesInitialisersMapping variableInitialisersAssociation,
             final AbstractSetterMethodChecker setterMethodChecker) {
         return new AssignmentGuardVerifier(notNull(initialValues), notNull(assignmentGuards),
                 notNull(variableInitialisersAssociation), notNull(setterMethodChecker));
     }
 
     public void verify() {
-        for (final Entry e : variableInitialisersAssociation) {
+        for (final Entry e : candidatesInitialisersMapping) {
             verifyEachCandidateInitialisersPair(e);
         }
     }
@@ -204,6 +234,10 @@ final class AssignmentGuardVerifier {
         v.verify();
     }
 
+    private static boolean checksAgainstNonNull(final JumpInsn jumpInstruction) {
+        return IFNONNULL == getOpcode(jumpInstruction);
+    }
+
     private static boolean isGetInstructionForVariable(final AbstractInsnNode insn, final FieldNode candidate) {
         boolean result = false;
         if (GETFIELD == insn.getOpcode() || GETSTATIC == insn.getOpcode()) {
@@ -281,11 +315,6 @@ final class AssignmentGuardVerifier {
         return result;
     }
 
-    private boolean
-            isPossibleInitialValueOfCandidate(final UnknownTypeValue comparativeValue, final FieldNode candidate) {
-        return !isNotPossibleInitialValueOfCandidate(comparativeValue, candidate);
-    }
-
     private boolean isNotPossibleInitialValueOfCandidate(final UnknownTypeValue comparativeValue,
             final FieldNode candidate) {
         final boolean result;
@@ -302,7 +331,6 @@ final class AssignmentGuardVerifier {
             final FieldNode candidate) {
         final int indexOfLoadInsnPredecessor = indexOfLoadInstruction - 1;
         verifyComparativeValueOf(block.getBlockInstructionForIndex(indexOfLoadInsnPredecessor), candidate);
-//        verifyComparativeValueOf(block.getBlockInstructionForIndex(indexOfLoadInstruction), candidate);
     }
 
     private static boolean checksAgainstOtherObject(final JumpInsn assignmentGuard, final ControlFlowBlock block,
@@ -343,61 +371,12 @@ final class AssignmentGuardVerifier {
         return result;
     }
 
-    // private static boolean checksAgainstNull(final JumpInsn jumpInstruction)
-    // {
-    // return IFNULL == getOpcode(jumpInstruction);
-    // }
-
-    private static boolean checksAgainstNonNull(final JumpInsn jumpInstruction) {
-        return IFNONNULL == getOpcode(jumpInstruction);
-    }
-
     private void verifyNonNullCheckAssignmentGuard(final FieldNode candidate, final JumpInsn assignmentGuard,
             final ControlFlowBlock controlFlowBlock) {
         final NonNullCheckAssignmentGuardVerifier v = new NonNullCheckAssignmentGuardVerifier(candidate,
                 controlFlowBlock, assignmentGuard);
         v.verify();
-//        final int indexOfPredecessor = assignmentGuard.getIndexWithinBlock() - 1;
-//        final AbstractInsnNode predecessor = block.getBlockInstructionForIndex(indexOfPredecessor);
-//        if (isNotPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
-//            // TODO Meldung machen.
-//        } else if (isGetInstructionForVariable(predecessor, candidate)) {
-//            if (isPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
-//                // TODO Meldung machen.
-//            }
-//        } else if (checksAgainstOtherObject(assignmentGuard, block, candidate)) {
-//            // TODO Block implementieren.
-//        }
     }
-
-    private final class NonNullCheckAssignmentGuardVerifier {
-
-        private final FieldNode candidate;
-        private final ControlFlowBlock controlFlowBlock;
-        private final JumpInsn assignmentGuard;
-
-        public NonNullCheckAssignmentGuardVerifier(final FieldNode theCandidate,
-                final ControlFlowBlock theControlFlowBlock, final JumpInsn theAssignmentGuard) {
-            candidate = theCandidate;
-            controlFlowBlock = theControlFlowBlock;
-            assignmentGuard = theAssignmentGuard;
-        }
-
-        public void verify() {
-            final int indexOfPredecessor = assignmentGuard.getIndexWithinBlock() - 1;
-            final AbstractInsnNode predecessor = controlFlowBlock.getBlockInstructionForIndex(indexOfPredecessor);
-            if (isNotPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
-                // TODO Meldung machen.
-            } else if (isGetInstructionForVariable(predecessor, candidate)) {
-                if (isPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
-                    // TODO Meldung machen.
-                }
-            } else if (checksAgainstOtherObject(assignmentGuard, controlFlowBlock, candidate)) {
-                // TODO Block implementieren.
-            }
-        }
-
-    } // class NonNullCheckAssignmentGuardVerifier
 
     private static boolean isTwoValuesJumpInstruction(final JumpInsn assignmentGuard) {
         switch (getOpcode(assignmentGuard)) {
