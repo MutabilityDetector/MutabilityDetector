@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.UnhandledExceptionBuilder;
 import org.mutabilitydetector.locations.Dotted;
 
 public class UnhandledExceptionBuilderTest {
@@ -20,8 +21,6 @@ public class UnhandledExceptionBuilderTest {
     private final Throwable unusedCause = new NullPointerException();
     private final AsmMutabilityChecker unusedChecker = mock(AsmMutabilityChecker.class);
     private final Dotted unusedClass = Dotted.dotted("unus.ed");
-    
-    private final String newline = System.getProperty("line.separator");
     
     private final Iterable<AnalysisResult> noResultsSoFar = Collections.<AnalysisResult>emptyList();
 
@@ -42,7 +41,7 @@ public class UnhandledExceptionBuilderTest {
         assertThat(unhandledException.getMessage(), 
                    allOf(containsString("sorry"),
                          containsString("An unhandled error occurred"), 
-                         containsString("https://github.com/MutabilityDetector/MutabilityDetector/issues/")));
+                         containsString("http://code.google.com/p/mutability-detector/issues/list")));
     }
     
     @Test
@@ -52,7 +51,7 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, noResultsSoFar, checkerThatFailed, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString(newline + "Checker that failed: NullMutabilityChecker" + newline));
+                   containsString("\nChecker that failed: NullMutabilityChecker\n"));
     }
     
     @Test
@@ -62,7 +61,7 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, noResultsSoFar, unusedChecker, classBeingAnalysed);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString(newline + "Class being analysed: this.is.the.clazz.being.Analysed" + newline));
+                   containsString("\nClass being analysed: this.is.the.clazz.being.Analysed\n"));
     }
     
     @Test
@@ -75,10 +74,7 @@ public class UnhandledExceptionBuilderTest {
                 exceptionBuilder.unhandledException(unusedCause, asList(first, second, third), unusedChecker, unusedClass);
         
         assertThat(unhandledException.getMessage(), 
-                   containsString(newline + "Classes analysed so far:" +
-                                  newline + "    a.b.c" +
-                                  newline + "    e.f.g" +
-                                  newline + "    h.i.j" + newline));
+                   containsString("\nClasses analysed so far:\n    a.b.c\n    e.f.g\n    h.i.j\n"));
     }
     
 }

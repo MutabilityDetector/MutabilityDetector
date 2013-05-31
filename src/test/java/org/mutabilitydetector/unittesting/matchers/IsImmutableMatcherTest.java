@@ -38,9 +38,8 @@ import org.mutabilitydetector.MutableReasonDetail;
 
 public class IsImmutableMatcherTest {
 
-    private final String newline = System.getProperty("line.separator");
+    IsImmutableMatcher matcher = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
     
-    private final IsImmutableMatcher matcher = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
     
     @Test
     public void matchesForSameIsImmutableResult() throws Exception {
@@ -65,7 +64,7 @@ public class IsImmutableMatcherTest {
         StringDescription description = new StringDescription();
         matcher.describeMismatch(nonMatchingResult, description);
 
-        assertThat(description.toString(), containsString("c.d.e is actually " + NOT_IMMUTABLE + newline));
+        assertThat(description.toString(), containsString("c.d.e is actually " + NOT_IMMUTABLE + "\n"));
     }
 
 }

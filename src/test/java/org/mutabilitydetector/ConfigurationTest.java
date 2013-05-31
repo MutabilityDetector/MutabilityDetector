@@ -15,12 +15,12 @@ public class ConfigurationTest {
     public void hasHardcodedResultForClass() throws Exception {
         Configuration hasIt = new ConfigurationBuilder() {
             @Override public void configure() {
-                hardcodeResult(AnalysisResult.definitelyImmutable("i.am.hardcoded"));
+                overrideResult(AnalysisResult.definitelyImmutable("i.am.hardcoded"));
             }
         }.build();
         Configuration doesNotHaveIt = new ConfigurationBuilder() {
             @Override public void configure() {
-                hardcodeResult(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class"));
+                overrideResult(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class"));
             }
         }.build();
 

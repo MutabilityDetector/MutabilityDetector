@@ -17,7 +17,6 @@
 
 package org.mutabilitydetector.unittesting.internal;
 
-import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -51,7 +50,6 @@ import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 public class AssertionReporterTest {
 
     private AssertionReporter reporter;
-    private final String newline = getProperty("line.separator");
 
     @Before
     public void setUp() {
@@ -82,7 +80,7 @@ public class AssertionReporterTest {
             reporter.assertThat(analysisResult, withNoAllowedReasons(areImmutable()));
             fail("expected exception");
         } catch (MutabilityAssertionError e) {
-            String[] errorMessageLines = e.getMessage().split(newline);
+            String[] errorMessageLines = e.getMessage().split("\n");
             assertThat(errorMessageLines[0], is(""));
             assertThat(errorMessageLines[1], is("Expected: d.e.SimpleClassName to be " + IMMUTABLE));
             assertThat(errorMessageLines[2], is("     but: d.e.SimpleClassName is actually " + NOT_IMMUTABLE));
@@ -108,8 +106,8 @@ public class AssertionReporterTest {
             reporter.assertThat(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasonDetail), withNoAllowedReasons(areImmutable()));
             fail("expected exception");
         } catch (MutabilityAssertionError expectedError) {
-            assertThat(expectedError.getMessage(), allOf(containsString("a.b.c to be IMMUTABLE" + newline),
-                                                         containsString("a.b.c is actually NOT_IMMUTABLE" + newline),
+            assertThat(expectedError.getMessage(), allOf(containsString("a.b.c to be IMMUTABLE\n"),
+                                                         containsString("a.b.c is actually NOT_IMMUTABLE\n"),
                                                          containsString("this message should appear")));
         }
     }

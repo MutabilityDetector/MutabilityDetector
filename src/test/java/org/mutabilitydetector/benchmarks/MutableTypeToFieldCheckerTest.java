@@ -23,9 +23,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
+import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -35,8 +37,7 @@ import static org.mutabilitydetector.TestUtil.testAnalysisSession;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
 import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
-import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
@@ -49,13 +50,15 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
-import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
-import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.ListFieldFromUnmodifiableArrayAsList;
-import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StoresCopiedCollectionAsObjectAndIterable;
-import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StoresCopiedCollectionIntoLocalVariableBeforeWrapping;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.ListFieldFromUnmodifiableArrayAsList;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.SafelyCopiedMapGenericOnMutableTypeForKey;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionAsObjectAndIterable;
+import org.mutabilitydetector.benchmarks.mutabletofield.CopyListIntoNewArrayListAndUnmodifiableListIdiom.StoresCopiedCollectionIntoLocalVariableBeforeWrapping;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.WrapWithUnmodifiableListWithoutCopyingFirst;
@@ -89,7 +92,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         return new MutableTypeToFieldChecker(
                 info, 
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                new MutableTypeInformation(testAnalysisSession(), ConfigurationBuilder.NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
 
@@ -100,18 +103,18 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checkerWithMockedSession = new MutableTypeToFieldChecker(
                 info, 
-                new MutableTypeInformation(session, NO_CONFIGURATION), 
+                new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
     
 
     @Before
     public void setUpWithRealSession() {
-        SessionCheckerRunner runner = new SessionCheckerRunner(TestUtil.testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
+        SessionCheckerRunner runner = new SessionCheckerRunner(createWithCurrentClassPath(), createWithCurrentClasspath(FAIL_FAST));
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo, 
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                new MutableTypeInformation(testAnalysisSession(), ConfigurationBuilder.NO_CONFIGURATION), 
                 testingVerifierFactory());
     }
 
@@ -214,19 +217,6 @@ public class MutableTypeToFieldCheckerTest {
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
-
-    @Test
-    public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeUsingANonWhitelistedMethod() throws Exception {
-        checkerWithRealSession = checkerWithRealAnalysisSession();
-        
-        result = runChecker(checkerWithRealSession, WrapsCollectionUsingNonWhitelistedMethod.class);
-        
-        assertThat(result, areNotImmutable());
-        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
-        assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method."));
-    }
     
     @Test
     public void doesNotAllowStoringCopiedCollectionIntoLocalVariableThatCouldEscape() throws Exception {
@@ -260,6 +250,40 @@ public class MutableTypeToFieldCheckerTest {
         
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
+    }
+    
+    @Test
+    public void safelyWrappedListsAreStillMutableIfTheTypeOfListElementsIsMutable() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+        
+        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnMutableTypeForKey.class);
+        assertThat(result, areNotImmutable());
+        
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
+        
+        assertEquals(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE, reasonDetail.reason());
+    }
+    
+    @Test
+    public void descriptionOfCollectionWithMutableElementType() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+        
+        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnMutableTypeForKey.class);
+        assertThat(result, areNotImmutable());
+        
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
+        
+        assertThat(reasonDetail.message(), 
+                is("Field can have collection with mutable element type " +
+                        "(java.util.Map<java.util.Date, org.mutabilitydetector.benchmarks.ImmutableExample>) assigned to it."));
+    }
+
+    @Test
+    public void safelyWrappedListsAreStillMutableIfTheTypeOfListElementsIsMutable_worksWhenCollectionFieldIsOneOfMany() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+        
+        result = runChecker(checkerWithRealSession, SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields.class);
+        assertThat(result, areImmutable());
     }
 
     @Test

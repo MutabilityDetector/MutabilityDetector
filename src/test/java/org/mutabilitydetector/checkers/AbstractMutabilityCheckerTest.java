@@ -21,9 +21,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.ClassLocation;
 
 public class AbstractMutabilityCheckerTest {
@@ -46,6 +47,6 @@ public class AbstractMutabilityCheckerTest {
         MutableReasonDetail reason = newMutableReasonDetail("Encountered an unhandled error in analysis.",
                 ClassLocation.fromInternalName("some/clazz/ToAnalyse.class"),
                 MutabilityReason.CANNOT_ANALYSE);
-        assertThat(defaultChecker.reasons(), contains(reason));
+        assertThat(defaultChecker.reasons(), contains(is(Matchers.equalTo(reason))));
     }
 }

@@ -18,7 +18,6 @@
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
 import static java.lang.String.format;
-import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +38,7 @@ import static org.mutabilitydetector.TestUtil.unusedReason;
 import static org.mutabilitydetector.locations.ClassLocation.from;
 import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
+import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
 import java.util.Collections;
@@ -62,14 +61,12 @@ public class WithAllowedReasonsMatcherTest {
 
     CodeLocation<?> unusedCodeLocation = TestUtil.unusedCodeLocation();
 
-    Matcher<MutableReasonDetail> noReasonsAllowed = noReasonsAllowed();
-    
     @Test
     public void passesWhenPrimaryResultPasses() throws Exception {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
         AnalysisResult analysisResult = definitelyImmutable("some.class");
 
-        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed));
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed()));
 
         assertThat(withReasonsMatcher.matches(analysisResult), is(true));
     }
@@ -90,7 +87,7 @@ public class WithAllowedReasonsMatcherTest {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
         AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedMutableReasonDetails());
         
-        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed));
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed()));
         
         assertThat(withReasonsMatcher.matches(analysisResult), is(false));
     }
@@ -144,8 +141,8 @@ public class WithAllowedReasonsMatcherTest {
             fail("Expected assertion to fail");
         } catch(AssertionError expectedError) {
             assertThat(expectedError.getMessage(), 
-                       allOf(containsString(format("    Allowed reasons:%n")),
-                             containsString(format("        %s %s%n", allowedReason.message(), allowedReason.codeLocation().prettyPrint()))));
+                       allOf(containsString("    Allowed reasons:\n"),
+                             containsString(format("        %s %s\n", allowedReason.message(), allowedReason.codeLocation().prettyPrint()))));
         }
     }
     
@@ -159,41 +156,33 @@ public class WithAllowedReasonsMatcherTest {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
         AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, asList(disallowedReason));
         
-        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed));
+        WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed()));
         
         try {
             MatcherAssert.assertThat(analysisResult, withReasonsMatcher);
             fail("Expected assertion to fail");
         } catch(AssertionError expectedError) {
-            String[] errorMessageLines = errorMessageFrom(expectedError).split(getProperty("line.separator"));
-            
+            String[] errorMessageLines = expectedError.getMessage().split("\n");
             assertThat(errorMessageLines[5], is("    Allowed reasons:"));
             assertThat(errorMessageLines[6], is("        None."));
         }
     }
-
-    private String errorMessageFrom(AssertionError expectedError) {
-        String matcherAssertMessageWithHardcodedUnixNewLines = expectedError.getMessage();
-        return matcherAssertMessageWithHardcodedUnixNewLines
-                .replace("\nExpected:", format("%nExpected:"))
-                .replace("\n     but:", format("%n     but:"));
-    }
     
     @Test
     public void describesMismatchItselfIfNoSuchMethodExistsForDelegateMatcher() throws Exception {
-        WithAllowedReasonsMatcher usingHamcrest1_1_matcher = withAllowedReasons(new Hamcrest1_1_Matcher(), singleton(noReasonsAllowed));
+        WithAllowedReasonsMatcher usingHamcrest1_1_matcher = withAllowedReasons(new Hamcrest1_1_Matcher(), singleton(noReasonsAllowed()));
         
         Description description = new StringDescription();
         AnalysisResult result = analysisResult("org.some.Thing", NOT_IMMUTABLE, 
                                                newMutableReasonDetail("it sucks", fromInternalName("org/some/Thing"), CAN_BE_SUBCLASSED));
         usingHamcrest1_1_matcher.describeMismatch(result, description);
         
-        String expectedError = String.format(
-                "org.some.Thing is actually NOT_IMMUTABLE%n" + 
-                "    Reasons:%n" + 
-                "        it sucks [Class: org.some.Thing]%n" + 
-                "    Allowed reasons:%n" + 
-                "        None.");
+        String expectedError = 
+                "org.some.Thing is actually NOT_IMMUTABLE\n" + 
+                "    Reasons:\n" + 
+                "        it sucks [Class: org.some.Thing]\n" + 
+                "    Allowed reasons:\n" + 
+                "        None.";
         
         assertThat(description.toString(), is(expectedError));
         

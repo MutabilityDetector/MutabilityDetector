@@ -2,16 +2,15 @@
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <stringAttribute key="bad_container_name" value="/MutabilityDetector/launch/rt.jar.launch"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/MutabilityDetector/src/main/java/org/mutabilitydetector/cli/RunMutabilityDetector.java"/>
+<listEntry value="/MutabilityDetector-0.9/src/main/java/org/mutabilitydetector/cli/RunMutabilityDetector.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
-</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.mutabilitydetector.cli.RunMutabilityDetector"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-cp /home/graham/.m2/repository/com/google/guava/guava/12.0/guava-12.0.jar&#10;-verbose"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MutabilityDetector"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MutabilityDetector-0.9"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:MaxPermSize=512m"/>
 </launchConfiguration>

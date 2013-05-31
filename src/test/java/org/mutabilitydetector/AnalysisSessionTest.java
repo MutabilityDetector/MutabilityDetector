@@ -23,10 +23,6 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
-import org.mutabilitydetector.checkers.AllChecksRunner;
-import org.mutabilitydetector.checkers.CheckerRunnerFactory;
-import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
-import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -36,11 +32,11 @@ public class AnalysisSessionTest {
     
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
-        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, ConfigurationBuilder.NO_CONFIGURATION);
 
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
                 checkerRunnerFactory, 
@@ -55,7 +51,7 @@ public class AnalysisSessionTest {
 
     @Test
     public void analysisWillBeRunForClassesWhenQueriedOnImmutableStatus() throws Exception {
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
+        AnalysisSession analysisSession = ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
         AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());
     }

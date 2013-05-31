@@ -19,12 +19,12 @@ package org.mutabilitydetector.benchmarks.circular;
 import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
+import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithCurrentClassPath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.Configurations;
-import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -35,23 +35,23 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
 
     @Test
     public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        AnalysisSession session = TestUtil.testAnalysisSession();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(ImmutableClassA.class));
     }
 
     @Test
     public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
-        AnalysisSession session = TestUtil.testAnalysisSession();
+        AnalysisSession session = createWithCurrentClassPath();
         session.resultFor(Dotted.fromClass(CircularReferenceClasses.class));
     }
 
     @Test
     public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
-        AnalysisSession session = TestUtil.testAnalysisSession();
+        AnalysisSession session = createWithCurrentClassPath();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(
                 information, 
-                new MutableTypeInformation(session, Configurations.NO_CONFIGURATION), 
+                new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION), 
                 testingVerifierFactory());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);

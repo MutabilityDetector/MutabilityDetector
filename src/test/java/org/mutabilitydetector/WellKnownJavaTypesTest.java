@@ -19,7 +19,6 @@ package org.mutabilitydetector;
 
 import static org.junit.Assert.fail;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
-import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -71,9 +70,9 @@ public class WellKnownJavaTypesTest {
     }
 
     @Test
-    @FalsePositive("Field is not final " + "Field [hash] can be reassigned.")
+    @FalsePositive("Mutable type to field (primitive array)" + "Field which is a mutable type")
     public void String() {
-        assertInstancesOf(String.class, areImmutable(), assumingFields("value").areNotModifiedAndDoNotEscape());
+        assertInstancesOf(String.class, areImmutable());
     }
 
     @Test

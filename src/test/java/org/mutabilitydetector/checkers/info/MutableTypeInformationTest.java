@@ -20,7 +20,6 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
-import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -44,7 +43,7 @@ public class MutableTypeInformationTest {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(needToKnowMutabilityOf)).thenReturn(result);
         
-        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, ConfigurationBuilder.NO_CONFIGURATION);
         
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).result.isImmutable, is(isImmutableResult));
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).foundCyclicReference, is(false));
@@ -55,7 +54,7 @@ public class MutableTypeInformationTest {
         final AnalysisResult harcodedResult = AnalysisResult.analysisResult("some.type.i.say.is.Immutable", IsImmutable.IMMUTABLE);
         Configuration configuration = new ConfigurationBuilder() {
             @Override public void configure() {
-                hardcodeResult(harcodedResult);
+                overrideResult(harcodedResult);
             }
         }.build();
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);

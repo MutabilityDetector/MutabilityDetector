@@ -407,7 +407,7 @@
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsObjectArrayArray" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsReference" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes$SetsShort" sourceFile="SetsFieldsOfDifferentTypes.java" interface="false" size="7" bugs="0"/>
-      <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest" sourceFile="SetterMethodCheckerTest.java" interface="false" size="78" bugs="0"/>
+      <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerOriginalTest" sourceFile="SetterMethodCheckerTest.java" interface="false" size="78" bugs="0"/>
       <ClassStats class="org.mutabilitydetector.benchmarks.settermethod.StillMutableSubclass" sourceFile="StillMutableSubclass.java" interface="false" size="8" bugs="0"/>
     </PackageStats>
     <PackageStats package="org.mutabilitydetector.benchmarks.types" total_bugs="0" total_types="15" total_size="472">

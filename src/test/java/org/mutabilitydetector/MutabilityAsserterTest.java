@@ -22,7 +22,7 @@ public class MutabilityAsserterTest {
         MutabilityAsserter asserter = MutabilityAsserter.configured(new ConfigurationBuilder() {
             @Override
             public void configure() {
-                hardcodeAsDefinitelyImmutable(Date.class);
+                overrideAsDefinitelyImmutable(Date.class);
             }
         });
         
@@ -34,7 +34,7 @@ public class MutabilityAsserterTest {
         MutabilityAsserter asserter = MutabilityAsserter.configured(new ConfigurationBuilder() {
             @Override
             public void configure() {
-                hardcodeAsDefinitelyImmutable(HasADateField.class);
+                overrideAsDefinitelyImmutable(HasADateField.class);
             }
         });
         

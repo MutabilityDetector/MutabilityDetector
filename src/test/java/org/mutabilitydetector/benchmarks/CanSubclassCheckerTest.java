@@ -42,7 +42,6 @@ import org.mutabilitydetector.benchmarks.sealed.SealedImmutable;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.locations.ClassLocation;
-import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @RunWith(Theories.class)
 public class CanSubclassCheckerTest {
@@ -60,7 +59,6 @@ public class CanSubclassCheckerTest {
         AnalysisResultTheory.of(HasFinalFieldsAndADefaultConstructor.class, NOT_IMMUTABLE),
         AnalysisResultTheory.of(IsFinalAndHasOnlyPrivateConstructors.class, IMMUTABLE),
         AnalysisResultTheory.of(ImmutableByHavingOnlyPrivateConstructors.class, IMMUTABLE),
-        AnalysisResultTheory.of(ImmutableByHavingOnlyAPrivateConstructorUsingTheBuilderPattern.class, IMMUTABLE),
     };
 
     @Theory
@@ -92,8 +90,4 @@ public class CanSubclassCheckerTest {
         assertThat(location.typeName(), is(MutableByNotBeingFinalClass.class.getName()));
     }
     
-    @Test
-    public void privateConstructorsUsingBuilderPatternAreImmutable() throws Exception {
-    	MutabilityAssert.assertImmutable(ImmutableByHavingOnlyAPrivateConstructorUsingTheBuilderPattern.class);
-    }
 }

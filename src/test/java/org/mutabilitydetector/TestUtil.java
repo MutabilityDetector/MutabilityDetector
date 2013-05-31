@@ -17,11 +17,10 @@
 package org.mutabilitydetector;
 
 import static java.util.Arrays.asList;
-import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -31,12 +30,8 @@ import org.junit.Ignore;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
-import org.mutabilitydetector.classloading.AnalysisClassLoader;
-import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
-import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -55,7 +50,7 @@ public class TestUtil {
     }
 
     public static AnalysisSession testAnalysisSession() {
-        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath(OUT_OF_THE_BOX_CONFIGURATION);
+        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath();
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {
@@ -73,9 +68,12 @@ public class TestUtil {
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
-        AnalysisSession analysisSession = testAnalysisSession();
-        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.errorReporter(), analysisSession.getResults());
-        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+        final AnalysisSession analysisSession = testAnalysisSession();
+        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse),
+                analysisSession.errorReporter(), analysisSession.getResults());
+        final AnalysisResult result = AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(),
+                checker.reasons());
+        return result;
     }
 
     public static SessionCheckerRunner sessionCheckerRunner() {
