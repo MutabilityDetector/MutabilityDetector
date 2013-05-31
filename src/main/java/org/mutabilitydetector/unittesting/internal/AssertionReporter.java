@@ -17,8 +17,6 @@
 
 package org.mutabilitydetector.unittesting.internal;
 
-import static java.lang.String.format;
-
 import org.hamcrest.Description;
 import org.hamcrest.StringDescription;
 import org.mutabilitydetector.AnalysisResult;
@@ -35,9 +33,9 @@ public final class AssertionReporter {
     public void assertThat(AnalysisResult analysisResult, WithAllowedReasonsMatcher resultMatcher) {
         if (!resultMatcher.matches(analysisResult)) {
             Description description = new StringDescription();
-            description.appendText(format("%nExpected: "))
+            description.appendText("\nExpected: ")
                        .appendDescriptionOf(resultMatcher)
-                       .appendText(format("%n     but: "));
+                       .appendText("\n     but: ");
             resultMatcher.describeMismatch(analysisResult, description);
             
             throw new MutabilityAssertionError(description.toString());

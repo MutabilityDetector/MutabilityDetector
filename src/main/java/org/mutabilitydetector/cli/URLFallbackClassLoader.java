@@ -19,8 +19,8 @@ package org.mutabilitydetector.cli;
 
 import java.net.URLClassLoader;
 
-import org.mutabilitydetector.classloading.AnalysisClassLoader;
-import org.mutabilitydetector.classloading.ClassForNameWrapper;
+import org.mutabilitydetector.AnalysisClassLoader;
+import org.mutabilitydetector.ClassForNameWrapper;
 
 public final class URLFallbackClassLoader implements AnalysisClassLoader {
 

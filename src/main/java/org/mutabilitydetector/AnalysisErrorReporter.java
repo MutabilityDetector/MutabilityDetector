@@ -3,7 +3,7 @@ package org.mutabilitydetector;
 
 public interface AnalysisErrorReporter {
 
-    void addAnalysisError(AnalysisError error);
+    void addAnalysisError(AnalysisErrorReporter.AnalysisError error);
 
     public static final class AnalysisError {
         public final String checkerName;
@@ -16,4 +16,6 @@ public interface AnalysisErrorReporter {
             this.description = errorDescription;
         }
     }
+
+
 }

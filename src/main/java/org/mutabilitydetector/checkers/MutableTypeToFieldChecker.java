@@ -16,19 +16,24 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.String.format;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
+import java.util.Map;
+
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.CollectionField.GenericType;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -41,14 +46,25 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
     private final MutableTypeInformation mutableTypeInfo;
     private final AsmVerifierFactory verifierFactory;
     
-    public MutableTypeToFieldChecker(TypeStructureInformation info, 
-                                     MutableTypeInformation mutableTypeInfo, 
-                                     AsmVerifierFactory verifierFactory) {
+    private final Map<String, String> fieldSignatures = newHashMap();
+    
+    public MutableTypeToFieldChecker(TypeStructureInformation info, MutableTypeInformation mutableTypeInfo, AsmVerifierFactory verifierFactory) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
     }
 
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
+    
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        fieldSignatures.put(name, signature);
+        return super.visitField(access, name, desc, signature, value);
+    }
+    
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         return new AssignMutableTypeToFieldChecker(ownerClass, access, name, desc, signature, exceptions, verifierFactory);
@@ -73,6 +89,8 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             checkIfClassIsMutable(fieldInsnNode, stackValue.getType());
         }
         
+
+        
         private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
             int sort = typeAssignedToField.getSort();
             String fieldName = fieldInsnNode.name;
@@ -93,7 +111,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                             MutabilityReason.MUTABLE_TYPE_TO_FIELD);
                 } else if(!isConcreteType(fieldClass)) {
                 
-                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomChecker(
+                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUmodifiableIdiomChecker(
                             fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
@@ -101,7 +119,21 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                                 fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
                                 MutabilityReason.ABSTRACT_TYPE_TO_FIELD);
                         return;
-                    } else if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
+                    } else if (unmodifiableWrapResult.canBeWrapped) {
+                        String fieldSignature = fieldSignatures.get(fieldInsnNode.name);
+                        CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);
+                        
+                        Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;
+                        
+                        if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
+                            setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                                    fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                                    MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+                            break;
+                        }
+                    }
+                    
+                    if (unmodifiableWrapResult.canBeWrapped && unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
                         if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
                             break;
                         } else {
@@ -110,10 +142,6 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                                     MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                             break;
                         }
-                    } else if (unmodifiableWrapResult.canBeWrapped && !unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
-                        setResult("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method.",
-                                  fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
-                                  MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD);
                     }
                 }
                 break;
@@ -125,6 +153,25 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             default:
                 return;
             }
+        }
+
+        private boolean anyGenericParameterTypesAreMutable(Iterable<GenericType> genericParameters) {
+            for (GenericType genericType : genericParameters) {
+                if (genericType.equals(GenericType.wildcard())) {
+                    return true;
+                } 
+                
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type);
+                
+                if (mutabilityLookup.foundCyclicReference) {
+                    // go ape
+                } else {
+                    if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private boolean isConcreteType(Dotted className) {

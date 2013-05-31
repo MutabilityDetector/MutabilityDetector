@@ -26,18 +26,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
-import org.mutabilitydetector.checkers.AllChecksRunner;
+import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
+import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
-import org.mutabilitydetector.checkers.CheckerRunnerFactory;
-import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
-import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
-import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
-import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
+
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.common.cache.Cache;
@@ -61,8 +60,8 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
         this.verifierFactory = verifierFactory;
-        mutableTypeInformation = new MutableTypeInformation(this, configuration);
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
+        mutableTypeInformation = new MutableTypeInformation(this, configuration);
         this.database = newAnalysisDatabase(sessionCheckerRunner);
     }
 
@@ -74,20 +73,23 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
+    public static AnalysisSession createWithCurrentClassPath() {
+        return createWithCurrentClassPath(ConfigurationBuilder.NO_CONFIGURATION);
+    }
     
-    /**
-     * Creates an analysis session based suitable for runtime analysis.
-     * <p>
-     * For analysis, classes will be accessed through the runtime classpath.
-     * 
-     * @see ConfigurationBuilder
-     * @param configuration custom configuration for analysis.
-     * @return AnalysisSession for runtime analysis.
-     */
     public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
         ClassLoadingVerifierFactory verifierFactory = new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()));
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
+    }
+    
+    public static AnalysisSession tempCreateWithVerifier() {
+        ClassPath classpath = new ClassPathFactory().createFromJVM();
+        AsmVerifierFactory verifierFactory = new NonClassLoadingVerifierFactory(
+                new IsAssignableFromCachingTypeHierarchyReader(
+                        new CachingTypeHierarchyReader(new TypeHierarchyReader())));
+        return createWithGivenClassPath(classpath, ConfigurationBuilder.NO_CONFIGURATION, verifierFactory);
+
     }
 
     private static AnalysisSession createWithGivenClassPath(ClassPath classpath,

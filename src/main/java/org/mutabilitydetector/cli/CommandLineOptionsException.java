@@ -26,12 +26,20 @@ public class CommandLineOptionsException extends RuntimeException {
 
     private static final long serialVersionUID = -6822667773302851896L;
 
-    public CommandLineOptionsException(Throwable cause) {
-        super(cause);
+    public CommandLineOptionsException() {
+        super();
+    }
+
+    public CommandLineOptionsException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public CommandLineOptionsException(String message) {
         super(message);
+    }
+
+    public CommandLineOptionsException(Throwable cause) {
+        super(cause);
     }
 
 }

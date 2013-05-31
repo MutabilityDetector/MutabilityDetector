@@ -16,7 +16,7 @@
  */
 package org.mutabilitydetector.asmoverride;
 
-import org.mutabilitydetector.classloading.AnalysisClassLoader;
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;

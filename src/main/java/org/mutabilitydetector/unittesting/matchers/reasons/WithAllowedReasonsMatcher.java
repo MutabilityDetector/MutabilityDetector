@@ -20,7 +20,7 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 import static java.lang.String.format;
 import static java.util.Collections.singleton;
 import static org.mutabilitydetector.unittesting.internal.ReasonsFormatter.formatReasons;
-import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
+import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowedMatcher.noReasonsAllowed;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,8 +42,7 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     }
     
     public static WithAllowedReasonsMatcher withNoAllowedReasons(Matcher<AnalysisResult> areImmutable) {
-        Matcher<MutableReasonDetail> noReasonsAllowed = noReasonsAllowed();
-        return withAllowedReasons(areImmutable, singleton(noReasonsAllowed));
+        return withAllowedReasons(areImmutable, singleton(noReasonsAllowed()));
     }
     
     private final Matcher<AnalysisResult> isImmutable;
@@ -63,8 +62,8 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
     private AnalysisResult checkIsValidToMatchOn(Object item) {
         if (item == null || !(item instanceof AnalysisResult)) {
             throw new IllegalArgumentException(
-               "Trying to pass " + item + " where an " + AnalysisResult.class.getSimpleName() + " is required. " +
-               "This is probably a programmer error, not your fault. Please file an issue. ");
+               "Trying to pass " + item + "where an " + AnalysisResult.class.getSimpleName() + "is required. " +
+               "This is probably a programmer error, not your fault. Please file an issue.");
         } else {
             return (AnalysisResult) item;
         }

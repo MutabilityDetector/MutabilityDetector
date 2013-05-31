@@ -13,7 +13,6 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
-import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
@@ -22,80 +21,35 @@ import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMat
 
 import com.google.common.collect.Lists;
 
-/**
- * Performs Mutability Detector's analysis and produces unit-test-friendly
- * {@link AssertionError} if the result is not as expected.
- * <p>
- * Instances of this class provide the methods accessed by
- * {@link MutabilityAssert}. More detailed documentation can be found there.
- */
 public class MutabilityAsserter {
 
     private final AssertionReporter reporter;
     private final AnalysisSession analysisSession;
 
-    private MutabilityAsserter(AssertionReporter reporter, AnalysisSession analysisSession) {
+    MutabilityAsserter(AssertionReporter reporter, AnalysisSession analysisSession) {
         this.reporter = reporter;
         this.analysisSession = analysisSession;
     }
 
-    /**
-     * Create a new asserter with an existing {@link Configuration}.
-     * <p>
-     * Example:
-     * <pre><code>
-     * MutabilityAsserter.configured(MyConfigurations.DEFAULT_CONFIGURATIONS);
-     * </code></pre>
-     * @see Configurations
-     * @see Configurations#JDK_CONFIGURATION
-     * @see Configurations#NO_CONFIGURATION
-     * @see Configurations#OUT_OF_THE_BOX_CONFIGURATION
-     */
     public static MutabilityAsserter configured(Configuration configuration) {
         return new MutabilityAsserter(new AssertionReporter(), 
                 ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration));
     }
 
-    /**
-     * Create a new asserter with a {@link Configuration} as built by the given
-     * {@link ConfigurationBuilder}.
-     * <p>
-     * Use this method when you want to build a one-time Configuration inline..
-     * <p>
-     * Example:
-     * 
-     * <pre>
-     * <code>
-     *  MutabilityAsserter.configured(new ConfigurationBuilder() { 
-     *   &#064;Override public void configure() {
-     *     hardcodeAsDefinitelyImmutable(ActuallyImmutable.class); 
-     *   }
-     * });
-     * </code>
-     * </pre>
-     */
     public static MutabilityAsserter configured(ConfigurationBuilder configuration) {
         return new MutabilityAsserter(new AssertionReporter(), 
                 ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration.build()));
     }
+    
 
-    /**
-     * @see MutabilityAssert#assertImmutable(Class)
-     */
     public void assertImmutable(Class<?> expectedImmutableClass) {
         reporter.assertThat(getResultFor(expectedImmutableClass), withNoAllowedReasons(areImmutable()));
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher)
-     */
     public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher) {
         reporter.assertThat(getResultFor(clazz), withNoAllowedReasons(mutabilityMatcher));
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher, Matcher)
-     */
     @SuppressWarnings("unchecked")
     public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
                                   Matcher<MutableReasonDetail> allowing) {
@@ -103,9 +57,6 @@ public class MutabilityAsserter {
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher, Matcher, Matcher)
-     */
     @SuppressWarnings("unchecked")
     public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
                                   Matcher<MutableReasonDetail> allowingFirst, 
@@ -116,9 +67,6 @@ public class MutabilityAsserter {
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher, Matcher, Matcher, Matcher)
-     */
     @SuppressWarnings("unchecked")
     public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
                                   Matcher<MutableReasonDetail> allowingFirst, 
@@ -133,9 +81,6 @@ public class MutabilityAsserter {
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher, Matcher, Matcher, Matcher, Matcher...)
-     */
     public void assertInstancesOf(Class<?> clazz, Matcher<AnalysisResult> mutabilityMatcher, 
                                   Matcher<MutableReasonDetail> allowingFirst, 
                                   Matcher<MutableReasonDetail> allowingSecond, 
@@ -152,9 +97,6 @@ public class MutabilityAsserter {
         reporter.assertThat(getResultFor(clazz), areImmutable_withReasons);
     }
 
-    /**
-     * @see MutabilityAssert#assertInstancesOf(Class, Matcher, Iterable)
-     */
     public void assertInstancesOf(Class<?> clazz,
                                   Matcher<AnalysisResult> mutabilityMatcher,
                                   Iterable<Matcher<MutableReasonDetail>> allowingAll) {

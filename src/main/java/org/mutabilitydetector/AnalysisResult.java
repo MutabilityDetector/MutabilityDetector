@@ -43,18 +43,9 @@ public final class AnalysisResult {
     private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         this.dottedClassName = dottedClassName;
         this.isImmutable = isImmutable;
-        this.reasons = Collections.unmodifiableList(new ArrayList<MutableReasonDetail>(reasons));
+        this.reasons = Collections.unmodifiableCollection(new ArrayList<MutableReasonDetail>(reasons));
         
         this.hashCode = Objects.hashCode(dottedClassName, isImmutable, reasons);
-    }
-
-    
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(getClass())
-                .add("class", dottedClassName)
-                .add("isImmutable", isImmutable)
-                .toString();
     }
 
     @Override
@@ -104,15 +95,9 @@ public final class AnalysisResult {
         }};
     }
 
-    public static final Function<AnalysisResult, Dotted> TO_DOTTED_CLASSNAME = new Function<AnalysisResult, Dotted>() {
+    public static final Function<AnalysisResult, Dotted> TO_CLASS_NAME = new Function<AnalysisResult, Dotted>() {
         @Override public Dotted apply(AnalysisResult input) {
             return dotted(input.dottedClassName);
-        }
-    };
-
-    public static final Function<AnalysisResult, String> TO_CLASSNAME = new Function<AnalysisResult, String>() {
-        @Override public String apply(AnalysisResult input) {
-            return input.dottedClassName;
         }
     };
     

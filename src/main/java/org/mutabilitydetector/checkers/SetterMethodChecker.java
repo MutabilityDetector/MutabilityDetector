@@ -27,7 +27,6 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.locations.FieldLocation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -35,13 +34,17 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
 /**
- * This class checks, for each field, that there is no method available which can change the reference of the field.
- * 
- * The check will pass iff there is no method available to change a reference for ANY field.
+ * This class checks, for each field, that there is no method
+ * available which can change the reference of the field. The check
+ * will pass iff there is no method available to change a reference
+ * for ANY field.
  * 
  * @author Graham Allan / Grundlefleck at gmail dot com
- * 
+ * @deprecated This class was superseeded by
+ *             {@link org.mutabilitydetector.checkers.settermethod.SetterMethodChecker}
+ *             .
  */
+@Deprecated
 public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
@@ -164,9 +167,8 @@ public final class SetterMethodChecker extends AbstractMutabilityChecker {
         }
 
         private void setIsImmutableResult(String fieldName) {
-            setResult(format("Field [%s] can be reassigned within method [%s]", fieldName, this.name), 
-                      FieldLocation.fieldLocation(fieldName, fromInternalName(owner)), 
-                      MutabilityReason.FIELD_CAN_BE_REASSIGNED);
+            String message = format("Field [%s] can be reassigned within method [%s]", fieldName, this.name);
+            setResult(message, fromInternalName(owner), MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
 
     }

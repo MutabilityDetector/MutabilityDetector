@@ -16,8 +16,6 @@
  */
 package org.mutabilitydetector;
 
-import java.util.HashMap;
-
 /**
  * The various classifications for instances of classes.
  * 

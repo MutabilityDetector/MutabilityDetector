@@ -39,7 +39,7 @@ public final class CanSubclassChecker extends AbstractMutabilityChecker {
     
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        if (MethodIs.aConstructor(name) && (method(access).isNotPrivate()) && method(access).isNotSynthetic()) {
+        if (MethodIs.aConstructor(name) && method(access).isNotPrivate()) {
             hasOnlyPrivateConstructors = false;
         }
         return super.visitMethod(access, name, desc, signature, exceptions);

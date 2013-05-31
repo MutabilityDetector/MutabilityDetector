@@ -18,10 +18,9 @@ package org.mutabilitydetector.cli;
 
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.CARRY_ON;
+import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.ThreadUnsafeAnalysisSession.createWithGivenClassPath;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.CARRY_ON;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.io.File;
@@ -37,8 +36,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.CachingAnalysisClassLoader;
+import org.mutabilitydetector.ClassForNameWrapper;
+import org.mutabilitydetector.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.MutabilityCheckerFactory;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
@@ -47,10 +50,6 @@ import org.mutabilitydetector.asmoverride.GuavaCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.GuavaIsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
-import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
-import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
-import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
-import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
@@ -101,7 +100,6 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         Configuration configuration = new ConfigurationBuilder() {
             @Override
             public void configure() {
-                mergeHardcodedResultsFrom(OUT_OF_THE_BOX_CONFIGURATION);
                 setExceptionPolicy(options.failFast() ? FAIL_FAST : CARRY_ON);
             }
         }.build(); 
@@ -117,7 +115,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         
         List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
         
-        AnalysisSession completedSession = new BatchAnalysisSession(newSession).runAnalysis(filtered);
+        AnalysisSession completedSession = new BulkAnalysisSession(newSession).runAnalysis(filtered);
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         

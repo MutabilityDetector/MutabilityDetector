@@ -22,6 +22,7 @@ import java.util.List;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.util.StackPushingOpcodes;
 import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.visitor.MethodVisitorAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -38,7 +39,7 @@ public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker
         super.visitMethod(access, name, desc, signature, exceptions);
         return MethodIs.aConstructor(name)
                 ? new ThisEscapingFromConstructorVistor(access, name, desc, signature, exceptions)
-                : null;
+                : new MethodVisitorAdapter();
     }
 
     private final class ThisEscapingFromConstructorVistor extends MethodNode {

@@ -17,13 +17,7 @@
 
 package org.mutabilitydetector.unittesting.matchers.reasons;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mutabilitydetector.MutableReasonDetail;
 
-/*default*/ abstract class BaseMutableReasonDetailMatcher extends TypeSafeMatcher<MutableReasonDetail>  {
-    @Override
-    public final void describeTo(Description description) {
-        throw new UnsupportedOperationException("Not yet implemented.");
-    }
-}
+/*default*/ abstract class BaseMutableReasonDetailMatcher extends TypeSafeDiagnosingMatcher<MutableReasonDetail>  { }

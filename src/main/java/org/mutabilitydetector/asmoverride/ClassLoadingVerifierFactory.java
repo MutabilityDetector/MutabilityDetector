@@ -1,6 +1,6 @@
 package org.mutabilitydetector.asmoverride;
 
-import org.mutabilitydetector.classloading.AnalysisClassLoader;
+import org.mutabilitydetector.AnalysisClassLoader;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Interpreter;
 
