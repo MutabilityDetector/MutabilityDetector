@@ -107,7 +107,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         }
         verifyVisibleSetterMethods();
     }
-    
+
     private void verifyInitialisersFor(final FieldNode candidate, final Initialisers allInitialisersForCandidate) {
         final Collection<MethodNode> initialisingMethods = allInitialisersForCandidate.getMethods();
         if (containsMoreThanOne(initialisingMethods)) {

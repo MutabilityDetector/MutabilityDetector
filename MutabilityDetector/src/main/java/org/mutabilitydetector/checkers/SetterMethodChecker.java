@@ -34,26 +34,30 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
 /**
- * This class checks, for each field, that there is no method available which can change the reference of the field.
- * 
- * The check will pass iff there is no method available to change a reference for ANY field.
+ * This class checks, for each field, that there is no method
+ * available which can change the reference of the field. The check
+ * will pass iff there is no method available to change a reference
+ * for ANY field.
  * 
  * @author Graham Allan / Grundlefleck at gmail dot com
- * 
+ * @deprecated This class was superseeded by
+ *             {@link org.mutabilitydetector.checkers.settermethod.SetterMethodChecker}
+ *             .
  */
-public final class SetterMethodCheckerOriginal extends AbstractMutabilityChecker {
+@Deprecated
+public final class SetterMethodChecker extends AbstractMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
     private final AsmVerifierFactory verifierFactory;
 
-    private SetterMethodCheckerOriginal(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
+    private SetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, 
                                  AsmVerifierFactory verifierFactory) {
         this.privateMethodInvocationInfo = privateMethodInvocationInfo;
         this.verifierFactory = verifierFactory;
     }
 
-    public static SetterMethodCheckerOriginal newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AsmVerifierFactory verifierFactory) {
-        return new SetterMethodCheckerOriginal(privateMethodInvocationInfo, verifierFactory);
+    public static SetterMethodChecker newSetterMethodChecker(PrivateMethodInvocationInformation privateMethodInvocationInfo, AsmVerifierFactory verifierFactory) {
+        return new SetterMethodChecker(privateMethodInvocationInfo, verifierFactory);
     }
 
     @Override
