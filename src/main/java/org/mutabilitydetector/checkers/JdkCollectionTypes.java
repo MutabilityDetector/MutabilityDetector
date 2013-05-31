@@ -1,0 +1,76 @@
+package org.mutabilitydetector.checkers;
+
+import org.mutabilitydetector.locations.Dotted;
+
+import com.google.common.collect.ImmutableSet;
+
+class JdkCollectionTypes {
+    
+    private static final ImmutableSet<String> JDK_COLLECTION_TYPES = ImmutableSet.<String>builder()
+            .add("java.lang.Iterable")
+            .add("java.util.Iterator")
+            .add("java.util.List") 
+            .add("java.util.ArrayList")
+            .add("java.util.LinkedList")
+            .add("java.util.Vector")
+            .add("java.util.concurrent.CopyOnWriteArrayList")
+            .add("java.util.Set")
+            .add("java.util.HashSet")
+            .add("java.util.LinkedHashSet")
+            .add("java.util.TreeSet")
+            .add("java.util.TreeSet")
+            .add("java.util.concurrent.ConcurrentSkipListSet")
+            .add("java.util.concurrent.ConcurrentSkipListSet")
+            .add("java.util.concurrent.CopyOnWriteArraySet")
+            .add("java.util.Map")
+            .add("java.util.HashMap")
+            .add("java.util.IdentityHashMap")
+            .add("java.util.TreeMap")
+            .add("java.util.TreeMap")
+            .add("java.util.WeakHashMap")
+            .add("java.util.Hashtable")
+            .add("java.util.IdentityHashMap")
+            .add("java.util.LinkedHashMap")
+            .add("java.util.concurrent.ConcurrentHashMap")
+            .add("java.util.concurrent.ConcurrentSkipListMap")
+            .add("java.util.concurrent.ConcurrentSkipListMap")
+            .add("java.util.SortedMap")
+            .add("java.util.TreeMap")
+            .add("java.util.TreeMap")
+            .add("java.util.concurrent.ConcurrentSkipListMap")
+            .add("java.util.concurrent.ConcurrentSkipListMap")
+            .add("java.util.SortedSet")
+            .add("java.util.TreeSet")
+            .add("java.util.TreeSet")
+            .add("java.util.concurrent.ConcurrentSkipListSet")
+            .add("java.util.concurrent.ConcurrentSkipListSet")
+            .add("java.util.Collection")
+            .add("java/util/ArrayList")
+            .add("java/util/concurrent/CopyOnWriteArrayList")
+            .add("java/util/LinkedList")
+            .add("java/util/Vector")
+            .add("java/util/HashSet")
+            .add("java/util/LinkedHashSet")
+            .add("java/util/TreeSet")
+            .add("java/util/TreeSet")
+            .add("java/util/concurrent/ConcurrentSkipListSet")
+            .add("java/util/concurrent/ConcurrentSkipListSet")
+            .add("java/util/concurrent/CopyOnWriteArraySet")
+            .add("java/util/concurrent/ConcurrentLinkedQueue")
+            .add("java/util/concurrent/DelayQueue")
+            .add("java/util/concurrent/LinkedBlockingDeque")
+            .add("java/util/concurrent/LinkedBlockingQueue")
+            .add("java/util/concurrent/LinkedTransferQueue")
+            .add("java/util/concurrent/PriorityBlockingQueue")
+            .add("java/util/concurrent/PriorityQueue")
+            .add("java/util/concurrent/PriorityQueue")
+            .add("java/util/concurrent/PriorityQueue")
+            .add("java/util/concurrent/ConcurrentLinkedDeque")
+            .add("java/util/ArrayDeque")
+            .add("java/util/concurrent/ArrayBlockingQueue")
+            .build();
+    
+    public boolean isCollectionType(Dotted type) {
+        return JDK_COLLECTION_TYPES.contains(type.asString());
+    }
+}

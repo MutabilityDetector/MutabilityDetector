@@ -1,0 +1,9 @@
+# Maven generated
+target/
+
+# Swap files
+*~
+
+# IDE
+.classpath
+.project
