@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,8 +36,8 @@ final class EffectiveAssignmentInsnVerifier {
     public static EffectiveAssignmentInsnVerifier newInstance(final AssignmentInsn assignmentInsn,
             final FieldNode candidate,
             final AbstractSetterMethodChecker setterMethodChecker) {
-        return new EffectiveAssignmentInsnVerifier(notNull(assignmentInsn), notNull(candidate),
-                notNull(setterMethodChecker));
+        return new EffectiveAssignmentInsnVerifier(checkNotNull(assignmentInsn), checkNotNull(candidate),
+                checkNotNull(setterMethodChecker));
     }
 
     public void verify() {

@@ -1,6 +1,6 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,10 +11,12 @@ import java.util.SortedSet;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -145,7 +147,8 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
      */
     public static InitialValueFinder newInstance(final FieldNode variable, final Initialisers initialisers,
             final EnhancedClassNode enhancedClassNode) {
-        return new InitialValueFinder(notNull(variable), notNull(initialisers), notNull(enhancedClassNode));
+        return new InitialValueFinder(checkNotNull(variable), checkNotNull(initialisers),
+                checkNotNull(enhancedClassNode));
     }
 
     /**
@@ -210,10 +213,10 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("variable", variable).append("setters", initialisers);
-        builder.append("possibleInitialValues", possibleInitialValues);
-        return builder.toString();
+        final ToStringHelper helper = Objects.toStringHelper(this);
+        helper.add("variable", variable).add("setters", initialisers);
+        helper.add("possibleInitialValues", possibleInitialValues);
+        return helper.toString();
     }
 
 }

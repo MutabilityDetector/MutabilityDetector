@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.notNull;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.util.Collection;
@@ -131,8 +131,8 @@ final class AssignmentGuardVerifier {
             final Map<FieldNode, Collection<JumpInsn>> assignmentGuards,
             final CandidatesInitialisersMapping variableInitialisersAssociation,
             final AbstractSetterMethodChecker setterMethodChecker) {
-        return new AssignmentGuardVerifier(notNull(initialValues), notNull(assignmentGuards),
-                notNull(variableInitialisersAssociation), notNull(setterMethodChecker));
+        return new AssignmentGuardVerifier(checkNotNull(initialValues), checkNotNull(assignmentGuards),
+                checkNotNull(variableInitialisersAssociation), checkNotNull(setterMethodChecker));
     }
 
     public void verify() {

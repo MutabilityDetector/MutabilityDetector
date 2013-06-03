@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.notNull;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
@@ -30,7 +30,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         private final MethodNode method;
 
         public MethodIdentifierFactory(final MethodNode theMethod) {
-            method = notNull(theMethod);
+            method = checkNotNull(theMethod);
         }
 
         public MethodIdentifier getMethodIdentifier() {
@@ -80,7 +80,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
     }
 
     public static AsmMutabilityChecker newInstance(final PrivateMethodInvocationInformation privateMethodInvocationInfo) {
-        return new SetterMethodChecker(notNull(privateMethodInvocationInfo));
+        return new SetterMethodChecker(checkNotNull(privateMethodInvocationInfo));
     }
 
     @Override

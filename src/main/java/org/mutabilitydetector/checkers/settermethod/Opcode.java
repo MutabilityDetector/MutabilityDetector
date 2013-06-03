@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.*;
 
@@ -314,7 +314,7 @@ public enum Opcode implements OpcodeInformation {
     }
 
     public static List<Opcode> allOfCategory(final Category category) {
-        notNull(category);
+        checkNotNull(category);
         final byte maxSize = 40;
         final List<Opcode> result = new ArrayList<Opcode>(maxSize);
         for (final Opcode opcode : Opcode.values()) {

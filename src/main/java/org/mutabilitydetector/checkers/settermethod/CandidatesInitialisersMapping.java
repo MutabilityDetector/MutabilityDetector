@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 
 import java.util.*;
@@ -32,6 +32,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
 
         List<MethodNode> getMethods();
     } // interface Setters
+
 
     @Immutable
     private static final class NullInitialisers implements Initialisers {
@@ -65,6 +66,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
             return getClass().getSimpleName() + " []";
         }
     } // class NullSetters
+
 
     @NotThreadSafe
     private static final class DefaultInitialisers implements Initialisers {
@@ -160,11 +162,15 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
         }
     } // class DefaultInitialisers
 
+
     public interface Entry {
+
         FieldNode getCandidate();
 
         Initialisers getInitialisers();
+
     } // interface Entry
+
 
     private static final class DefaultEntry implements Entry {
         private final FieldNode candidate;
@@ -172,8 +178,8 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
 
         public DefaultEntry(final FieldNode theCandidate, final Initialisers theInitialisers) {
             final String msgTemplate = "Argument '%s' must not be null!";
-            candidate = notNull(theCandidate, msgTemplate, "theCandidate");
-            initialisers = notNull(theInitialisers, msgTemplate, "theInitialisers");
+            candidate = checkNotNull(theCandidate, msgTemplate, "theCandidate");
+            initialisers = checkNotNull(theInitialisers, msgTemplate, "theInitialisers");
         }
 
         @Override
@@ -230,6 +236,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
         }
     } // class DefaultEntry
 
+
     private final ConcurrentMap<FieldNode, Initialisers> candidatesAndInitialisers;
     private final Map<String, Set<MethodNode>> visibleSetterMethods;
 
@@ -257,7 +264,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
      *         the node was already contained in this collection.
      */
     public boolean addCandidate(final FieldNode candidate) {
-        notNull(candidate);
+        checkNotNull(candidate);
         final boolean result = !candidatesAndInitialisers.containsKey(candidate);
         candidatesAndInitialisers.put(candidate, DefaultInitialisers.getInstance());
         return result;
@@ -274,8 +281,8 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
      *         of this collection, {@code false} else.
      */
     public boolean addInitialiserForCandidate(final String candidateName, final MethodNode initialiser) {
-        notEmpty(candidateName);
-        notNull(initialiser);
+        checkArgument(!candidateName.isEmpty());
+        checkNotNull(initialiser);
         boolean result = false;
         final FieldNode candidate = getCandidateForName(candidateName);
         if (null != candidate) {
@@ -325,7 +332,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
     }
 
     Initialisers getInitialisersFor(final FieldNode candidate) {
-        notNull(candidate);
+        checkNotNull(candidate);
         Initialisers result = candidatesAndInitialisers.get(candidate);
         if (null == result) {
             result = NullInitialisers.getInstance();
@@ -343,7 +350,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
      *         found an empty {@code List} is returned.
      */
     Collection<MethodNode> getInitialisingMethodsFor(final String candidateName) {
-        notEmpty(candidateName);
+        checkArgument(!candidateName.isEmpty());
         Collection<MethodNode> result = Collections.emptyList();
         final FieldNode candidate = getCandidateForName(candidateName);
         if (null != candidate) {

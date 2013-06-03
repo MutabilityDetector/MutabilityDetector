@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.DSTORE;
 import static org.objectweb.asm.Opcodes.FSTORE;
@@ -50,7 +50,8 @@ final class AliasFinder implements Finder<Alias> {
      * @return a new instance of this class.
      */
     public static AliasFinder newInstance(final String variableName, final ControlFlowBlock controlFlowBlockToExamine) {
-        return new AliasFinder(notEmpty(variableName), notNull(controlFlowBlockToExamine));
+        checkArgument(!variableName.isEmpty());
+        return new AliasFinder(variableName, checkNotNull(controlFlowBlockToExamine));
     }
 
     /**
@@ -67,7 +68,7 @@ final class AliasFinder implements Finder<Alias> {
      * Uses method argument as this method works recursively.
      */
     private Alias searchForAliasInBlock(final ControlFlowBlock block) {
-        notNull(block);
+        checkNotNull(block);
         Alias result = Alias.newInstance(false, Integer.MIN_VALUE);
         if (alreadyVisited.contains(block)) {
             return result;

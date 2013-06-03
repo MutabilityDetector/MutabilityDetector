@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.notNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,8 +51,8 @@ final class InitialisersFinder implements Finder<CandidatesInitialisersMapping> 
     public static InitialisersFinder newInstance(final Collection<MethodNode> methodsOfAnalysedClass,
             final CandidatesInitialisersMapping candidatesInitialisersMapping) {
         final String msgTemplate = "Argument '%s' must not be null!";
-        notNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
-        notNull(candidatesInitialisersMapping, format(msgTemplate, "variableInitialiserMapping"));
+        checkNotNull(methodsOfAnalysedClass, format(msgTemplate, "methodsOfAnalysedClass"));
+        checkNotNull(candidatesInitialisersMapping, format(msgTemplate, "variableInitialiserMapping"));
         return new InitialisersFinder(methodsOfAnalysedClass, candidatesInitialisersMapping);
     }
 

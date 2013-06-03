@@ -1,12 +1,11 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mutabilitydetector.locations.ClassName;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
@@ -37,12 +36,12 @@ final class ClassNodeFactory {
     }
 
     public EnhancedClassNode getConvenienceClassNodeFor(final Class<?> klasse) {
-        final ClassNode classNodeToWrap = getClassNodeFor(notNull(klasse));
+        final ClassNode classNodeToWrap = getClassNodeFor(checkNotNull(klasse));
         return EnhancedClassNode.newInstance(classNodeToWrap);
     }
 
     public ClassNode getClassNodeFor(final Class<?> klasse) {
-        final ClassName dotted = Dotted.fromClass(notNull(klasse));
+        final ClassName dotted = Dotted.fromClass(checkNotNull(klasse));
         final ClassReader cr = tryToCreateClassReaderFor(dotted.asString());
         final ClassNode result = new ClassNode();
         cr.accept(result, 0);
@@ -60,7 +59,8 @@ final class ClassNodeFactory {
 
     @Override
     public String toString() {
-        final ToStringBuilder builder = new ToStringBuilder(this);
+        final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
+        builder.append(" []");
         return builder.toString();
     }
 

@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +47,7 @@ final class EffectiveAssignmentInsnFinder implements Finder<AssignmentInsn> {
      */
     public static EffectiveAssignmentInsnFinder newInstance(final FieldNode targetVariable,
             final Collection<ControlFlowBlock> controlFlowBlocks) {
-        return new EffectiveAssignmentInsnFinder(notNull(targetVariable), notNull(controlFlowBlocks));
+        return new EffectiveAssignmentInsnFinder(checkNotNull(targetVariable), checkNotNull(controlFlowBlocks));
     }
 
     /**

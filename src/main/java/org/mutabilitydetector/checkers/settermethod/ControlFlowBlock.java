@@ -3,8 +3,8 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,9 +117,10 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         private final SortedSet<Integer> rangeItems;
 
         public Builder(final int theBlockNumber, final String theIdentifier, final InsnList allInstructions) {
+            checkArgument(!theIdentifier.isEmpty());
             blockNumber = theBlockNumber;
-            identifier = notEmpty(theIdentifier);
-            this.allInstructions = notNull(allInstructions);
+            identifier = theIdentifier;
+            this.allInstructions = checkNotNull(allInstructions);
             rangeItems = new TreeSet<Integer>();
         }
 
@@ -175,7 +176,8 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
         }
 
         public static ControlFlowBlockFactory newInstance(final String owner, final MethodNode method) {
-            final ControlFlowBlockFactory result = new ControlFlowBlockFactory(notEmpty(owner), notNull(method));
+            checkArgument(!owner.isEmpty());
+            final ControlFlowBlockFactory result = new ControlFlowBlockFactory(owner, checkNotNull(method));
             result.createAllControlFlowBlockBuilders();
             result.analyseMethod();
             return result;
@@ -273,8 +275,9 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             final String identifier,
             final InsnList methodInstructions,
             final Range rangeOfInstructionIndices) {
-        return new ControlFlowBlock(blockNumber, notEmpty(identifier), notNull(methodInstructions),
-                notNull(rangeOfInstructionIndices));
+        checkArgument(!identifier.isEmpty());
+        return new ControlFlowBlock(blockNumber, identifier, checkNotNull(methodInstructions),
+                checkNotNull(rangeOfInstructionIndices));
     }
 
     public boolean isEmpty() {

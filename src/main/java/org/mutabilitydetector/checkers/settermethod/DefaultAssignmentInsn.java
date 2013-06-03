@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -30,8 +30,8 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
     public static AssignmentInsn newInstance(final ControlFlowBlock surroundingControlFlowBlock,
             final int indexWithinMethod,
             final FieldInsnNode assignmentInsnNode) {
-        return new DefaultAssignmentInsn(notNull(surroundingControlFlowBlock), indexWithinMethod,
-                notNull(assignmentInsnNode));
+        return new DefaultAssignmentInsn(checkNotNull(surroundingControlFlowBlock), indexWithinMethod,
+                checkNotNull(assignmentInsnNode));
     }
 
     /**

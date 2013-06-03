@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.checkers.settermethod.AssignmentGuardFinderTest.ContainsMatcher.containsAssignmentGuardFor;
@@ -62,7 +62,8 @@ public final class AssignmentGuardFinderTest {
         }
     
         public Reason andVariable(final String theVariableName) {
-            variableName = notEmpty(theVariableName);
+            checkArgument(!theVariableName.isEmpty());
+            variableName = theVariableName;
             findPossibleInitialValuesForVariable();
             return this;
         }
@@ -106,7 +107,8 @@ public final class AssignmentGuardFinderTest {
         private final String variableName;
 
         private ContainsMatcher(final String theVariableName) {
-            variableName = notEmpty(theVariableName);
+            checkArgument(!theVariableName.isEmpty());
+            variableName = theVariableName;
         }
 
         public static ContainsMatcher containsAssignmentGuardFor(final String variableName) {

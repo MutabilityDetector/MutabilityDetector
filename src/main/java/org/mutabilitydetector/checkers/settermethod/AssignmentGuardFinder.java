@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.util.ArrayList;
@@ -49,7 +49,8 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
      */
     public static AssignmentGuardFinder newInstance(final String candidateName,
             final ControlFlowBlock controlFlowBlock) {
-        return new AssignmentGuardFinder(notEmpty(candidateName), notNull(controlFlowBlock));
+        checkArgument(!candidateName.isEmpty());
+        return new AssignmentGuardFinder(candidateName, checkNotNull(controlFlowBlock));
     }
 
     @Override

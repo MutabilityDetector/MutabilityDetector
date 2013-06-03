@@ -3,8 +3,8 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
 import java.util.ArrayList;
@@ -310,9 +310,9 @@ final class AssignmentGuard implements JumpInsn {
     private static void validateArguments(final JumpInsn delegationTarget,
             final List<AbstractInsnNode> predecessorInstructions) {
         final String msg = "Argument '%s' must not be %s!";
-        notNull(delegationTarget, msg, "delegationTarget", "null");
-        notNull(predecessorInstructions, msg, "predecessorInstructions", "null");
-        notEmpty(predecessorInstructions, msg, "predecessorInstructions", "empty");
+        checkNotNull(delegationTarget, msg, "delegationTarget", "null");
+        checkNotNull(predecessorInstructions, msg, "predecessorInstructions", "null");
+        checkArgument(!predecessorInstructions.isEmpty(), msg, "predecessorInstructions", "empty");
     }
 
     @Override

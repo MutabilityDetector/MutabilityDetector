@@ -1,6 +1,6 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.*;
 
@@ -28,7 +28,8 @@ final class ControlFlowBlockCache {
     }
 
     public static ControlFlowBlockCache newInstance(final String owner) {
-        return new ControlFlowBlockCache(notEmpty(owner));
+        checkArgument(!owner.isEmpty());
+        return new ControlFlowBlockCache(owner);
     }
 
     public List<ControlFlowBlock> getControlFlowBlocksForMethod(final MethodNode methodNode) {

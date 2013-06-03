@@ -1,7 +1,7 @@
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.String;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ final class EnhancedClassNode {
     }
 
     public static EnhancedClassNode newInstance(final ClassNode classNode) {
-        return new EnhancedClassNode(notNull(classNode));
+        return new EnhancedClassNode(checkNotNull(classNode));
     }
 
     public String getName() {
@@ -45,7 +45,7 @@ final class EnhancedClassNode {
     }
 
     FieldNode findVariableWithName(final String variableName) {
-        notEmpty(variableName);
+        checkArgument(!variableName.isEmpty());
         for (final FieldNode variable : getFields()) {
             if (variableName.equals(variable.name)) {
                 return variable;
@@ -55,7 +55,7 @@ final class EnhancedClassNode {
     }
 
     List<MethodNode> findMethodByName(final String methodName) {
-        notEmpty(methodName);
+        checkArgument(!methodName.isEmpty());
         final ArrayList<MethodNode> result = new ArrayList<MethodNode>();
         for (final MethodNode method : getMethods()) {
             if (methodName.equals(method.name)) {
@@ -67,15 +67,15 @@ final class EnhancedClassNode {
     }
 
     MethodNode findMethodByDescriptor(final String methodName, final Type returnType, final Type... argumentTypes) {
-        notEmpty(methodName, "Parameter 'methodName' must neither be null nor empty!");
-        notNull(returnType, "Parameter 'returnType' must not be null!");
+        checkArgument(!methodName.isEmpty(), "Parameter 'methodName' must neither be null nor empty!");
+        checkNotNull(returnType, "Parameter 'returnType' must not be null!");
         final String desc = createDescriptorFor(methodName, returnType, argumentTypes);
         return findMethodByDescriptor(methodName, desc);
     }
 
     MethodNode findMethodByDescriptor(final String methodName, final String descriptor) {
-        notEmpty(methodName, "Parameter 'methodName' must neither be null nor empty!");
-        notEmpty(descriptor, "Parameter 'descriptor' must neither be null nor empty!");
+        checkArgument(!methodName.isEmpty(), "Parameter 'methodName' must neither be null nor empty!");
+        checkArgument(!descriptor.isEmpty(), "Parameter 'descriptor' must neither be null nor empty!");
         for (final MethodNode method : getMethods()) {
             if (method.name.equals(methodName) && method.desc.equals(descriptor)) {
                 return method;

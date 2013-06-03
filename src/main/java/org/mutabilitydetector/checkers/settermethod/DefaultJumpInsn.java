@@ -3,7 +3,7 @@
  */
 package org.mutabilitydetector.checkers.settermethod;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -33,7 +33,7 @@ final class DefaultJumpInsn implements JumpInsn {
     public static DefaultJumpInsn newInstance(final JumpInsnNode jumpInsnNode,
             final int indexWithinBlock,
             final int indexWithinMethod) {
-        return new DefaultJumpInsn(notNull(jumpInsnNode), indexWithinBlock, indexWithinMethod);
+        return new DefaultJumpInsn(checkNotNull(jumpInsnNode), indexWithinBlock, indexWithinMethod);
     }
 
     @Override

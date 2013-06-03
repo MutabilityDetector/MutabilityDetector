@@ -2,7 +2,7 @@ package org.mutabilitydetector.benchmarks.settermethod;
 
 //import static org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest.IsImmutableMatcher.isImmutable;
 //import static org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest.IsMutableMatcher.isMutable;
-import static org.apache.commons.lang3.Validate.notNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mutabilitydetector.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.TestUtil.runChecker;
@@ -91,7 +91,8 @@ public final class SetterMethodCheckerTest {
         }
 
         private AsmMutabilityChecker createSetterMethodChecker(final Class<?> eineKlasse) {
-            final ClassName dotted = Dotted.fromClass(notNull(eineKlasse));
+            
+            final ClassName dotted = Dotted.fromClass(checkNotNull(eineKlasse));
             final ClassReader cr = tryToCreateClassReaderFor(dotted.asString());
             final AsmMutabilityChecker result = SetterMethodChecker.newInstance();
             cr.accept(result, 0);
@@ -135,7 +136,7 @@ public final class SetterMethodCheckerTest {
         }
 
         private AsmMutabilityChecker createSetterMethodChecker(final Class<?> eineKlasse) {
-            final ClassName dotted = Dotted.fromClass(notNull(eineKlasse));
+            final ClassName dotted = Dotted.fromClass(checkNotNull(eineKlasse));
             final ClassReader cr = tryToCreateClassReaderFor(dotted.asString());
             final AsmMutabilityChecker result = SetterMethodChecker.newInstance();
             cr.accept(result, 0);
