@@ -80,7 +80,7 @@ public class AccessModifierQuery {
     }
     
     public boolean isSynthetic() {
-        return !is(ACC_SYNTHETIC);
+        return is(ACC_SYNTHETIC);
     }
     
     public boolean isNotSynthetic() {
