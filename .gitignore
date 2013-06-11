@@ -7,3 +7,5 @@ target/
 # IDE
 .classpath
 .project
+/.settings
+/.directory
