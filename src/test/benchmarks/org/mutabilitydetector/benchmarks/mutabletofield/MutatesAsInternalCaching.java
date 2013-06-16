@@ -30,9 +30,14 @@ public final class MutatesAsInternalCaching {
     
     public int getConcatenatedLength() {
         if (lengthWhenConcatenated == 0) {
-            lengthWhenConcatenated = myString.concat(otherString).length();
+//            lengthWhenConcatenated = myString.concat(otherString).length();
+            lengthWhenConcatenated = getLengthWhenConcatenated();
         }
         return lengthWhenConcatenated;
+    }
+
+    private int getLengthWhenConcatenated() {
+        return myString.concat(otherString).length();
     }
     
 }
