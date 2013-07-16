@@ -17,18 +17,7 @@
 
 package org.mutabilitydetector.unittesting;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
-import static org.mutabilitydetector.unittesting.AllowedReason.provided;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-
+import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -49,7 +38,17 @@ import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
-import com.google.common.collect.Lists;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 public class MutabilityAssertTest {
 
