@@ -41,19 +41,18 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.benchmarks.settermethod.SetterMethodCheckerTest;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
-import org.mutabilitydetector.checkers.SetterMethodChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
+import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @SuppressWarnings("unused")
@@ -67,7 +66,7 @@ public class FieldAssumptionsTest {
                                                                                testingVerifierFactory());
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo = TestUtil.analysisDatabase().requestInformation(AnalysisDatabase.PRIVATE_METHOD_INVOCATION);
-    private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newSetterMethodChecker(privateMethodInvocationInfo, testingVerifierFactory());
+    private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newInstance(privateMethodInvocationInfo);
     private final AsmMutabilityChecker nonFinalFieldChecker = new NonFinalFieldChecker();
     
     @Test

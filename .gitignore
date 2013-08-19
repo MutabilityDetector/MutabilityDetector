@@ -7,8 +7,11 @@ target/
 # IDE
 .classpath
 .project
+
 .idea/
 *.iml
 *.ipr
 *.iws
 
+/.settings
+/.directory
