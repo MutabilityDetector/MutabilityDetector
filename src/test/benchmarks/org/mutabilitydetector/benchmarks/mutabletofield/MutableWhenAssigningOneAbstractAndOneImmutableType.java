@@ -19,7 +19,7 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 import org.mutabilitydetector.benchmarks.types.AbstractType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 
-@SuppressWarnings({ "unused", "hiding" })
+@SuppressWarnings({ "unused" })
 public class MutableWhenAssigningOneAbstractAndOneImmutableType {
     private AbstractType abstractType;
     private InterfaceType interfaceType;

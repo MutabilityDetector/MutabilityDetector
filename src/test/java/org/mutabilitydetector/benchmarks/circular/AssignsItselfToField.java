@@ -16,7 +16,6 @@
  */
 package org.mutabilitydetector.benchmarks.circular;
 
-@SuppressWarnings("hiding") 
 public class AssignsItselfToField {
     private AssignsItselfToField other;
 
