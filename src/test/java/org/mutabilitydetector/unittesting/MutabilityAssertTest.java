@@ -17,7 +17,19 @@
 
 package org.mutabilitydetector.unittesting;
 
-import com.google.common.collect.Lists;
+import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -38,17 +50,7 @@ import org.mutabilitydetector.benchmarks.visibility.AlmostEffectivelyImmutable;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
-import static org.mutabilitydetector.unittesting.AllowedReason.provided;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import com.google.common.collect.Lists;
 
 public class MutabilityAssertTest {
 
@@ -60,8 +62,8 @@ public class MutabilityAssertTest {
             "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" + 
             "    Reasons:%n" + 
             "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
-            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
             "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
+            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
             "    Allowed reasons:%n" + 
             "        None.");
 
@@ -81,7 +83,7 @@ public class MutabilityAssertTest {
             assertImmutable(mutableClass);
             fail("Assertion should have failed.");
         } catch (final AssertionError ae) {
-            assertThat(ae.getMessage(), equalTo(expectedError));
+            assertEquals("", expectedError, ae.getMessage());
         }
     }
     

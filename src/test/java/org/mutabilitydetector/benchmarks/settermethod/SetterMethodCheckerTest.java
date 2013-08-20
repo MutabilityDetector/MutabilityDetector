@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -48,6 +47,7 @@ import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -69,6 +69,7 @@ import org.mutabilitydetector.benchmarks.settermethod.singlecheck.WithoutAlias;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CheckerRunner;
+import org.mutabilitydetector.checkers.OldSetterMethodChecker;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
@@ -78,11 +79,12 @@ import org.mutabilitydetector.locations.ClassName;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.unittesting.MutabilityAsserter;
 import org.objectweb.asm.ClassReader;
 
 @RunWith(Enclosed.class)
 public final class SetterMethodCheckerTest {
-
+    
     @Immutable
     static final class IsImmutableMatcher extends TypeSafeMatcher<Class<?>> {
 
@@ -172,67 +174,72 @@ public final class SetterMethodCheckerTest {
         
     } // class IsImmutableMatcher
 
+    private static final MutabilityAsserter asserterWithLazyInitialisation = MutabilityAsserter.configured(new ConfigurationBuilder() {
+        @Override public void configure() {
+            useAdvancedReassignedFieldAlgorithm();
+        }
+    });
 
     public static final class ValidSingleCheckLazyInitialisationWithoutAlias {
-
+        
         @Test
         public void booleanFlagRendersImmutable() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.BooleanFlag.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void booleanFlagWithFalseAssignmentGuardRendersNotImmutable() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.BooleanFlagWithFalseAssignmentGuard.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void verifyIntegerWithJvmInitial() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void integerWithJvmInitial() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void charWithJvmInitial() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void objectWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.ObjectValid.class;
-            assertInstancesOf(klasse, areImmutable(), provided(Object.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areImmutable(), provided(Object.class).isAlsoImmutable());
         }
 
         @Test
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void floatWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void customObjectWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CustomObjectInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
     } // class TestsForValidSingleCheckLazyInitialisationWithoutAlias
@@ -243,67 +250,67 @@ public final class SetterMethodCheckerTest {
         @Test
         public void charWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void integerWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.FloatInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void objectWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.ObjectInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void stringWithJvmInitialValue() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.StringInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void floatWithMultipleCustomInitialValues() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.FloatInvalidWithMultipleInitialValues.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void stringWithCustomInitialValue() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.StringInvalid.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void integerWithNonCandidateVariableRendersEffectivelyImmutable() {
             final Class<?> klasse = WithoutAlias.WithCustomInitialValue.IntegerWithNonCandidateVariable.class;
-            assertInstancesOf(klasse, areEffectivelyImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areEffectivelyImmutable());
         }
 
         @Test
         public void integerWithInvalidValueCalculationMethodRendersMutable() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.IntegerWithInvalidValueCalculationMethod.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void stringWithInvalidValueCalculationMethodRendersMutable() {
             final Class<?> klasse = WithoutAlias.WithJvmInitialValue.StringWithInvalidValueCalculationMethod.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
     } // class InvalidSingleCheckLazyInitialisationWithoutAlias
@@ -314,43 +321,43 @@ public final class SetterMethodCheckerTest {
         @Test
         public void byteWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.ByteValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void shortWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.ShortValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void floatWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.FloatValid.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void javaLangString() {
             final Class<?> klasse = String.class;
-            assertInstancesOf(klasse, areNotImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable());
         }
 
         @Test
         public void stringWithJvmInitialValue() {
             final Class<?> klasse = WithAlias.WithJvmInitialValue.StringValid.class;
-            assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
         }
 
         @Test
         public void stringWithCustomInitialValue() {
             final Class<?> klasse = WithAlias.WithCustomInitialValue.StringValid.class;
-            assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
         }
 
         @Test
         public void integerWithCustomInitialValue() {
             final Class<?> klasse = WithAlias.WithCustomInitialValue.IntegerValid.class;
-            assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
         }
 
     } // TestsForValidSingleCheckLazyInitialisationWithAlias
@@ -361,19 +368,19 @@ public final class SetterMethodCheckerTest {
         @Test
         public void aliasedValidIntegerWithJvmInitialValue() {
             final Class<?> klasse = org.mutabilitydetector.benchmarks.settermethod.doublecheck.AliasedIntegerWithDefault.class;
-            assertImmutable(klasse);
+            asserterWithLazyInitialisation.assertImmutable(klasse);
         }
 
         @Test
         public void messageHolderRendersImmutable() {
             final Class<?> klasse = MessageHolder.class;
-            assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areImmutable(), provided(String.class).isAlsoImmutable());
         }
 
         @Test
         public void messageHolderWithWrongAssignmentGuardRendersMutable() {
             final Class<?> klasse = MessageHolderWithWrongAssignmentGuard.class;
-            assertInstancesOf(klasse, areNotImmutable(), provided(String.class).isAlsoImmutable());
+            asserterWithLazyInitialisation.assertInstancesOf(klasse, areNotImmutable(), provided(String.class).isAlsoImmutable());
         }
 
     } // ValidDoubleCheckLazyInitialisationWithAlias
@@ -383,7 +390,7 @@ public final class SetterMethodCheckerTest {
     public static final class OriginalTests {
 
         @Rule public MethodRule rule = new IncorrectAnalysisRule();
-        private SetterMethodChecker checker;
+        private OldSetterMethodChecker checker;
         private CheckerRunner checkerRunner;
         private AnalysisSession analysisSession;
         private PrivateMethodInvocationInformation info;
@@ -397,8 +404,7 @@ public final class SetterMethodCheckerTest {
             checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
             analysisSession = TestUtil.testAnalysisSession();
             info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
-//            checker = newSetterMethodChecker(info, testingVerifierFactory());
-            checker = (SetterMethodChecker) SetterMethodChecker.newInstance(info);
+            checker = OldSetterMethodChecker.newSetterMethodChecker(info, TestUtil.testingVerifierFactory());
         }
 
         private AnalysisResult doCheck(Class<?> toCheck) {

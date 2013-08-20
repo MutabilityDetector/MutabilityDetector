@@ -16,6 +16,8 @@
  */
 package org.mutabilitydetector.checkers;
 
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
@@ -29,12 +31,28 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
 
 public final class MutabilityCheckerFactory {
+    
+    private final ReassignedFieldAnalysisChoice analysisChoice;
+
+    public MutabilityCheckerFactory(ReassignedFieldAnalysisChoice analysisChoice) {
+        this.analysisChoice = analysisChoice;
+    }
 
     public Iterable<AsmMutabilityChecker> createInstances(AnalysisDatabase database, AsmVerifierFactory verifierFactory, MutableTypeInformation mutableTypeInformation) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
-        checkers.add(SetterMethodChecker.newInstance(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
+        
+        if (analysisChoice == NAIVE_PUT_FIELD_ANALYSIS) {
+            checkers.add(new NonFinalFieldChecker());
+            checkers.add(OldSetterMethodChecker.newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION),
+                                                                       verifierFactory));
+        } else if (analysisChoice == LAZY_INITIALISATION_ANALYSIS) {
+            checkers.add(SetterMethodChecker.newInstance(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
+        } else {
+            throw new IllegalStateException();
+        }
+        
         checkers.add(new MutableTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), 
                                                    mutableTypeInformation, 
                                                    verifierFactory));
@@ -47,4 +65,9 @@ public final class MutabilityCheckerFactory {
         return Collections.unmodifiableCollection(checkers);
     }
 
+    public static enum ReassignedFieldAnalysisChoice { 
+        NAIVE_PUT_FIELD_ANALYSIS, 
+        LAZY_INITIALISATION_ANALYSIS
+    }
+    
 }

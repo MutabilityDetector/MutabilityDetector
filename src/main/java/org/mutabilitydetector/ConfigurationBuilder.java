@@ -19,6 +19,7 @@ package org.mutabilitydetector;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
 import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
 
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
@@ -133,11 +135,12 @@ public abstract class ConfigurationBuilder {
     
     public final Configuration build() {
         configure();
-        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy);
+        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
+    private ReassignedFieldAnalysisChoice reassignedFieldAgorithm = NAIVE_PUT_FIELD_ANALYSIS;
     
     
     /**
@@ -279,17 +282,25 @@ public abstract class ConfigurationBuilder {
         hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
     }
     
+    protected void useAdvancedReassignedFieldAlgorithm() {
+        this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
+    }
+    
     @Immutable
     private static final class DefaultConfiguration implements Configuration {
 
         private final Set<AnalysisResult> hardcodedResults;
         private final Map<Dotted, AnalysisResult> resultsByClassname;
         private final ExceptionPolicy exceptionPolicy;
+        private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
 
-        private DefaultConfiguration(Set<AnalysisResult> predefinedResults, ExceptionPolicy exceptionPolicy) {
+        private DefaultConfiguration(Set<AnalysisResult> predefinedResults, 
+                                     ExceptionPolicy exceptionPolicy,
+                                     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm) {
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
+            this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
         }
 
         @Override
@@ -300,6 +311,11 @@ public abstract class ConfigurationBuilder {
         @Override
         public ExceptionPolicy exceptionPolicy() {
             return exceptionPolicy;
+        }
+
+        @Override
+        public ReassignedFieldAnalysisChoice reassignedFieldAlgorithm() {
+            return reassignedFieldAlgorithm;
         }
         
     }

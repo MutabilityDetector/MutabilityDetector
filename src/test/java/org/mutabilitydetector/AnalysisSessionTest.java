@@ -27,6 +27,7 @@ import org.mutabilitydetector.checkers.AllChecksRunner;
 import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -38,7 +39,7 @@ public class AnalysisSessionTest {
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
         AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
-        MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory();
+        MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS);
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
         MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, Configurations.NO_CONFIGURATION);
 

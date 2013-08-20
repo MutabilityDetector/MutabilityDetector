@@ -90,11 +90,12 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
+    @SuppressWarnings("deprecation")
     private static AnalysisSession createWithGivenClassPath(ClassPath classpath,
                                                             Configuration configuration,
                                                             AsmVerifierFactory verifierFactory) {
         return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
-                                               new MutabilityCheckerFactory(), 
+                                               new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm()), 
                                                verifierFactory, 
                                                configuration);
     }

@@ -70,8 +70,8 @@ public class WellKnownJavaTypesTest {
         assertInstancesOf(BigInteger.class, areImmutable());
     }
 
+    @FalsePositive("Field is not final; Field [hash] can be reassigned")
     @Test
-    @FalsePositive("Field is not final " + "Field [hash] can be reassigned.")
     public void String() {
         assertInstancesOf(String.class, areImmutable(), assumingFields("value").areNotModifiedAndDoNotEscape());
     }

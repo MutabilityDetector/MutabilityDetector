@@ -19,6 +19,7 @@ package org.mutabilitydetector;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
@@ -88,4 +89,10 @@ public interface Configuration {
      *            - how to respond to exceptions during analysis. Defaults to
      */
     ExceptionPolicy exceptionPolicy();
+
+    /**
+     * Only to be used in development. This method will never appear in a released version.
+     */
+    @Deprecated
+    ReassignedFieldAnalysisChoice reassignedFieldAlgorithm();
 }
