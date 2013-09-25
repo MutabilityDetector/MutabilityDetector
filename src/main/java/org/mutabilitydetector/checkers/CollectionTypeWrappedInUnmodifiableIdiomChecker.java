@@ -34,9 +34,12 @@ import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
@@ -47,7 +50,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
                                                                                "java.util.SortedSet",
                                                                                "java.util.List",
                                                                                "java.util.Map",
-                                                                               "java.util.SortedMap");
+                                                                               "java.util.SortedMap",
+                                                                               "com.google.common.collect.ImmutableList");
     
     private static final String UNMODIFIABLE_METHOD_OWNER = "java.util.Collections";
     
@@ -59,6 +63,13 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             .put("java.util.Map", "unmodifiableMap")
             .put("java.util.SortedMap", "unmodifiableSortedMap")
             .build();
+
+    public static void addCopyMethod(String dottedTargetClassOfAssignment, String dottedClassName, String methodName, String desc) {
+    	CopyMethod copyMethod = new CopyMethod(dotted(dottedClassName), methodName, desc);
+   		userDefinedCopyMethods.put(dottedTargetClassOfAssignment, copyMethod);
+    }
+    
+    private static Multimap<String, CopyMethod> userDefinedCopyMethods = HashMultimap.create();
 
     private static final ImmutableMultimap<String, CopyMethod> FIELD_TYPE_TO_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>builder()
             .putAll("java.util.List", 
@@ -158,6 +169,15 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             return desc.equals(other.desc) && name.equals(other.name) && owner.equals(other.owner);
         }
         
+        @Override
+        public String toString() {
+        	return Objects.toStringHelper(this)
+        			.add("owner", owner)
+        			.add("name", name)
+        			.add("desc", desc)
+        			.toString();
+        }
+        
     }
 
     private FieldInsnNode fieldInsnNode;
@@ -229,8 +249,16 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
         }
         
         MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) lastMeaningfulNode;
+        System.out.println("Look for "+typeAssignedToField() + " ->" + CopyMethod.from(shouldBeCopyConstructor));
         
-        return FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
+        if (FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor))==true) {
+        	return true;
+        } else {
+        	System.out.println("Key? "+ userDefinedCopyMethods.containsKey(typeAssignedToField()));
+        	System.out.println("Value? "+ userDefinedCopyMethods.containsValue(CopyMethod.from(shouldBeCopyConstructor)));
+        	System.out.println("Entry? "+ userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
+        	return userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
+        }
     }
 
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {

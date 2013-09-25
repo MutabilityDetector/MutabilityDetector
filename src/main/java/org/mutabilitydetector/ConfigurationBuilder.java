@@ -31,6 +31,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
@@ -43,6 +44,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod;
 
 /**
  * Builds a {@link Configuration} for customising Mutability Detector's analysis.
@@ -286,6 +289,17 @@ public abstract class ConfigurationBuilder {
         this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
     
+    protected final void addCopyMethod(String method) {
+		String className = method.substring(0, method.lastIndexOf("."));
+		String methodName = method.substring(method.lastIndexOf(".")+1);
+
+		System.out.println("Allowable copy method: "+className+"."+methodName);
+
+    	CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod("java.util.List",
+				className, methodName, "(Ljava/lang/Iterable;)Ljava/util/ArrayList;");
+	
+    }
+    
     @Immutable
     private static final class DefaultConfiguration implements Configuration {
 
@@ -319,5 +333,7 @@ public abstract class ConfigurationBuilder {
         }
         
     }
+    
+    
 
 }
