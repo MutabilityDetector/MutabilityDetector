@@ -39,7 +39,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
@@ -64,9 +63,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             .put("java.util.SortedMap", "unmodifiableSortedMap")
             .build();
 
-    public static void addCopyMethod(String dottedTargetClassOfAssignment, String dottedClassName, String methodName, String desc) {
-    	CopyMethod copyMethod = new CopyMethod(dotted(dottedClassName), methodName, desc);
-   		userDefinedCopyMethods.put(dottedTargetClassOfAssignment, copyMethod);
+    public static void addCopyMethod(String returnType, CopyMethod copyMethod) {
+   		userDefinedCopyMethods.put(returnType, copyMethod);
     }
     
     private static Multimap<String, CopyMethod> userDefinedCopyMethods = HashMultimap.create();
@@ -134,7 +132,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             .build();
     
     
-    private static class CopyMethod {
+    public static class CopyMethod {
         private final Dotted owner;
         private final String name;
         private final String desc;
@@ -249,18 +247,15 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
         }
         
         MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) lastMeaningfulNode;
-        System.out.println("Look for "+typeAssignedToField() + " ->" + CopyMethod.from(shouldBeCopyConstructor));
-        
-        if (FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor))==true) {
-        	return true;
-        } else {
-        	System.out.println("Key? "+ userDefinedCopyMethods.containsKey(typeAssignedToField()));
-        	System.out.println("Value? "+ userDefinedCopyMethods.containsValue(CopyMethod.from(shouldBeCopyConstructor)));
-        	System.out.println("Entry? "+ userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
-        	return userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
-        }
+        return configuratedAsImmutableCopyMethod(shouldBeCopyConstructor);
     }
 
+    private boolean configuratedAsImmutableCopyMethod(MethodInsnNode shouldBeCopyConstructor) {
+    	System.out.println("Looking for: typeAssignedToField="+typeAssignedToField()+", copyMethod="+CopyMethod.from(shouldBeCopyConstructor));
+        return (FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor))
+        		 || userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
+    }
+    
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {
         AbstractInsnNode previous = node.getPrevious();
         return (previous instanceof LabelNode) || (previous instanceof LineNumberNode)

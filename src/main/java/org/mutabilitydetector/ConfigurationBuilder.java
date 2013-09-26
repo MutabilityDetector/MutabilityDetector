@@ -21,8 +21,11 @@ import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
 import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,16 +35,21 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.CopyMethod;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
+import org.mutabilitydetector.checkers.UnhandledExceptionBuilder;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
+import org.objectweb.asm.Type;
 
 import com.google.common.base.Equivalence;
 import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -289,15 +297,34 @@ public abstract class ConfigurationBuilder {
         this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
     
-    protected final void addCopyMethod(String method) {
+    protected final void hardcodeValidCopyMethod(String returnType, String method, Class<?> argType) {
 		String className = method.substring(0, method.lastIndexOf("."));
 		String methodName = method.substring(method.lastIndexOf(".")+1);
+		Method m = null;
+		try {
+			m = Class.forName(className).getMethod(methodName, argType);
+		} catch (NoSuchMethodException e) {
+			rethrow(e);
+		} catch (SecurityException e) {
+			rethrow(e);
+		} catch (ClassNotFoundException e) {
+			rethrow(e);
+		}
+		String desc = Type.getMethodDescriptor(Type.getType(m.getReturnType()), Type.getType(argType));
+    	CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
+		System.out.println("Hardcoded copy method: " + copyMethod.toString());
+    	//copyMethodsAllowed.add(copyMethod);
+    	CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod(returnType, copyMethod);
+    }
+    
+    private List<CopyMethod> copyMethodsAllowed = Lists.newArrayList();
 
-		System.out.println("Allowable copy method: "+className+"."+methodName);
-
-    	CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod("java.util.List",
-				className, methodName, "(Ljava/lang/Iterable;)Ljava/util/ArrayList;");
-	
+    public List<CopyMethod> getCopyMethodsAllowed() {
+		return copyMethodsAllowed;
+	}
+    
+    private void rethrow(Throwable e) {
+    	throw new MutabilityAnalysisException("Error in configuration: "+e.getMessage(), e);
     }
     
     @Immutable
