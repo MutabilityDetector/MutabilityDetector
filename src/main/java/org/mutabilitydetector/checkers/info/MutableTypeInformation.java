@@ -19,6 +19,7 @@ package org.mutabilitydetector.checkers.info;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Collections.newSetFromMap;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,9 +28,11 @@ import javax.annotation.concurrent.Immutable;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Multimap;
 
 public final class MutableTypeInformation {
 
@@ -111,4 +114,9 @@ public final class MutableTypeInformation {
             return new MutabilityLookup(checkNotNull(result));
         }
     }
+    
+    public Multimap<String, CopyMethod> hardcodedCopyMethods() {
+    	return configuration.hardcodedCopyMethods();
+    }
+    
 }

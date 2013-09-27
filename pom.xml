@@ -94,7 +94,6 @@
     </pluginManagement>
 
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -329,6 +328,10 @@
       <scope>test</scope>
     </dependency>
 
-
+    <dependency>
+    	<groupId>com.gs</groupId>
+    	<artifactId>gs-collections</artifactId>
+    	<version>4.0.0</version>
+    </dependency>
   </dependencies>
 </project>

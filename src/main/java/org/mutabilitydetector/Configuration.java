@@ -19,9 +19,12 @@ package org.mutabilitydetector;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.CopyMethod;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
+
+import com.google.common.collect.Multimap;
 
 /**
  * Allows customisation of Mutability Detector's analysis.
@@ -95,4 +98,11 @@ public interface Configuration {
      */
     @Deprecated
     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm();
+
+    /**
+     * Safe methods for copying collections when being assigned to fields in a class's constructor.
+     * 
+     * @return
+     */
+	Multimap<String, CopyMethod> hardcodedCopyMethods();
 }

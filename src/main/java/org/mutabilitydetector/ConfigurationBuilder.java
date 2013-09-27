@@ -48,12 +48,13 @@ import com.google.common.base.Equivalence;
 import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
-
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod;
 
 /**
  * Builds a {@link Configuration} for customising Mutability Detector's analysis.
@@ -146,7 +147,7 @@ public abstract class ConfigurationBuilder {
     
     public final Configuration build() {
         configure();
-        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm);
+        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm, copyMethodsAllowed);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
@@ -297,6 +298,13 @@ public abstract class ConfigurationBuilder {
         this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
     
+    /**
+     * Hardcode a copy method as being valid
+     * 
+     * @param returnType
+     * @param method
+     * @param argType
+     */
     protected final void hardcodeValidCopyMethod(String returnType, String method, Class<?> argType) {
 		String className = method.substring(0, method.lastIndexOf("."));
 		String methodName = method.substring(method.lastIndexOf(".")+1);
@@ -304,27 +312,27 @@ public abstract class ConfigurationBuilder {
 		try {
 			m = Class.forName(className).getMethod(methodName, argType);
 		} catch (NoSuchMethodException e) {
-			rethrow(e);
+			rethrow("No such method", e);
 		} catch (SecurityException e) {
-			rethrow(e);
+			rethrow("Security error", e);
 		} catch (ClassNotFoundException e) {
-			rethrow(e);
+			rethrow("Class not  found", e);
 		}
 		String desc = Type.getMethodDescriptor(Type.getType(m.getReturnType()), Type.getType(argType));
     	CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
 		System.out.println("Hardcoded copy method: " + copyMethod.toString());
-    	//copyMethodsAllowed.add(copyMethod);
-    	CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod(returnType, copyMethod);
+    	copyMethodsAllowed.put(returnType, copyMethod);
+    	//CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod(returnType, copyMethod);
     }
     
-    private List<CopyMethod> copyMethodsAllowed = Lists.newArrayList();
+    private Multimap<String,CopyMethod> copyMethodsAllowed = ArrayListMultimap.create();
 
-    public List<CopyMethod> getCopyMethodsAllowed() {
+    public Multimap<String,CopyMethod> getCopyMethodsAllowed() {
 		return copyMethodsAllowed;
 	}
     
-    private void rethrow(Throwable e) {
-    	throw new MutabilityAnalysisException("Error in configuration: "+e.getMessage(), e);
+    private void rethrow(String message, Throwable e) {
+    	throw new MutabilityAnalysisException("Error in configuration: "+message+": "+e.getMessage(), e);
     }
     
     @Immutable
@@ -334,14 +342,17 @@ public abstract class ConfigurationBuilder {
         private final Map<Dotted, AnalysisResult> resultsByClassname;
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
+		private final Multimap<String, CopyMethod> copyMethodsAllowed;
 
         private DefaultConfiguration(Set<AnalysisResult> predefinedResults, 
                                      ExceptionPolicy exceptionPolicy,
-                                     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm) {
+                                     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm, 
+                                     Multimap<String, CopyMethod> copyMethodsAllowed) {
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
+            this.copyMethodsAllowed = copyMethodsAllowed;
         }
 
         @Override
@@ -357,6 +368,11 @@ public abstract class ConfigurationBuilder {
         @Override
         public ReassignedFieldAnalysisChoice reassignedFieldAlgorithm() {
             return reassignedFieldAlgorithm;
+        }
+        
+        @Override
+        public Multimap<String, CopyMethod> hardcodedCopyMethods() {
+        	return copyMethodsAllowed;
         }
         
     }

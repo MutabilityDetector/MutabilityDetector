@@ -94,7 +94,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 } else if(!isConcreteType(fieldClass)) {
                 
                     UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomChecker(
-                            fieldInsnNode, typeAssignedToField).checkWrappedInUnmodifiable();
+                            fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods()).checkWrappedInUnmodifiable();
 
                     if (!unmodifiableWrapResult.canBeWrapped) {
                         setResult(format("Field can have an abstract type (%s) assigned to it.", fieldClass),
