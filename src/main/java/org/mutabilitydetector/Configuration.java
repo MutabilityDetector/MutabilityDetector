@@ -19,8 +19,8 @@ package org.mutabilitydetector;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.CopyMethod;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
+import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
@@ -100,7 +100,7 @@ public interface Configuration {
     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm();
 
     /**
-     * Safe methods for copying collections when being assigned to fields in a class's constructor.
+     * Safe methods for copying collections when being assigned to a field in a class's constructor.
      * 
      * @return
      */

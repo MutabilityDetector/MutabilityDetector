@@ -23,9 +23,9 @@ import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.Reassigne
 import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,11 +34,10 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.CopyMethod;
+import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
-import org.mutabilitydetector.checkers.UnhandledExceptionBuilder;
+import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
@@ -49,11 +48,11 @@ import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 /**
@@ -147,13 +146,14 @@ public abstract class ConfigurationBuilder {
     
     public final Configuration build() {
         configure();
-        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm, copyMethodsAllowed);
+        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm, validCopyMethods);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
     private ReassignedFieldAnalysisChoice reassignedFieldAgorithm = NAIVE_PUT_FIELD_ANALYSIS;
-    
+    private Multimap<String,CopyMethod> validCopyMethods = HashMultimap.create();
+
     
     /**
      * Configures how Mutability Detector's analysis should respond to
@@ -294,23 +294,49 @@ public abstract class ConfigurationBuilder {
         hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
     }
     
+    /**
+     * Merge valid copy methods from another configuration.
+     * 
+     * @param otherConfiguration - configuration to merge harcoded copy methods from.
+     */
+    protected void mergeValidCopyMethodsFrom(Configuration otherConfiguration) {
+    	validCopyMethods.putAll(otherConfiguration.hardcodedCopyMethods());
+    }
+    
     protected void useAdvancedReassignedFieldAlgorithm() {
         this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
     
     /**
-     * Hardcode a copy method as being valid
+     * Hardcode a copy method as being valid. This should be used to tell Mutability Detector about
+     * a method which copies a collection, and when the copy can be wrapped in an immutable wrapper
+     * we can consider the assignment immutable. Useful for allowing Mutability Detector to correctly
+     * work with other collections frameworks such as Google Guava.
      * 
-     * @param returnType
-     * @param method
-     * @param argType
+     * @param fieldType - the type of the field to which the result of the copy is assigned
+     * @param fullyQualifiedMethodName - the fully qualified method name
+     * @param argType - the type of the argument passed to the copy method, or null if the method does not take 
+     * an argument
      */
-    protected final void hardcodeValidCopyMethod(String returnType, String method, Class<?> argType) {
-		String className = method.substring(0, method.lastIndexOf("."));
-		String methodName = method.substring(method.lastIndexOf(".")+1);
-		Method m = null;
+    protected final void hardcodeValidCopyMethod(Class<?> fieldType, String fullyQualifiedMethodName, Class<?> argType) {
+		String className = fullyQualifiedMethodName.substring(0, fullyQualifiedMethodName.lastIndexOf("."));
+		String methodName = fullyQualifiedMethodName.substring(fullyQualifiedMethodName.lastIndexOf(".")+1);
+		Method method = null;
+		Constructor ctor = null;
 		try {
-			m = Class.forName(className).getMethod(methodName, argType);
+			if (MethodIs.aConstructor(methodName)) {
+				if (argType == null) {
+					ctor = Class.forName(className).getDeclaredConstructor();
+				} else {
+					ctor = Class.forName(className).getDeclaredConstructor(argType);
+				}
+			} else {
+				if (argType==null) {
+					method = Class.forName(className).getMethod(methodName);
+				} else {
+					method = Class.forName(className).getMethod(methodName, argType);
+				}
+			}
 		} catch (NoSuchMethodException e) {
 			rethrow("No such method", e);
 		} catch (SecurityException e) {
@@ -318,17 +344,22 @@ public abstract class ConfigurationBuilder {
 		} catch (ClassNotFoundException e) {
 			rethrow("Class not  found", e);
 		}
-		String desc = Type.getMethodDescriptor(Type.getType(m.getReturnType()), Type.getType(argType));
+		String desc = null;
+		if (MethodIs.aConstructor(methodName)) {
+			desc = Type.getConstructorDescriptor(ctor);
+		} else {
+			desc = Type.getMethodDescriptor(method);
+		}
     	CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
-		System.out.println("Hardcoded copy method: " + copyMethod.toString());
-    	copyMethodsAllowed.put(returnType, copyMethod);
-    	//CollectionTypeWrappedInUnmodifiableIdiomChecker.addCopyMethod(returnType, copyMethod);
+		hardcodeValidCopyMethod(fieldType, copyMethod);
     }
     
-    private Multimap<String,CopyMethod> copyMethodsAllowed = ArrayListMultimap.create();
-
+    protected final void hardcodeValidCopyMethod(Class<?> fieldType, CopyMethod copyMethod) {
+		validCopyMethods.put(fieldType.getCanonicalName(), copyMethod);
+    }
+    
     public Multimap<String,CopyMethod> getCopyMethodsAllowed() {
-		return copyMethodsAllowed;
+		return validCopyMethods;
 	}
     
     private void rethrow(String message, Throwable e) {
@@ -342,17 +373,17 @@ public abstract class ConfigurationBuilder {
         private final Map<Dotted, AnalysisResult> resultsByClassname;
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
-		private final Multimap<String, CopyMethod> copyMethodsAllowed;
+		private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
 
         private DefaultConfiguration(Set<AnalysisResult> predefinedResults, 
                                      ExceptionPolicy exceptionPolicy,
                                      ReassignedFieldAnalysisChoice reassignedFieldAlgorithm, 
-                                     Multimap<String, CopyMethod> copyMethodsAllowed) {
+                                     Multimap<String, CopyMethod> validCopyMethods) {
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
-            this.copyMethodsAllowed = copyMethodsAllowed;
+            this.validCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().putAll(validCopyMethods).build();
         }
 
         @Override
@@ -372,7 +403,7 @@ public abstract class ConfigurationBuilder {
         
         @Override
         public Multimap<String, CopyMethod> hardcodedCopyMethods() {
-        	return copyMethodsAllowed;
+        	return validCopyMethods;
         }
         
     }

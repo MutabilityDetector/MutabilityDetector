@@ -17,6 +17,7 @@
 package org.mutabilitydetector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -27,12 +28,16 @@ import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
 public class ConfigurationBuilderTest {
@@ -92,6 +97,50 @@ public class ConfigurationBuilderTest {
 
         assertInstancesOf(configurationBuilder.build().getClass(), 
                           areImmutable(),
-                          provided(ImmutableSet.class, ImmutableMap.class).isAlsoImmutable());
+                          provided(ImmutableSet.class, ImmutableMap.class, ImmutableMultimap.class).isAlsoImmutable());
     }
+    
+    @Test
+    public void mergeCopyMethodsDoesNotCauseDuplicates() {
+    	final CopyMethod a = new CopyMethod(dotted("any"), "method", "A");
+        final CopyMethod b = new CopyMethod(dotted("any"), "method", "B");
+        final CopyMethod c = new CopyMethod(dotted("any"), "method", "C");
+        final CopyMethod d = new CopyMethod(dotted("any"), "method", "A");
+
+        final Configuration original = new ConfigurationBuilder() {
+            @Override public void configure() {
+                hardcodeValidCopyMethod(List.class, a);
+                hardcodeValidCopyMethod(List.class, b);
+            }
+        }.build();
+
+        final Configuration merged = new ConfigurationBuilder() {
+            @Override public void configure() {
+                hardcodeValidCopyMethod(List.class, c);
+                hardcodeValidCopyMethod(List.class, d);
+                mergeValidCopyMethodsFrom(original);
+            }
+        }.build();
+        
+        assertThat(merged.hardcodedCopyMethods().size(), is(3));
+        assertThat(merged.hardcodedCopyMethods().values(), containsInAnyOrder(b, c, d));
+    }
+    
+	@Test (expected=MutabilityAnalysisException.class)
+	public void shouldThrowIfClassOfCopyMethodIsNotKnown() {
+		new ConfigurationBuilder() { 
+			@Override public void configure() {
+				hardcodeValidCopyMethod(List.class, "non.existant.Collection.<init>", List.class);
+			}
+		}.build();
+	}
+
+	@Test (expected=MutabilityAnalysisException.class)
+	public void shouldThrowIfCopyMethodDoesNotExist() {
+		new ConfigurationBuilder() { 
+			@Override public void configure() {
+				hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.doesNotExist", List.class);
+			}
+		}.build();
+	}
 }
