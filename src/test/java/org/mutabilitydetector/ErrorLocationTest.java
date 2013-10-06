@@ -16,8 +16,8 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutabl
 public class ErrorLocationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ArrayFieldMutabilityChecker: code location points to the field and class (correct).
-    // Potential Improvements: Line number
+    // ArrayFieldMutabilityChecker: code location points to the field (correct).
+    // Potential Improvements: Line number. Whole declaration of the field with access modifier, type etc...
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class ClassWithArrayField {
@@ -41,8 +41,8 @@ public class ErrorLocationTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // CollectionWithMutableElementTypeToFieldChecker: code location points to the field and class, as well as the collection declaration with the mutable type (correct)
-    // Potential improvements: line number.
+    // CollectionWithMutableElementTypeToFieldChecker: code location points to the field, as well as the collection declaration with the mutable type (correct)
+    // Potential improvements: Line number.
     // Other improvements: avoid multiple reasons for this case (ABSTRACT_COLLECTION_TYPE_TO_FIELD, COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,13 +71,15 @@ public class ErrorLocationTest {
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////
     // MutableTypeToFieldChecker
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // TODO: finish this one
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CanSubclassChecker: code location points to the class (correct).
-    // Potential improvements: lists of available subclasses if there are already any?
+    // Potential improvements: Class declaration line with access modifier, etc. List of available subclasses if there are already any.
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static class NonFinalClass {
@@ -145,8 +147,8 @@ public class ErrorLocationTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // NonFinalFieldChecker: code location points to the field and class (correct).
-    // Potential improvements: Line number.
+    // NonFinalFieldChecker: code location points to the field (correct).
+    // Potential improvements: Line number. Field declaration with access modifiers, etc...
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class ClassWithNonFinalField {
@@ -170,9 +172,11 @@ public class ErrorLocationTest {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PublishedNonFinalFieldChecker: code location points to the field and class (correct).
-    // Potential improvements: Line number, current access modifier.
+    // Potential improvements: Line number. Field declaration with access modifiers, etc...
     // Other Improvements: avoid multiple reasons (PUBLISHED_NON_FINAL_FIELD,  NON_FINAL_FIELD)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class ClassWithPublicNonFinalField {
         public String publicField;
@@ -217,5 +221,78 @@ public class ErrorLocationTest {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OldSetterMethodChecker: code location points to the field and class, name of the setter method is displayed. This is not wrong but actually just the name of the setter method and the class would be needed.
+    // Potential improvements: Line number.
+    // Other Improvements: avoid multiple reasons (FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public final static class ClassWithSetterMethod {
+        private String field;
+
+        public void setField(String field) {
+            this.field = field;
+        }
+    }
+
+    @Test
+    public void isImmutableClassWithSetterMethod() throws Exception {
+        try {
+            assertImmutable(ClassWithSetterMethod.class);
+        } catch (MutabilityAssertionError e) {
+            assertEquals(e.getMessage(),
+                    "\n" +
+                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod to be IMMUTABLE\n" +
+                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod is actually NOT_IMMUTABLE\n" +
+                            "    Reasons:\n" +
+                            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
+                            "        Field [field] can be reassigned within method [setField] [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
+                            "    Allowed reasons:\n" +
+                            "        None.");
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // EscapedThisReferenceChecker: code location points to the class passing the this reference (ok).
+    // Potential improvements: Line number where this reference is passed.
+    // Other Improvements: avoid multiple reasons (FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public final class ClassWithThisReference {
+
+        private final ClassPassingThisReference thisReference;
+
+        public ClassWithThisReference(ClassPassingThisReference thisReference) {
+            this.thisReference = thisReference;
+        }
+    }
+
+    public final class ClassPassingThisReference {
+        private final ClassWithThisReference field;
+
+        public ClassPassingThisReference() {
+            this.field = new ClassWithThisReference(this);
+        }
+    }
+
+
+    @Test
+    public void isImmutableClassPassingThisReference() throws Exception {
+        try {
+            assertImmutable(ClassPassingThisReference.class);
+        } catch (MutabilityAssertionError e) {
+            assertEquals(e.getMessage(),
+                    "\n" +
+                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference to be IMMUTABLE\n" +
+                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference is actually NOT_IMMUTABLE\n" +
+                            "    Reasons:\n" +
+                            "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest) assigned to it. [Field: this$0, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                            "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$ClassWithThisReference) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                            "        The 'this' reference is passed outwith the constructor. [Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                            "    Allowed reasons:\n" +
+                            "        None.");
+        }
+    }
 
 }
