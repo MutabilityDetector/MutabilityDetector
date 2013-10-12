@@ -9,9 +9,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 
-/**
- * @author: Marc Gomez
- */
+
 @SuppressWarnings("ALL")
 public class ErrorLocationTest {
 
@@ -71,11 +69,46 @@ public class ErrorLocationTest {
         }
     }
 
-    //////////////////////////////////////////////////
-    // MutableTypeToFieldChecker
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MutableTypeToFieldChecker:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // TODO: finish this one
+    // TODO: finish up audit for MutableTypeToFieldChecker
+
+    public final static class CyclicDependencyClassA {
+        private final CyclicDependencyClassB classBField;
+
+        public CyclicDependencyClassA(CyclicDependencyClassB classBField) {
+            this.classBField = classBField;
+        }
+    }
+
+    public final static class CyclicDependencyClassB {
+        private final CyclicDependencyClassA classAField;
+
+        public CyclicDependencyClassB() {
+            this.classAField = new CyclicDependencyClassA(this);
+        }
+    }
+
+    @Test
+    public void isImmutableMutableTypeToField_CyclicDependency() throws Exception {
+        try {
+            assertImmutable(CyclicDependencyClassB.class);
+        } catch (MutabilityAssertionError e) {
+            assertEquals(e.getMessage(),
+                    "\n" +
+                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField to be IMMUTABLE\n" +
+                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField is actually NOT_IMMUTABLE\n" +
+                            "    Reasons:\n" +
+                            "        Field can have a mutable type (java.util.ArrayList) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
+                            "        Field can have collection with mutable element type (java.util.List<org.mutabilitydetector.ErrorLocationTest$MutableClass>) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
+                            "    Allowed reasons:\n" +
+                            "        None.");
+        }
+    }
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CanSubclassChecker: code location points to the class (correct).
