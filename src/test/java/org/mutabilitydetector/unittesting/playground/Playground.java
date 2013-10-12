@@ -10,9 +10,8 @@ import java.util.Set;
 import org.junit.Test;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.Configurations;
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
+import org.mutabilitydetector.unittesting.internal.CloneList;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,7 +27,7 @@ import com.google.common.collect.Sets;
 final class ClassContainingCustomCollection {
 	final List<Integer> list;
 	public ClassContainingCustomCollection(List<Integer> list) {
-		this.list = Collections.unmodifiableList(new MyList<Integer>(list));
+		this.list = Collections.unmodifiableList(new CloneList<Integer>(list));
 	}
 	
 }
