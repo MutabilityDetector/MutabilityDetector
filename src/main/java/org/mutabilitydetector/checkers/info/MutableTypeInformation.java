@@ -30,7 +30,7 @@ import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMultimap;
 
 public final class MutableTypeInformation {
 
@@ -46,7 +46,7 @@ public final class MutableTypeInformation {
         this.configuration = configuration;
     }
 
-    public Multimap<String, CopyMethod> hardcodedCopyMethods() {
+    public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
     	return configuration.hardcodedCopyMethods();
     }
 

@@ -24,7 +24,7 @@ import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMultimap;
 
 /**
  * Allows customisation of Mutability Detector's analysis.
@@ -104,5 +104,5 @@ public interface Configuration {
      * 
      * @return
      */
-	Multimap<String, CopyMethod> hardcodedCopyMethods();
+	ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods();
 }

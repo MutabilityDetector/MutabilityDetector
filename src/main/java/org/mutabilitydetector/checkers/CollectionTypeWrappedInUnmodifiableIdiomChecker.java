@@ -33,15 +33,13 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
 
 public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
-    private final Multimap<String, CopyMethod> userDefinedCopyMethods;
+    private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
 
     private static final ClassNameConverter CLASS_NAME_CONVERTER = new ClassNameConverter();
 
@@ -148,14 +146,14 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     }
     
     public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField, 
-    		Multimap<String, CopyMethod> userDefinedCopyMethods) {
+    		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
         init(fieldInsnNode, typeAssignedToField);
         this.userDefinedCopyMethods = userDefinedCopyMethods;
     }
 
     public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
         init(fieldInsnNode, typeAssignedToField);
-        this.userDefinedCopyMethods = ArrayListMultimap.create();
+        this.userDefinedCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().build();
     }
 
 	private void init(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {

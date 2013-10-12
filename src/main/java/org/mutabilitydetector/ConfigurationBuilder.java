@@ -47,7 +47,6 @@ import com.google.common.base.Equivalence;
 import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -311,31 +310,32 @@ public abstract class ConfigurationBuilder {
      * Hardcode a copy method as being valid. This should be used to tell Mutability Detector about
      * a method which copies a collection, and when the copy can be wrapped in an immutable wrapper
      * we can consider the assignment immutable. Useful for allowing Mutability Detector to correctly
-     * work with other collections frameworks such as Google Guava.
+     * work with other collections frameworks such as Google Guava. Reflection is used to obtain the
+     * method's descriptor and to verify the method's existence.
      * 
      * @param fieldType - the type of the field to which the result of the copy is assigned
      * @param fullyQualifiedMethodName - the fully qualified method name
-     * @param argType - the type of the argument passed to the copy method, or null if the method does not take 
-     * an argument
+     * @param argType - the type of the argument passed to the copy method
+     * 
+     * @throws MutabilityAnalysisException - if the specified class or method does not exist
+     * @throws IllegalArgumentException - if any of the arguments are null
      */
     protected final void hardcodeValidCopyMethod(Class<?> fieldType, String fullyQualifiedMethodName, Class<?> argType) {
 		String className = fullyQualifiedMethodName.substring(0, fullyQualifiedMethodName.lastIndexOf("."));
 		String methodName = fullyQualifiedMethodName.substring(fullyQualifiedMethodName.lastIndexOf(".")+1);
-		Method method = null;
-		Constructor ctor = null;
+
+		if (argType==null || fieldType==null || fullyQualifiedMethodName==null) {
+			throw new IllegalArgumentException("All parameters must be supplied - no nulls");
+		}
+		
+		String desc = null;
 		try {
 			if (MethodIs.aConstructor(methodName)) {
-				if (argType == null) {
-					ctor = Class.forName(className).getDeclaredConstructor();
-				} else {
-					ctor = Class.forName(className).getDeclaredConstructor(argType);
-				}
+				Constructor<?> ctor = Class.forName(className).getDeclaredConstructor(argType);
+				desc = Type.getConstructorDescriptor(ctor);
 			} else {
-				if (argType==null) {
-					method = Class.forName(className).getMethod(methodName);
-				} else {
-					method = Class.forName(className).getMethod(methodName, argType);
-				}
+				Method method = Class.forName(className).getMethod(methodName, argType);
+				desc = Type.getMethodDescriptor(method);
 			}
 		} catch (NoSuchMethodException e) {
 			rethrow("No such method", e);
@@ -344,20 +344,14 @@ public abstract class ConfigurationBuilder {
 		} catch (ClassNotFoundException e) {
 			rethrow("Class not  found", e);
 		}
-		String desc = null;
-		if (MethodIs.aConstructor(methodName)) {
-			desc = Type.getConstructorDescriptor(ctor);
-		} else {
-			desc = Type.getMethodDescriptor(method);
-		}
     	CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
-		hardcodeValidCopyMethod(fieldType, copyMethod);
+    	hardcodeValidCopyMethod(fieldType, copyMethod);
     }
     
-    protected final void hardcodeValidCopyMethod(Class<?> fieldType, CopyMethod copyMethod) {
+	protected void hardcodeValidCopyMethod(Class<?> fieldType, CopyMethod copyMethod) {
 		validCopyMethods.put(fieldType.getCanonicalName(), copyMethod);
-    }
-    
+	}
+
     public Multimap<String,CopyMethod> getCopyMethodsAllowed() {
 		return validCopyMethods;
 	}
@@ -402,7 +396,7 @@ public abstract class ConfigurationBuilder {
         }
         
         @Override
-        public Multimap<String, CopyMethod> hardcodedCopyMethods() {
+        public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
         	return validCopyMethods;
         }
         
