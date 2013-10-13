@@ -39,8 +39,6 @@ import com.google.common.collect.ImmutableSet;
 
 public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
-    private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
-
     private static final ClassNameConverter CLASS_NAME_CONVERTER = new ClassNameConverter();
 
     private static final ImmutableSet<String> CAN_BE_WRAPPED = ImmutableSet.of("java.util.Collection",
@@ -125,42 +123,17 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             .build();
     
     
-    private FieldInsnNode fieldInsnNode;
-    private Type typeAssignedToField;
-    
-    public static enum UnmodifiableWrapResult {
-        FIELD_TYPE_CANNOT_BE_WRAPPED(false, false, false),
-        DOES_NOT_WRAP_USING_WHITELISTED_METHOD(true, false, false),
-        WRAPS_BUT_DOES_NOT_COPY(true, true, false),
-        WRAPS_AND_COPIES_SAFELY(true, true, true);
-        
-        public final boolean canBeWrapped;
-        public final boolean invokesWhitelistedWrapperMethod;
-        public final boolean safelyCopiesBeforeWrapping;
-        
-        private UnmodifiableWrapResult(boolean canBeWrapped, boolean isWrapped, boolean safelyCopiesBeforeWrapping) {
-            this.canBeWrapped = canBeWrapped;
-            this.invokesWhitelistedWrapperMethod = isWrapped;
-            this.safelyCopiesBeforeWrapping = safelyCopiesBeforeWrapping;
-        }
-    }
+    private final FieldInsnNode fieldInsnNode;
+    private final Type typeAssignedToField;
+    private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
     
     public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField, 
     		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
-        init(fieldInsnNode, typeAssignedToField);
-        this.userDefinedCopyMethods = userDefinedCopyMethods;
-    }
-
-    public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
-        init(fieldInsnNode, typeAssignedToField);
-        this.userDefinedCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().build();
-    }
-
-	private void init(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
-		checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
+        checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         this.fieldInsnNode = fieldInsnNode;
         this.typeAssignedToField = typeAssignedToField;
-	}
+        this.userDefinedCopyMethods = userDefinedCopyMethods;
+    }
 
     public UnmodifiableWrapResult checkWrappedInUnmodifiable() {
         if (!CAN_BE_WRAPPED.contains(typeAssignedToField())) {
@@ -218,5 +191,21 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
                 ? lastMeaningfulNode(previous)
                 : previous;
     }
-
+    
+    public static enum UnmodifiableWrapResult {
+        FIELD_TYPE_CANNOT_BE_WRAPPED(false, false, false),
+        DOES_NOT_WRAP_USING_WHITELISTED_METHOD(true, false, false),
+        WRAPS_BUT_DOES_NOT_COPY(true, true, false),
+        WRAPS_AND_COPIES_SAFELY(true, true, true);
+        
+        public final boolean canBeWrapped;
+        public final boolean invokesWhitelistedWrapperMethod;
+        public final boolean safelyCopiesBeforeWrapping;
+        
+        private UnmodifiableWrapResult(boolean canBeWrapped, boolean isWrapped, boolean safelyCopiesBeforeWrapping) {
+            this.canBeWrapped = canBeWrapped;
+            this.invokesWhitelistedWrapperMethod = isWrapped;
+            this.safelyCopiesBeforeWrapping = safelyCopiesBeforeWrapping;
+        }
+    }
 }
