@@ -29,7 +29,7 @@ To use Mutability Detector directly, either from the command line, at runtime in
     </dependency>
 
 
-### Unit Testing
+### Using Mutability Detector in Unit Testing
 Just add MutabilityDetector to your unit testing classpath. Adding your first assertion is as simple as:
 
     import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
@@ -40,7 +40,7 @@ Just add MutabilityDetector to your unit testing classpath. Adding your first as
     
 Though it is possible (or likely) that you will have to configure the assertion to deal with any false positives that arise. See the JavaDoc on `MutabilityAssert` for further information. (TODO: link to as-yet unhosted JavaDoc).
 
-### Static Analysis
+### Using Mutability Detector from the Command Line
 
 An example of how to run it is probably the most useful. If you want to analyse MyCodebase.jar use:
 
@@ -91,7 +91,7 @@ The command line has the following usage:
 
 
 
-### Runtime Analysis
+### Using Mutability Detector within Your Application
 
 It is possible to use Mutability Detector at runtime. For example, consider if you have a library which requires that objects passed to it are immutable. On receiving such an object, you can ask Mutability Detector if it is actually immutable.
 
@@ -109,7 +109,7 @@ MutabilityDetector4FindBugs is also available from Maven Central, with the follo
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector4FindBugs</artifactId>
-        <version>0.2.3</version>
+        <version>0.9.1</version>
         <scope>test</scope>
     </dependency>
 

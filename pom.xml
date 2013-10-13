@@ -29,6 +29,7 @@
     <package.base>org.mutabilitydetector</package.base>
     <repackage.base>${package.base}.repackaged</repackage.base>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <findbugs-plugin.version>2.4.0</findbugs-plugin.version>
   </properties>
 
   <issueManagement>
@@ -76,7 +77,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.3.3</version>
+        <version>${findbugs-plugin.version}</version>
       </plugin>
     </plugins>
   </reporting>
@@ -88,7 +89,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>${findbugs-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -203,7 +204,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.4.0</version>
+        <version>${findbugs-plugin.version}</version>
       </plugin>
     </plugins>
 
