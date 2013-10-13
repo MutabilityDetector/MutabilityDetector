@@ -6,7 +6,8 @@ import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 
 
@@ -27,14 +28,13 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithArrayField.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field is an array. [Field: arrayField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is an array. [Field: arrayField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -57,57 +57,16 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithCollectionWithMutableElementTypeToField.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field can have a mutable type (java.util.ArrayList) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
-                            "        Field can have collection with mutable element type (java.util.List<org.mutabilitydetector.ErrorLocationTest$MutableClass>) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field can have a mutable type (java.util.ArrayList) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
+                    "        Field can have collection with mutable element type (java.util.List<org.mutabilitydetector.ErrorLocationTest$MutableClass>) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // MutableTypeToFieldChecker:
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // TODO: finish up audit for MutableTypeToFieldChecker
-
-    public final static class CyclicDependencyClassA {
-        private final CyclicDependencyClassB classBField;
-
-        public CyclicDependencyClassA(CyclicDependencyClassB classBField) {
-            this.classBField = classBField;
-        }
-    }
-
-    public final static class CyclicDependencyClassB {
-        private final CyclicDependencyClassA classAField;
-
-        public CyclicDependencyClassB() {
-            this.classAField = new CyclicDependencyClassA(this);
-        }
-    }
-
-    @Test
-    public void isImmutableMutableTypeToField_CyclicDependency() throws Exception {
-        try {
-            assertImmutable(CyclicDependencyClassB.class);
-        } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field can have a mutable type (java.util.ArrayList) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
-                            "        Field can have collection with mutable element type (java.util.List<org.mutabilitydetector.ErrorLocationTest$MutableClass>) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
-        }
-    }
-
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,14 +82,13 @@ public class ErrorLocationTest {
         try {
             assertImmutable(NonFinalClass.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$NonFinalClass to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$NonFinalClass is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.ErrorLocationTest$NonFinalClass]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$NonFinalClass to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$NonFinalClass is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.ErrorLocationTest$NonFinalClass]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -151,15 +109,14 @@ public class ErrorLocationTest {
         try {
             assertImmutable(AbstractClass.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$AbstractClass to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$AbstractClass is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.ErrorLocationTest$AbstractClass]\n" +
-                            "        Is inherently mutable, as declared as an abstract type. [Class: org.mutabilitydetector.ErrorLocationTest$AbstractClass]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$AbstractClass to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$AbstractClass is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.ErrorLocationTest$AbstractClass]\n" +
+                    "        Is inherently mutable, as declared as an abstract type. [Class: org.mutabilitydetector.ErrorLocationTest$AbstractClass]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -168,14 +125,13 @@ public class ErrorLocationTest {
         try {
             assertImmutable(AnInterface.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$AnInterface to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$AnInterface is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Is inherently mutable, as declared as an abstract type. [Class: org.mutabilitydetector.ErrorLocationTest$AnInterface]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$AnInterface to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$AnInterface is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Is inherently mutable, as declared as an abstract type. [Class: org.mutabilitydetector.ErrorLocationTest$AnInterface]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -194,14 +150,13 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithNonFinalField.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField is actually EFFECTIVELY_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField is actually EFFECTIVELY_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -225,15 +180,14 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithPublicNonFinalField.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
-                            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -242,15 +196,14 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithPublicNonFinalField.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
-                            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -274,15 +227,14 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassWithSetterMethod.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
-                            "        Field [field] can be reassigned within method [setField] [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
+                    "        Field [field] can be reassigned within method [setField] [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
 
@@ -315,17 +267,87 @@ public class ErrorLocationTest {
         try {
             assertImmutable(ClassPassingThisReference.class);
         } catch (MutabilityAssertionError e) {
-            assertEquals(e.getMessage(),
-                    "\n" +
-                            "Expected: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference to be IMMUTABLE\n" +
-                            "     but: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference is actually NOT_IMMUTABLE\n" +
-                            "    Reasons:\n" +
-                            "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest) assigned to it. [Field: this$0, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
-                            "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$ClassWithThisReference) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
-                            "        The 'this' reference is passed outwith the constructor. [Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
-                            "    Allowed reasons:\n" +
-                            "        None.");
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest) assigned to it. [Field: this$0, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$ClassWithThisReference) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                    "        The 'this' reference is passed outwith the constructor. [Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
         }
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MutableTypeToFieldChecker:
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // TODO: finish up audit for MutableTypeToFieldChecker
+
+    public final static class CyclicDependencyClassA {
+        private final CyclicDependencyClassB classBField;
+
+        public CyclicDependencyClassA(CyclicDependencyClassB classBField) {
+            this.classBField = classBField;
+        }
+    }
+
+    public final static class CyclicDependencyClassB {
+        private final CyclicDependencyClassA classAField;
+
+        public CyclicDependencyClassB() {
+            this.classAField = new CyclicDependencyClassA(this);
+        }
+    }
+
+    public final static class OwnCyclicDependencyClass {
+        private final OwnCyclicDependencyClass field;
+
+
+        public OwnCyclicDependencyClass(OwnCyclicDependencyClass field) {
+            this.field = field;
+        }
+    }
+
+    // Cyclic dependency between 2 classes: wrong reasons?? Cyclic dependency is not mentioned!
+
+    @Test
+    public void isImmutableMutableTypeToField_CyclicDependency() throws Exception {
+        try {
+            assertImmutable(CyclicDependencyClassB.class);
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassB to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassB is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassA) assigned to it. [Field: classAField, Class: org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassB]\n" +
+                    "        The 'this' reference is passed outwith the constructor. [Class: org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassB]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
+
+        }
+    }
+
+    // Own Cyclic dependency: code location points to field (correct)
+    // Potential Improvements: Line number
+
+    @Test
+    public void isImmutableMutableTypeToField_OwnCyclicDependency() throws Exception {
+        try {
+            assertImmutable(OwnCyclicDependencyClass.class);
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        There is a field assigned which creates a circular reference. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
+        }
+    }
+
+
 
 }
