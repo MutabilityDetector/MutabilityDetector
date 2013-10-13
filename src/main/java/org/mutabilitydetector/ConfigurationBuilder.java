@@ -321,12 +321,12 @@ public abstract class ConfigurationBuilder {
      * @throws IllegalArgumentException - if any of the arguments are null
      */
     protected final void hardcodeValidCopyMethod(Class<?> fieldType, String fullyQualifiedMethodName, Class<?> argType) {
+        if (argType==null || fieldType==null || fullyQualifiedMethodName==null) {
+            throw new IllegalArgumentException("All parameters must be supplied - no nulls");
+        }
 		String className = fullyQualifiedMethodName.substring(0, fullyQualifiedMethodName.lastIndexOf("."));
 		String methodName = fullyQualifiedMethodName.substring(fullyQualifiedMethodName.lastIndexOf(".")+1);
 
-		if (argType==null || fieldType==null || fullyQualifiedMethodName==null) {
-			throw new IllegalArgumentException("All parameters must be supplied - no nulls");
-		}
 		
 		String desc = null;
 		try {
