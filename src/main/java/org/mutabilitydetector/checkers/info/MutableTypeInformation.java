@@ -45,9 +45,9 @@ public final class MutableTypeInformation {
         this.analysisSession = analysisSession;
         this.configuration = configuration;
     }
-
+    
     public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
-    	return configuration.hardcodedCopyMethods();
+        return configuration.hardcodedCopyMethods();
     }
 
     public MutabilityLookup resultOf(Dotted ownerClass, final Dotted fieldClass) {
@@ -116,5 +116,4 @@ public final class MutableTypeInformation {
             return new MutabilityLookup(checkNotNull(result));
         }
     }
-    
 }
