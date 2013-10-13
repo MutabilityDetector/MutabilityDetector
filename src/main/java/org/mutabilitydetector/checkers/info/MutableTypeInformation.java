@@ -30,6 +30,7 @@ import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMultimap;
 
 public final class MutableTypeInformation {
 
@@ -43,6 +44,10 @@ public final class MutableTypeInformation {
     public MutableTypeInformation(AnalysisSession analysisSession, Configuration configuration) {
         this.analysisSession = analysisSession;
         this.configuration = configuration;
+    }
+
+    public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
+    	return configuration.hardcodedCopyMethods();
     }
 
     public MutabilityLookup resultOf(Dotted ownerClass, final Dotted fieldClass) {
@@ -111,4 +116,5 @@ public final class MutableTypeInformation {
             return new MutabilityLookup(checkNotNull(result));
         }
     }
+    
 }

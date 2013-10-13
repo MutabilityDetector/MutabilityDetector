@@ -23,8 +23,8 @@ import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiabl
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
+import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.ClassNameConverter;
-import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -33,13 +33,14 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
 public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     
+    private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
+
     private static final ClassNameConverter CLASS_NAME_CONVERTER = new ClassNameConverter();
 
     private static final ImmutableSet<String> CAN_BE_WRAPPED = ImmutableSet.of("java.util.Collection",
@@ -47,7 +48,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
                                                                                "java.util.SortedSet",
                                                                                "java.util.List",
                                                                                "java.util.Map",
-                                                                               "java.util.SortedMap");
+                                                                               "java.util.SortedMap",
+                                                                               "com.google.common.collect.ImmutableList");
     
     private static final String UNMODIFIABLE_METHOD_OWNER = "java.util.Collections";
     
@@ -123,43 +125,6 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
             .build();
     
     
-    private static class CopyMethod {
-        private final Dotted owner;
-        private final String name;
-        private final String desc;
-        
-        public CopyMethod(Dotted owner, String name, String desc) {
-            this.owner = owner;
-            this.name = name;
-            this.desc = desc;
-        }
-        
-        public static CopyMethod from(MethodInsnNode methodNode) {
-            return new CopyMethod(Dotted.dotted(methodNode.owner), methodNode.name, methodNode.desc);
-        }
-    
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(desc, name, owner);
-        }
-    
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            CopyMethod other = (CopyMethod) obj;
-            return desc.equals(other.desc) && name.equals(other.name) && owner.equals(other.owner);
-        }
-        
-    }
-
     private FieldInsnNode fieldInsnNode;
     private Type typeAssignedToField;
     
@@ -180,12 +145,22 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
         }
     }
     
+    public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField, 
+    		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
+        init(fieldInsnNode, typeAssignedToField);
+        this.userDefinedCopyMethods = userDefinedCopyMethods;
+    }
+
     public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
-        checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
-        
+        init(fieldInsnNode, typeAssignedToField);
+        this.userDefinedCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().build();
+    }
+
+	private void init(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
+		checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         this.fieldInsnNode = fieldInsnNode;
         this.typeAssignedToField = typeAssignedToField;
-    }
+	}
 
     public UnmodifiableWrapResult checkWrappedInUnmodifiable() {
         if (!CAN_BE_WRAPPED.contains(typeAssignedToField())) {
@@ -229,10 +204,14 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
         }
         
         MethodInsnNode shouldBeCopyConstructor = (MethodInsnNode) lastMeaningfulNode;
-        
-        return FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor));
+        return configuratedAsImmutableCopyMethod(shouldBeCopyConstructor);
     }
 
+    private boolean configuratedAsImmutableCopyMethod(MethodInsnNode shouldBeCopyConstructor) {
+        return (FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor))
+        		 || userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
+    }
+    
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {
         AbstractInsnNode previous = node.getPrevious();
         return (previous instanceof LabelNode) || (previous instanceof LineNumberNode)

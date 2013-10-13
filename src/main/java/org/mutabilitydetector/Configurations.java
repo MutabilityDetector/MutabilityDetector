@@ -18,6 +18,9 @@ package org.mutabilitydetector;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
@@ -58,6 +61,22 @@ public class Configurations {
     }.build();
     
     /**
+     * List of collection copying methods in Guava collections which Mutability detector recognises
+     * 
+     * @see com.google.common.collect.Lists
+     * @see com.google.common.collect.Sets
+     * @see com.google.common.collect.Maps
+     */
+    public static final Configuration GUAVA_CONFIGURATION = new ConfigurationBuilder() {
+        @Override
+        public void configure() {
+			hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
+			hardcodeValidCopyMethod(Set.class, "com.google.common.collect.Sets.newHashSet", Iterable.class);
+			hardcodeValidCopyMethod(Map.class, "com.google.common.collect.Maps.newHashMap", Map.class);
+        }
+    }.build();
+    
+    /**
      * Configurations with default settings and no hardcoded results.
      */
     public static final Configuration NO_CONFIGURATION = new ConfigurationBuilder() {
@@ -80,6 +99,7 @@ public class Configurations {
     public static final Configuration OUT_OF_THE_BOX_CONFIGURATION = new ConfigurationBuilder() {
         @Override public void configure() {
             mergeHardcodedResultsFrom(JDK_CONFIGURATION);
+            mergeValidCopyMethodsFrom(GUAVA_CONFIGURATION);
         }
     }.build();
 

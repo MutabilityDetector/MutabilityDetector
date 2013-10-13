@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Type.getType;
 
@@ -32,6 +33,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -41,6 +43,8 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import com.google.common.collect.ImmutableMultimap;
 
 @RunWith(Theories.class)
 public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
@@ -200,6 +204,24 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertThat(result.safelyCopiesBeforeWrapping, is(true));
         assertThat(result, is(WRAPS_AND_COPIES_SAFELY));
     }
+    
+    @Test
+    public void canBeConfiguredWithAdditionalCopyMethods() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+		String copyMethodName = "newArrayList";
+		String copyMethodOwner = "com.google.common.collect.Lists";
+		String copyMethodDesc = "(Ljava/lang/Iterable;)Ljava/util/ArrayList;";
+
+		CopyMethod copyMethod = new CopyMethod(dotted(copyMethodOwner), copyMethodName, copyMethodDesc);
+		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods = 
+				new ImmutableMultimap.Builder<String,CopyMethod>().put("java.util.List", copyMethod).build();
+
+		CollectionTypeWrappedInUnmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
+				copyMethodOwner.replaceAll("\\.", "/"), copyMethodName, 
+				copyMethodDesc, "unmodifiableList", "java/util/List",
+				userDefinedCopyMethods);
+
+        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+    }
 
     @Theory
     public void validAssignmentsHold(ValidUnmodifiableAssignment dataPoint) throws Exception {
@@ -208,7 +230,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
                 dataPoint.copyMethodName,
                 dataPoint.copyMethodDesc,
                 dataPoint.wrappingMethodName,
-                dataPoint.fieldType);
+                dataPoint.fieldType, null);
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
     
@@ -301,7 +323,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
 
     private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
             String copyMethodOwner, String copyMethodName, String copyMethodDesc, String wrappingMethodName,
-            String fieldType) {
+            String fieldType, ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
         final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, copyMethodOwner, copyMethodName, copyMethodDesc);
         final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", wrappingMethodName, "") {
             @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
@@ -309,7 +331,11 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
+        if (userDefinedCopyMethods == null) {
+        	return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
+        } else {
+        	return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType), userDefinedCopyMethods);
+        }
     }
 
     private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
