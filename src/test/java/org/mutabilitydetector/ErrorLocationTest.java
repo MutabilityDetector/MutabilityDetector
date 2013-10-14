@@ -11,7 +11,11 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
 
 @SuppressWarnings("ALL")
@@ -30,6 +34,7 @@ public class ErrorLocationTest {
     public void isImmutableClassWithArrayField() throws Exception {
         try {
             assertImmutable(ClassWithArrayField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithArrayField to be IMMUTABLE\n" +
@@ -44,7 +49,6 @@ public class ErrorLocationTest {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CollectionWithMutableElementTypeToFieldChecker: code location points to the field, as well as the collection declaration with the mutable type (correct)
     // Potential improvements: Line number.
-    // Other improvements: avoid multiple reasons for this case (ABSTRACT_COLLECTION_TYPE_TO_FIELD, COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class MutableClass {
@@ -52,25 +56,28 @@ public class ErrorLocationTest {
     }
 
     public final static class ClassWithCollectionWithMutableElementTypeToField {
-        private final List<MutableClass> collectionWithMutableType = new ArrayList<MutableClass>();
+        private final List<MutableClass> collectionWithMutableType;
+
+        public ClassWithCollectionWithMutableElementTypeToField(List<MutableClass> collectionWithMutableType) {
+            this.collectionWithMutableType = Collections.unmodifiableList(new ArrayList(collectionWithMutableType));
+        }
     }
 
     @Test
     public void isImmutableCollectionWithMutableElementTypeToField() throws Exception {
         try {
             assertImmutable(ClassWithCollectionWithMutableElementTypeToField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Field can have a mutable type (java.util.ArrayList) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
                     "        Field can have collection with mutable element type (java.util.List<org.mutabilitydetector.ErrorLocationTest$MutableClass>) assigned to it. [Field: collectionWithMutableType, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithCollectionWithMutableElementTypeToField]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CanSubclassChecker: code location points to the class (correct).
@@ -84,6 +91,7 @@ public class ErrorLocationTest {
     public void isImmutableCanSubclass() throws Exception {
         try {
             assertImmutable(NonFinalClass.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$NonFinalClass to be IMMUTABLE\n" +
@@ -97,7 +105,7 @@ public class ErrorLocationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // InherentTypeMutabilityChecker: code location points to the class (correct).
-    // Other improvements: change output to "is declared as an interface" for interfaces. Avoid multiple reasons for abstract classes (ABSTRACT_TYPE_INHERENTLY_MUTABLE + CAN_BE_SUBCLASSED)
+    // Potential improvements: change output to "is declared as an interface" for interfaces. Avoid multiple reasons for abstract classes (ABSTRACT_TYPE_INHERENTLY_MUTABLE + CAN_BE_SUBCLASSED)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public abstract static class AbstractClass {
@@ -111,6 +119,7 @@ public class ErrorLocationTest {
     public void isImmutableInherentlyMutable_Abstract() throws Exception {
         try {
             assertImmutable(AbstractClass.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$AbstractClass to be IMMUTABLE\n" +
@@ -127,6 +136,7 @@ public class ErrorLocationTest {
     public void isImmutableInherentlyMutable_Interface() throws Exception {
         try {
             assertImmutable(AnInterface.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$AnInterface to be IMMUTABLE\n" +
@@ -144,7 +154,7 @@ public class ErrorLocationTest {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class ClassWithNonFinalField {
-        private String publicField;
+        private String field;
     }
 
 
@@ -152,12 +162,13 @@ public class ErrorLocationTest {
     public void isImmutableNonFinalField() throws Exception {
         try {
             assertImmutable(ClassWithNonFinalField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField is actually EFFECTIVELY_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField]\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithNonFinalField]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
@@ -165,8 +176,7 @@ public class ErrorLocationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PublishedNonFinalFieldChecker: code location points to the field and class (correct).
-    // Potential improvements: Line number. Field declaration with access modifiers, etc...
-    // Other Improvements: avoid multiple reasons (PUBLISHED_NON_FINAL_FIELD,  NON_FINAL_FIELD)
+    // Potential improvements: Line number. Field declaration with access modifiers, etc... Avoid multiple reasons (PUBLISHED_NON_FINAL_FIELD + NON_FINAL_FIELD)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final static class ClassWithPublicNonFinalField {
@@ -174,7 +184,7 @@ public class ErrorLocationTest {
     }
 
     public final static class ClassWithProtectedNonFinalField {
-        protected String publicField;
+        protected String protectedField;
     }
 
 
@@ -182,6 +192,7 @@ public class ErrorLocationTest {
     public void isImmutablePublishedNonFinalField_Public() throws Exception {
         try {
             assertImmutable(ClassWithPublicNonFinalField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
@@ -195,16 +206,33 @@ public class ErrorLocationTest {
     }
 
     @Test
-    public void isImmutablePublishedNonFinalField_Protected() throws Exception {
+    public void isImmutablePublishedNonFinalField_Public_AllowingNonFinalFields() throws Exception {
         try {
-            assertImmutable(ClassWithPublicNonFinalField.class);
+            assertInstancesOf(ClassWithPublicNonFinalField.class, areImmutable(), allowingNonFinalFields());
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
                     "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
-                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithPublicNonFinalField]\n"));
+        }
+    }
+
+    @Test
+    public void isImmutablePublishedNonFinalField_Protected() throws Exception {
+        try {
+            assertImmutable(ClassWithProtectedNonFinalField.class);
+            fail("Error should be thrown");
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithProtectedNonFinalField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithProtectedNonFinalField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is visible outwith this class, and is not declared final. [Field: protectedField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithProtectedNonFinalField]\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: protectedField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithProtectedNonFinalField]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
@@ -212,10 +240,8 @@ public class ErrorLocationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // OldSetterMethodChecker: code location points to the field and class, name of the setter method is displayed. This is not wrong but actually just the name of the setter method and the class would be needed.
-    // Potential improvements: Line number.
-    // Other Improvements: avoid multiple reasons (FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
+    // Potential improvements: Line number. Avoid multiple reasons (FIELD_CAN_BE_REASSIGNED + NON_FINAL_FIELD)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     public final static class ClassWithSetterMethod {
         private String field;
@@ -229,6 +255,7 @@ public class ErrorLocationTest {
     public void isImmutableClassWithSetterMethod() throws Exception {
         try {
             assertImmutable(ClassWithSetterMethod.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod to be IMMUTABLE\n" +
@@ -241,10 +268,25 @@ public class ErrorLocationTest {
         }
     }
 
+    @Test
+    public void isImmutableClassWithSetterMethod_AllowingNonFinalFields() throws Exception {
+        try {
+            assertInstancesOf(ClassWithSetterMethod.class, areImmutable(), allowingNonFinalFields());
+            fail("Error should be thrown");
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field [field] can be reassigned within method [setField] [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n" +
+                    "    Allowed reasons:\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithSetterMethod]\n"));
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // EscapedThisReferenceChecker: code location points to the class passing the this reference (correct).
-    // Potential improvements: Line number where this reference is passed.
-    // Other Improvements: avoid multiple reasons (FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
+    // Potential improvements: Line number(s) where this reference is passed. Avoid multiple reasons (ESCAPED_THIS_REFERENCE, FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public final class ClassWithThisReference {
@@ -269,6 +311,7 @@ public class ErrorLocationTest {
     public void isImmutableClassPassingThisReference() throws Exception {
         try {
             assertImmutable(ClassPassingThisReference.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference to be IMMUTABLE\n" +
@@ -309,6 +352,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_CyclicDependency() throws Exception {
         try {
             assertImmutable(CyclicDependencyClassB.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$CyclicDependencyClassB to be IMMUTABLE\n" +
@@ -338,6 +382,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_OwnCyclicDependency() throws Exception {
         try {
             assertImmutable(OwnCyclicDependencyClass.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass to be IMMUTABLE\n" +
@@ -364,6 +409,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_ClassWithMutableField() throws Exception {
         try {
             assertImmutable(ClassWithMutableField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithMutableField to be IMMUTABLE\n" +
@@ -390,6 +436,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_ClassWithAbstractField() throws Exception {
         try {
             assertImmutable(ClassWithAbstractField.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithAbstractField to be IMMUTABLE\n" +
@@ -415,6 +462,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_ClassWrappingCollectionWithoutCopy() throws Exception {
         try {
             assertImmutable(ClassWrappingCollectionWithoutCopy.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWrappingCollectionWithoutCopy to be IMMUTABLE\n" +
@@ -440,6 +488,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_ClassNotWrappingCollection() throws Exception {
         try {
             assertImmutable(ClassNotWrappingCollection.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassNotWrappingCollection to be IMMUTABLE\n" +
@@ -470,6 +519,7 @@ public class ErrorLocationTest {
     public void isImmutableMutableTypeToField_ClassWrappingWithNonWhitelistedMethod() throws Exception {
         try {
             assertImmutable(ClassWrappingWithNonWhitelistedMethod.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWrappingWithNonWhitelistedMethod to be IMMUTABLE\n" +
@@ -496,6 +546,7 @@ public class ErrorLocationTest {
     public void ClassWithFieldCanBeAssignedArray() throws Exception {
         try {
             assertImmutable(ClassWithFieldCanBeAssignedArray.class);
+            fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedArray to be IMMUTABLE\n" +
