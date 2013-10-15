@@ -1,7 +1,7 @@
 package org.mutabilitydetector;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.mutabilitydetector.unittesting.AllowedReason;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
 import java.util.ArrayList;
@@ -289,7 +289,7 @@ public class ErrorLocationTest {
     // Potential improvements: Line number(s) where this reference is passed. Avoid multiple reasons (ESCAPED_THIS_REFERENCE, FIELD_CAN_BE_REASSIGNED,  NON_FINAL_FIELD)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public final class ClassWithThisReference {
+    public static final class ClassWithThisReference {
 
         private final ClassPassingThisReference thisReference;
 
@@ -298,7 +298,7 @@ public class ErrorLocationTest {
         }
     }
 
-    public final class ClassPassingThisReference {
+    public static final class ClassPassingThisReference {
         private final ClassWithThisReference field;
 
         public ClassPassingThisReference() {
@@ -310,27 +310,25 @@ public class ErrorLocationTest {
     @Test
     public void isImmutableClassPassingThisReference() throws Exception {
         try {
-            assertImmutable(ClassPassingThisReference.class);
+            assertInstancesOf(ClassPassingThisReference.class, areImmutable(), AllowedReason.provided(ClassWithThisReference.class).isAlsoImmutable());
             fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest) assigned to it. [Field: this$0, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
-                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$ClassWithThisReference) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
                     "        The 'this' reference is passed outwith the constructor. [Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n" +
                     "    Allowed reasons:\n" +
-                    "        None."));
+                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$ClassWithThisReference) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassPassingThisReference]\n"));
         }
     }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // MutableTypeToFieldChecker:
+    // MutableTypeToFieldChecker: see detail analysis below
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Cyclic dependency between 2 classes: wrong reasons?? Cyclic dependency is not mentioned!
+    // CyclicDependency2Classes: wrong reasons?? Cyclic dependency is not mentioned!
 
     public final static class CyclicDependencyClassA {
         private final CyclicDependencyClassB classBField;
@@ -351,7 +349,7 @@ public class ErrorLocationTest {
     @Test
     public void isImmutableMutableTypeToField_CyclicDependency() throws Exception {
         try {
-            assertImmutable(CyclicDependencyClassB.class);
+            assertInstancesOf(CyclicDependencyClassB.class, areImmutable());
             fail("Error should be thrown");
         } catch (MutabilityAssertionError e) {
             assertThat(e.getMessage(), is("\n"+
@@ -366,7 +364,7 @@ public class ErrorLocationTest {
         }
     }
 
-    // Own Cyclic dependency: code location points to field (correct)
+    // OwnCyclicDependency: code location points to field (correct)
     // Potential Improvements: Line number
 
     public final static class OwnCyclicDependencyClass {
@@ -394,7 +392,7 @@ public class ErrorLocationTest {
         }
     }
 
-    // Mutable Field: code location points to the field. Mutable type is output (correct)
+    // MutableField: code location points to the field. Mutable type is displayed (correct)
     // Potential improvements: Line number
 
     public final static class ClassWithMutableField {
@@ -421,8 +419,8 @@ public class ErrorLocationTest {
         }
     }
 
-    // Abstract Field: code location points to the field. The abstract type is output.
-    // Potential improvements: Line of code
+    // AbstractField: code location points to the field. The abstract type is displayed.
+    // Potential improvements: Line number
 
     public final static class ClassWithAbstractField {
         private final AbstractClass field;
@@ -501,7 +499,7 @@ public class ErrorLocationTest {
     }
 
     // ClassNotWrappingCollection: weird error message. Nothing is being wrapped but the error message still mentions usage of non-whitelisted wrapper method.
-    // Error message changes to "Field can have an abstract type" if private copy method is inlined.
+    // Error message changes to "Field can have an abstract type assigned" if private copy method is inlined.
 
     public final static class ClassWrappingWithNonWhitelistedMethod {
         private final Collection<String> collection;
@@ -511,7 +509,7 @@ public class ErrorLocationTest {
         }
 
         private Collection<String> copy(Collection<String> collection) {
-            return ImmutableList.copyOf(collection);
+            return collection;
         }
     }
 
@@ -531,7 +529,8 @@ public class ErrorLocationTest {
         }
     }
 
-    // ClassWithFieldCanBeAssignedArray: code location points to field. Better would be to display the assignment line.
+    // ClassWithFieldCanBeAssignedArray: code location points to field(correct).
+    // Potential improvements: line number of the assignment(s)
 
     public final static class ClassWithFieldCanBeAssignedArray {
         private final Object arrayField;
@@ -553,6 +552,34 @@ public class ErrorLocationTest {
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedArray is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
                     "        Field can have a mutable type (an array) assigned to it. [Field: arrayField, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedArray]\n" +
+                    "    Allowed reasons:\n" +
+                    "        None."));
+        }
+    }
+
+    // ClassWithFieldCanBeAssignedArray: code location points to field and the mutable type is displayed (correct).
+    // Potential improvements: line number of the assignment(s)
+
+    public final static class ClassWithFieldCanBeAssignedMutableType {
+        private final Object field;
+
+
+        public ClassWithFieldCanBeAssignedMutableType(Object field) {
+            this.field = field;
+        }
+    }
+
+    @Test
+    public void ClassWithFieldCanBeAssignedMutableType() throws Exception {
+        try {
+            assertImmutable(ClassWithFieldCanBeAssignedMutableType.class);
+            fail("Error should be thrown");
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedMutableType to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedMutableType is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field can have a mutable type (java.lang.Object) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithFieldCanBeAssignedMutableType]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
