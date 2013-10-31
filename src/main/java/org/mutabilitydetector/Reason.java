@@ -37,4 +37,6 @@ public interface Reason {
     
     boolean isOneOf(Reason... reasons);
 
+    boolean supersededByOneOf(Reason... reasons);
+
 }

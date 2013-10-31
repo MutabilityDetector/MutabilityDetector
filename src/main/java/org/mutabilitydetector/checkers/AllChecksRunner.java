@@ -23,15 +23,18 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.util.Collection;
 import java.util.Map;
 
-import org.mutabilitydetector.AnalysisErrorReporter;
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.MutableReasonDetail;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import org.mutabilitydetector.*;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
+
+import javax.annotation.Nullable;
 
 public final class AllChecksRunner {
 
@@ -67,6 +70,8 @@ public final class AllChecksRunner {
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
             addAll(reasons, checkerResult.reasons);
         }
+
+        reasons = new SupersededReasonsFilter().filterSupersededReasons(reasons);
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
