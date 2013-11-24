@@ -71,8 +71,6 @@ public final class AllChecksRunner {
             addAll(reasons, checkerResult.reasons);
         }
 
-        reasons = new SupersededReasonsFilter().filterSupersededReasons(reasons);
-
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
         return AnalysisResult.analysisResult(toAnalyse.asString(), isImmutable, reasons);

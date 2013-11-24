@@ -1,5 +1,7 @@
 package org.mutabilitydetector;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
@@ -46,5 +48,45 @@ public class ConsolidatedReasonsTest {
                     "    Allowed reasons:\n" +
                     "        None."));
         }
+    }
+
+    // In this case allowed reason is displayed although is being superseded.
+    @Test
+    public void isImmutablePublishedNonFinalFieldWithAllowedReason() throws Exception {
+        try {
+            assertInstancesOf(ClassWithPublicNonFinalField.class, areImmutable(), new TypeSafeMatcher<MutableReasonDetail>() {
+                @Override
+                protected boolean matchesSafely(MutableReasonDetail item) {
+                    return item.reason().equals(MutabilityReason.PUBLISHED_NON_FINAL_FIELD);
+                }
+
+                @Override
+                public void describeTo(Description description) {
+                }
+            });
+            fail("Error should be thrown");
+        } catch (MutabilityAssertionError e) {
+            assertThat(e.getMessage(), is("\n"+
+                    "Expected: org.mutabilitydetector.ConsolidatedReasonsTest$ClassWithPublicNonFinalField to be IMMUTABLE\n" +
+                    "     but: org.mutabilitydetector.ConsolidatedReasonsTest$ClassWithPublicNonFinalField is actually NOT_IMMUTABLE\n" +
+                    "    Reasons:\n" +
+                    "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: publicField, Class: org.mutabilitydetector.ConsolidatedReasonsTest$ClassWithPublicNonFinalField]\n" +
+                    "    Allowed reasons:\n" +
+                    "        Field is visible outwith this class, and is not declared final. [Field: publicField, Class: org.mutabilitydetector.ConsolidatedReasonsTest$ClassWithPublicNonFinalField]\n"));
+        }
+    }
+
+    @Test
+    public void isImmutablePublishedNonFinalFieldWithAllReasonsAllowed() throws Exception {
+            assertInstancesOf(ClassWithPublicNonFinalField.class, areImmutable(), new TypeSafeMatcher<MutableReasonDetail>() {
+                @Override
+                protected boolean matchesSafely(MutableReasonDetail item) {
+                    return true;
+                }
+
+                @Override
+                public void describeTo(Description description) {
+                }
+            });
     }
 }
