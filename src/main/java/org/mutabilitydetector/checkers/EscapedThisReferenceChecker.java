@@ -47,18 +47,18 @@ public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker
         private final List<FieldInsnNode> fieldAssignmentsInConstructor = new ArrayList<FieldInsnNode>();
 
         private final StackPushingOpcodes stackPushingOpcodes = new StackPushingOpcodes();
-        
+
         public ThisEscapingFromConstructorVistor(int access,
                 String name,
                 String desc,
                 String signature,
                 String[] exceptions) {
-            super(access, name, desc, signature, exceptions);
+            super(Opcodes.ASM5, access, name, desc, signature, exceptions);
         }
 
         @Override
-        public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc) {
-            super.visitMethodInsn(opcode, owner, methodName, methodDesc);
+        public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc, boolean isInterface) {
+            super.visitMethodInsn(opcode, owner, methodName, methodDesc, isInterface);
             if (MethodIs.aConstructor(methodName) && owner.equals("java/lang/Object")) { return; }
             methodCalls.add((MethodInsnNode) instructions.getLast());
         }
@@ -95,7 +95,7 @@ public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker
             if (stackPushingOpcodes.includes(previous.getOpcode())) {
                 checkForThisReferenceBeingPutOnStack(previous);
             }
-            
+
         }
 
         private void checkForPassingThisReferenceAsParameter() {
@@ -114,7 +114,7 @@ public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker
             for (int i = numberOfArguments - 1; i >= 0; i--) {
                 if (instructionPushesSomethingElseOnTheStack(previous)) {
                     i = i + 1;
-                } 
+                }
 
                 checkForThisReferenceBeingPutOnStack(previous);
 

@@ -39,9 +39,9 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
             String name,
             String desc,
             String signature,
-            String[] exceptions, 
+            String[] exceptions,
             AsmVerifierFactory verifierFactory) {
-        super(access, name, desc, signature, exceptions);
+        super(Opcodes.ASM4, access, name, desc, signature, exceptions);
         this.owner = owner;
         this.verifierFactory = verifierFactory;
     }
@@ -56,12 +56,12 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
     }
 
     /**
-     * 
+     *
      * At the end of a method, the frames are analysed to be able to inspect
      * the state of the stack when the field is assigned. This method is
      * called, giving the frame at the time of the assignment, as well as
      * the instruction node.
-     * 
+     *
      * @param assignmentFrame
      * @param fieldInsnNode
      */

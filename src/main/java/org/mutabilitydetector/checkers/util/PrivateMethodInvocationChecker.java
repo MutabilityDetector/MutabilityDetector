@@ -30,6 +30,7 @@ import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
 
 public final class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
@@ -39,7 +40,7 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
     public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {
         MethodIdentifier identifier = makeMethodIdentifier(methodDescriptor);
         if (privateMethodCalledFromConstructorMap.containsKey(identifier)) { return privateMethodCalledFromConstructorMap.get(identifier); }
-        
+
         String message = format("Could not find method descriptor %s. Available descriptors are: %n%s",
                 identifier,
                 privateMethodCalledFromConstructorMap.keySet().toString());
@@ -68,7 +69,7 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
     private class MethodInvocationVisitor extends MethodNode {
 
         public MethodInvocationVisitor(int access, String name, String desc, String signature, String[] exceptions) {
-            super(access, name, desc, signature, exceptions);
+            super(Opcodes.ASM4, access, name, desc, signature, exceptions);
         }
 
         @Override

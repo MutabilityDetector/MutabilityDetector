@@ -21,8 +21,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Type.getType;
 
 import java.util.List;
@@ -33,7 +31,6 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
-import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -44,24 +41,20 @@ import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.google.common.collect.ImmutableMultimap;
-
 @RunWith(Theories.class)
 public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
-    
-    private final ImmutableMultimap<String, CopyMethod> NO_USER_DEFINED_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>of();
 
     @Test(expected=IllegalArgumentException.class)
     public void requiresTheFieldInstructionNodeToBeAPutFieldInstruction() throws Exception {
         FieldInsnNode insnNode = new FieldInsnNode(Opcodes.GETFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        new CollectionTypeWrappedInUnmodifiableIdiomChecker(insnNode, null, NO_USER_DEFINED_COPY_METHODS);
+        new CollectionTypeWrappedInUnmodifiableIdiomChecker(insnNode, null);
     }
-    
+
     @Test
     public void doesNotAllowCopyingIntoAbritraryType() throws Exception {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, getType("the/assigned/Type"), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, getType("the/assigned/Type"));
+
         assertThat(checker.checkWrappedInUnmodifiable(), is(UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED));
     }
 
@@ -74,17 +67,23 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertThat(checkerForAssigningToFieldOfType("java/util/Map").checkWrappedInUnmodifiable().canBeWrapped, is(true));
         assertThat(checkerForAssigningToFieldOfType("java/util/SortedMap").checkWrappedInUnmodifiable().canBeWrapped, is(true));
     }
-    
+
     @Test
     public void findsThatAssignmentDoesNotCallNonWhitelistedMethod() throws Exception {
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "some/non/whitelisted/Type", "nonWhitelistedMethod", "()V");
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("some/non/whitelisted/Type", "nonWhitelistedMethod", "()V");
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
+    }
+
+    private static class StaticConcreteMethodInsnNode extends MethodInsnNode {
+      StaticConcreteMethodInsnNode(String owner, String name, String desc) {
+        super(Opcodes.INVOKESTATIC, owner, name, desc, false);
+      }
     }
 
     @Test
@@ -93,8 +92,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return varInsn; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
     }
@@ -114,48 +113,48 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertThat(checkerOfPutFieldPrecededByCall("java/util/Collection", "unmodifiableCollection", "(Ljava/util/Collection;)Ljava/util/Collection;")
                 .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
     }
-    
+
     @Test
     public void findsThatAssignmentIsNotSafelyCopiedIfCallToUnmodifiableMethodIsNotPrecededByMethodInstruction() throws Exception {
         final VarInsnNode varInsn = new VarInsnNode(Opcodes.ASTORE, 2);
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", "unmodifiableList", "") {
             @Override public AbstractInsnNode getPrevious() { return varInsn; }
         };
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
     }
 
     @Test
     public void findsThatAssignmentIsNotSafelyCopiedIfCallToUnmodifiableMethodIsPrecededByInvokingNonWhitelistedMethod() throws Exception {
-        final MethodInsnNode nonWhitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "some/non/whitelisted/Type", "method", "");
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+        final MethodInsnNode nonWhitelistedCopyMethod = new StaticConcreteMethodInsnNode("some/non/whitelisted/Type", "method", "");
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", "unmodifiableList", "") {
             @Override public AbstractInsnNode getPrevious() { return nonWhitelistedCopyMethod; }
         };
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
     }
 
     @Test
     public void findsThatAssignmentIsSafelyCopiedIfCallToUnmodifiableMethodIsPrecededByInvokingWhitelistedCopyMethod() throws Exception {
-        final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+        final MethodInsnNode whitelistedCopyMethod = new StaticConcreteMethodInsnNode("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", "unmodifiableList", "") {
             @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
         };
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/lang/Iterable") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().canBeWrapped, is(true));
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
@@ -163,87 +162,69 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
 
     @Test
     public void decidesIfTypeCanBeSafelyWrappedUsingTypeThatIsActuallyAssignedRatherThanDeclarationOfField() throws Exception {
-        final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+        final MethodInsnNode whitelistedCopyMethod = new StaticConcreteMethodInsnNode("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
+        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "", false) {
             @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
         };
-        
+
         String typeOfField = "java/lang/Iterable";
-        
+
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
-    
+
     @Test
     public void ignoresNodesWhichDoNotResultInDifferentCodeSemantics() throws Exception {
-        final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
+        final MethodInsnNode whitelistedCopyMethod = new StaticConcreteMethodInsnNode("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V");
         final LabelNode label = new LabelNode(new Label()) {
             @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
         };
         final LineNumberNode lineNumber = new LineNumberNode(42, new LabelNode()) {
             @Override public AbstractInsnNode getPrevious() { return label; }
         };
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", "unmodifiableList", "") {
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", "unmodifiableList", "") {
             @Override public AbstractInsnNode getPrevious() { return lineNumber; }
         };
-        
+
         String typeOfField = "java/util/List";
-        
+
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-        
+
+        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class));
+
         UnmodifiableWrapResult result = checker.checkWrappedInUnmodifiable();
-        
+
         assertThat(result.invokesWhitelistedWrapperMethod, is(true));
         assertThat(result.safelyCopiesBeforeWrapping, is(true));
         assertThat(result, is(WRAPS_AND_COPIES_SAFELY));
-    }
-    
-    @Test
-    public void canBeConfiguredWithAdditionalCopyMethods() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
-		String copyMethodName = "newArrayList";
-		String copyMethodOwner = "com.google.common.collect.Lists";
-		String copyMethodDesc = "(Ljava/lang/Iterable;)Ljava/util/ArrayList;";
-
-		CopyMethod copyMethod = new CopyMethod(dotted(copyMethodOwner), copyMethodName, copyMethodDesc);
-		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods = 
-				new ImmutableMultimap.Builder<String,CopyMethod>().put("java.util.List", copyMethod).build();
-
-		CollectionTypeWrappedInUnmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
-				copyMethodOwner.replaceAll("\\.", "/"), copyMethodName, 
-				copyMethodDesc, "unmodifiableList", "java/util/List",
-				userDefinedCopyMethods);
-
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
 
     @Theory
     public void validAssignmentsHold(ValidUnmodifiableAssignment dataPoint) throws Exception {
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
-                dataPoint.copyMethodOwner, 
+                dataPoint.copyMethodOwner,
                 dataPoint.copyMethodName,
                 dataPoint.copyMethodDesc,
                 dataPoint.wrappingMethodName,
-                dataPoint.fieldType, null);
+                dataPoint.fieldType);
         assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
     }
-    
+
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_List = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableList", "java/util/List"),
         new ValidUnmodifiableAssignment("java/util/LinkedList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableList", "java/util/List"),
         new ValidUnmodifiableAssignment("java/util/Vector", "<init>", "(Ljava/util/Collection;)V", "unmodifiableList", "java/util/List"),
         new ValidUnmodifiableAssignment("java/util/concurrent/CopyOnWriteArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableList", "java/util/List"),
     };
-    
-    @DataPoints public static ValidUnmodifiableAssignment[] java_util_Collection = new ValidUnmodifiableAssignment[] { 
+
+    @DataPoints public static ValidUnmodifiableAssignment[] java_util_Collection = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/ArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection"),
         new ValidUnmodifiableAssignment("java/util/concurrent/CopyOnWriteArrayList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection"),
         new ValidUnmodifiableAssignment("java/util/LinkedList", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection"),
@@ -268,7 +249,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         new ValidUnmodifiableAssignment("java/util/ArrayDeque", "<init>", "(Ljava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection"),
         new ValidUnmodifiableAssignment("java/util/concurrent/ArrayBlockingQueue", "<init>", "(IZLjava/util/Collection;)V", "unmodifiableCollection", "java/util/Collection")
     };
-    
+
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_Map = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/HashMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map"),
         new ValidUnmodifiableAssignment("java/util/IdentityHashMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map"),
@@ -282,14 +263,14 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableMap", "java/util/Map"),
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableMap", "java/util/Map")
     };
-    
+
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_SortedMap = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/TreeMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableSortedMap", "java/util/SortedMap"),
         new ValidUnmodifiableAssignment("java/util/TreeMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableSortedMap", "java/util/SortedMap"),
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/SortedMap;)V", "unmodifiableSortedMap", "java/util/SortedMap"),
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListMap", "<init>", "(Ljava/util/Map;)V", "unmodifiableSortedMap", "java/util/SortedMap"),
     };
-    
+
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_Set = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/HashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set"),
         new ValidUnmodifiableAssignment("java/util/LinkedHashSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set"),
@@ -298,22 +279,22 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set"),
         new ValidUnmodifiableAssignment("java/util/concurrent/CopyOnWriteArraySet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSet", "java/util/Set"),
     };
-    
+
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_SortedSet = new ValidUnmodifiableAssignment[] {
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSortedSet", "java/util/SortedSet"),
         new ValidUnmodifiableAssignment("java/util/concurrent/ConcurrentSkipListSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableSortedSet", "java/util/SortedSet"),
         new ValidUnmodifiableAssignment("java/util/TreeSet", "<init>", "(Ljava/util/Collection;)V", "unmodifiableSortedSet", "java/util/SortedSet"),
         new ValidUnmodifiableAssignment("java/util/TreeSet", "<init>", "(Ljava/util/SortedSet;)V", "unmodifiableSortedSet", "java/util/SortedSet"),
     };
-            
-    
+
+
     private static class ValidUnmodifiableAssignment {
         public final String copyMethodOwner;
         public final String copyMethodName;
         public final String copyMethodDesc;
         public final String wrappingMethodName;
         public final String fieldType;
-        
+
         public ValidUnmodifiableAssignment(String copyMethodOwner, String copyMethodName, String copyMethodDesc, String wrappingMethodName, String fieldType) {
             this.copyMethodOwner = copyMethodOwner;
             this.copyMethodName = copyMethodName;
@@ -325,36 +306,33 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
 
     private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
             String copyMethodOwner, String copyMethodName, String copyMethodDesc, String wrappingMethodName,
-            String fieldType, ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
-        final MethodInsnNode whitelistedCopyMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, copyMethodOwner, copyMethodName, copyMethodDesc);
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Collections", wrappingMethodName, "") {
+            String fieldType) {
+        final MethodInsnNode whitelistedCopyMethod = new StaticConcreteMethodInsnNode(copyMethodOwner, copyMethodName, copyMethodDesc);
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", wrappingMethodName, "") {
             @Override public AbstractInsnNode getPrevious() { return whitelistedCopyMethod; }
         };
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        if (userDefinedCopyMethods == null) {
-        	return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType), NO_USER_DEFINED_COPY_METHODS);
-        } else {
-        	return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType), userDefinedCopyMethods);
-        }
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
     private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
-        final MethodInsnNode wrappingMethod = new MethodInsnNode(INVOKESTATIC, "java/util/Collections", methodName, unmodifiableMethodDesc);
+        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", methodName, unmodifiableMethodDesc);
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType), NO_USER_DEFINED_COPY_METHODS);
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
     private CollectionTypeWrappedInUnmodifiableIdiomChecker checkerForAssigningToFieldOfType(String fieldType) {
         FieldInsnNode fieldInsnNode = putFieldForType(fieldType);
-        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType), NO_USER_DEFINED_COPY_METHODS);
+        return new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(fieldType));
     }
 
     private FieldInsnNode putFieldForType(String fieldType) {
         return new FieldInsnNode(Opcodes.PUTFIELD, "some/type/assigning/Field", "fieldName", fieldType);
     }
-    
+
 }
+>>>>>>> Update version of asm to be compatible with JDK 8.
