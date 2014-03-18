@@ -27,7 +27,7 @@
 
   <properties>
     <package.base>org.mutabilitydetector</package.base>
-    <repackage.base>${package.base}.repackaged</repackage.base>
+    <repackage.base>${package.base}.internal</repackage.base>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <findbugs-plugin.version>2.4.0</findbugs-plugin.version>
   </properties>
