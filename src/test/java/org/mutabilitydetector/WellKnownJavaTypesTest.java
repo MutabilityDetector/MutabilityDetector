@@ -141,9 +141,4 @@ public class WellKnownJavaTypesTest {
         
     }
     
-    @Test
-    public void JDK13Services() throws Exception {
-        assertInstancesOf(com.sun.media.sound.JDK13Services.class, areNotImmutable());
-    }
-
 }

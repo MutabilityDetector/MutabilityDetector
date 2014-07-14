@@ -28,7 +28,7 @@ import org.objectweb.asm.Opcodes;
 public abstract class AsmMutabilityChecker extends ClassVisitor {
 
     public AsmMutabilityChecker() {
-        super(Opcodes.ASM4);
+        super(Opcodes.ASM5);
     }
     
     public abstract Collection<MutableReasonDetail> reasons();

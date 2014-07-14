@@ -142,7 +142,7 @@ public class CollectionFieldTest {
         final String[] fieldDescSignature = new String[2]; 
         
         ClassReader classReader = new ClassReader(class1.getName());
-        classReader.accept(new ClassVisitor(Opcodes.ASM4) {
+        classReader.accept(new ClassVisitor(Opcodes.ASM5) {
             @Override
             public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
                 fieldDescSignature[0] = desc;

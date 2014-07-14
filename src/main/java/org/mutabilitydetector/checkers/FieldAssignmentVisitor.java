@@ -41,7 +41,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
             String signature,
             String[] exceptions,
             AsmVerifierFactory verifierFactory) {
-        super(Opcodes.ASM4, access, name, desc, signature, exceptions);
+        super(Opcodes.ASM5, access, name, desc, signature, exceptions);
         this.owner = owner;
         this.verifierFactory = verifierFactory;
     }

@@ -69,15 +69,15 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
     private class MethodInvocationVisitor extends MethodNode {
 
         public MethodInvocationVisitor(int access, String name, String desc, String signature, String[] exceptions) {
-            super(Opcodes.ASM4, access, name, desc, signature, exceptions);
+            super(Opcodes.ASM5, access, name, desc, signature, exceptions);
         }
 
         @Override
-        public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc) {
-            if (MethodIs.aConstructor(this.name)) { return; }
-
-            MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(methodName, methodDesc));
-            privateMethodCalledFromConstructorMap.put(identifier, false);
+        public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc, boolean isInterface) {
+        	if (MethodIs.aConstructor(this.name)) { return; }
+        	
+        	MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(methodName, methodDesc));
+        	privateMethodCalledFromConstructorMap.put(identifier, false);
         }
     }
 

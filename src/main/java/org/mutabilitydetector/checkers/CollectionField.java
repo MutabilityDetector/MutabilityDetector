@@ -94,7 +94,7 @@ public abstract class CollectionField {
         boolean seenOuterCollectionType = false;
 
         public GenericCollectionReader() {
-            super(Opcodes.ASM4);
+            super(Opcodes.ASM5);
         }
 
         @Override
