@@ -24,7 +24,7 @@ To use Mutability Detector directly, either from the command line, at runtime in
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector</artifactId>
-        <version>0.9.1</version>
+        <version>0.9.2</version>
         <scope>test</scope>
     </dependency>
 
@@ -109,7 +109,7 @@ MutabilityDetector4FindBugs is also available from Maven Central, with the follo
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector4FindBugs</artifactId>
-        <version>0.9.2</version>
+        <version>0.9.1</version>
         <scope>test</scope>
     </dependency>
 
