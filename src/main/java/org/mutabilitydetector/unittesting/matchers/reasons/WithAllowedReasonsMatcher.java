@@ -33,28 +33,29 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.MutableReasonDetail;
 
 import com.google.common.collect.ImmutableList;
+import org.mutabilitydetector.checkers.SupersededReasonsFilter;
 
 public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult> {
-    
+
     public static WithAllowedReasonsMatcher withAllowedReasons(Matcher<AnalysisResult> areImmutable,
                                                                Iterable<Matcher<MutableReasonDetail>> allowing) {
         return new WithAllowedReasonsMatcher(areImmutable, ImmutableList.copyOf(allowing));
     }
-    
+
     public static WithAllowedReasonsMatcher withNoAllowedReasons(Matcher<AnalysisResult> areImmutable) {
         Matcher<MutableReasonDetail> noReasonsAllowed = noReasonsAllowed();
         return withAllowedReasons(areImmutable, singleton(noReasonsAllowed));
     }
-    
+
     private final Matcher<AnalysisResult> isImmutable;
     private final Iterable<Matcher<MutableReasonDetail>> allowedReasonMatchers;
+    private final SupersededReasonsFilter supersededReasonsFilter = new SupersededReasonsFilter();
 
     private WithAllowedReasonsMatcher(Matcher<AnalysisResult> isImmutable, Iterable<Matcher<MutableReasonDetail>> allowedReasons) {
         this.isImmutable = isImmutable;
         this.allowedReasonMatchers = allowedReasons;
     }
 
-    
     @Override
     public boolean matches(Object item) {
         return matchesSafely(checkIsValidToMatchOn(item), new StringDescription());
@@ -96,16 +97,17 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
             mismatchDescription.appendText(format("%s is actually %s%n", analysisResult.dottedClassName, analysisResult.isImmutable));
         }
     }
-    
+
     private boolean mutabilityReasonsHaveBeenAllowed(Collection<MutableReasonDetail> reasons, Description mismatchDescription) {
         Collection<MutableReasonDetail> allowedReasons = collectAllowedReasons(reasons);
         Collection<MutableReasonDetail> unmatchedReasons = new ArrayList<MutableReasonDetail>(reasons);
         
         unmatchedReasons.removeAll(allowedReasons);
-        
+        unmatchedReasons = supersededReasonsFilter.filterSupersededReasons(unmatchedReasons);
+
         boolean noAllowedReasonsProvided = allowedReasons.isEmpty();
         boolean allReasonsAllowed = unmatchedReasons.isEmpty();
-        
+
         if (noAllowedReasonsProvided || !allReasonsAllowed) {
             describeMismatchedReasons(mismatchDescription, unmatchedReasons, allowedReasons);
             return false;

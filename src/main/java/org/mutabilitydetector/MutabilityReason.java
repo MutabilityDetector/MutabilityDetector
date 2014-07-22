@@ -17,6 +17,9 @@
 
 package org.mutabilitydetector;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
 import static java.util.Arrays.asList;
 
 /**
@@ -118,6 +121,16 @@ public enum MutabilityReason implements Reason {
             IsImmutable.NOT_IMMUTABLE),
 
     /**
+     * Class has a published, non-final field. Fields of an immutable class may
+     * not be reassigned after an instance is constructed. If an accessible
+     * field is not made final, it can be reassigned.
+     */
+    PUBLISHED_NON_FINAL_FIELD("Class has a published, non-final field. Fields of an immutable class may not be "
+            + "reassigned after an instance is constructed. "
+            + "If an accessible field is not made final, it can be reassigned.",
+            IsImmutable.NOT_IMMUTABLE),
+
+    /**
      * Field is not declared final. If the object is published across threads
      * the Java Memory Model does not guarantee that it will be fully
      * initialised before it is read. However, if the object is only used in a
@@ -127,16 +140,10 @@ public enum MutabilityReason implements Reason {
             "Field is not declared final. If the object is published across threads the Java Memory Model "
                     + "does not guarantee that it will be fully initialised before it is read. "
                     + "However, if the object is only used in a single thread, reads are guaranteed to see the fully initialised fields.",
-            IsImmutable.EFFECTIVELY_IMMUTABLE),
+            IsImmutable.EFFECTIVELY_IMMUTABLE,
+            PUBLISHED_NON_FINAL_FIELD),
 
-    /**
-     * Class has a published, non-final field. Fields of an immutable class may
-     * not be reassigned after an instance is constructed. If an accessible
-     * field is not made final, it can be reassigned.
-     */
-    PUBLISHED_NON_FINAL_FIELD("Class has a published, non-final field. Fields of an immutable class may not be "
-            + "reassigned after an instance is constructed. "
-            + "If an accessible field is not made final, it can be reassigned.", IsImmutable.NOT_IMMUTABLE),
+
 
     /**
      * For a class to be immutable, fields cannot be reassigned once an instance
@@ -155,11 +162,20 @@ public enum MutabilityReason implements Reason {
     private final String description;
     private final String code;
     private final IsImmutable createsResult;
+    private ImmutableSet<Reason> supersededBy;
 
     MutabilityReason(String description, IsImmutable createsResult) {
         this.description = description;
         this.code = this.name();
         this.createsResult = createsResult;
+        this.supersededBy = ImmutableSet.<Reason>of();
+    }
+
+    MutabilityReason(String description, IsImmutable createsResult, Reason... supersededBy) {
+        this.description = description;
+        this.code = this.name();
+        this.createsResult = createsResult;
+        this.supersededBy = ImmutableSet.copyOf(supersededBy);
     }
 
     @Override
@@ -182,4 +198,8 @@ public enum MutabilityReason implements Reason {
         return asList(reasons).contains(this);
     }
 
+    @Override
+    public boolean supersededByOneOf(Reason... reasons) {
+        return !Sets.intersection(supersededBy, ImmutableSet.copyOf(reasons)).isEmpty();
+    }
 }
