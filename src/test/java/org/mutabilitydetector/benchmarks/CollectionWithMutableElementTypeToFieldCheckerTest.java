@@ -9,9 +9,9 @@ package org.mutabilitydetector.benchmarks;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,12 +46,12 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 
 public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
-    private MutableTypeInformation mutableTypeInfo = 
+    private final MutableTypeInformation mutableTypeInfo =
             new MutableTypeInformation(testAnalysisSession(), Configurations.NO_CONFIGURATION);
-    
-    private final AsmMutabilityChecker checker = 
+
+    private final AsmMutabilityChecker checker =
             new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());
-    
+
     @Test
     public void safelyWrappedCollectionsAreStillMutableIfTheTypeOfListElementsIsMutable() throws Exception {
         AnalysisResult result = runChecker(checker, SafelyCopiedMapGenericOnMutableTypeForKey.class);
@@ -72,17 +72,17 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         assertThat(result, areNotImmutable());
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
     }
-    
+
     @Test
     public void descriptionOfCollectionWithMutableElementType() throws Exception {
         AnalysisResult result = runChecker(checker, SafelyCopiedMapGenericOnMutableTypeForKey.class);
         assertThat(result, areNotImmutable());
-        
+
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
-        assertThat(reasonDetail.message(), 
+
+        assertThat(reasonDetail.message(),
                 is("Field can have collection with mutable element type " +
                         "(java.util.Map<java.util.Date, org.mutabilitydetector.benchmarks.ImmutableExample>) assigned to it."));
     }
-    
+
 }

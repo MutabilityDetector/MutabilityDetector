@@ -9,9 +9,9 @@ package org.mutabilitydetector.checkers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,11 +27,11 @@ import org.mutabilitydetector.locations.Dotted;
 import com.google.common.collect.ImmutableSet;
 
 class JdkCollectionTypes {
-    
+
     private static final ImmutableSet<String> JDK_COLLECTION_TYPES = ImmutableSet.<String>builder()
             .add("java.lang.Iterable")
             .add("java.util.Iterator")
-            .add("java.util.List") 
+            .add("java.util.List")
             .add("java.util.ArrayList")
             .add("java.util.LinkedList")
             .add("java.util.Vector")
@@ -90,8 +90,9 @@ class JdkCollectionTypes {
             .add("java/util/concurrent/ConcurrentLinkedDeque")
             .add("java/util/ArrayDeque")
             .add("java/util/concurrent/ArrayBlockingQueue")
+            .add("java/util/Optional")
             .build();
-    
+
     public boolean isCollectionType(Dotted type) {
         return JDK_COLLECTION_TYPES.contains(type.asString());
     }
