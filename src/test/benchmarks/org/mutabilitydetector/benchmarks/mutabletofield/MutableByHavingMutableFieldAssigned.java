@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.mutabletofield;
 
 /*
  * #%L

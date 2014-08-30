@@ -9,9 +9,9 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,6 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
 
 
 import static com.google.common.collect.ImmutableSet.copyOf;
-import static com.google.common.collect.Iterables.concat;
-import static java.util.Arrays.asList;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
@@ -51,7 +49,7 @@ import org.mutabilitydetector.unittesting.AllowedReason;
  * It is expected that this class will not be used directly. Instead, use the
  * factory methods provided by {@link AllowedReason} for more fluent unit tests.
  * <p>
- * 
+ *
  * @see AllowedReason#assumingFields(Iterable)
  * @see AllowedReason#assumingFields(String, String...)
  */
@@ -68,16 +66,7 @@ public final class FieldAssumptions {
      * {@link AllowedReason#assumingFields(String, String...)} for greater
      * readability.
      */
-    public static FieldAssumptions named(String firstFieldName, String... otherFieldNames) {
-        return named(concat(asList(firstFieldName), asList(otherFieldNames)));
-    }
-
-    /**
-     * Advice: use the factory method
-     * {@link AllowedReason#assumingFields(String, String...)} for greater
-     * readability.
-     */
-    public static FieldAssumptions named(Iterable<String> fieldNames) {
+    public static FieldAssumptions named(Set<String> fieldNames) {
         return new FieldAssumptions(copyOf(fieldNames));
     }
 
@@ -94,28 +83,28 @@ public final class FieldAssumptions {
      * reason will permit those warnings.
      * <p>
      * Example usage:
-     * 
+     *
      * <pre>
      * <code>
      * import com.google.common.collect.Lists;
-     * 
+     *
      * &#064;Immutable
      * public final class SafelyCopiesAndWraps {
      *   private final List&lt;String&gt; unmodifiableCopy;
-     *   
+     *
      *   public SafelyCopiesAndWraps(List<String> original) {
-     *     // use Guava method to copy 
+     *     // use Guava method to copy
      *     this.unmodifiableCopy = Collections.unmodifiableList(Lists.newArrayList(original));
      *   }
-     *   
+     *
      *   // ... other methods
      * }
-     * 
+     *
      *  // a warning will be raised because copy method, Guava's Lists.newArrayList(),  is unrecognised
      *  assertInstancesOf(SafelyCopiesAndWraps.class, areImmutable());
-     *  
+     *
      *  // use FieldAssumptions to insist the usage is safe
-     *  assertInstancesOf(SafelyCopiesAndWraps.class, 
+     *  assertInstancesOf(SafelyCopiesAndWraps.class,
      *                    areImmutable(),
      *                    assumingFields("unmodifiableCopy").areSafelyCopiedUnmodifiableCollectionsWithImmutableElements());
      * </code>
@@ -123,7 +112,7 @@ public final class FieldAssumptions {
      * <p>
      * This case will also work when the collection is declared (with generics)
      * to contain a mutable type.
-     * 
+     *
      * @see MutabilityReason#ABSTRACT_COLLECTION_TYPE_TO_FIELD
      * @see MutabilityReason#ABSTRACT_TYPE_TO_FIELD
      * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
@@ -154,33 +143,33 @@ public final class FieldAssumptions {
      * fields.
      * <p>
      * Example usage:
-     * 
+     *
      * <pre>
      * <code>
      * import java.util.Date;
-     * 
+     *
      * &#064;Immutable
      * public final class UsesMutableField {
      *   private final Date myDate;
-     *   
+     *
      *   public UsesMutableField(Date original) {
      *     this.myDate = new Date(original.getTime());
      *   }
-     *   
+     *
      *   public Date getDate() {
      *     // if we used 'return myDate;' we would be publishing reference
      *     return new Date(myDate.getTime());
      *   }
-     *   
+     *
      *   // ... other methods, which never call myDate.setTime()
      *   // if we called, e.g. setTime() we would be mutating the field
      * }
-     * 
+     *
      *  // a warning will be raised because myDate is of a mutable type, java.util.Date
      *  assertInstancesOf(UsesMutableField.class, areImmutable());
-     *  
+     *
      *  // use FieldAssumptions to insist the usage is safe
-     *  assertInstancesOf(UsesMutableField.class, 
+     *  assertInstancesOf(UsesMutableField.class,
      *                    areImmutable(),
      *                    assumingFields("myDate").areNotModifiedAndDoNotEscape());
      * </code>
@@ -189,11 +178,11 @@ public final class FieldAssumptions {
      * Note: this allowed reason also assumes the defensive copy of
      * <code>original</code> into <code>myDate</code>, although there is
      * currently no support for automatically detecting this.
-     * 
+     *
      * <p>
      * [0] <a href="http://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat">
      *       A Strategy for Defining Immutable Objects</a>
-     * 
+     *
      * @see MutabilityReason#MUTABLE_TYPE_TO_FIELD
      * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
      * @see MutabilityReason#ARRAY_TYPE_INHERENTLY_MUTABLE
@@ -201,11 +190,11 @@ public final class FieldAssumptions {
     public Matcher<MutableReasonDetail> areNotModifiedAndDoNotEscape() {
         return new MutableFieldNotModifiedAndDoesntEscapeMatcher();
     }
-    
+
     private final class MutableFieldNotModifiedAndDoesntEscapeMatcher extends BaseMutableReasonDetailMatcher {
         @Override
         protected boolean matchesSafely(MutableReasonDetail reasonDetail) {
-    
+
             return new FieldLocationWithNameMatcher().matches(reasonDetail.codeLocation())
                     && reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD,
                                                      COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE,
@@ -230,7 +219,7 @@ public final class FieldAssumptions {
      * While this technique is tricky, it can be very useful for performance
      * reasons. Unfortunately, Mutability Detector cannot tell the difference
      * between: lazily storing the result of a computation for future lookup;
-     * and a setter method. 
+     * and a setter method.
      * <p>
      * This allowed reason will permit mutable fields, and also reassigning field references.
      * <p>
@@ -238,18 +227,18 @@ public final class FieldAssumptions {
      * <pre>
      * <code>
      * import java.util.Date;
-     * 
+     *
      * &#064;Immutable
      * public static final class ReassignsHashCode {
      *   private final String name;
      *   private final Integer age;
      *   private int hash;
-     *     
+     *
      *   public ReassignsHashCode(String name, Integer age) {
      *     this.name = name;
      *     this.age = age;
      *   }
-     *     
+     *
      *   &#064;Override
      *   public int hashCode() {
      *     if (hash == 0) {
@@ -258,17 +247,17 @@ public final class FieldAssumptions {
      *     return hash;
      *   }
      * }
-     * 
+     *
      *  // a warning will be raised because the hash field is reassigned, as with a setter method
      *  assertInstancesOf(ReassignsHashCode.class, areImmutable());
-     *  
+     *
      *  // use FieldAssumptions to insist the usage is safe
-     *  assertInstancesOf(ReassignsHashCode.class, 
+     *  assertInstancesOf(ReassignsHashCode.class,
      *                    areImmutable(),
      *                    assumingFields("hash").areModifiedAsPartOfAnUnobservableCachingStrategy());
      * </code>
      * </pre>
-     * 
+     *
      * @see MutabilityReason#MUTABLE_TYPE_TO_FIELD
      * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
      * @see MutabilityReason#ARRAY_TYPE_INHERENTLY_MUTABLE
@@ -296,11 +285,11 @@ public final class FieldAssumptions {
         @Override
         public void describeTo(Description description) {
         }
-    
+
         @Override
         protected boolean matchesSafely(FieldLocation locationOfMutability) {
             return fieldNames.contains(locationOfMutability.fieldName());
         }
-    
+
     }
 }

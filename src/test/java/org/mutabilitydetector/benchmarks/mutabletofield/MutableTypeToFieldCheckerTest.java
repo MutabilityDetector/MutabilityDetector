@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks;
+package org.mutabilitydetector.benchmarks.mutabletofield;
 
 /*
  * #%L
@@ -57,14 +57,12 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
+import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.benchmarks.WrapsCollectionUsingNonWhitelistedMethod;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.ListFieldFromUnmodifiableArrayAsList;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StoresCopiedCollectionAsObjectAndIterable;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StoresCopiedCollectionIntoLocalVariableBeforeWrapping;
-import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
-import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningInterfaceToField;
-import org.mutabilitydetector.benchmarks.mutabletofield.WrapWithUnmodifiableListWithoutCopyingFirst;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableButHasUnmodifiedArrayAsField;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArrayFieldIsStatic;
 import org.mutabilitydetector.benchmarks.mutabletofield.array.MutableByHavingArrayTypeAsField;
@@ -81,21 +79,21 @@ import org.mutabilitydetector.locations.FieldLocation;
 public class MutableTypeToFieldCheckerTest {
 
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
-    
+
     private AnalysisSession session;
     private AsmMutabilityChecker checkerWithMockedSession;
     private AsmMutabilityChecker checkerWithRealSession;
-    
+
     private AnalysisResult result;
-    private AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
-    
-    private Dotted mutableExample = Dotted.fromClass(MutableExample.class);
+    private final AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
+
+    private final Dotted mutableExample = Dotted.fromClass(MutableExample.class);
 
     private MutableTypeToFieldChecker checkerWithRealAnalysisSession() {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         return new MutableTypeToFieldChecker(
-                info, 
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                info,
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
                 testingVerifierFactory());
     }
 
@@ -105,19 +103,19 @@ public class MutableTypeToFieldCheckerTest {
         session = mock(AnalysisSession.class);
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checkerWithMockedSession = new MutableTypeToFieldChecker(
-                info, 
-                new MutableTypeInformation(session, NO_CONFIGURATION), 
+                info,
+                new MutableTypeInformation(session, NO_CONFIGURATION),
                 testingVerifierFactory());
     }
-    
+
 
     @Before
     public void setUpWithRealSession() {
         SessionCheckerRunner runner = new SessionCheckerRunner(TestUtil.testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
-                typeInfo, 
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION), 
+                typeInfo,
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
                 testingVerifierFactory());
     }
 
@@ -125,7 +123,7 @@ public class MutableTypeToFieldCheckerTest {
     public void requestsMutableStatusOfPublishedField() throws Exception {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
-        
+
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
         verify(session).resultFor(mutableExample);
@@ -135,13 +133,13 @@ public class MutableTypeToFieldCheckerTest {
     public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
         String unusedMessage = "";
         AnalysisResult mutableResult = AnalysisResult.analysisResult(
-                "", 
-                NOT_IMMUTABLE, 
+                "",
+                NOT_IMMUTABLE,
                 newMutableReasonDetail(unusedMessage, unusedCodeLocation(), ABSTRACT_COLLECTION_TYPE_TO_FIELD));
 
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(mutableExample)).thenReturn(mutableResult);
-        
+
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
         assertThat(result, areNotImmutable());
@@ -158,7 +156,7 @@ public class MutableTypeToFieldCheckerTest {
         assertThat(result, areNotImmutable());
         assertThat(checkerWithMockedSession, hasReasons(MUTABLE_TYPE_TO_FIELD));
     }
-    
+
     @Test
     public void instanceFieldWhichHasAMutatedArrayIsMutable() throws Exception {
         result = runChecker(checkerWithMockedSession, MutableByHavingArrayTypeAsField.class);
@@ -182,7 +180,7 @@ public class MutableTypeToFieldCheckerTest {
     public void codeLocationIsFieldLocation() throws Exception {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
-        
+
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
         FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.reasons().iterator().next().codeLocation();
 
@@ -198,25 +196,25 @@ public class MutableTypeToFieldCheckerTest {
         assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
         assertThat(codeLocation.fieldName(), is("names"));
     }
-    
-    
+
+
     @Test
     public void allowsCopyingAndWrappingInUmodifiableCollectionTypeIdiom() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
-        assertThat(runChecker(checkerWithRealSession, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class), 
+
+        assertThat(runChecker(checkerWithRealSession, CopyListIntoNewArrayListAndUnmodifiableListIdiom.class),
                    areImmutable());
     }
 
     @Test
     public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeButIsNotCopiedFirst() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
+
         result = runChecker(checkerWithRealSession, WrapWithUnmodifiableListWithoutCopyingFirst.class);
-        
+
         assertThat(result, areNotImmutable());
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
+
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
@@ -224,25 +222,25 @@ public class MutableTypeToFieldCheckerTest {
     @Test
     public void raisesAnErrorIfWrappedInUnmodifiableCollectionTypeUsingANonWhitelistedMethod() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
+
         result = runChecker(checkerWithRealSession, WrapsCollectionUsingNonWhitelistedMethod.class);
-        
+
         assertThat(result, areNotImmutable());
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
+
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method."));
     }
-    
+
     @Test
     public void doesNotAllowStoringCopiedCollectionIntoLocalVariableThatCouldEscape() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
+
         result = runChecker(checkerWithRealSession, StoresCopiedCollectionIntoLocalVariableBeforeWrapping.class);
-        
+
         assertThat(result, areNotImmutable());
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
+
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
@@ -250,7 +248,7 @@ public class MutableTypeToFieldCheckerTest {
     @Test
     public void allowsStoringASafelyCopiedAndWrappedCollectionIntoFieldOfMoreAbstractType() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
+
         AnalysisResult runChecker = runChecker(checkerWithRealSession, StoresCopiedCollectionAsObjectAndIterable.class);
         assertThat(runChecker, areImmutable());
     }
@@ -258,12 +256,12 @@ public class MutableTypeToFieldCheckerTest {
     @Test
     public void arraysAsListCopiedIntoUnmodifiableIsNotImmutable() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();
-        
+
         result = runChecker(checkerWithRealSession, ListFieldFromUnmodifiableArrayAsList.class);
         assertThat(result, areNotImmutable());
-        
+
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
-        
+
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
@@ -298,7 +296,7 @@ public class MutableTypeToFieldCheckerTest {
         String typeName = reasonDetail.codeLocation().typeName();
         assertThat(typeName, is(MutableByAssigningAbstractTypeToField.class.getName()));
     }
-    
+
     @Test
     public void reasonCreatedByCheckerIncludesMessagePointingToAbstractType() throws Exception {
         result = runChecker(checkerWithRealSession, MutableByAssigningAbstractTypeToField.class);
