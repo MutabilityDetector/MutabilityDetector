@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */package org.mutabilitydetector.checkers.settermethod;
 
 /*
@@ -27,7 +27,13 @@
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.Immutable;
@@ -46,7 +52,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 
 /**
  * Range of a method's instructions which is delimited by label nodes.
- * 
+ *
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
  * @version 18.02.2013
  */
@@ -76,8 +82,8 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             for (final Integer item : new TreeSet<Integer>(allItems)) {
                 allItemsList.add(item);
             }
-            final Integer lowerBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(0);
-            final Integer upperBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(allItemsList.size() - 1);
+            final int lowerBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(0);
+            final int upperBoundary = allItemsList.isEmpty() ? -1 : allItemsList.get(allItemsList.size() - 1);
             return new Range(lowerBoundary, upperBoundary, allItemsList);
         }
 

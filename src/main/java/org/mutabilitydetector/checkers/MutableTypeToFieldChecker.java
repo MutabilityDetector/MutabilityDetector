@@ -100,7 +100,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         return super.visitField(access, name, desc, signature, value);
     }
 
-    class GenericFieldVisitor extends SignatureVisitor {
+    static final class GenericFieldVisitor extends SignatureVisitor {
         private String declaredType;
         private boolean fieldIsOfGenericType = true;
 

@@ -47,7 +47,12 @@ final class NullJumpInsn implements JumpInsn {
 
     @Override
     public int compareTo(final JumpInsn o) {
-        return -1;
+        return this.equals(o) ? 0 : -1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this;
     }
 
     @Override
