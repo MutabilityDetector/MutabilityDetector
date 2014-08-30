@@ -1,21 +1,27 @@
+package org.mutabilitydetector.checkers.info;
+
 /*
- *    Copyright (c) 2008-2011 Graham Allan
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
+ * #%L
+ * MutabilityDetector
+ * %%
+ * Copyright (C) 2008 - 2014 Graham Allan
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
  */
 
-package org.mutabilitydetector.checkers.info;
+
+
 
 import javax.annotation.concurrent.Immutable;
 
@@ -29,13 +35,13 @@ public class CopyMethod {
     private final Dotted owner;
     private final String name;
     private final String desc;
-    
+
     public CopyMethod(Dotted owner, String name, String desc) {
         this.owner = owner;
         this.name = name;
         this.desc = desc;
     }
-    
+
     public static CopyMethod from(MethodInsnNode methodNode) {
         return new CopyMethod(Dotted.dotted(methodNode.owner), methodNode.name, methodNode.desc);
     }
@@ -59,7 +65,7 @@ public class CopyMethod {
         CopyMethod other = (CopyMethod) obj;
         return desc.equals(other.desc) && name.equals(other.name) && owner.equals(other.owner);
     }
-    
+
     @Override
     public String toString() {
     	return Objects.toStringHelper(this)
@@ -68,5 +74,5 @@ public class CopyMethod {
     			.add("desc", desc)
     			.toString();
     }
-    
+
 }
