@@ -17,7 +17,7 @@
 package org.mutabilitydetector.checkers.util;
 
 import static java.lang.String.format;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.objectweb.asm.Opcodes.*;
 

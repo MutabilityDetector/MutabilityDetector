@@ -16,7 +16,7 @@
  */
 package org.mutabilitydetector.checkers;
 
-import static junit.framework.Assert.assertSame;
+import static org.junit.Assert.assertSame;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
