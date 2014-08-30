@@ -68,11 +68,11 @@ public class CopyMethod {
 
     @Override
     public String toString() {
-    	return Objects.toStringHelper(this)
-    			.add("owner", owner)
-    			.add("name", name)
-    			.add("desc", desc)
-    			.toString();
+        return Objects.toStringHelper(this)
+                .add("owner", owner)
+                .add("name", name)
+                .add("desc", desc)
+                .toString();
     }
 
 }

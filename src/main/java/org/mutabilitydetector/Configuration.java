@@ -111,5 +111,5 @@ public interface Configuration {
      * 
      * @return
      */
-	ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods();
+    ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods();
 }

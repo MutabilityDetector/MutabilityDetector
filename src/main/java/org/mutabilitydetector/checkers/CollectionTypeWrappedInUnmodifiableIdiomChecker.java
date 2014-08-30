@@ -135,7 +135,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
     
     public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField, 
-    		ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
+            ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
         checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         this.fieldInsnNode = fieldInsnNode;
         this.typeAssignedToField = typeAssignedToField;
@@ -189,7 +189,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
 
     private boolean configuratedAsImmutableCopyMethod(MethodInsnNode shouldBeCopyConstructor) {
         return (FIELD_TYPE_TO_COPY_METHODS.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor))
-        		 || userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
+                 || userDefinedCopyMethods.containsEntry(typeAssignedToField(), CopyMethod.from(shouldBeCopyConstructor)));
     }
     
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {

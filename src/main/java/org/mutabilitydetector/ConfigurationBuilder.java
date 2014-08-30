@@ -306,7 +306,7 @@ public abstract class ConfigurationBuilder {
      * @param otherConfiguration - configuration to merge harcoded copy methods from.
      */
     protected void mergeValidCopyMethodsFrom(Configuration otherConfiguration) {
-    	validCopyMethods.putAll(otherConfiguration.hardcodedCopyMethods());
+        validCopyMethods.putAll(otherConfiguration.hardcodedCopyMethods());
     }
     
     protected void useAdvancedReassignedFieldAlgorithm() {
@@ -331,40 +331,40 @@ public abstract class ConfigurationBuilder {
         if (argType==null || fieldType==null || fullyQualifiedMethodName==null) {
             throw new IllegalArgumentException("All parameters must be supplied - no nulls");
         }
-		String className = fullyQualifiedMethodName.substring(0, fullyQualifiedMethodName.lastIndexOf("."));
-		String methodName = fullyQualifiedMethodName.substring(fullyQualifiedMethodName.lastIndexOf(".")+1);
+        String className = fullyQualifiedMethodName.substring(0, fullyQualifiedMethodName.lastIndexOf("."));
+        String methodName = fullyQualifiedMethodName.substring(fullyQualifiedMethodName.lastIndexOf(".")+1);
 
-		
-		String desc = null;
-		try {
-			if (MethodIs.aConstructor(methodName)) {
-				Constructor<?> ctor = Class.forName(className).getDeclaredConstructor(argType);
-				desc = Type.getConstructorDescriptor(ctor);
-			} else {
-				Method method = Class.forName(className).getMethod(methodName, argType);
-				desc = Type.getMethodDescriptor(method);
-			}
-		} catch (NoSuchMethodException e) {
-			rethrow("No such method", e);
-		} catch (SecurityException e) {
-			rethrow("Security error", e);
-		} catch (ClassNotFoundException e) {
-			rethrow("Class not  found", e);
-		}
-    	CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
-    	hardcodeValidCopyMethod(fieldType, copyMethod);
+        
+        String desc = null;
+        try {
+            if (MethodIs.aConstructor(methodName)) {
+                Constructor<?> ctor = Class.forName(className).getDeclaredConstructor(argType);
+                desc = Type.getConstructorDescriptor(ctor);
+            } else {
+                Method method = Class.forName(className).getMethod(methodName, argType);
+                desc = Type.getMethodDescriptor(method);
+            }
+        } catch (NoSuchMethodException e) {
+            rethrow("No such method", e);
+        } catch (SecurityException e) {
+            rethrow("Security error", e);
+        } catch (ClassNotFoundException e) {
+            rethrow("Class not  found", e);
+        }
+        CopyMethod copyMethod = new CopyMethod(dotted(className), methodName, desc);
+        hardcodeValidCopyMethod(fieldType, copyMethod);
     }
     
-	protected void hardcodeValidCopyMethod(Class<?> fieldType, CopyMethod copyMethod) {
-		validCopyMethods.put(fieldType.getCanonicalName(), copyMethod);
-	}
+    protected void hardcodeValidCopyMethod(Class<?> fieldType, CopyMethod copyMethod) {
+        validCopyMethods.put(fieldType.getCanonicalName(), copyMethod);
+    }
 
     public Multimap<String,CopyMethod> getCopyMethodsAllowed() {
-		return validCopyMethods;
-	}
+        return validCopyMethods;
+    }
     
     private void rethrow(String message, Throwable e) {
-    	throw new MutabilityAnalysisException("Error in configuration: "+message+": "+e.getMessage(), e);
+        throw new MutabilityAnalysisException("Error in configuration: "+message+": "+e.getMessage(), e);
     }
     
     @Immutable
@@ -374,7 +374,7 @@ public abstract class ConfigurationBuilder {
         private final Map<Dotted, AnalysisResult> resultsByClassname;
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
-		private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
+        private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
 
         private DefaultConfiguration(Set<AnalysisResult> predefinedResults, 
                                      ExceptionPolicy exceptionPolicy,
@@ -404,7 +404,7 @@ public abstract class ConfigurationBuilder {
         
         @Override
         public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
-        	return validCopyMethods;
+            return validCopyMethods;
         }
         
     }

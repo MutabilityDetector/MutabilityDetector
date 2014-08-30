@@ -110,7 +110,7 @@ public class ConfigurationBuilderTest {
     
     @Test
     public void mergeCopyMethodsDoesNotCauseDuplicates() {
-    	final CopyMethod a = new CopyMethod(dotted("any"), "method", "A");
+        final CopyMethod a = new CopyMethod(dotted("any"), "method", "A");
         final CopyMethod b = new CopyMethod(dotted("any"), "method", "B");
         final CopyMethod c = new CopyMethod(dotted("any"), "method", "C");
         final CopyMethod a2 = new CopyMethod(dotted("any"), "method", "A");
@@ -135,33 +135,33 @@ public class ConfigurationBuilderTest {
         assertThat(merged.hardcodedCopyMethods().values(), containsInAnyOrder(a, b, c));
     }
     
-	@Test (expected=MutabilityAnalysisException.class)
-	public void shouldThrowIfClassOfCopyMethodIsNotKnown() {
-		new ConfigurationBuilder() { 
-			@Override public void configure() {
-				hardcodeValidCopyMethod(List.class, "non.existent.Collection.<init>", List.class);
-			}
-		}.build();
-	}
+    @Test (expected=MutabilityAnalysisException.class)
+    public void shouldThrowIfClassOfCopyMethodIsNotKnown() {
+        new ConfigurationBuilder() { 
+            @Override public void configure() {
+                hardcodeValidCopyMethod(List.class, "non.existent.Collection.<init>", List.class);
+            }
+        }.build();
+    }
 
-	@Test (expected=MutabilityAnalysisException.class)
-	public void shouldThrowIfCopyMethodDoesNotExist() {
-		new ConfigurationBuilder() { 
-			@Override public void configure() {
-				hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.doesNotExist", List.class);
-			}
-		}.build();
-	}
-	
-	@Test
-	public void constructorsCanBeValidCopyMethods() {
+    @Test (expected=MutabilityAnalysisException.class)
+    public void shouldThrowIfCopyMethodDoesNotExist() {
+        new ConfigurationBuilder() { 
+            @Override public void configure() {
+                hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.doesNotExist", List.class);
+            }
+        }.build();
+    }
+    
+    @Test
+    public void constructorsCanBeValidCopyMethods() {
         final Configuration cfg = new ConfigurationBuilder() {
             @Override public void configure() {
                 hardcodeValidCopyMethod(CloneList.class, 
-                		"org.mutabilitydetector.unittesting.internal.CloneList.<init>", List.class);
+                        "org.mutabilitydetector.unittesting.internal.CloneList.<init>", List.class);
             }
         }.build();
 
         assertThat(cfg.hardcodedCopyMethods().size(), is(1));
-	}
+    }
 }

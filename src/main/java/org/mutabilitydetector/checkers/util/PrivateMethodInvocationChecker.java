@@ -79,10 +79,10 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
 
         @Override
         public void visitMethodInsn(int opcode, String owner, String methodName, String methodDesc, boolean isInterface) {
-        	if (MethodIs.aConstructor(this.name)) { return; }
-        	
-        	MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(methodName, methodDesc));
-        	privateMethodCalledFromConstructorMap.put(identifier, false);
+            if (MethodIs.aConstructor(this.name)) { return; }
+            
+            MethodIdentifier identifier = makeMethodIdentifier(makeMethodDescriptor(methodName, methodDesc));
+            privateMethodCalledFromConstructorMap.put(identifier, false);
         }
     }
 

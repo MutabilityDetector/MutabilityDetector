@@ -77,9 +77,9 @@ public class Configurations {
     public static final Configuration GUAVA_CONFIGURATION = new ConfigurationBuilder() {
         @Override
         public void configure() {
-			hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
-			hardcodeValidCopyMethod(Set.class, "com.google.common.collect.Sets.newHashSet", Iterable.class);
-			hardcodeValidCopyMethod(Map.class, "com.google.common.collect.Maps.newHashMap", Map.class);
+            hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
+            hardcodeValidCopyMethod(Set.class, "com.google.common.collect.Sets.newHashSet", Iterable.class);
+            hardcodeValidCopyMethod(Map.class, "com.google.common.collect.Maps.newHashMap", Map.class);
         }
     }.build();
     

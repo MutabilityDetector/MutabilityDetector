@@ -100,6 +100,6 @@ public class CanSubclassCheckerTest {
     
     @Test
     public void privateConstructorsUsingBuilderPatternAreImmutable() throws Exception {
-    	MutabilityAssert.assertImmutable(ImmutableByHavingOnlyAPrivateConstructorUsingTheBuilderPattern.class);
+        MutabilityAssert.assertImmutable(ImmutableByHavingOnlyAPrivateConstructorUsingTheBuilderPattern.class);
     }
 }
