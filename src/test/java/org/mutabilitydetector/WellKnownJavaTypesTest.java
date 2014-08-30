@@ -9,9 +9,9 @@ package org.mutabilitydetector;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
 public class WellKnownJavaTypesTest {
 
     @Rule public IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
-    
+
     @Test
     public void Object() throws Exception {
         assertInstancesOf(Object.class, areImmutable(), allowingForSubclassing());
@@ -60,7 +60,7 @@ public class WellKnownJavaTypesTest {
     @Test
     @FalsePositive("Not final " + "Reassigned field " + "Mutable type to field (BigInteger, String)")
     public void BigDecimal() {
-        assertInstancesOf(BigDecimal.class, areImmutable(), 
+        assertInstancesOf(BigDecimal.class, areImmutable(),
                           provided(BigInteger.class).isAlsoImmutable(),
                           provided(String.class).isAlsoImmutable(),
                           allowingForSubclassing());
@@ -100,7 +100,8 @@ public class WellKnownJavaTypesTest {
     public void AbstractMap$SimpleImmutableEntry() {
         assertInstancesOf(AbstractMap.SimpleImmutableEntry.class, areImmutable(),
                           allowingForSubclassing(),
-                          provided(Object.class).isAlsoImmutable());
+                          provided("K").isAlsoImmutable(),
+                          provided("V").isAlsoImmutable());
     }
 
     @FalsePositive("Not final" + "Field hashCode reassigned" + "Field of mutable type (primitive array)")
@@ -135,7 +136,7 @@ public class WellKnownJavaTypesTest {
     public void XPDefaultRenderer() {
         Class<?> enclosingClass = WindowsTableHeaderUI.class;
         Class<?>[] declaredClasses = enclosingClass.getDeclaredClasses();
-        
+
         for (Class<?> declaredClass : declaredClasses) {
             if ("XPDefaultRenderer".equals(declaredClass.getSimpleName())) {
                 assertInstancesOf(declaredClass, areNotImmutable());
@@ -143,7 +144,7 @@ public class WellKnownJavaTypesTest {
             }
         }
         fail("Didn't find private class");
-        
+
     }
-    
+
 }

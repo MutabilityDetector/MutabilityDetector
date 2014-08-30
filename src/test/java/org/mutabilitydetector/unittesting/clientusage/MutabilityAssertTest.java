@@ -43,8 +43,9 @@ import org.mutabilitydetector.benchmarks.ImmutableProvidedOtherClassIsImmutable.
 import org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField;
 import org.mutabilitydetector.benchmarks.mutabletofield.DependsOnManyTypesBeingImmutable;
 import org.mutabilitydetector.benchmarks.mutabletofield.HasDateField;
-import org.mutabilitydetector.benchmarks.mutabletofield.HasFieldOfGenericType;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutatesAsInternalCaching;
+import org.mutabilitydetector.benchmarks.mutabletofield.generic.HasFieldOfGenericType;
+import org.mutabilitydetector.benchmarks.mutabletofield.generic.HasFieldUsingGenericTypeOfClass;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasCollectionField;
 import org.mutabilitydetector.benchmarks.sealed.IsSubclassableAndDependsOnParameterBeingImmutable;
@@ -164,13 +165,20 @@ public class MutabilityAssertTest {
 
     }
 
-    @FalsePositive
     @Test
     public void canSpecifyIsImmutableAsLongAsGenericTypeIsImmutable() throws Exception {
         assertInstancesOf(HasFieldOfGenericType.class,
                 areImmutable(),
-                provided("T").isAlsoImmutable());
+                provided("T").isAlsoImmutable(),
+                provided("N").isAlsoImmutable());
+    }
 
+    @Test
+    public void canSpecifyIsImmutableAsLongAsGenericTypeUsedByFieldIsImmutable() throws Exception {
+        assertInstancesOf(HasFieldUsingGenericTypeOfClass.class,
+                areImmutable(),
+                provided("T").isAlsoImmutable(),
+                provided("N").isAlsoImmutable());
     }
 
     @Test(expected = MutabilityAssertionError.class)

@@ -317,7 +317,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * <code>
  * assertInstancesOf(HasGenericField.class,
  *                   areImmutable(),
- *                   AllowedReason.provided("T").areAlsoImmutable());
+ *                   AllowedReason.provided("T").isAlsoImmutable());
  * </code>
  * </pre>
  *
