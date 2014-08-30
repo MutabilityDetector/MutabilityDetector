@@ -9,9 +9,9 @@ package org.mutabilitydetector.unittesting;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,11 +22,11 @@ package org.mutabilitydetector.unittesting;
 
 
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
@@ -61,15 +61,15 @@ public class MutabilityAssertTest {
 
     private final Class<?> immutableClass = ImmutableExample.class;
     private final Class<?> mutableClass = MutableByHavingPublicNonFinalField.class;
-    
+
     private final String expectedError = String.format("%n" +
-            "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE%n" + 
-            "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" + 
-            "    Reasons:%n" + 
-            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
-            "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
-            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" + 
-            "    Allowed reasons:%n" + 
+            "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE%n" +
+            "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" +
+            "    Reasons:%n" +
+            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
+            "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
+            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
+            "    Allowed reasons:%n" +
             "        None.");
 
     @Test
@@ -91,7 +91,7 @@ public class MutabilityAssertTest {
             assertEquals("", expectedError, ae.getMessage());
         }
     }
-    
+
     @Test
     public void whenAssertInstancesOfFailsReasonsArePrintedWithAssertionFailure() throws Exception {
         try {
@@ -120,15 +120,15 @@ public class MutabilityAssertTest {
             assertThat(ae.getMessage(), equalTo(expectedError));
         }
     }
-    
+
     @Test public void canSpecifyMultipleAllowedReasons() {
          assertInstancesOf(IsSubclassableAndDependsOnParameterBeingImmutable.class,
                            areImmutable(),
                            allowingForSubclassing(),
                            provided(ThisHasToBeImmutable.class).isAlsoImmutable());
-                           
+
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test public void varArgsArgumentsCompilesAndExecutes() {
         assertInstancesOf(IsSubclassableAndDependsOnParameterBeingImmutable.class,
@@ -136,9 +136,9 @@ public class MutabilityAssertTest {
                           allowingForSubclassing(),
                           provided(ThisHasToBeImmutable.class).isAlsoImmutable(),
                           allowingForSubclassing(),
-                          allowingForSubclassing(), 
+                          allowingForSubclassing(),
                           allowingForSubclassing());
-                          
+
    }
 
     @SuppressWarnings("unchecked")
@@ -148,9 +148,9 @@ public class MutabilityAssertTest {
                           Lists.newArrayList(allowingForSubclassing(),
                                              provided(ThisHasToBeImmutable.class).isAlsoImmutable(),
                                              allowingForSubclassing(),
-                                             allowingForSubclassing(), 
+                                             allowingForSubclassing(),
                                              allowingForSubclassing()));
-        
+
     }
 
     @Test
@@ -178,7 +178,7 @@ public class MutabilityAssertTest {
             assertThat(e.getMessage(), containsString("can be reassigned"));
         }
     }
-    
+
     @Test
     public void canAllowSubclassingForNonFinalClasses() throws Exception {
         assertInstancesOf(MutableByNotBeingFinalClass.class,
@@ -186,14 +186,14 @@ public class MutabilityAssertTest {
                 allowingForSubclassing());
     }
 
-    
+
     @Test(expected = MutabilityAssertionError.class)
     public void allowSubclassingFailsWhenReasonIsDifferent() throws Exception {
         assertInstancesOf(MutableByHavingSetterMethod.class,
                 areImmutable(),
                 allowingForSubclassing());
     }
-    
+
     @Test
     public void canMatchEffectivelyImmutableAllowingAnotherReason() throws Exception {
         assertInstancesOf(AlmostEffectivelyImmutable.class,
@@ -201,7 +201,7 @@ public class MutabilityAssertTest {
                           allowingNonFinalFields(),
                           allowingForSubclassing());
     }
-    
+
     @Test
     public void canMatchImmutableAllowingAnotherReason() throws Exception {
         assertInstancesOf(AlmostEffectivelyImmutable.class,
@@ -211,7 +211,7 @@ public class MutabilityAssertTest {
     }
 
     @Rule public final IncorrectAnalysisRule incorrectAnalysisRule = new IncorrectAnalysisRule();
-    
+
     /**
      * @see #canMatchEffectivelyImmutableAllowingAnotherReason() for a workaround
      */
@@ -222,15 +222,15 @@ public class MutabilityAssertTest {
                           areEffectivelyImmutable(),
                           allowingForSubclassing());
     }
-    
+
     @Test
     public void havingStringFieldsDoesNotCauseFalsePositivesInTheDefaultConfiguration() throws Exception {
         assertImmutable(HasAStringField.class);
     }
-    
+
     @Test
     public void allowSpecifyingThatMultipleTypesMustAlsoBeImmutable() throws Exception {
-        assertInstancesOf(DependsOnManyTypesBeingImmutable.class, 
+        assertInstancesOf(DependsOnManyTypesBeingImmutable.class,
                           areImmutable(),
                           provided(AbstractType.class, InterfaceType.class).isAlsoImmutable());
     }
@@ -238,19 +238,19 @@ public class MutabilityAssertTest {
     @FalsePositive("Does not work when specifying two different ProvidedOtherClass reasons.")
     @Test
     public void allowSpecifyingThatMultipleTypesMustAlsoBeImmutable_does_not_work_with_separate_provided_calls() throws Exception {
-        assertInstancesOf(DependsOnManyTypesBeingImmutable.class, 
+        assertInstancesOf(DependsOnManyTypesBeingImmutable.class,
                           areImmutable(),
                           provided(AbstractType.class).isAlsoImmutable(),
                           provided(InterfaceType.class).isAlsoImmutable());
     }
-    
+
     @Test
     public void canAllowCollectionFieldsDeemedToHaveBeenSafelyCopiedAndWrappedInUnmodifiable() throws Exception {
-        assertInstancesOf(HasCollectionField.class, 
+        assertInstancesOf(HasCollectionField.class,
                           areImmutable(),
                           AllowedReason.assumingFields("myStrings").areSafelyCopiedUnmodifiableCollectionsWithImmutableElements());
     }
-    
+
     @Test
     public void canAllowAMutableFieldWhicIsNotMutatedAndDoesNotEscape() throws Exception {
         assertInstancesOf(HasDateField.class,
