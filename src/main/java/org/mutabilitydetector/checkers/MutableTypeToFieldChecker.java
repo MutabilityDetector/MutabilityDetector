@@ -78,7 +78,8 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         if (signature == null) { return; }
 
         new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
-            @Override public void visitFormalTypeParameter(String name) {
+            @Override
+            public void visitFormalTypeParameter(String name) {
                 genericTypesOfClass.add(name);
             }
         });
@@ -166,11 +167,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 if (mutabilityLookup.foundCyclicReference) {
                     setCircularReferenceResult(fieldLocation);
                     break;
-                } else if (!mutabilityLookup.result.isImmutable.equals(IMMUTABLE) && isConcreteType(assignedToField)) {
-                    setMutableFieldAssignmentResult(fieldLocation, assignedToField);
-                    break;
                 } else if(!isConcreteType(assignedToField)) {
-
                     UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomChecker(
                             fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods()).checkWrappedInUnmodifiable();
 
@@ -187,6 +184,18 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     } else if (unmodifiableWrapResult.canBeWrapped && !unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
                         setUnsafeWrappingResult(fieldLocation);
                     }
+                } else {
+                    if (mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
+                        break;
+                    } else if(isImmutableContainerType(assignedToField)) {
+                        /**
+                         * Allow {@link CollectionWithMutableElementTypeToFieldChecker} to decide if this concrete class
+                         * is immutable as long as it has an immutable element type.
+                          */
+                        break;
+                    } else {
+                        setMutableFieldAssignmentResult(fieldLocation, assignedToField);
+                    }
                 }
                 break;
             case Type.ARRAY:
@@ -196,6 +205,10 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
             default:
                 return;
             }
+        }
+
+        private boolean isImmutableContainerType(Dotted assignedToField) {
+            return "java.util.Optional".equals(assignedToField.asString());
         }
 
         private void setAssigningToGenericFieldResult(String fieldName, FieldLocation fieldLocation) {

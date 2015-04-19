@@ -199,7 +199,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
                 : previous;
     }
     
-    public static enum UnmodifiableWrapResult {
+    public enum UnmodifiableWrapResult {
         FIELD_TYPE_CANNOT_BE_WRAPPED(false, false, false),
         DOES_NOT_WRAP_USING_WHITELISTED_METHOD(true, false, false),
         WRAPS_BUT_DOES_NOT_COPY(true, true, false),
@@ -209,7 +209,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
         public final boolean invokesWhitelistedWrapperMethod;
         public final boolean safelyCopiesBeforeWrapping;
         
-        private UnmodifiableWrapResult(boolean canBeWrapped, boolean isWrapped, boolean safelyCopiesBeforeWrapping) {
+        UnmodifiableWrapResult(boolean canBeWrapped, boolean isWrapped, boolean safelyCopiesBeforeWrapping) {
             this.canBeWrapped = canBeWrapped;
             this.invokesWhitelistedWrapperMethod = isWrapped;
             this.safelyCopiesBeforeWrapping = safelyCopiesBeforeWrapping;
