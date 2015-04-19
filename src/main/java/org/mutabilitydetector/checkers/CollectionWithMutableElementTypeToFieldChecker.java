@@ -115,8 +115,11 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends Abstra
             for (GenericType genericType : genericParameters) {
                 if (genericType.equals(GenericType.wildcard())) {
                     return true;
-                } 
-                
+                } else if (genericType.isVariable) {
+                    return true;
+                }
+
+
                 MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type);
                 
                 if (mutabilityLookup.foundCyclicReference || !mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {

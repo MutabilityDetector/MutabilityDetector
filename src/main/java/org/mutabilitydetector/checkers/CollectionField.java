@@ -25,10 +25,16 @@ package org.mutabilitydetector.checkers;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.valueOf;
 import static java.util.Collections.unmodifiableList;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
@@ -79,7 +85,7 @@ public abstract class CollectionField {
 
     public static CollectionField from(String collectionType, String signature) {
         if (signature == null) {
-            return new RawCollection(Dotted.dotted(collectionType));
+            return new RawCollection(dotted(collectionType));
         }
         GenericCollectionReader collectionTypeReader = new GenericCollectionReader();
         
@@ -90,11 +96,12 @@ public abstract class CollectionField {
         
     }
     
-    private static class GenericCollectionReader extends SignatureVisitor {
+    private static final class GenericCollectionReader extends SignatureVisitor {
 
         private Dotted collectionType;
-        private List<Dotted> elementTypes = new ArrayList<Dotted>();
-        private List<String> wildcards = new ArrayList<String>();
+        private final Map<Integer, Dotted> elementTypes = Maps.newHashMap();
+        private final Map<Integer, Dotted> typeVariables = Maps.newHashMap();
+        private final Map<Integer, String> wildcards = Maps.newHashMap();
         private int genericParameterIndex = 0;
 
         boolean seenOuterCollectionType = false;
@@ -106,24 +113,30 @@ public abstract class CollectionField {
         @Override
         public void visitClassType(String name) {
             if (!seenOuterCollectionType) {
-                this.collectionType = Dotted.dotted(name);
+                this.collectionType = dotted(name);
                 seenOuterCollectionType = true;
             } else {
-                elementTypes.add(genericParameterIndex, Dotted.dotted(name));
+                elementTypes.put(genericParameterIndex, dotted(name));
                 genericParameterIndex++;
             }
         }
-        
+
+        @Override
+        public void visitTypeVariable(String name) {
+            typeVariables.put(genericParameterIndex, dotted(name));
+            genericParameterIndex++;
+        }
+
         @Override
         public void visitTypeArgument() {
-            wildcards.add(genericParameterIndex, "?");
-            elementTypes.add(genericParameterIndex, null);
+            wildcards.put(genericParameterIndex, "?");
+            elementTypes.put(genericParameterIndex, null);
             genericParameterIndex++;
         }
         
         @Override
         public SignatureVisitor visitTypeArgument(char wildcard) {
-            wildcards.add(genericParameterIndex, valueOf(wildcard));
+            wildcards.put(genericParameterIndex, valueOf(wildcard));
             
             return this;
         }
@@ -132,8 +145,11 @@ public abstract class CollectionField {
             List<GenericType> genericParameters = new ArrayList<GenericType>();
             for (int i = 0; i < genericParameterIndex; i++) {
                 Dotted elementType = elementTypes.get(i);
+                Dotted typeVariable = typeVariables.get(i);
+                boolean isVariable = typeVariable != null;
+
                 String wildcard = wildcards.get(i);
-                genericParameters.add(new GenericType(elementType, wildcard));
+                genericParameters.add(new GenericType(isVariable ? typeVariable : elementType, wildcard, isVariable));
             }
             
             return unmodifiableList(new ArrayList<GenericType>(genericParameters));
@@ -143,26 +159,28 @@ public abstract class CollectionField {
     static class GenericType {
         public final Dotted type;
         public final String wildcard;
+        public final boolean isVariable;
 
-        public GenericType(Dotted type, String wildcard) {
+        public GenericType(Dotted type, String wildcard, boolean isVariable) {
             this.type = type;
             this.wildcard = checkNotNull(wildcard, "wildcard");
+            this.isVariable = isVariable;
         }
-        
+
         public static GenericType wildcard() {
-            return new GenericType(null, "?");
+            return new GenericType(null, "?", false);
         }
 
         public static GenericType exact(Dotted type) {
-            return new GenericType(type, "=");
+            return new GenericType(type, "=", false);
         }
 
         public static GenericType extends_(Dotted type) {
-            return new GenericType(type, "+");
+            return new GenericType(type, "+", false);
         }
 
         public static GenericType super_(Dotted type) {
-            return new GenericType(type, "-");
+            return new GenericType(type, "-", false);
         }
 
         @Override

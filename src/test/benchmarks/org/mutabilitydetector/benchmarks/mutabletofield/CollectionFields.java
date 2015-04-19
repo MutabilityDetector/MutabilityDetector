@@ -86,7 +86,7 @@ public class CollectionFields {
         public StoresCopiedCollectionAsObjectAndIterable(List<ImmutableExample> potentiallyMutatable) {
             this.unmodifiableReferencedAsIterable =
                     Collections.unmodifiableList(
-                         new LinkedList<ImmutableExample>(potentiallyMutatable));
+                            new LinkedList<ImmutableExample>(potentiallyMutatable));
         }
 
         public ImmutableExample first() {
@@ -158,6 +158,15 @@ public class CollectionFields {
             this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<ImmutableExample, ImmutableExample>(mapOfImmutableType));
             this.field2 = field2;
             this.unmodifiableList = Collections.unmodifiableList(new ArrayList<ImmutableExample>(listOfImmutableType));
+        }
+    }
+
+
+    public final static class SafelyCopiedMap_UsesGenericTypeOfClass<SOME_GENERIC_TYPE> {
+        private final Map<ImmutableExample, SOME_GENERIC_TYPE> unmodifiableMap;
+
+        public SafelyCopiedMap_UsesGenericTypeOfClass(Map<ImmutableExample, SOME_GENERIC_TYPE> mapOfImmutableType) {
+            this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<ImmutableExample, SOME_GENERIC_TYPE>(mapOfImmutableType));
         }
     }
 

@@ -23,6 +23,7 @@ package org.mutabilitydetector.benchmarks;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
@@ -40,6 +41,7 @@ import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.NestedGenericTypes;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMapGenericOnMutableTypeForKey;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMap_UsesGenericTypeOfClass;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -71,6 +73,14 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         AnalysisResult result = runChecker(checker, NestedGenericTypes.class);
         assertThat(result, areNotImmutable());
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+    }
+
+    @Test
+    public void raisesErrorWhenCollectionFieldHasElementTypeUsingGenericTypeOfClass() {
+        AnalysisResult result = runChecker(checker, SafelyCopiedMap_UsesGenericTypeOfClass.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+        assertThat(checker.reasons().iterator().next().message(), containsString("<org.mutabilitydetector.benchmarks.ImmutableExample, SOME_GENERIC_TYPE>"));
     }
 
     @Test

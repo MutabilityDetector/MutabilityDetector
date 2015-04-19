@@ -34,6 +34,7 @@ import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutabl
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -175,10 +176,8 @@ public class MutabilityAssertTest {
 
     @Test
     public void canSpecifyIsImmutableAsLongAsGenericTypeUsedByFieldIsImmutable() throws Exception {
-        assertInstancesOf(HasFieldUsingGenericTypeOfClass.class,
-                areImmutable(),
-                provided("T").isAlsoImmutable(),
-                provided("N").isAlsoImmutable());
+        assertInstancesOf(HasFieldUsingGenericTypeOfClass.class, areNotImmutable());
+        assertInstancesOf(HasFieldUsingGenericTypeOfClass.class, areImmutable(), provided("MY_TYPE").isAlsoImmutable());
     }
 
     @Test(expected = MutabilityAssertionError.class)
