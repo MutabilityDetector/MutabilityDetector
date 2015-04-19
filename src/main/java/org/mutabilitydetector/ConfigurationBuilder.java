@@ -344,6 +344,26 @@ public abstract class ConfigurationBuilder {
         
         hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
     }
+
+    /**
+     * Merges the immutable container types of this Configuration with the given
+     * Configuration.
+     *
+     * The resultant immutable container types results will be the union of the two sets of
+     * immutable container types. Where the type is found in both
+     * Configurations, the result from otherConfiguration will replace the
+     * existing result in this Configuration. This replacement behaviour will
+     * occur for subsequent calls to
+     * {@link #mergeImmutableContainerTypesFrom(Configuration)} .
+     *
+     * @param otherConfiguration - Configuration to merge immutable container types with.
+     */
+    protected void mergeImmutableContainerTypesFrom(Configuration otherConfiguration) {
+        Set<Dotted> union =
+                Sets.union(hardcodedImmutableContainerClasses.build(), otherConfiguration.immutableContainerClasses());
+
+        hardcodedImmutableContainerClasses = ImmutableSet.<Dotted>builder().addAll(union);
+    }
     
     /**
      * Merge valid copy methods from another configuration.

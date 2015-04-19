@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -72,7 +73,10 @@ public final class MutabilityCheckerFactory {
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());
         checkers.add(new EscapedThisReferenceChecker());
-        checkers.add(new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInformation, verifierFactory));
+        checkers.add(new CollectionWithMutableElementTypeToFieldChecker(
+                mutableTypeInformation,
+                verifierFactory,
+                ImmutableSet.copyOf(immutableContainerClasses)));
         // checkers.add(new InheritedMutabilityChecker(analysisSession));
         // checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
         return Collections.unmodifiableCollection(checkers);

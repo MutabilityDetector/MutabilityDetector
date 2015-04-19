@@ -21,15 +21,7 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static com.google.common.collect.Maps.newHashMap;
-import static java.lang.String.format;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
-
-import java.util.Map;
-
+import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
@@ -44,18 +36,30 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
+import static java.lang.String.format;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+
 public final class CollectionWithMutableElementTypeToFieldChecker extends AbstractMutabilityChecker {
 
     private final MutableTypeInformation mutableTypeInfo;
     private final AsmVerifierFactory verifierFactory;
+    private final ImmutableSet<Dotted> immutableContainerTypes;
     private final JdkCollectionTypes jdkCollectionTypes = new JdkCollectionTypes();
     
     private final Map<String, String> fieldSignatures = newHashMap();
     
-    public CollectionWithMutableElementTypeToFieldChecker(MutableTypeInformation mutableTypeInfo, 
-                                                          AsmVerifierFactory verifierFactory) {
+    public CollectionWithMutableElementTypeToFieldChecker(
+            MutableTypeInformation mutableTypeInfo,
+            AsmVerifierFactory verifierFactory,
+            ImmutableSet<Dotted> immutableContainerTypes) {
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
+        this.immutableContainerTypes = immutableContainerTypes;
     }
 
     @Override
@@ -96,7 +100,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends Abstra
         private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
             Dotted fieldClass = dotted(typeAssignedToField.getInternalName());
             
-            if (jdkCollectionTypes.isCollectionType(fieldClass)) {
+            if (jdkCollectionTypes.isCollectionType(fieldClass) || immutableContainerTypes.contains(fieldClass)) {
                 String fieldName = fieldInsnNode.name;
                 String fieldSignature = fieldSignatures.get(fieldName);
                 CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);

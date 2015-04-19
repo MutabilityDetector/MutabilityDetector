@@ -170,4 +170,26 @@ public class CollectionFields {
         }
     }
 
+    public interface ImmutableContainer<E> {
+        E get();
+    }
+
+    public final static class HasImmutableContainerOfImmutableType {
+        private final ImmutableContainer<ImmutableExample> field;
+        public HasImmutableContainerOfImmutableType(ImmutableContainer<ImmutableExample> field) {
+            this.field = field;
+        }
+    }
+    public final static class HasImmutableContainerOfMutableType {
+        private final ImmutableContainer<Date> field;
+        public HasImmutableContainerOfMutableType(ImmutableContainer<Date> field) {
+            this.field = field;
+        }
+    }
+    public final static class HasImmutableContainerOfGenericType<T> {
+        private final ImmutableContainer<T> field;
+        public HasImmutableContainerOfGenericType(ImmutableContainer<T> field) {
+            this.field = field;
+        }
+    }
 }

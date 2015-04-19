@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
@@ -73,7 +74,10 @@ public class FieldAssumptionsTest {
             mutableTypeInfo,
             testingVerifierFactory(),
             immutableContainerClasses);
-    private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());
+    private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(
+            mutableTypeInfo,
+            testingVerifierFactory(),
+            ImmutableSet.<Dotted>of());
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo = TestUtil.analysisDatabase().requestInformation(AnalysisDatabase.PRIVATE_METHOD_INVOCATION);
     private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newInstance(privateMethodInvocationInfo);
     private final AsmMutabilityChecker nonFinalFieldChecker = new NonFinalFieldChecker();
