@@ -160,4 +160,5 @@ public class CollectionFields {
             this.unmodifiableList = Collections.unmodifiableList(new ArrayList<ImmutableExample>(listOfImmutableType));
         }
     }
+
 }

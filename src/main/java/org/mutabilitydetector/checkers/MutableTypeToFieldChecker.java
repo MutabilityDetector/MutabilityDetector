@@ -240,6 +240,5 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
 
-
     }
 }
