@@ -32,6 +32,7 @@ import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
@@ -60,15 +61,18 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
     private final TypeStructureInformation typeStructureInformation;
     private final MutableTypeInformation mutableTypeInfo;
     private final AsmVerifierFactory verifierFactory;
+    private final Set<Dotted> immutableContainerClasses;
     private final List<String> genericTypesOfClass = Lists.newLinkedList();
     private final Map<String, String> genericFields = Maps.newHashMap();
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
-                                     AsmVerifierFactory verifierFactory) {
+                                     AsmVerifierFactory verifierFactory,
+                                     Set<Dotted> immutableContainerClasses) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
+        this.immutableContainerClasses = immutableContainerClasses;
     }
 
     @Override
@@ -209,7 +213,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
         }
 
         private boolean isImmutableContainerType(Dotted assignedToField) {
-            return "java.util.Optional".equals(assignedToField.asString());
+            return immutableContainerClasses.contains(assignedToField);
         }
 
         private void setAssigningToGenericFieldResult(String fieldName, FieldLocation fieldLocation) {

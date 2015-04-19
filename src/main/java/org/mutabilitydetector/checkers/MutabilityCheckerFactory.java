@@ -30,18 +30,22 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTU
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
+import org.mutabilitydetector.locations.Dotted;
 
 public final class MutabilityCheckerFactory {
     
     private final ReassignedFieldAnalysisChoice analysisChoice;
+    private final Set<Dotted> immutableContainerClasses;
 
-    public MutabilityCheckerFactory(ReassignedFieldAnalysisChoice analysisChoice) {
+    public MutabilityCheckerFactory(ReassignedFieldAnalysisChoice analysisChoice, Set<Dotted> immutableContainerClasses) {
         this.analysisChoice = analysisChoice;
+        this.immutableContainerClasses = immutableContainerClasses;
     }
 
     public Iterable<AsmMutabilityChecker> createInstances(AnalysisDatabase database, AsmVerifierFactory verifierFactory, MutableTypeInformation mutableTypeInformation) {
@@ -59,9 +63,12 @@ public final class MutabilityCheckerFactory {
             throw new IllegalStateException();
         }
         
-        checkers.add(new MutableTypeToFieldChecker(database.requestInformation(TYPE_STRUCTURE), 
-                                                   mutableTypeInformation, 
-                                                   verifierFactory));
+        checkers.add(new MutableTypeToFieldChecker(
+                database.requestInformation(TYPE_STRUCTURE),
+                mutableTypeInformation,
+                verifierFactory,
+                immutableContainerClasses));
+
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());
         checkers.add(new EscapedThisReferenceChecker());

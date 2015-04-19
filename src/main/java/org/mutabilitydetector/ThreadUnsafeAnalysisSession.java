@@ -101,7 +101,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
                                                             Configuration configuration,
                                                             AsmVerifierFactory verifierFactory) {
         return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
-                                               new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm()), 
+                                               new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm(), configuration.immutableContainerClasses()),
                                                verifierFactory, 
                                                configuration);
     }

@@ -27,6 +27,8 @@ import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.AllChecksRunner;
@@ -37,6 +39,8 @@ import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldA
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
+import java.util.Collections;
+
 public class AnalysisSessionTest {
 
     private final Dotted immutableClass = Dotted.fromClass(ImmutableExample.class);
@@ -45,7 +49,7 @@ public class AnalysisSessionTest {
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
         AnalysisSession analysisSession = TestUtil.testAnalysisSession();
         AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
-        MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS);
+        MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS, Collections.<Dotted>emptySet());
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
         MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, Configurations.NO_CONFIGURATION);
 

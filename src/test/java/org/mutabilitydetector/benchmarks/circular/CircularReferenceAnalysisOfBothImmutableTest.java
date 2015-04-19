@@ -37,6 +37,8 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
 
+import java.util.Collections;
+
 public class CircularReferenceAnalysisOfBothImmutableTest {
 
     @Test
@@ -58,7 +60,8 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(
                 information, 
                 new MutableTypeInformation(session, Configurations.NO_CONFIGURATION), 
-                testingVerifierFactory());
+                testingVerifierFactory(),
+                Collections.<Dotted>emptySet());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }

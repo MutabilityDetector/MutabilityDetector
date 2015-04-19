@@ -24,6 +24,7 @@ package org.mutabilitydetector;
 
 
 import java.util.Map;
+import java.util.Set;
 
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
@@ -64,6 +65,11 @@ public interface Configuration {
      * @see AnalysisSession#resultFor(org.mutabilitydetector.locations.Dotted)
      */
     Map<Dotted, AnalysisResult> hardcodedResults();
+
+    /**
+     *
+     */
+    Set<Dotted> immutableContainerClasses();
 
     /**
      * Configures how Mutability Detector's analysis should respond to

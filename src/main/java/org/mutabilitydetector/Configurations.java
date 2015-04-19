@@ -64,6 +64,8 @@ public class Configurations {
             hardcodeAsDefinitelyImmutable(BigDecimal.class);
             hardcodeAsDefinitelyImmutable(BigInteger.class);
             hardcodeAsDefinitelyImmutable(Class.class);
+
+            hardcodeAsImmutableContainerType("java.util.Optional");
         }
     }.build();
     

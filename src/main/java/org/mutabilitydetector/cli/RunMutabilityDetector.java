@@ -103,7 +103,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
 
         AnalysisSession newSession = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
-                                                            new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS), 
+                                                            new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS, configuration.immutableContainerClasses()),
                                                             verifierFactory,
                                                             configuration);
         

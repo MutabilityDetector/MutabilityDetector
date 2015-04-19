@@ -21,40 +21,14 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
  */
 
 
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.TestMatchers.hasReasons;
-import static org.mutabilitydetector.TestUtil.analysisDatabase;
-import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testAnalysisSession;
-import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
-import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
-import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
-
-import java.util.Collections;
-
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -76,6 +50,34 @@ import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.FieldLocation;
 
+import java.util.Collections;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
+import static org.mutabilitydetector.TestUtil.analysisDatabase;
+import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.testAnalysisSession;
+import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
+import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
+import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
+
 public class MutableTypeToFieldCheckerTest {
 
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
@@ -88,13 +90,15 @@ public class MutableTypeToFieldCheckerTest {
     private final AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
 
     private final Dotted mutableExample = Dotted.fromClass(MutableExample.class);
+    private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
 
     private MutableTypeToFieldChecker checkerWithRealAnalysisSession() {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         return new MutableTypeToFieldChecker(
                 info,
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
-                testingVerifierFactory());
+                testingVerifierFactory(),
+                immutableContainerClasses);
     }
 
 
@@ -105,7 +109,8 @@ public class MutableTypeToFieldCheckerTest {
         checkerWithMockedSession = new MutableTypeToFieldChecker(
                 info,
                 new MutableTypeInformation(session, NO_CONFIGURATION),
-                testingVerifierFactory());
+                testingVerifierFactory(),
+                immutableContainerClasses);
     }
 
 
@@ -116,7 +121,8 @@ public class MutableTypeToFieldCheckerTest {
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo,
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
-                testingVerifierFactory());
+                testingVerifierFactory(),
+                immutableContainerClasses);
     }
 
     @Test
@@ -316,6 +322,20 @@ public class MutableTypeToFieldCheckerTest {
 
         assertThat(fieldLocation.typeName(), is(MutableByAssigningAbstractTypeToField.class.getName()));
         assertThat(fieldLocation.fieldName(), is("nameContainer"));
+    }
+
+    @Test
+    public void doesNotConsiderAClassHardcodedAsAnImmutableContainerClassMutable() throws Exception {
+        TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+        MutableTypeToFieldChecker checker = new MutableTypeToFieldChecker(
+                info,
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
+                testingVerifierFactory(),
+                ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)));
+
+        result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
+
+        assertThat(result.isImmutable, is(IsImmutable.IMMUTABLE));
     }
 
 }

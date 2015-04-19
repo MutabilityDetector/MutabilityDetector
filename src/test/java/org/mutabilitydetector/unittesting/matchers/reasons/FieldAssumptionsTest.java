@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -58,16 +59,20 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
+import org.mutabilitydetector.locations.Dotted;
 
 @SuppressWarnings("unused")
 public class FieldAssumptionsTest {
 
     private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(testAnalysisSession(), OUT_OF_THE_BOX_CONFIGURATION);
     private final TypeStructureInformation typeStructureInfo = analysisDatabase().requestInformation(TYPE_STRUCTURE);
+    private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
 
-    private final AsmMutabilityChecker mutableTypeToFieldChecker = new MutableTypeToFieldChecker(typeStructureInfo,
-                                                                               mutableTypeInfo,
-                                                                               testingVerifierFactory());
+    private final AsmMutabilityChecker mutableTypeToFieldChecker = new MutableTypeToFieldChecker(
+            typeStructureInfo,
+            mutableTypeInfo,
+            testingVerifierFactory(),
+            immutableContainerClasses);
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory());
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo = TestUtil.analysisDatabase().requestInformation(AnalysisDatabase.PRIVATE_METHOD_INVOCATION);
     private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newInstance(privateMethodInvocationInfo);

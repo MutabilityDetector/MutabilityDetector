@@ -152,10 +152,16 @@ public abstract class ConfigurationBuilder {
     
     public final Configuration build() {
         configure();
-        return new DefaultConfiguration(hardcodedResults.build(), exceptionPolicy, reassignedFieldAgorithm, validCopyMethods);
+        return new DefaultConfiguration(
+                hardcodedResults.build(),
+                hardcodedImmutableContainerClasses.build(),
+                exceptionPolicy,
+                reassignedFieldAgorithm,
+                validCopyMethods);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
+    private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
     private ReassignedFieldAnalysisChoice reassignedFieldAgorithm = NAIVE_PUT_FIELD_ANALYSIS;
     private Multimap<String,CopyMethod> validCopyMethods = HashMultimap.create();
@@ -278,6 +284,45 @@ public abstract class ConfigurationBuilder {
     }
 
     /**
+     * Configures a generic container type as immutable.
+     *
+     * Should be used for classes which, while immutable, contain potentially mutable elements. Mutability Detector's
+     * analysis will warn on classes which use immutable container classes parameterised with mutable types, but allow
+     * container classes parameterised with immutable types.
+     *
+     * For example:
+     * <code>
+     *     private final ImmutableContainer&lt;java.util.Date&gt; // considered mutable
+     *     private final ImmutableContainer&lt;GENERIC_TYPE_VARIABLE&gt; // considered mutable
+     *     private final ImmutableContainer&lt;?&gt; // considered mutable
+     *     private final ImmutableContainer&lt;String&gt; // considered immutable
+     * </code>
+     *
+     * A good example of an immutable container type is JDK 8's java.util.Optional. It has a single, final field, and
+     * cannot be subclassed. However, the generic parameter allows an instance of Optional to contain a mutable type,
+     * which can be modified by any code with a reference. However, if a class has an Optional field containing an
+     * immutable type, e.g. <code>Optional&lt;String&gt;</code> then it should not cause the class to be considered
+     * mutable.
+     *
+     * Be default java.util.Optional is considered an immutable container class.
+     *
+     * @param immutableContainerClass
+     * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
+     */
+    protected final void hardcodeAsImmutableContainerType(Class<?> immutableContainerClass) {
+        hardcodeAsImmutableContainerType(Dotted.fromClass(immutableContainerClass));
+    }
+
+    protected final void hardcodeAsImmutableContainerType(String immutableContainerClassName) {
+        hardcodeAsImmutableContainerType(dotted(CONVERTER.dotted(immutableContainerClassName)));
+
+    }
+
+    private final void hardcodeAsImmutableContainerType(Dotted immutableContainerClassName) {
+        hardcodedImmutableContainerClasses.add(immutableContainerClassName);
+    }
+
+    /**
      * Merges the hardcoded results of this Configuration with the given
      * Configuration.
      * 
@@ -372,16 +417,19 @@ public abstract class ConfigurationBuilder {
 
         private final Set<AnalysisResult> hardcodedResults;
         private final Map<Dotted, AnalysisResult> resultsByClassname;
+        private final Set<Dotted> immutableContainerClasses;
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
         private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
 
-        private DefaultConfiguration(Set<AnalysisResult> predefinedResults, 
+        private DefaultConfiguration(Set<AnalysisResult> predefinedResults,
+                                     Set<Dotted> immutableContainerClasses,
                                      ExceptionPolicy exceptionPolicy,
                                      ReassignedFieldAnalysisChoice reassignedFieldAlgorithm, 
                                      Multimap<String, CopyMethod> validCopyMethods) {
+            this.immutableContainerClasses = ImmutableSet.copyOf(immutableContainerClasses);
             this.exceptionPolicy = exceptionPolicy;
-            this.hardcodedResults = ImmutableSet.<AnalysisResult>copyOf(predefinedResults);
+            this.hardcodedResults = ImmutableSet.copyOf(predefinedResults);
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
             this.validCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().putAll(validCopyMethods).build();
@@ -391,7 +439,10 @@ public abstract class ConfigurationBuilder {
         public Map<Dotted, AnalysisResult> hardcodedResults() {
             return resultsByClassname;
         }
-        
+
+        @Override
+        public Set<Dotted> immutableContainerClasses() { return immutableContainerClasses; }
+
         @Override
         public ExceptionPolicy exceptionPolicy() {
             return exceptionPolicy;
