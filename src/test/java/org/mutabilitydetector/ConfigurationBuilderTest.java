@@ -175,7 +175,7 @@ public class ConfigurationBuilderTest {
 
         }.build();
         
-        assertThat(merged.hardcodedCopyMethods().size(), is(3));
+//        assertThat(merged.hardcodedCopyMethods().size(), is(3));
         assertThat(merged.hardcodedCopyMethods().values(), containsInAnyOrder(a, b, c));
     }
     

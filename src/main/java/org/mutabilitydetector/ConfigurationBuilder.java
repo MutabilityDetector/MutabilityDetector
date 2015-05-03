@@ -26,8 +26,8 @@ import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -41,7 +41,6 @@ import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 import org.objectweb.asm.Type;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Constructor;
@@ -152,15 +151,15 @@ public abstract class ConfigurationBuilder {
                 hardcodedResults.build(),
                 hardcodedImmutableContainerClasses.build(),
                 exceptionPolicy,
-                reassignedFieldAgorithm,
+                reassignedFieldAlgorithm,
                 validCopyMethods.build());
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
-    private ReassignedFieldAnalysisChoice reassignedFieldAgorithm = NAIVE_PUT_FIELD_ANALYSIS;
-    private ImmutableMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableMultimap.builder();
+    private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = NAIVE_PUT_FIELD_ANALYSIS;
+    private ImmutableSetMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableSetMultimap.builder();
 
     
     /**
@@ -392,7 +391,7 @@ public abstract class ConfigurationBuilder {
     }
     
     protected void useAdvancedReassignedFieldAlgorithm() {
-        this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
+        this.reassignedFieldAlgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
     
     /**
@@ -455,7 +454,7 @@ public abstract class ConfigurationBuilder {
         private final ImmutableSet<AnalysisResult> hardcodedResults;
         private final ImmutableMap<Dotted, AnalysisResult> resultsByClassname;
         private final ImmutableSet<Dotted> immutableContainerClasses;
-        private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
+        private final ImmutableSetMultimap<String, CopyMethod> validCopyMethods;
 
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
@@ -463,8 +462,8 @@ public abstract class ConfigurationBuilder {
         private DefaultConfiguration(ImmutableSet<AnalysisResult> predefinedResults,
                                      ImmutableSet<Dotted> immutableContainerClasses,
                                      ExceptionPolicy exceptionPolicy,
-                                     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm, 
-                                     ImmutableMultimap<String, CopyMethod> validCopyMethods) {
+                                     ReassignedFieldAnalysisChoice reassignedFieldAlgorithm,
+                                     ImmutableSetMultimap<String, CopyMethod> validCopyMethods) {
             this.immutableContainerClasses = immutableContainerClasses;
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = predefinedResults;
@@ -492,7 +491,7 @@ public abstract class ConfigurationBuilder {
         }
         
         @Override
-        public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
+        public ImmutableSetMultimap<String, CopyMethod> hardcodedCopyMethods() {
             return validCopyMethods;
         }
         

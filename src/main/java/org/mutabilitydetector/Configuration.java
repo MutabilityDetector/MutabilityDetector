@@ -26,6 +26,7 @@ package org.mutabilitydetector;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
@@ -117,5 +118,5 @@ public interface Configuration {
      * 
      * @return
      */
-    ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods();
+    ImmutableSetMultimap<String, CopyMethod> hardcodedCopyMethods();
 }
