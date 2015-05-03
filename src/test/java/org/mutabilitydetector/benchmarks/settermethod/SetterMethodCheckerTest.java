@@ -64,7 +64,7 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.CodeLocation;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 @RunWith(Theories.class)
 public final class SetterMethodCheckerTest {

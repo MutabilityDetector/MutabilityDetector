@@ -31,7 +31,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import com.google.common.base.Objects;
 
 @Immutable
-public class CopyMethod {
+public final class CopyMethod {
     private final Dotted owner;
     private final String name;
     private final String desc;

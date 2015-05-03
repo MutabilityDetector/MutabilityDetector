@@ -30,8 +30,8 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE;
 import static org.mutabilitydetector.MutabilityReason.FIELD_CAN_BE_REASSIGNED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 

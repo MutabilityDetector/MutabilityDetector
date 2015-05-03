@@ -41,8 +41,8 @@ import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.TestUtil.unusedReason;
-import static org.mutabilitydetector.locations.ClassLocation.from;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
 import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
@@ -162,7 +162,7 @@ public class WithAllowedReasonsMatcherTest {
         when(onlyAllowOneReason.matches(disallowedReason)).thenReturn(false);
         
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
-        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, asList(disallowedReason));
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, disallowedReason);
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed));
         

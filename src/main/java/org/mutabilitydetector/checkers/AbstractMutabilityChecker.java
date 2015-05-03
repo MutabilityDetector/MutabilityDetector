@@ -31,7 +31,7 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.Reason;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;

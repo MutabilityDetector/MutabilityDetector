@@ -22,7 +22,7 @@ package org.mutabilitydetector.checkers;
 
 
 
-import static org.mutabilitydetector.locations.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.mutabilitydetector.MutabilityReason;

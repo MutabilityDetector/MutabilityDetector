@@ -21,25 +21,16 @@ package org.mutabilitydetector;
  */
 
 
-
-
-import static com.google.common.collect.ImmutableSet.copyOf;
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
-import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
-
+import com.google.common.base.Equivalence;
+import com.google.common.base.Equivalence.Wrapper;
+import com.google.common.base.Equivalences;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
@@ -50,16 +41,21 @@ import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 import org.objectweb.asm.Type;
 
-import com.google.common.base.Equivalence;
-import com.google.common.base.Equivalence.Wrapper;
-import com.google.common.base.Equivalences;
-import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.collect.ImmutableSet.copyOf;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
+import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 /**
  * Builds a {@link Configuration} for customising Mutability Detector's analysis.
@@ -144,7 +140,7 @@ public abstract class ConfigurationBuilder {
     };
 
     private static final Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
-        @Override public AnalysisResult apply(@Nonnull Wrapper<AnalysisResult> input) { return input.get(); }
+        @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
     };
 
     
@@ -157,14 +153,14 @@ public abstract class ConfigurationBuilder {
                 hardcodedImmutableContainerClasses.build(),
                 exceptionPolicy,
                 reassignedFieldAgorithm,
-                validCopyMethods);
+                validCopyMethods.build());
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
     private ReassignedFieldAnalysisChoice reassignedFieldAgorithm = NAIVE_PUT_FIELD_ANALYSIS;
-    private Multimap<String,CopyMethod> validCopyMethods = HashMultimap.create();
+    private ImmutableMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableMultimap.builder();
 
     
     /**
@@ -306,7 +302,7 @@ public abstract class ConfigurationBuilder {
      *
      * Be default java.util.Optional is considered an immutable container class.
      *
-     * @param immutableContainerClass
+     * @param immutableContainerClass class that is immutable as long as contained elements are immutable
      * @see MutabilityReason#COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE
      */
     protected final void hardcodeAsImmutableContainerType(Class<?> immutableContainerClass) {
@@ -318,7 +314,7 @@ public abstract class ConfigurationBuilder {
 
     }
 
-    private final void hardcodeAsImmutableContainerType(Dotted immutableContainerClassName) {
+    private void hardcodeAsImmutableContainerType(Dotted immutableContainerClassName) {
         hardcodedImmutableContainerClasses.add(immutableContainerClassName);
     }
 
@@ -384,7 +380,7 @@ public abstract class ConfigurationBuilder {
      * change <code>this<code> <code>Configuration</code>'s setting for e.g. @{link #setExceptionPolicy}.
      *
      *
-     * @param otherConfiguration
+     * @param otherConfiguration configuration to merge from
      * @see #mergeHardcodedResultsFrom(Configuration)
      * @see #mergeImmutableContainerTypesFrom(Configuration)
      * @see #mergeValidCopyMethodsFrom(Configuration)
@@ -446,7 +442,7 @@ public abstract class ConfigurationBuilder {
     }
 
     public Multimap<String,CopyMethod> getCopyMethodsAllowed() {
-        return validCopyMethods;
+        return validCopyMethods.build();
     }
     
     private void rethrow(String message, Throwable e) {
@@ -456,25 +452,25 @@ public abstract class ConfigurationBuilder {
     @Immutable
     private static final class DefaultConfiguration implements Configuration {
 
-        private final Set<AnalysisResult> hardcodedResults;
-        private final Map<Dotted, AnalysisResult> resultsByClassname;
-        private final Set<Dotted> immutableContainerClasses;
+        private final ImmutableSet<AnalysisResult> hardcodedResults;
+        private final ImmutableMap<Dotted, AnalysisResult> resultsByClassname;
+        private final ImmutableSet<Dotted> immutableContainerClasses;
         private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
 
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
 
-        private DefaultConfiguration(Set<AnalysisResult> predefinedResults,
-                                     Set<Dotted> immutableContainerClasses,
+        private DefaultConfiguration(ImmutableSet<AnalysisResult> predefinedResults,
+                                     ImmutableSet<Dotted> immutableContainerClasses,
                                      ExceptionPolicy exceptionPolicy,
                                      ReassignedFieldAnalysisChoice reassignedFieldAlgorithm, 
-                                     Multimap<String, CopyMethod> validCopyMethods) {
-            this.immutableContainerClasses = ImmutableSet.copyOf(immutableContainerClasses);
+                                     ImmutableMultimap<String, CopyMethod> validCopyMethods) {
+            this.immutableContainerClasses = immutableContainerClasses;
             this.exceptionPolicy = exceptionPolicy;
-            this.hardcodedResults = ImmutableSet.copyOf(predefinedResults);
+            this.hardcodedResults = predefinedResults;
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
-            this.validCopyMethods = new ImmutableMultimap.Builder<String,CopyMethod>().putAll(validCopyMethods).build();
+            this.validCopyMethods = validCopyMethods;
         }
 
         @Override

@@ -22,6 +22,7 @@ package org.mutabilitydetector.cli;
 
 
 
+import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
@@ -32,12 +33,13 @@ import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
-import static org.mutabilitydetector.locations.ClassLocation.from;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
@@ -45,7 +47,7 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 public class SessionResultsFormatterTest {
 
@@ -97,7 +99,7 @@ public class SessionResultsFormatterTest {
         when(options.verbose()).thenReturn(true);
 
         AnalysisSession analysisSession = mock(AnalysisSession.class);
-        Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasons));
+        Collection<AnalysisResult> analysisResults = singleton(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasons));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);

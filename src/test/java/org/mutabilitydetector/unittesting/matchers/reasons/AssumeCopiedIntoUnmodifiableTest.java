@@ -28,8 +28,8 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_T
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.ClassLocation.from;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 import static org.mutabilitydetector.unittesting.matchers.reasons.AssumeCopiedIntoUnmodifiable.assuming;
 
 import org.junit.Test;
@@ -40,7 +40,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.locations.Dotted;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 @RunWith(Theories.class)
 public class AssumeCopiedIntoUnmodifiableTest {

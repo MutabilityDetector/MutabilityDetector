@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 public class PublishedNonFinalFieldCheckerTest {
 

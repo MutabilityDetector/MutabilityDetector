@@ -44,7 +44,7 @@ import org.mutabilitydetector.AnalysisResultTheory;
 import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 @RunWith(Theories.class)
 public class ArrayFieldMutabilityCheckerTest {

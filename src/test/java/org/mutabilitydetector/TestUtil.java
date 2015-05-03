@@ -23,6 +23,7 @@ package org.mutabilitydetector;
 
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
 import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
@@ -32,6 +33,7 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisD
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Ignore;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
@@ -43,7 +45,7 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.AnalysisClassLoader;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
@@ -51,8 +53,7 @@ import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 @Ignore
 public class TestUtil {
     public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        IsImmutable result = testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).isImmutable;
-        return result;
+        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).isImmutable;
     }
     
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
@@ -68,7 +69,7 @@ public class TestUtil {
     }
 
     public static Collection<MutableReasonDetail> unusedMutableReasonDetails() {
-        return asList(unusedMutableReasonDetail());
+        return singleton(unusedMutableReasonDetail());
     }
 
     public static MutableReasonDetail unusedMutableReasonDetail() {

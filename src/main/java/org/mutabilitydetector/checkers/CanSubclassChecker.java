@@ -26,7 +26,7 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.MethodVisitor;
 
 public final class CanSubclassChecker extends AbstractMutabilityChecker {

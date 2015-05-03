@@ -30,7 +30,7 @@ import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import org.junit.Test;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 
 public class AbstractMutabilityCheckerTest {
 

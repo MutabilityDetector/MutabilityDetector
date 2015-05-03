@@ -48,7 +48,7 @@ import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.Dotted;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 import java.util.Collections;
 import java.util.Set;

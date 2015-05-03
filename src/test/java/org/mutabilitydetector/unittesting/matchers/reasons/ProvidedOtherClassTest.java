@@ -32,10 +32,13 @@ import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import org.hamcrest.Matcher;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.checkers.CollectionField;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.CodeLocation;
 
 public class ProvidedOtherClassTest {
@@ -101,14 +104,32 @@ public class ProvidedOtherClassTest {
     @Test
     public void matchesWhenReasonIsMapWithMutableElementTypes() {
         CollectionField collectionField = CollectionField.from("Ljava/util/Map;", "Ljava/util/Map<Lsome/mutable/Clazz;Lsome/mutable/OtherClazz;>;");
-        
+
         MutableReasonDetail reason = newMutableReasonDetail(
                 format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
                 unusedClassLocation,
                 COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
-        
+
         matcher = ProvidedOtherClass.provided(dotted("some.mutable.Clazz"), dotted("some.mutable.OtherClazz")).isAlsoImmutable();
-        
+
+        assertTrue(matcher.matches(reason));
+    }
+
+    @Rule
+    public IncorrectAnalysisRule rule = new IncorrectAnalysisRule();
+
+    @FalsePositive
+    @Test
+    public void matchesWhenReasonIsMapWithMutableKeysWithImmutableValues() {
+        CollectionField collectionField = CollectionField.from("Ljava/util/Map;", "Ljava/util/Map<Lsome/mutable/Clazz;Lsome/immutable/OtherClazz;>;");
+
+        MutableReasonDetail reason = newMutableReasonDetail(
+                format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
+                unusedClassLocation,
+                COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
+
+        matcher = ProvidedOtherClass.provided(dotted("some.mutable.Clazz")).isAlsoImmutable();
+
         assertTrue(matcher.matches(reason));
     }
 

@@ -26,7 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import org.junit.Test;

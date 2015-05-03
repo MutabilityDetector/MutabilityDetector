@@ -35,7 +35,7 @@ import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ESCAPED_THIS_REFERENCE;
 import static org.mutabilitydetector.MutabilityReason.PUBLISHED_NON_FINAL_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
@@ -49,7 +49,7 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
@@ -82,7 +82,7 @@ public class AssertionReporterTest {
                 codeLocation,
                 PUBLISHED_NON_FINAL_FIELD);
 
-        AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, asList(reason));
+        AnalysisResult analysisResult = analysisResult("d.e.SimpleClassName", NOT_IMMUTABLE, reason);
         try {
             reporter.assertThat(analysisResult, withNoAllowedReasons(areImmutable()));
             fail("expected exception");

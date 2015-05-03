@@ -24,8 +24,8 @@ package org.mutabilitydetector.checkers.settermethod;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -33,8 +33,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
-import org.mutabilitydetector.locations.ClassLocation;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -162,9 +162,6 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
 
     protected void end() {}
 
-    /**
-     * @return
-     */
     protected final EnhancedClassNode getEnhancedClassNode() {
         EnhancedClassNode result = enhancedClassNode;
         if (null == result) {
@@ -211,12 +208,10 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName());
-        builder.append(", [candidatesInitialisersMapping=").append(candidatesInitialisersMapping);
-        builder.append(", classNode=").append(classNode);
-        builder.append(", enhancedClassNode=").append(enhancedClassNode).append("]");
-        return builder.toString();
+        return getClass().getSimpleName()
+                + ", [candidatesInitialisersMapping=" + candidatesInitialisersMapping
+                + ", classNode=" + classNode
+                + ", enhancedClassNode=" + enhancedClassNode + "]";
     }
 
 }

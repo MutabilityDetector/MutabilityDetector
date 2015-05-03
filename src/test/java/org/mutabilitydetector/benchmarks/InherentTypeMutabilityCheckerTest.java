@@ -38,7 +38,7 @@ import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.InherentTypeMutabilityChecker;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 
 public class InherentTypeMutabilityCheckerTest {
 

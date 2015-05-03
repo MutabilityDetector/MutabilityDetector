@@ -25,7 +25,7 @@ package org.mutabilitydetector.checkers;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 
 /**
  * This checker visits types and fields. Types can be visited separately, fields should be visited as part of visiting

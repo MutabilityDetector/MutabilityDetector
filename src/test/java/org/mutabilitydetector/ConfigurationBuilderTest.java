@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
@@ -108,7 +109,7 @@ public class ConfigurationBuilderTest {
 
         assertInstancesOf(configurationBuilder.build().getClass(),
                 areImmutable(),
-                provided(ImmutableSet.class, ImmutableMap.class, ImmutableMultimap.class).isAlsoImmutable());
+                provided(AnalysisResult.class, Dotted.class).areAlsoImmutable());
     }
 
     @Test

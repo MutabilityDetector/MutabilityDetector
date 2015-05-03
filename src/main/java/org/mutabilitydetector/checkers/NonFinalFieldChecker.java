@@ -23,10 +23,10 @@ package org.mutabilitydetector.checkers;
 
 
 import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 
 public final class NonFinalFieldChecker extends AbstractMutabilityChecker {

@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.util.StackPushingOpcodes;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;

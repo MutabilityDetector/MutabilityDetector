@@ -27,7 +27,7 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -42,7 +42,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.String.format;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 public final class CollectionWithMutableElementTypeToFieldChecker extends AbstractMutabilityChecker {
 

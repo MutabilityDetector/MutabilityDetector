@@ -23,6 +23,7 @@ package org.mutabilitydetector.checkers.info;
 
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -32,7 +33,7 @@ import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.util.Collections;
@@ -59,9 +60,9 @@ public class MutableTypeInformationTest {
     public void returnsIsImmutableResultFromAnalysisSession() throws Exception {
         IsImmutable isImmutableResult = EFFECTIVELY_IMMUTABLE;
         
-        AnalysisResult result = analysisResult("a.b.c.D", 
-                                               isImmutableResult, 
-                                               asList(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
+        AnalysisResult result = analysisResult("a.b.c.D",
+                isImmutableResult,
+                singleton(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
 
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.resultFor(needToKnowMutabilityOf)).thenReturn(result);

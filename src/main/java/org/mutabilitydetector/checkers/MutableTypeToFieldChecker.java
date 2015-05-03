@@ -28,7 +28,7 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_T
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.locations.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 import java.util.List;
 import java.util.Map;
@@ -39,9 +39,9 @@ import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomC
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

@@ -33,7 +33,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 
 public class AnalysisResultTest {
 

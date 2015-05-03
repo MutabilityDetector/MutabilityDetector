@@ -47,7 +47,7 @@ import org.mutabilitydetector.benchmarks.sealed.MutableByNotBeingFinalClass;
 import org.mutabilitydetector.benchmarks.sealed.SealedImmutable;
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 @RunWith(Theories.class)

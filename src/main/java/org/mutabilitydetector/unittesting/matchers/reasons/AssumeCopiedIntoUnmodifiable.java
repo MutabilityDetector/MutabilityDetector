@@ -28,7 +28,7 @@ import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTA
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 public class AssumeCopiedIntoUnmodifiable {
 

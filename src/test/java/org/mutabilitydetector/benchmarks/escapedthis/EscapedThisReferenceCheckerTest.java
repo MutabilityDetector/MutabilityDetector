@@ -67,7 +67,7 @@ import org.mutabilitydetector.benchmarks.escapedthis.Unsafe.ThisPassedToPrivateM
 import org.mutabilitydetector.checkers.EscapedThisReferenceChecker;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
-import org.mutabilitydetector.locations.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 
 @RunWith(Theories.class)

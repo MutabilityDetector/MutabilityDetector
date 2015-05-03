@@ -25,7 +25,7 @@ package org.mutabilitydetector.checkers;
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
-import static org.mutabilitydetector.locations.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import org.mutabilitydetector.MutabilityReason;
@@ -33,7 +33,7 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.locations.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
