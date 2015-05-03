@@ -82,6 +82,25 @@ public class Configurations {
             hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
             hardcodeValidCopyMethod(Set.class, "com.google.common.collect.Sets.newHashSet", Iterable.class);
             hardcodeValidCopyMethod(Map.class, "com.google.common.collect.Maps.newHashMap", Map.class);
+
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableCollection");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableClassToInstanceMap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableBiMap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableCollection");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableList");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableListMultimap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMultimap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMultiset");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableRangeMap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableRangeSet");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSet");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSetMultimap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedMap");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedMultiset");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedSet");
+            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableTable");
+            hardcodeAsImmutableContainerType("com.google.common.base.Optional");
         }
     }.build();
     
