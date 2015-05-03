@@ -24,6 +24,7 @@ package org.mutabilitydetector;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
@@ -39,7 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.CloneList;
@@ -76,9 +79,9 @@ public class ConfigurationBuilderTest {
             }
         }.build();
         
-        final AnalysisResult resultInCurrentConfig = analysisResult("hardcoded.in.both.Configurations", 
-                                                              IsImmutable.NOT_IMMUTABLE, 
-                                                              TestUtil.unusedMutableReasonDetail());
+        final AnalysisResult resultInCurrentConfig = analysisResult("hardcoded.in.both.Configurations",
+                IsImmutable.NOT_IMMUTABLE,
+                TestUtil.unusedMutableReasonDetail());
         
         final Configuration current = new ConfigurationBuilder() {
             @Override public void configure() {
@@ -103,9 +106,49 @@ public class ConfigurationBuilderTest {
             @Override public void configure() { }
         };
 
-        assertInstancesOf(configurationBuilder.build().getClass(), 
-                          areImmutable(),
-                          provided(ImmutableSet.class, ImmutableMap.class, ImmutableMultimap.class).isAlsoImmutable());
+        assertInstancesOf(configurationBuilder.build().getClass(),
+                areImmutable(),
+                provided(ImmutableSet.class, ImmutableMap.class, ImmutableMultimap.class).isAlsoImmutable());
+    }
+
+    @Test
+    public void canMergeEntireConfigurations() throws Exception {
+        final Configuration first = new ConfigurationBuilder() {
+            @Override public void configure() {
+                hardcodeResult(definitelyImmutable("hardcoded.in.both.Configurations"));
+                hardcodeResult(definitelyImmutable("only.in.existing.Configuration"));
+                useAdvancedReassignedFieldAlgorithm();
+            }
+        }.build();
+
+        final Configuration second = new ConfigurationBuilder() {
+            @Override public void configure() {
+                hardcodeAsDefinitelyImmutable("only.in.second.Configuration");
+                hardcodeAsImmutableContainerType("container.only.in.second.Configuration");
+                hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
+                setExceptionPolicy(ExceptionPolicy.FAIL_FAST);
+            }
+        }.build();
+
+        final AnalysisResult resultInCurrentConfig = analysisResult("hardcoded.in.both.Configurations",
+                IsImmutable.NOT_IMMUTABLE,
+                TestUtil.unusedMutableReasonDetail());
+
+        final Configuration current = new ConfigurationBuilder() {
+            @Override public void configure() {
+                setExceptionPolicy(ExceptionPolicy.CARRY_ON);
+                hardcodeResult(resultInCurrentConfig);
+                merge(first);
+                merge(second);
+            }
+        }.build();
+
+        assertThat(current.hardcodedResults().size(), is(3));
+        assertThat(current.immutableContainerClasses(), contains(Dotted.dotted("container.only.in.second.Configuration")));
+        assertThat(current.hardcodedCopyMethods().get("java.util.List"),
+            contains(new CopyMethod(dotted("com.google.common.collect.Lists"), "newArrayList", "(Ljava/lang/Iterable;)Ljava/util/ArrayList;")));
+        assertThat(current.exceptionPolicy(), is(ExceptionPolicy.CARRY_ON));
+        assertThat(current.reassignedFieldAlgorithm(), is(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS));
     }
     
     @Test

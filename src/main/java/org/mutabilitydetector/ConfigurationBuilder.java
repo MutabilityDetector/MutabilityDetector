@@ -373,6 +373,27 @@ public abstract class ConfigurationBuilder {
     protected void mergeValidCopyMethodsFrom(Configuration otherConfiguration) {
         validCopyMethods.putAll(otherConfiguration.hardcodedCopyMethods());
     }
+
+    /**
+     * Merges configuration from another configuration with this one.
+     *
+     * As with other merge methods, where the same setting is present in both configurations, the settings from
+     * <code>other</code> will be applied.
+     *
+     * Merging applies only to the configuration applied to certain classes, such as hardcoded results. It does not
+     * change <code>this<code> <code>Configuration</code>'s setting for e.g. @{link #setExceptionPolicy}.
+     *
+     *
+     * @param otherConfiguration
+     * @see #mergeHardcodedResultsFrom(Configuration)
+     * @see #mergeImmutableContainerTypesFrom(Configuration)
+     * @see #mergeValidCopyMethodsFrom(Configuration)
+     */
+    protected void merge(Configuration otherConfiguration) {
+        mergeHardcodedResultsFrom(otherConfiguration);
+        mergeImmutableContainerTypesFrom(otherConfiguration);
+        mergeValidCopyMethodsFrom(otherConfiguration);
+    }
     
     protected void useAdvancedReassignedFieldAlgorithm() {
         this.reassignedFieldAgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
@@ -438,9 +459,10 @@ public abstract class ConfigurationBuilder {
         private final Set<AnalysisResult> hardcodedResults;
         private final Map<Dotted, AnalysisResult> resultsByClassname;
         private final Set<Dotted> immutableContainerClasses;
+        private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
+
         private final ExceptionPolicy exceptionPolicy;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
-        private final ImmutableMultimap<String, CopyMethod> validCopyMethods;
 
         private DefaultConfiguration(Set<AnalysisResult> predefinedResults,
                                      Set<Dotted> immutableContainerClasses,
