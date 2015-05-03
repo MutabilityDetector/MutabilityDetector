@@ -107,8 +107,8 @@ public class Configurations {
      */
     public static final Configuration OUT_OF_THE_BOX_CONFIGURATION = new ConfigurationBuilder() {
         @Override public void configure() {
-            mergeHardcodedResultsFrom(JDK_CONFIGURATION);
-            mergeValidCopyMethodsFrom(GUAVA_CONFIGURATION);
+            merge(JDK_CONFIGURATION);
+            merge(GUAVA_CONFIGURATION);
         }
     }.build();
 
