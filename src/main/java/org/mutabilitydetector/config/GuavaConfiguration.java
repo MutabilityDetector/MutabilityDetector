@@ -21,6 +21,7 @@ package org.mutabilitydetector.config;
  */
 
 import org.mutabilitydetector.ConfigurationBuilder;
+import org.mutabilitydetector.locations.Dotted;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class GuavaConfiguration extends ConfigurationBuilder {
         hardcodeValidCopyMethod(Set.class, packageBase + "collect.Sets.newHashSet", Iterable.class);
         hardcodeValidCopyMethod(Map.class, packageBase + "collect.Maps.newHashMap", Map.class);
 
+        hardcodeAsImmutableContainerType(packageBase + "collect.ContiguousSet");
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableCollection");
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableClassToInstanceMap");
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableBiMap");
@@ -54,6 +56,8 @@ public class GuavaConfiguration extends ConfigurationBuilder {
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableSortedMultiset");
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableSortedSet");
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableTable");
+        hardcodeAsImmutableContainerType(packageBase + "collect.Range");
         hardcodeAsImmutableContainerType(packageBase + "base.Optional");
     }
+
 }
