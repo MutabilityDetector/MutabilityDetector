@@ -116,5 +116,8 @@ MutabilityDetector4FindBugs is also available from Maven Central, with the follo
 ### Java 8 Compatibility
 ![Compatibility Badge](https://java.net/downloads/adoptopenjdk/compat.svg)
 
+### Build Status
+[![Build Status](https://api.travis-ci.org/MutabilityDetector/MutabilityDetector.png?branch=master)](https://travis-ci.org/MutabilityDetector/MutabilityDetector)
+
 #### Contact
 Contact can be made either by leaving comments or by [email](mailto:Grundlefleck+md@gmail.com).
