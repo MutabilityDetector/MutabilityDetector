@@ -21,88 +21,22 @@ package org.mutabilitydetector;
  */
 
 
-
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.mutabilitydetector.config.GuavaConfiguration;
+import org.mutabilitydetector.config.JdkConfiguration;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
 public class Configurations {
 
-    /**
-     * Non-exhaustive list of immutable classes from the standard JDK.
-     * 
-     * @see String
-     * @see Boolean
-     * @see Byte
-     * @see Character
-     * @see Short
-     * @see Integer
-     * @see Long
-     * @see Float
-     * @see Double
-     * @see BigDecimal
-     * @see BigInteger
-     * @see Class
-     */
-    public static final Configuration JDK_CONFIGURATION = new ConfigurationBuilder() {
-        @Override
-        public void configure() {
-            hardcodeAsDefinitelyImmutable(String.class);
-            hardcodeAsDefinitelyImmutable(Boolean.class);
-            hardcodeAsDefinitelyImmutable(Byte.class);
-            hardcodeAsDefinitelyImmutable(Character.class);
-            hardcodeAsDefinitelyImmutable(Short.class);
-            hardcodeAsDefinitelyImmutable(Integer.class);
-            hardcodeAsDefinitelyImmutable(Long.class);
-            hardcodeAsDefinitelyImmutable(Float.class);
-            hardcodeAsDefinitelyImmutable(Double.class);
-            hardcodeAsDefinitelyImmutable(BigDecimal.class);
-            hardcodeAsDefinitelyImmutable(BigInteger.class);
-            hardcodeAsDefinitelyImmutable(Class.class);
 
-            hardcodeAsImmutableContainerType("java.util.Optional");
-        }
-    }.build();
+    /**
+     * @see JdkConfiguration
+     */
+    public static final Configuration JDK_CONFIGURATION = new JdkConfiguration().build();
     
     /**
-     * List of collection copying methods in Guava collections which Mutability detector recognises
-     * 
-     * @see com.google.common.collect.Lists
-     * @see com.google.common.collect.Sets
-     * @see com.google.common.collect.Maps
+     * @see GuavaConfiguration
      */
-    public static final Configuration GUAVA_CONFIGURATION = new ConfigurationBuilder() {
-        @Override
-        public void configure() {
-            hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
-            hardcodeValidCopyMethod(Set.class, "com.google.common.collect.Sets.newHashSet", Iterable.class);
-            hardcodeValidCopyMethod(Map.class, "com.google.common.collect.Maps.newHashMap", Map.class);
-
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableCollection");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableClassToInstanceMap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableBiMap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableCollection");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableList");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableListMultimap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMultimap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableMultiset");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableRangeMap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableRangeSet");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSet");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSetMultimap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedMap");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedMultiset");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableSortedSet");
-            hardcodeAsImmutableContainerType("com.google.common.collect.ImmutableTable");
-            hardcodeAsImmutableContainerType("com.google.common.base.Optional");
-        }
-    }.build();
+    public static final Configuration GUAVA_CONFIGURATION = new GuavaConfiguration().build();
     
     /**
      * Configurations with default settings and no hardcoded results.
@@ -116,13 +50,15 @@ public class Configurations {
      * <p>
      * As of version 0.9 the default configuration differs from
      * {@link #NO_CONFIGURATION} only in that it merges in the hardcoded results
-     * from {@link #JDK_CONFIGURATION}.
+     * from {@link #JDK_CONFIGURATION} {@link #GUAVA_CONFIGURATION}.
      * <p>
      * It is recommended that this configuration is merged into any custom
      * Configuration, in order to remain consistent with
      * {@link MutabilityAssert}.
      * 
-     * @since 0.9
+     * @since 0.9.3
+     * @see JdkConfiguration
+     * @see GuavaConfiguration
      */
     public static final Configuration OUT_OF_THE_BOX_CONFIGURATION = new ConfigurationBuilder() {
         @Override public void configure() {
