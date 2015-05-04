@@ -23,7 +23,6 @@ package org.mutabilitydetector;
 
 import com.google.common.base.Equivalence;
 import com.google.common.base.Equivalence.Wrapper;
-import com.google.common.base.Equivalences;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -129,7 +128,7 @@ public abstract class ConfigurationBuilder {
      */
     public abstract void configure();
     
-    private static final Equivalence<AnalysisResult> CLASSNAME_EQUIVALENCE = Equivalences.equals().onResultOf(AnalysisResult.TO_CLASSNAME);
+    private static final Equivalence<AnalysisResult> CLASSNAME_EQUIVALENCE = Equivalence.equals().onResultOf(AnalysisResult.TO_CLASSNAME);
 
     private static final Function<AnalysisResult, Wrapper<AnalysisResult>> TO_CLASSNAME_EQUIVALENCE_WRAPPER = 
         new Function<AnalysisResult, Wrapper<AnalysisResult>>() {

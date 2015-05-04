@@ -45,7 +45,7 @@ public final class NamesFromClassResources {
         return FluentIterable.from(asList(findResources))
                 .transform(TO_DOTTED_STRING)
                 .filter(containsPattern(classNameRegex))
-                .transform(STRING_NAME_TO_DOTTED).toImmutableList();
+                .transform(STRING_NAME_TO_DOTTED).toList();
     }
 
 }

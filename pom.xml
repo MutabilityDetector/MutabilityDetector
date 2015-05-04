@@ -329,7 +329,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>12.0</version>
+      <version>18.0</version>
       <scope>compile</scope>
     </dependency>
     <!-- Ignore while releasing <dependency> <groupId>org.mutabilitydetector</groupId> <artifactId>asm-nonclassloadingsimpleverifier</artifactId> 
@@ -337,13 +337,13 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.9.5</version>
+      <version>1.10.19</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -53,8 +53,7 @@ public class AnalysingRtJar {
     }
     
     public static void main(String[] args) throws Exception {
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.start();
+        Stopwatch stopwatch = Stopwatch.createStarted();
         Date started = new Date();
         new AnalysingRtJar().checkExceptionIsNotThrown();
         Date ended = new Date();
@@ -63,7 +62,7 @@ public class AnalysingRtJar {
         System.out.println("======================================");
         System.out.println("Started: " + started);
         System.out.println("Ended: " + ended);
-        System.out.println("Total: " + stopwatch.elapsedTime(TimeUnit.SECONDS));
+        System.out.println("Total: " + stopwatch.elapsed(TimeUnit.SECONDS));
     }
     
     @Ignore
