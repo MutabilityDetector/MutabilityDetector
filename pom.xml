@@ -34,7 +34,7 @@
   <scm>
     <url>https://github.com/MutabilityDetector/MutabilityDetector</url>
     <connection>scm:git:https://github.com/MutabilityDetector/MutabilityDetector</connection>
-    <developerConnection>scm:git:https://github.com/MutabilityDetector/MutabilityDetector</developerConnection>
+    <developerConnection>scm:git:git@github.com:MutabilityDetector/MutabilityDetector.git</developerConnection>
   </scm>
   <developers>
     <developer>
@@ -124,7 +124,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.3</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -151,7 +151,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>1.6</version>
+        <version>2.3</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -252,17 +252,12 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>2.2</version>
+        <version>2.9</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
         <artifactId>maven-scm-manager-plexus</artifactId>
-        <version>1.5</version>
-      </extension>
-      <extension>
-        <groupId>org.apache.maven.scm</groupId>
-        <artifactId>maven-scm-provider-svnexe</artifactId>
-        <version>1.5</version>
+        <version>1.9.4</version>
       </extension>
     </extensions>
   </build>
