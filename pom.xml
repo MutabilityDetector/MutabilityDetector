@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mutabilitydetector</groupId>
   <artifactId>MutabilityDetector</artifactId>
-  <version>0.9.5</version>
+  <version>0.9.6-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>MutabilityDetector</name>
   <description>Lightweight analysis tool for detecting mutability in Java
