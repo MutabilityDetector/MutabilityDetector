@@ -24,6 +24,7 @@ import org.mutabilitydetector.ConfigurationBuilder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 
 /**
  * Non-exhaustive list of immutable classes from the standard JDK.
@@ -56,6 +57,7 @@ public class JdkConfiguration extends ConfigurationBuilder {
         hardcodeAsDefinitelyImmutable(BigDecimal.class);
         hardcodeAsDefinitelyImmutable(BigInteger.class);
         hardcodeAsDefinitelyImmutable(Class.class);
+        hardcodeAsDefinitelyImmutable(URI.class);
 
         hardcodeAsImmutableContainerType("java.util.Optional");
     }

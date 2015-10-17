@@ -33,6 +33,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmuta
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,6 +114,11 @@ public class WellKnownJavaTypesTest {
     @Test
     public void Class() {
         assertInstancesOf(Class.class, areNotImmutable());
+    }
+
+    @Test
+    public void URI() {
+        assertInstancesOf(URI.class, areNotImmutable());
     }
 
     @Test
