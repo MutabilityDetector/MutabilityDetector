@@ -27,8 +27,6 @@ import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.AllChecksRunner;
@@ -36,6 +34,7 @@ import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -52,13 +51,14 @@ public class AnalysisSessionTest {
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS, Collections.<Dotted>emptySet());
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
         MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(analysisSession, Configurations.NO_CONFIGURATION);
+        AnalysisInProgress analysisInProgress = AnalysisInProgress.noAnalysisUnderway();
 
         AllChecksRunner checker = new AllChecksRunner(checkerFactory, 
                 checkerRunnerFactory, 
                 testingVerifierFactory(), 
                 immutableClass);
 
-        checker.runCheckers(analysisSession, errorReporter, analysisDatabase(), mutableTypeInformation);
+        checker.runCheckers(analysisSession, errorReporter, analysisDatabase(), mutableTypeInformation, analysisInProgress);
 
         AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());

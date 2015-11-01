@@ -50,10 +50,9 @@ import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyC
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyCopiedMap_UsesGenericTypeOfClass;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
-
-import java.util.Collections;
 
 public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
@@ -61,7 +60,11 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
             new MutableTypeInformation(testAnalysisSession(), Configurations.NO_CONFIGURATION);
 
     private final AsmMutabilityChecker checker =
-            new CollectionWithMutableElementTypeToFieldChecker(mutableTypeInfo, testingVerifierFactory(), ImmutableSet.<Dotted>of());
+            new CollectionWithMutableElementTypeToFieldChecker(
+                    mutableTypeInfo,
+                    testingVerifierFactory(),
+                    ImmutableSet.<Dotted>of(),
+                    AnalysisInProgress.noAnalysisUnderway());
 
     @Test
     public void safelyWrappedCollectionsAreStillMutableIfTheTypeOfListElementsIsMutable() throws Exception {
@@ -94,10 +97,7 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
     @Test
     public void raisesErrorForHardcodedImmutableContainerTypeThatIsGenericWithMutableType() {
-        AsmMutabilityChecker checker = new CollectionWithMutableElementTypeToFieldChecker(
-                mutableTypeInfo,
-                testingVerifierFactory(),
-                ImmutableSet.of(fromClass(ImmutableContainer.class)));
+        AsmMutabilityChecker checker = checkerWithHardcodedAsImmutable(ImmutableContainer.class);
 
         AnalysisResult result = runChecker(checker, HasImmutableContainerOfMutableType.class);
         assertThat(result, areNotImmutable());
@@ -105,10 +105,7 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
     @Test
     public void raisesErrorForHardcodedImmutableContainerTypeThatIsGenericWithVariableGenericParameter() {
-        AsmMutabilityChecker checker = new CollectionWithMutableElementTypeToFieldChecker(
-                mutableTypeInfo,
-                testingVerifierFactory(),
-                ImmutableSet.of(fromClass(ImmutableContainer.class)));
+        AsmMutabilityChecker checker = checkerWithHardcodedAsImmutable(ImmutableContainer.class);
 
         AnalysisResult result = runChecker(checker, HasImmutableContainerOfGenericType.class);
         assertThat(result, areNotImmutable());
@@ -116,13 +113,18 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
     @Test
     public void doesNotRaiseErrorForHardcodedImmutableContainerTypeThatIsGenericWithImmutableType() {
-        AsmMutabilityChecker checker = new CollectionWithMutableElementTypeToFieldChecker(
-                mutableTypeInfo,
-                testingVerifierFactory(),
-                ImmutableSet.of(fromClass(ImmutableContainer.class)));
+        AsmMutabilityChecker checker = checkerWithHardcodedAsImmutable(ImmutableContainer.class);
 
         AnalysisResult result = runChecker(checker, HasImmutableContainerOfImmutableType.class);
         assertThat(result, areImmutable());
+    }
+
+    private AsmMutabilityChecker checkerWithHardcodedAsImmutable(Class<ImmutableContainer> containerClass) {
+        return new CollectionWithMutableElementTypeToFieldChecker(
+                    mutableTypeInfo,
+                    testingVerifierFactory(),
+                    ImmutableSet.of(fromClass(containerClass)),
+                    AnalysisInProgress.noAnalysisUnderway());
     }
 
     @Test

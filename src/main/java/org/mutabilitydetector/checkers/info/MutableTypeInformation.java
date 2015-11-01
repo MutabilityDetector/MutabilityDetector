@@ -44,8 +44,6 @@ public final class MutableTypeInformation {
     private final Configuration configuration;
     
     private final KnownCircularReferences knownCircularReferences = new KnownCircularReferences();
-    
-    private final Set<Dotted> visited = newSetFromMap(new ConcurrentHashMap<Dotted, Boolean>());
 
     public MutableTypeInformation(AnalysisSession analysisSession, Configuration configuration) {
         this.analysisSession = analysisSession;
@@ -56,29 +54,17 @@ public final class MutableTypeInformation {
         return configuration.hardcodedCopyMethods();
     }
 
-    public MutabilityLookup resultOf(Dotted ownerClass, final Dotted fieldClass) {
+    public MutabilityLookup resultOf(Dotted ownerClass, Dotted fieldClass, AnalysisInProgress analysisInProgress) {
         Optional<AnalysisResult> alreadyComputedResult = existingResult(fieldClass);
         
         if (alreadyComputedResult.isPresent()) {
             return MutabilityLookup.complete(alreadyComputedResult.get());
-        }
-        
-        if (fieldClass.equals(ownerClass) || visited.contains(fieldClass)) {
-            knownCircularReferences.register(ownerClass, fieldClass);
-        }
-
-        if (knownCircularReferences.includes(ownerClass, fieldClass)) {
+        } else if (knownCircularReferences.containsCyclicReference(ownerClass, fieldClass, analysisInProgress)) {
             return MutabilityLookup.foundCyclicReference();
+        } else {
+            AnalysisResult result = analysisSession.processTransitiveAnalysis(fieldClass, analysisInProgress.register(ownerClass));
+            return MutabilityLookup.complete(result);
         }
-        
-
-        visited.add(ownerClass);
-        
-        AnalysisResult result = analysisSession.resultFor(fieldClass);
-        
-        visited.remove(ownerClass);
-        
-        return MutabilityLookup.complete(result);
     }
 
     private Optional<AnalysisResult> existingResult(final Dotted fieldClass) {
@@ -93,13 +79,21 @@ public final class MutableTypeInformation {
     private final static class KnownCircularReferences {
         private final Set<Dotted> knownCyclicReferenceClass = newSetFromMap(new ConcurrentHashMap<Dotted, Boolean>());
 
-        public boolean includes(Dotted ownerClass, Dotted fieldClass) {
+        private boolean includes(Dotted ownerClass, Dotted fieldClass) {
             return knownCyclicReferenceClass.contains(fieldClass) || knownCyclicReferenceClass.contains(ownerClass);
         }
 
-        public void register(Dotted ownerClass, Dotted fieldClass) {
+        private void register(Dotted ownerClass, Dotted fieldClass) {
             knownCyclicReferenceClass.add(ownerClass);
             knownCyclicReferenceClass.add(fieldClass);
+        }
+
+        public boolean containsCyclicReference(Dotted ownerClass, Dotted fieldClass, AnalysisInProgress analysisInProgress) {
+            if (fieldClass.equals(ownerClass) || analysisInProgress.contains(fieldClass)) {
+                register(ownerClass, fieldClass);
+            }
+
+            return includes(ownerClass, fieldClass);
         }
         
     }
@@ -122,4 +116,5 @@ public final class MutableTypeInformation {
             return new MutabilityLookup(checkNotNull(result));
         }
     }
+
 }

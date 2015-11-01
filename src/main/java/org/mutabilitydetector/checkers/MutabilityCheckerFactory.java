@@ -35,6 +35,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
 import org.mutabilitydetector.locations.Dotted;
@@ -49,7 +50,11 @@ public final class MutabilityCheckerFactory {
         this.immutableContainerClasses = immutableContainerClasses;
     }
 
-    public Iterable<AsmMutabilityChecker> createInstances(AnalysisDatabase database, AsmVerifierFactory verifierFactory, MutableTypeInformation mutableTypeInformation) {
+    public Iterable<AsmMutabilityChecker> createInstances(
+            AnalysisDatabase database,
+            AsmVerifierFactory verifierFactory,
+            MutableTypeInformation mutableTypeInformation,
+            AnalysisInProgress analysisInProgress) {
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
@@ -68,7 +73,7 @@ public final class MutabilityCheckerFactory {
                 database.requestInformation(TYPE_STRUCTURE),
                 mutableTypeInformation,
                 verifierFactory,
-                immutableContainerClasses));
+                immutableContainerClasses, analysisInProgress));
 
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());
@@ -76,13 +81,14 @@ public final class MutabilityCheckerFactory {
         checkers.add(new CollectionWithMutableElementTypeToFieldChecker(
                 mutableTypeInformation,
                 verifierFactory,
-                ImmutableSet.copyOf(immutableContainerClasses)));
+                ImmutableSet.copyOf(immutableContainerClasses),
+                analysisInProgress));
         // checkers.add(new InheritedMutabilityChecker(analysisSession));
         // checkers.add(new NoCopyOfFieldChecker()); - or whatever it's going to be called.
         return Collections.unmodifiableCollection(checkers);
     }
 
-    public static enum ReassignedFieldAnalysisChoice { 
+    public enum ReassignedFieldAnalysisChoice {
         NAIVE_PUT_FIELD_ANALYSIS, 
         LAZY_INITIALISATION_ANALYSIS
     }

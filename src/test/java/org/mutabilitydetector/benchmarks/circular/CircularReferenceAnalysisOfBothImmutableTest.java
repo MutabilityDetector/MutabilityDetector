@@ -33,6 +33,7 @@ import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
@@ -61,7 +62,8 @@ public class CircularReferenceAnalysisOfBothImmutableTest {
                 information, 
                 new MutableTypeInformation(session, Configurations.NO_CONFIGURATION), 
                 testingVerifierFactory(),
-                Collections.<Dotted>emptySet());
+                Collections.<Dotted>emptySet(),
+                AnalysisInProgress.noAnalysisUnderway());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }

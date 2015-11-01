@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -64,15 +65,18 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
     private final Set<Dotted> immutableContainerClasses;
     private final List<String> genericTypesOfClass = Lists.newLinkedList();
     private final Map<String, String> genericFields = Maps.newHashMap();
+    private final AnalysisInProgress analysisInProgress;
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
                                      AsmVerifierFactory verifierFactory,
-                                     Set<Dotted> immutableContainerClasses) {
+                                     Set<Dotted> immutableContainerClasses,
+                                     AnalysisInProgress analysisInProgress) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
         this.immutableContainerClasses = immutableContainerClasses;
+        this.analysisInProgress = analysisInProgress;
     }
 
     @Override
@@ -166,7 +170,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     break;
                 }
 
-                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), assignedToField);
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), assignedToField, analysisInProgress);
 
                 if (mutabilityLookup.foundCyclicReference) {
                     setCircularReferenceResult(fieldLocation);

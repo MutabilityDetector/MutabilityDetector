@@ -39,6 +39,7 @@ import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
@@ -49,6 +50,9 @@ import com.google.classpath.ClassPathFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
+@NotThreadSafe
 public final class ThreadUnsafeAnalysisSession implements AnalysisSession, AnalysisErrorReporter {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
@@ -108,10 +112,15 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
 
     @Override
     public AnalysisResult resultFor(Dotted className) {
-        return requestAnalysis(className);
+        return requestAnalysis(className, AnalysisInProgress.noAnalysisUnderway());
     }
 
-    private AnalysisResult requestAnalysis(Dotted className) {
+    @Override
+    public AnalysisResult processTransitiveAnalysis(Dotted className, AnalysisInProgress analysisInProgress) {
+        return requestAnalysis(className, analysisInProgress);
+    }
+
+    private AnalysisResult requestAnalysis(Dotted className, AnalysisInProgress analysisInProgress) {
         AnalysisResult existingResult = analysedClasses.getIfPresent(className);
         if (existingResult != null) {
             return existingResult;
@@ -122,7 +131,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
                                                               verifierFactory, 
                                                               className);
         
-        return addAnalysisResult(allChecksRunner.runCheckers(this, this, database, mutableTypeInformation));
+        return addAnalysisResult(allChecksRunner.runCheckers(this, this, database, mutableTypeInformation, analysisInProgress));
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {

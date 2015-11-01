@@ -36,6 +36,7 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -59,12 +60,16 @@ public final class AllChecksRunner {
     public AnalysisResult runCheckers(AnalysisSession analysisSession,
                                       AnalysisErrorReporter errorReporter,
                                       AnalysisDatabase database,
-                                      MutableTypeInformation mutableTypeInformation) {
+                                      MutableTypeInformation mutableTypeInformation, AnalysisInProgress analysisInProgress) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 
-        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(database, verifierFactory,
-                mutableTypeInformation);
+        Iterable<AsmMutabilityChecker> checkers = factory.createInstances(
+                database,
+                verifierFactory,
+                mutableTypeInformation,
+                analysisInProgress);
+
         CheckerRunner checkerRunner = checkerRunnerFactory.createRunner();
 
         for (AsmMutabilityChecker checker : checkers) {

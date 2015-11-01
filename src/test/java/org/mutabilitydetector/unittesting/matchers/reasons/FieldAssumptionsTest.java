@@ -56,6 +56,7 @@ import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.NonFinalFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -68,16 +69,21 @@ public class FieldAssumptionsTest {
     private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(testAnalysisSession(), OUT_OF_THE_BOX_CONFIGURATION);
     private final TypeStructureInformation typeStructureInfo = analysisDatabase().requestInformation(TYPE_STRUCTURE);
     private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
+    private final AnalysisInProgress analysisInProgress = AnalysisInProgress.noAnalysisUnderway();
 
     private final AsmMutabilityChecker mutableTypeToFieldChecker = new MutableTypeToFieldChecker(
             typeStructureInfo,
             mutableTypeInfo,
             testingVerifierFactory(),
-            immutableContainerClasses);
+            immutableContainerClasses,
+            analysisInProgress);
+
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(
             mutableTypeInfo,
             testingVerifierFactory(),
-            ImmutableSet.<Dotted>of());
+            ImmutableSet.<Dotted>of(),
+            analysisInProgress);
+
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo = TestUtil.analysisDatabase().requestInformation(AnalysisDatabase.PRIVATE_METHOD_INVOCATION);
     private final AsmMutabilityChecker setterMethodChecker = SetterMethodChecker.newInstance(privateMethodInvocationInfo);
     private final AsmMutabilityChecker nonFinalFieldChecker = new NonFinalFieldChecker();

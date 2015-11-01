@@ -42,6 +42,7 @@ import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArray
 import org.mutabilitydetector.benchmarks.mutabletofield.array.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -57,6 +58,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -98,7 +101,8 @@ public class MutableTypeToFieldCheckerTest {
                 info,
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
                 testingVerifierFactory(),
-                immutableContainerClasses);
+                immutableContainerClasses,
+                AnalysisInProgress.noAnalysisUnderway());
     }
 
 
@@ -110,7 +114,8 @@ public class MutableTypeToFieldCheckerTest {
                 info,
                 new MutableTypeInformation(session, NO_CONFIGURATION),
                 testingVerifierFactory(),
-                immutableContainerClasses);
+                immutableContainerClasses,
+                AnalysisInProgress.noAnalysisUnderway());
     }
 
 
@@ -122,21 +127,33 @@ public class MutableTypeToFieldCheckerTest {
                 typeInfo,
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
                 testingVerifierFactory(),
-                immutableContainerClasses);
+                immutableContainerClasses,
+                AnalysisInProgress.noAnalysisUnderway());
     }
 
     @Test
     public void requestsMutableStatusOfPublishedField() throws Exception {
+        AnalysisInProgress analysisInProgressWhenRequestingMutabilityOfField = analysisInProgressIncludes(MutableByHavingMutableFieldAssigned.class);
+
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        when(session.processTransitiveAnalysis(
+                mutableExample,
+                analysisInProgressWhenRequestingMutabilityOfField))
+                .thenReturn(unusedAnalysisResult);
 
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
-        verify(session).resultFor(mutableExample);
+        verify(session).processTransitiveAnalysis(mutableExample, analysisInProgressWhenRequestingMutabilityOfField);
+    }
+
+    private AnalysisInProgress analysisInProgressIncludes(Class<MutableByHavingMutableFieldAssigned> analyzing) {
+        return AnalysisInProgress.noAnalysisUnderway().register(Dotted.fromClass(analyzing));
     }
 
     @Test
     public void failsCheckWhenMutableTypeIsAssignedToField() throws Exception {
+        AnalysisInProgress analysisInProgressWhenRequestingMutabilityOfField = analysisInProgressIncludes(MutableByHavingMutableFieldAssigned.class);
+
         String unusedMessage = "";
         AnalysisResult mutableResult = AnalysisResult.analysisResult(
                 "",
@@ -144,7 +161,7 @@ public class MutableTypeToFieldCheckerTest {
                 newMutableReasonDetail(unusedMessage, unusedCodeLocation(), ABSTRACT_COLLECTION_TYPE_TO_FIELD));
 
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(mutableResult);
+        when(session.processTransitiveAnalysis(mutableExample, analysisInProgressWhenRequestingMutabilityOfField)).thenReturn(mutableResult);
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
@@ -154,8 +171,10 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
+        AnalysisInProgress analysisInProgressWhenRequestingMutabilityOfField = analysisInProgressIncludes(MutableByHavingMutableFieldAssigned.class);
+
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        when(session.processTransitiveAnalysis(mutableExample, analysisInProgressWhenRequestingMutabilityOfField)).thenReturn(unusedAnalysisResult);
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
 
@@ -185,7 +204,7 @@ public class MutableTypeToFieldCheckerTest {
     @Test
     public void codeLocationIsFieldLocation() throws Exception {
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(mutableExample)).thenReturn(unusedAnalysisResult);
+        when(session.processTransitiveAnalysis(eq(mutableExample), any(AnalysisInProgress.class))).thenReturn(unusedAnalysisResult);
 
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
         FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.reasons().iterator().next().codeLocation();
@@ -331,7 +350,8 @@ public class MutableTypeToFieldCheckerTest {
                 info,
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
                 testingVerifierFactory(),
-                ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)));
+                ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)),
+                AnalysisInProgress.noAnalysisUnderway());
 
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 

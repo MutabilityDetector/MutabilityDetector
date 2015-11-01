@@ -27,6 +27,8 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
@@ -39,6 +41,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
@@ -55,6 +58,7 @@ public class MutableTypeInformationTest {
     private final Dotted needToKnowMutabilityOf = dotted("a.b.c.D");
     private final CodeLocation<?> unusedCodeLocation = from(needToKnowMutabilityOf);
     private final AnalysisSession session = mock(AnalysisSession.class);
+    private final AnalysisInProgress NO_ANALYSIS_IN_PROGRESS = AnalysisInProgress.noAnalysisUnderway();
     
     @Test
     public void returnsIsImmutableResultFromAnalysisSession() throws Exception {
@@ -65,12 +69,12 @@ public class MutableTypeInformationTest {
                 singleton(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
 
         when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.resultFor(needToKnowMutabilityOf)).thenReturn(result);
+        when(session.processTransitiveAnalysis(eq(needToKnowMutabilityOf), any(AnalysisInProgress.class))).thenReturn(result);
         
         MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
         
-        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf).foundCyclicReference, is(false));
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS).result.isImmutable, is(isImmutableResult));
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS).foundCyclicReference, is(false));
     }
     
     @Test
@@ -83,7 +87,7 @@ public class MutableTypeInformationTest {
         }.build();
         MutableTypeInformation information = new MutableTypeInformation(session, configuration);
         
-        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable")).result, 
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable"), NO_ANALYSIS_IN_PROGRESS).result,
                 sameInstance(harcodedResult));
     }
     

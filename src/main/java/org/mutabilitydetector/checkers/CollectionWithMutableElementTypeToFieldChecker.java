@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
@@ -52,14 +53,17 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends Abstra
     private final JdkCollectionTypes jdkCollectionTypes = new JdkCollectionTypes();
     
     private final Map<String, String> fieldSignatures = newHashMap();
-    
+    private final AnalysisInProgress analysisInProgress;
+
     public CollectionWithMutableElementTypeToFieldChecker(
             MutableTypeInformation mutableTypeInfo,
             AsmVerifierFactory verifierFactory,
-            ImmutableSet<Dotted> immutableContainerTypes) {
+            ImmutableSet<Dotted> immutableContainerTypes,
+            AnalysisInProgress analysisInProgress) {
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
         this.immutableContainerTypes = immutableContainerTypes;
+        this.analysisInProgress = analysisInProgress;
     }
 
     @Override
@@ -124,7 +128,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends Abstra
                 }
 
 
-                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type);
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type, analysisInProgress);
                 
                 if (mutabilityLookup.foundCyclicReference || !mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
                     return true;

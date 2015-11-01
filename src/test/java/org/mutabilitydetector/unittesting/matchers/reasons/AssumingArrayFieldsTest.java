@@ -33,7 +33,6 @@ import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
 
-import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
@@ -44,6 +43,7 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
@@ -58,12 +58,14 @@ public class AssumingArrayFieldsTest {
     private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(testAnalysisSession(), OUT_OF_THE_BOX_CONFIGURATION);
     private final TypeStructureInformation typeStructureInfo = analysisDatabase().requestInformation(TYPE_STRUCTURE);
     private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
+    private final AnalysisInProgress analysisInProgress = AnalysisInProgress.noAnalysisUnderway();
 
     private final AsmMutabilityChecker mutableTypeToFieldChecker = new MutableTypeToFieldChecker(
             typeStructureInfo,
             mutableTypeInfo,
             testingVerifierFactory(),
-            immutableContainerClasses);
+            immutableContainerClasses,
+            analysisInProgress);
 
     private final AsmMutabilityChecker arrayFieldChecker = new ArrayFieldMutabilityChecker();
 
