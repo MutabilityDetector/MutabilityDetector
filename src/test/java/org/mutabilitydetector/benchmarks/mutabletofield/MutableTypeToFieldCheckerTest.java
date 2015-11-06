@@ -147,7 +147,7 @@ public class MutableTypeToFieldCheckerTest {
     }
 
     private AnalysisInProgress analysisInProgressIncludes(Class<MutableByHavingMutableFieldAssigned> analyzing) {
-        return AnalysisInProgress.noAnalysisUnderway().register(Dotted.fromClass(analyzing));
+        return AnalysisInProgress.noAnalysisUnderway().analysisStartedFor(Dotted.fromClass(analyzing));
     }
 
     @Test

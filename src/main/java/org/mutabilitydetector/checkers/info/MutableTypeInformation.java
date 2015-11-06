@@ -56,13 +56,16 @@ public final class MutableTypeInformation {
 
     public MutabilityLookup resultOf(Dotted ownerClass, Dotted fieldClass, AnalysisInProgress analysisInProgress) {
         Optional<AnalysisResult> alreadyComputedResult = existingResult(fieldClass);
-        
+
         if (alreadyComputedResult.isPresent()) {
             return MutabilityLookup.complete(alreadyComputedResult.get());
-        } else if (knownCircularReferences.containsCyclicReference(ownerClass, fieldClass, analysisInProgress)) {
+        } else if (knownCircularReferences.includes(ownerClass, fieldClass)) {
+            return MutabilityLookup.foundCyclicReference();
+        } else if (fieldClass.equals(ownerClass) || analysisInProgress.contains(fieldClass)) {
+            knownCircularReferences.register(ownerClass, fieldClass);
             return MutabilityLookup.foundCyclicReference();
         } else {
-            AnalysisResult result = analysisSession.processTransitiveAnalysis(fieldClass, analysisInProgress.register(ownerClass));
+            AnalysisResult result = analysisSession.processTransitiveAnalysis(fieldClass, analysisInProgress.analysisStartedFor(ownerClass));
             return MutabilityLookup.complete(result);
         }
     }
@@ -79,23 +82,15 @@ public final class MutableTypeInformation {
     private final static class KnownCircularReferences {
         private final Set<Dotted> knownCyclicReferenceClass = newSetFromMap(new ConcurrentHashMap<Dotted, Boolean>());
 
-        private boolean includes(Dotted ownerClass, Dotted fieldClass) {
+        boolean includes(Dotted ownerClass, Dotted fieldClass) {
             return knownCyclicReferenceClass.contains(fieldClass) || knownCyclicReferenceClass.contains(ownerClass);
         }
 
-        private void register(Dotted ownerClass, Dotted fieldClass) {
+        void register(Dotted ownerClass, Dotted fieldClass) {
             knownCyclicReferenceClass.add(ownerClass);
             knownCyclicReferenceClass.add(fieldClass);
         }
 
-        public boolean containsCyclicReference(Dotted ownerClass, Dotted fieldClass, AnalysisInProgress analysisInProgress) {
-            if (fieldClass.equals(ownerClass) || analysisInProgress.contains(fieldClass)) {
-                register(ownerClass, fieldClass);
-            }
-
-            return includes(ownerClass, fieldClass);
-        }
-        
     }
     
     @Immutable

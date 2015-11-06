@@ -73,7 +73,8 @@ public final class MutabilityCheckerFactory {
                 database.requestInformation(TYPE_STRUCTURE),
                 mutableTypeInformation,
                 verifierFactory,
-                immutableContainerClasses, analysisInProgress));
+                immutableContainerClasses,
+                analysisInProgress));
 
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());

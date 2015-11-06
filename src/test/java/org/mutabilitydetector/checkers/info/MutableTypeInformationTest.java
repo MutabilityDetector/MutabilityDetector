@@ -21,35 +21,37 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
-import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
-import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
-import java.util.Collections;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
+
+import java.util.Collections;
+
+import static java.util.Collections.singleton;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.checkers.info.AnalysisInProgress.noAnalysisUnderway;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+
 
 public class MutableTypeInformationTest {
 
@@ -58,23 +60,54 @@ public class MutableTypeInformationTest {
     private final Dotted needToKnowMutabilityOf = dotted("a.b.c.D");
     private final CodeLocation<?> unusedCodeLocation = from(needToKnowMutabilityOf);
     private final AnalysisSession session = mock(AnalysisSession.class);
-    private final AnalysisInProgress NO_ANALYSIS_IN_PROGRESS = AnalysisInProgress.noAnalysisUnderway();
-    
-    @Test
-    public void returnsIsImmutableResultFromAnalysisSession() throws Exception {
-        IsImmutable isImmutableResult = EFFECTIVELY_IMMUTABLE;
-        
-        AnalysisResult result = analysisResult("a.b.c.D",
-                isImmutableResult,
-                singleton(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
+    private final AnalysisInProgress NO_ANALYSIS_IN_PROGRESS = noAnalysisUnderway();
 
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
-        when(session.processTransitiveAnalysis(eq(needToKnowMutabilityOf), any(AnalysisInProgress.class))).thenReturn(result);
-        
+    private final AnalysisResult result = analysisResult(needToKnowMutabilityOf.asString(),
+            EFFECTIVELY_IMMUTABLE,
+            singleton(newMutableReasonDetail("message", unusedCodeLocation, NON_FINAL_FIELD)));
+
+    @Test
+    public void returnsIsImmutableResultFromAnalysisSessionIfAvailable() throws Exception {
+        when(session.resultsByClass()).thenReturn(ImmutableMap.of(needToKnowMutabilityOf, result));
+
         MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
-        
-        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS).result.isImmutable, is(isImmutableResult));
-        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS).foundCyclicReference, is(false));
+
+        MutabilityLookup mutabilityLookup = information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS);
+        assertThat(mutabilityLookup.result, is(result));
+        assertThat(mutabilityLookup.foundCyclicReference, is(false));
+        verify(session, never()).processTransitiveAnalysis(any(Dotted.class), any(AnalysisInProgress.class));
+    }
+
+    @Test
+    public void returnsKnownCircularReferenceWhenRevisitingClassBeforeInProgressAnalysisHasComplete() {
+        AnalysisInProgress analysisInProgress = noAnalysisUnderway().analysisStartedFor(needToKnowMutabilityOf).analysisStartedFor(dotted("e.f.g.H"));
+
+        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+
+        assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, analysisInProgress).foundCyclicReference, is(true));
+    }
+
+    @Test
+    public void returnsKnownCyclicReferenceIfRequestingAnalysisOfFieldThatIsSameTypeAsCurrentAnalysisInProgress() {
+        AnalysisInProgress analysisInProgress = noAnalysisUnderway();
+
+        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+
+        assertThat(information.resultOf(needToKnowMutabilityOf, needToKnowMutabilityOf, analysisInProgress).foundCyclicReference, is(true));
+    }
+
+    @Test
+    public void startsAnalysisOfFieldTypeWhenItIsNotAlreadyAvailableAndDoesNotIndicateCircularReference() {
+        AnalysisInProgress analysisInProgress = noAnalysisUnderway();
+
+        when(session.resultsByClass()).thenReturn(Collections.<Dotted, AnalysisResult>emptyMap());
+        when(session.processTransitiveAnalysis(needToKnowMutabilityOf, analysisInProgress.analysisStartedFor(mutabilityAskedOnBehalfOf))).thenReturn(result);
+
+        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+
+        MutabilityLookup mutabilityLookup = information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, analysisInProgress);
+        assertThat(mutabilityLookup.result, is(result));
+        assertThat(mutabilityLookup.foundCyclicReference, is(false));
     }
     
     @Test

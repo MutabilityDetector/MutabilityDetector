@@ -64,9 +64,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     private final AsmVerifierFactory verifierFactory;
     private final MutableTypeInformation mutableTypeInformation;
     
-    private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory, 
+    private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
                              MutabilityCheckerFactory checkerFactory,
-                             AsmVerifierFactory verifierFactory, 
+                             AsmVerifierFactory verifierFactory,
                              Configuration configuration) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
@@ -104,7 +104,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     private static AnalysisSession createWithGivenClassPath(ClassPath classpath,
                                                             Configuration configuration,
                                                             AsmVerifierFactory verifierFactory) {
-        return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
+        return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
                                                new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm(), configuration.immutableContainerClasses()),
                                                verifierFactory, 
                                                configuration);
