@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -20,10 +20,11 @@ package org.mutabilitydetector.benchmarks.circular;
  * #L%
  */
 
-public final class HasCircularReference {
-    public final HasCircularReference h;
-
-    public HasCircularReference(HasCircularReference other) {
-        this.h = other;
+@SuppressWarnings("unused")
+public final class ImmutableClassB {
+    private final ImmutableClassA cyclicRef;
+    
+    public ImmutableClassB(ImmutableClassA classA) {
+        cyclicRef = classA;
     }
 }

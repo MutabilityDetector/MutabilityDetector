@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -29,12 +29,12 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmuta
 
 import org.junit.Test;
 import org.mutabilitydetector.Configurations;
-import org.mutabilitydetector.benchmarks.circular.MultipleCircularAssignments.B;
-import org.mutabilitydetector.benchmarks.circular.OuterClassWithInnerClassAsField.Inner;
+import org.mutabilitydetector.benchmarks.cyclic.MultipleCyclicAssignments.B;
+import org.mutabilitydetector.benchmarks.cyclic.OuterClassWithInnerClassAsField.Inner;
 import org.mutabilitydetector.benchmarks.inheritance.ImmutableSupertype;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
-public class CircularReferenceAnalysisTest {
+public class CyclicReferenceAnalysisTest {
     
     
     private static final MutabilityAsserter asserter = configured(Configurations.NO_CONFIGURATION);
@@ -64,32 +64,31 @@ public class CircularReferenceAnalysisTest {
     
     @Test
     public void stackOverflowExceptionIsNotThrown_awtExample() throws Exception {
-        asserter.assertInstancesOf(MimicAwtCircularDependencies.class, areNotImmutable());
+        asserter.assertInstancesOf(MimicAwtCyclicDependencies.class, areNotImmutable());
     }
     
-
     @Test
-    public void handlesCircularReferencesInFieldAssignments() throws Exception {
+    public void handlesCyclicReferencesInFieldAssignments() throws Exception {
         asserter.assertInstancesOf(B.class, areNotImmutable());
     }
 
     @Test
-    public void handlesCircularReferencesAcrossSeveralHops() throws Exception {
-        asserter.assertInstancesOf(SeveralHopsCircularDependency.class, areNotImmutable());
+    public void handlesCyclicReferencesAcrossSeveralHops() throws Exception {
+        asserter.assertInstancesOf(SeveralHopsCyclicDependency.class, areNotImmutable());
     }
 
     @Test
-    public void handlesCircularReferencesCreatedByAssigningInnerClassToField() throws Exception {
+    public void handlesCyclicReferencesCreatedByAssigningInnerClassToField() throws Exception {
         asserter.assertInstancesOf(Inner.class, areNotImmutable());
     }
 
     @Test
-    public void immutableExampleIsNotIncorrectlyAnalysedAsHavingACircularDependency() throws Exception {
+    public void immutableExampleIsNotIncorrectlyAnalysedAsHavingACyclicDependency() throws Exception {
         asserter.assertInstancesOf(ImmutableSupertype.class, areImmutable(), allowingForSubclassing());
     }
     
     @Test
-    public void classWhichAssignsSelfTypeToFieldHasACircularReference() throws Exception {
-        asserter.assertInstancesOf(HasCircularReference.class, areNotImmutable());
+    public void classWhichAssignsSelfTypeToFieldHasACyclicReference() throws Exception {
+        asserter.assertInstancesOf(HasCyclicReference.class, areNotImmutable());
     }
 }

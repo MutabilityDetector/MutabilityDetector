@@ -79,7 +79,7 @@ public class MutableTypeInformationTest {
     }
 
     @Test
-    public void returnsKnownCircularReferenceWhenRevisitingClassBeforeInProgressAnalysisHasComplete() {
+    public void returnsKnownCyclicReferenceWhenRevisitingClassBeforeInProgressAnalysisHasComplete() {
         AnalysisInProgress analysisInProgress = noAnalysisUnderway().analysisStartedFor(needToKnowMutabilityOf).analysisStartedFor(dotted("e.f.g.H"));
 
         MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
@@ -97,7 +97,7 @@ public class MutableTypeInformationTest {
     }
 
     @Test
-    public void startsAnalysisOfFieldTypeWhenItIsNotAlreadyAvailableAndDoesNotIndicateCircularReference() {
+    public void startsAnalysisOfFieldTypeWhenItIsNotAlreadyAvailableAndDoesNotIndicateCyclicReference() {
         AnalysisInProgress analysisInProgress = noAnalysisUnderway();
 
         when(session.resultsByClass()).thenReturn(Collections.<Dotted, AnalysisResult>emptyMap());

@@ -106,7 +106,7 @@ public enum MutabilityReason implements Reason {
      * mutable field may be kept, the containing type can be mutated after
      * construction.
      * 
-     * This reason can also indicate a circular reference in the fields of
+     * This reason can also indicate a cyclic reference in the fields of
      * several types. E.g. type A has a field of type B, and type B has a field
      * of type A. Therefore one of these types has to not be completely
      * constructed when passed to the other type.

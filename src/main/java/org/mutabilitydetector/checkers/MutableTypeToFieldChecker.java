@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
@@ -173,7 +174,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                 MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), assignedToField, analysisInProgress);
 
                 if (mutabilityLookup.foundCyclicReference) {
-                    setCircularReferenceResult(fieldLocation);
+                    setCyclicReferenceResult(fieldLocation, mutabilityLookup.cyclicReference);
                     break;
                 } else if (isImmutableContainerType(assignedToField)) {
                     /**
@@ -257,8 +258,9 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
 
-        private void setCircularReferenceResult(FieldLocation fieldLocation) {
-            setResult("There is a field assigned which creates a circular reference.",
+        private void setCyclicReferenceResult(FieldLocation fieldLocation, MutableTypeInformation.CyclicReference cyclicReference) {
+            setResult("There is a field assigned which creates a cyclic reference. " +
+                            "(" + Joiner.on(" -> ").join(cyclicReference.references) + ")",
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
 

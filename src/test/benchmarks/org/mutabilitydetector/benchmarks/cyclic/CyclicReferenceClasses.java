@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -20,25 +20,12 @@ package org.mutabilitydetector.benchmarks.circular;
  * #L%
  */
 
-public final class MultipleCircularAssignments {
-
-    public final static class A {
-        public final B b;
-        public final B secondB;
-
-        public A(B b) {
-            this.b = b;
-            this.secondB = b;
-        }
-    }
-
-    public final static class B {
-        public final A a;
-        public final A secondA;
-
-        public B(A a) {
-            this.a = a;
-            this.secondA = a;
-        }
+public final class CyclicReferenceClasses {
+    public final ImmutableClassA classA;
+    public final ImmutableClassB classB;
+    
+    public CyclicReferenceClasses(ImmutableClassA classA, ImmutableClassB classB) {
+        this.classA = classA;
+        this.classB = classB;
     }
 }

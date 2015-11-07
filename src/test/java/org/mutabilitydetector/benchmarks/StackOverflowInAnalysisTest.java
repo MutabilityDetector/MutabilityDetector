@@ -28,7 +28,7 @@ import java.util.HashMap;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.benchmarks.circular.AssignsItselfToField;
+import org.mutabilitydetector.benchmarks.cyclic.AssignsItselfToField;
 import org.mutabilitydetector.benchmarks.mutabletofield.AbstractStringContainer;
 import org.mutabilitydetector.benchmarks.mutabletofield.MutableByAssigningAbstractTypeToField;
 import org.mutabilitydetector.benchmarks.types.EnumType;

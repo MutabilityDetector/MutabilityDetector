@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -20,21 +20,25 @@ package org.mutabilitydetector.benchmarks.circular;
  * #L%
  */
 
+public final class MultipleCyclicAssignments {
 
+    public final static class A {
+        public final B b;
+        public final B secondB;
 
-public class AssignsItselfToField {
-    private AssignsItselfToField other;
-
-    public AssignsItselfToField(AssignsItselfToField other) {
-        this.other = other;
+        public A(B b) {
+            this.b = b;
+            this.secondB = b;
+        }
     }
-    
-    public void assignsItselfInOtherMethod(AssignsItselfToField other) {
-        this.other = other;
-    }
-    
-    void assignsFieldOfOtherInstanceOfSelf(AssignsItselfToField other) {
-        other.other = this;
-        other.other.other = null;
+
+    public final static class B {
+        public final A a;
+        public final A secondA;
+
+        public B(A a) {
+            this.a = a;
+            this.secondA = a;
+        }
     }
 }

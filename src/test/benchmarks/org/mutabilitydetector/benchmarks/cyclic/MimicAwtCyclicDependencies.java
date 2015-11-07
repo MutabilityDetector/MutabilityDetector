@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package org.mutabilitydetector.benchmarks.circular;
  * #L%
  */
 
-import org.mutabilitydetector.benchmarks.circular.MimicAwtCircularDependencies.Component.NativeInLightFixer;
+import org.mutabilitydetector.benchmarks.cyclic.MimicAwtCyclicDependencies.Component.NativeInLightFixer;
 
 @SuppressWarnings("unused")
-public class MimicAwtCircularDependencies {
+public class MimicAwtCyclicDependencies {
     private final Container container;
 
-    public MimicAwtCircularDependencies(Container container) {
+    public MimicAwtCyclicDependencies(Container container) {
         this.container = container;
     }
 

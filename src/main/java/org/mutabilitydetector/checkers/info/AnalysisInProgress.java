@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableList;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class AnalysisInProgress {
-    private final ImmutableList<Dotted> inProgress;
+    public final ImmutableList<Dotted> inProgress;
 
     private AnalysisInProgress() {
         this.inProgress = ImmutableList.of();

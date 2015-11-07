@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -40,22 +40,22 @@ import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collections;
 
-public class CircularReferenceAnalysisOfBothImmutableTest {
+public class CyclicReferenceAnalysisOfBothImmutableTest {
 
     @Test
-    public void immutableClassesWithCircularReferencesAreAnalysedCorrectly() throws Exception {
+    public void immutableClassesWithCyclicReferencesAreAnalysedCorrectly() throws Exception {
         AnalysisSession session = TestUtil.testAnalysisSession();
         session.resultFor(Dotted.fromClass(ImmutableClassA.class));
     }
 
     @Test
-    public void immutableClassWithFieldsWithCircularReferencesAreAnalysedCorrectly() throws Exception {
+    public void immutableClassWithFieldsWithCyclicReferencesAreAnalysedCorrectly() throws Exception {
         AnalysisSession session = TestUtil.testAnalysisSession();
-        session.resultFor(Dotted.fromClass(CircularReferenceClasses.class));
+        session.resultFor(Dotted.fromClass(CyclicReferenceClasses.class));
     }
 
     @Test
-    public void mutableFieldCheckerHandlesCircularReferences() throws Exception {
+    public void mutableFieldCheckerHandlesCyclicReferences() throws Exception {
         AnalysisSession session = TestUtil.testAnalysisSession();
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(

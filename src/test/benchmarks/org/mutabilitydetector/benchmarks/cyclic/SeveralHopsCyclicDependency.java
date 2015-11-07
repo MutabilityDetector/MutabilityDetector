@@ -1,4 +1,4 @@
-package org.mutabilitydetector.benchmarks.circular;
+package org.mutabilitydetector.benchmarks.cyclic;
 
 /*
  * #%L
@@ -21,10 +21,27 @@ package org.mutabilitydetector.benchmarks.circular;
  */
 
 @SuppressWarnings("unused")
-public final class ImmutableClassA {
-    private final ImmutableClassB circularRef;
+public final class SeveralHopsCyclicDependency {
+
+    private final A a = new A();
     
-    public ImmutableClassA(ImmutableClassB classB) {
-        circularRef = classB;
+    public final static class A {
+        private final B b = new B();
     }
+    public final static class B {
+        private final C c = new C();
+    }
+    public final static class C {
+        private final D d = new D();
+    }
+    public final static class D {
+        private final E e = new E();
+    }
+    public final static class E {
+        private final A a = new A();
+        private final B b = new B();
+        private final C c = new C();
+    }
+    
+    
 }
