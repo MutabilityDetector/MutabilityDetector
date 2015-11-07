@@ -123,7 +123,6 @@ public class WellKnownJavaTypesTest {
 
     @Test
     public void Constructor() {
-        assertInstancesOf(Class.class, areNotImmutable());
         assertInstancesOf(java.lang.reflect.Constructor.class, areNotImmutable());
     }
 
