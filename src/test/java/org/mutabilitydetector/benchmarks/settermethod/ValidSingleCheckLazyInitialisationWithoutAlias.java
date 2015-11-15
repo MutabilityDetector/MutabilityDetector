@@ -26,6 +26,7 @@ import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.settermethod.singlecheck.WithoutAlias;
 
@@ -61,6 +62,7 @@ public final class ValidSingleCheckLazyInitialisationWithoutAlias {
         AsserterWithLazyInitialisationAlgorithm.ASSERTER.assertImmutable(klasse);
     }
 
+    @Ignore
     @Test
     public void charWithJvmInitial() {
         final Class<?> klasse = WithoutAlias.WithJvmInitialValue.CharValid.class;

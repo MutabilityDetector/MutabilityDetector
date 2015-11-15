@@ -49,7 +49,6 @@ public class AnalysisSessionTest {
     @Test
     public void analysisOfImmutableExampleWillBeRegistered() throws Exception {
         AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-        AnalysisErrorReporter errorReporter = analysisSession.errorReporter();
         MutabilityCheckerFactory checkerFactory = new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS, Collections.<Dotted>emptySet());
         CheckerRunnerFactory checkerRunnerFactory = new ClassPathBasedCheckerRunnerFactory(null, null);
         MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(
@@ -63,7 +62,7 @@ public class AnalysisSessionTest {
                 testingVerifierFactory(), 
                 immutableClass);
 
-        checker.runCheckers(ImmutableList.<AnalysisResult>of(), errorReporter, analysisDatabase(), mutableTypeInformation, analysisInProgress);
+        checker.runCheckers(ImmutableList.<AnalysisResult>of(), analysisDatabase(), mutableTypeInformation, analysisInProgress);
 
         AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());

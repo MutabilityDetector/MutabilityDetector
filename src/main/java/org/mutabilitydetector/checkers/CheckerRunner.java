@@ -23,14 +23,17 @@ package org.mutabilitydetector.checkers;
 
 
 import static java.lang.String.format;
+import static java.util.Collections.singleton;
+import static org.mutabilitydetector.MutabilityReason.CANNOT_ANALYSE;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.mutabilitydetector.AnalysisErrorReporter;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
+import org.mutabilitydetector.AnalysisError;
+import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
@@ -61,7 +64,7 @@ public final class CheckerRunner {
         FAIL_FAST, CARRY_ON
     }
 
-    public CheckerResult run(AsmMutabilityChecker checker, Dotted className, AnalysisErrorReporter errorReporter, Iterable<AnalysisResult> resultsSoFar) {
+    public CheckerResult run(AsmMutabilityChecker checker, Dotted className, Iterable<AnalysisResult> resultsSoFar) {
         try {
             try {
                 analyseFromStream(checker, className);
@@ -69,11 +72,21 @@ public final class CheckerRunner {
                 analyseFromClassLoader(checker, className);
             }
         } catch (Throwable e) {
-            attemptRecovery(checker, className, errorReporter, resultsSoFar, e);
+            AnalysisError error = attemptRecovery(checker, className, resultsSoFar, e);
+
+            return new CheckerResult(
+                    CANNOT_ANALYSE.createsResult(),
+                    singleton(newMutableReasonDetail("Encountered an unhandled error in analysis.", codeLocationOf(className), CANNOT_ANALYSE)),
+                    singleton(error));
         }
         return checker.checkerResult();
     }
 
+    private CodeLocation<?> codeLocationOf(Dotted className) {
+        return className != null
+                ? CodeLocation.ClassLocation.from(className)
+                : CodeLocation.UnknownCodeLocation.UNKNOWN;
+    }
 
     private void analyseFromStream(AsmMutabilityChecker checker, Dotted dottedClassPath) throws IOException {
         InputStream classStream = classpath.getResourceAsStream(asResourceName(dottedClassPath));
@@ -94,16 +107,15 @@ public final class CheckerRunner {
         return className.asString().replace(".", "/").concat(".class");
     }
 
-    private void attemptRecovery(AsmMutabilityChecker checker,
+    private AnalysisError attemptRecovery(AsmMutabilityChecker checker,
                                  Dotted className,
-                                 AnalysisErrorReporter errorReporter,
                                  Iterable<AnalysisResult> resultsSoFar,
                                  Throwable e) {
 
         if (!isRecoverable(e) || exceptionPolicy == FAIL_FAST) {
             throw unhandledExceptionBuilder.unhandledException(e, resultsSoFar, checker, className);
         } else {
-            handleException(errorReporter, checker, className.asString(), e);
+            return handleException(checker, className, e);
         }
     }
     
@@ -120,15 +132,13 @@ public final class CheckerRunner {
         return rootCause;
     }
 
-    private void handleException(AnalysisErrorReporter errorReporter, AsmMutabilityChecker checker, String dottedClassPath, Throwable e) {
-        String errorDescription = createErrorDescription(dottedClassPath);
-        checker.visitAnalysisException(e);
-        AnalysisError error = new AnalysisError(dottedClassPath, getNameOfChecker(checker), errorDescription);
-        errorReporter.addAnalysisError(error);
+    private AnalysisError handleException(AsmMutabilityChecker checker, Dotted onClass, Throwable e) {
+        String errorDescription = createErrorDescription(onClass);
+        return new AnalysisError(onClass, getNameOfChecker(checker), errorDescription);
     }
 
-    public String createErrorDescription(String dottedClassPath) {
-        return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClassPath);
+    public String createErrorDescription(Dotted dottedClass) {
+        return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClass.asString());
     }
 
     private String getNameOfChecker(AsmMutabilityChecker checker) {

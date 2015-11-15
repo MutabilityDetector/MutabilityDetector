@@ -22,21 +22,24 @@ package org.mutabilitydetector.checkers;
 
 
 import org.junit.Test;
+import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
@@ -50,8 +53,7 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
         
         try {
-            AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-            checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
+            checkerRunner.run(checker, fromClass(CheckerRunner.class), Collections.<AnalysisResult>emptyList());
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
             assertSame(toBeThrown, expected.getCause());
@@ -64,11 +66,7 @@ public class CheckerRunnerTest {
         AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
 
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-        checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
-
-        verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
+        checkerRunner.run(checker, fromClass(CheckerRunner.class), Collections.<AnalysisResult>emptyList());
     }
 
     @Test
@@ -79,8 +77,7 @@ public class CheckerRunnerTest {
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
         
         try {
-            AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-            checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
+            checkerRunner.run(checker, fromClass(CheckerRunner.class), Collections.<AnalysisResult>emptyList());
             fail("expected exception");
         } catch (MutabilityAnalysisException expected) {
             assertSame(toBeThrown, expected.getCause());
@@ -89,14 +86,7 @@ public class CheckerRunnerTest {
 
     @Test
     public void attemptsToRecoverFromNoClassDefFoundError() throws Exception {
-        Throwable toBeThrown = new NoClassDefFoundError();
-        AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
-        
-        CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-        checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
-            
-        verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
+        checkCapturesErrorWithoutThrowingException(new NoClassDefFoundError());
     }
 
     @Test
@@ -104,14 +94,8 @@ public class CheckerRunnerTest {
         Throwable rootCause = new NoClassDefFoundError();
         Throwable toBeThrown = new Error();
         toBeThrown.initCause(rootCause);
-        
-        AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
-        
-        CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-        checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
-        
-        verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
+
+        checkCapturesErrorWithoutThrowingException(toBeThrown);
     }
 
     @Test
@@ -119,14 +103,40 @@ public class CheckerRunnerTest {
         Throwable rootCause = new UnsatisfiedLinkError();
         Throwable toBeThrown = new Error();
         toBeThrown.initCause(rootCause);
-        
+
+        checkCapturesErrorWithoutThrowingException(toBeThrown);
+    }
+
+    private void checkCapturesErrorWithoutThrowingException(Throwable toBeThrown) {
         AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
-        
+
         CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
-        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
-        checkerRunner.run(checker, fromClass(CheckerRunner.class), analysisSession.errorReporter(), Collections.<AnalysisResult>emptyList());
-        
-        verify(checker, atLeastOnce()).visitAnalysisException(toBeThrown);
+        CheckerResult result = checkerRunner.run(checker, fromClass(CheckerRunner.class), Collections.<AnalysisResult>emptyList());
+
+        assertThat(result.errors, hasSize(1));
+    }
+
+    @Test
+    public void checkerReturnsAnalysisErrorsWhenEncountered() {
+        Throwable rootCause = new UnsatisfiedLinkError();
+        Throwable toBeThrown = new Error();
+        toBeThrown.initCause(rootCause);
+
+        AsmMutabilityChecker checker = checkerWhichThrows(toBeThrown);
+
+        CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(ExceptionPolicy.CARRY_ON);
+        CheckerResult result = checkerRunner.run(checker, fromClass(ImmutableExample.class), Collections.<AnalysisResult>emptyList());
+
+        assertThat(result.errors, hasSize(1));
+
+        assertThat(result.isImmutable, is(IsImmutable.COULD_NOT_ANALYSE));
+        assertThat(result.reasons.iterator().next().message(), is("Encountered an unhandled error in analysis."));
+
+        AnalysisError error = result.errors.iterator().next();
+
+        assertThat(error.description,
+                containsString("It is likely that the class org.mutabilitydetector.benchmarks.ImmutableExample has " +
+                        "dependencies outwith the given class path."));
     }
 
     private AsmMutabilityChecker checkerWhichThrows(Throwable toBeThrown) {

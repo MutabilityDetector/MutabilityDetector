@@ -21,20 +21,6 @@ package org.mutabilitydetector;
  */
 
 
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
-import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
-import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
-import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
-import static org.mutabilitydetector.locations.Dotted.fromClass;
-
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Ignore;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
@@ -45,17 +31,25 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.AnalysisClassLoader;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
-import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.ReasonsFormatter;
 
+import java.util.Collection;
+
+import static java.util.Collections.singleton;
+import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.MutabilityReason.NULL_REASON;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
+
 @Ignore
 public class TestUtil {
-    public static IsImmutable getIsImmutableResult(Class<?> toAnalyse) {
-        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse)).isImmutable;
-    }
-    
+
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
         return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse));
     }
@@ -80,7 +74,7 @@ public class TestUtil {
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
         AnalysisSession analysisSession = testAnalysisSession();
-        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.errorReporter(), analysisSession.getResults());
+        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.getResults());
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 

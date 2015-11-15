@@ -21,8 +21,6 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
-
-import org.mutabilitydetector.AnalysisErrorReporter;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
@@ -33,17 +31,15 @@ public class SessionCheckerRunner implements AsmSessionCheckerRunner {
 
     private final CheckerRunner checkerRunner;
     private final AnalysisSession analysisSession;
-    private final AnalysisErrorReporter analysisErrorReporter;
 
     public SessionCheckerRunner(AnalysisSession analysisSession, CheckerRunner checkerRunner) {
         this.analysisSession = analysisSession;
-        this.analysisErrorReporter = analysisSession.errorReporter();
         this.checkerRunner = checkerRunner;
     }
 
     @Override
     public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier) {
-        checkerRunner.run(checker, classIdentifier.asDotted(), analysisErrorReporter, analysisSession.getResults());
+        checkerRunner.run(checker, classIdentifier.asDotted(), analysisSession.getResults());
     }
 
 }

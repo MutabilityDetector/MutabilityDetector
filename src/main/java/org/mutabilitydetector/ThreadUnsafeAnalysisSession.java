@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AllChecksRunner;
+import org.mutabilitydetector.checkers.AllChecksRunner.ResultAndErrors;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
@@ -53,7 +54,7 @@ import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisD
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 @NotThreadSafe
-public final class ThreadUnsafeAnalysisSession implements AnalysisSession, AnalysisErrorReporter {
+public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
     private final List<AnalysisError> analysisErrors = Lists.newCopyOnWriteArrayList();
@@ -135,23 +136,21 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
                                                               checkerRunnerFactory,
                                                               verifierFactory, 
                                                               className);
-        
-        return addAnalysisResult(allChecksRunner.runCheckers(
+
+        ResultAndErrors resultAndErrors = allChecksRunner.runCheckers(
                 ImmutableList.copyOf(getResults()),
-                this,
                 database,
                 mutableTypeInformation,
-                analysisInProgress));
+                analysisInProgress);
+
+        analysisErrors.addAll(resultAndErrors.errors);
+
+        return addAnalysisResult(resultAndErrors.result);
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
         analysedClasses.put(dotted(result.dottedClassName), result);
         return result;
-    }
-
-    @Override
-    public void addAnalysisError(AnalysisError error) {
-        analysisErrors.add(error);
     }
 
     @Override
@@ -167,10 +166,5 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
     @Override
     public Collection<AnalysisError> getErrors() {
         return Collections.unmodifiableCollection(analysisErrors);
-    }
-
-    @Override
-    public AnalysisErrorReporter errorReporter() {
-        return this;
     }
 }

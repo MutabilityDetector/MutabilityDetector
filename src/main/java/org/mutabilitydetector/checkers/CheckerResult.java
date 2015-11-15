@@ -22,7 +22,7 @@ package org.mutabilitydetector.checkers;
 
 
 import com.google.common.collect.ImmutableList;
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
+import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 
@@ -44,5 +44,9 @@ public final class CheckerResult {
 
     public CheckerResult(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons) {
         this(isImmutable, reasons, Collections.<AnalysisError>emptyList());
+    }
+
+    public CheckerResult withError(AnalysisError error) {
+        return new CheckerResult(this.isImmutable, this.reasons, Collections.singleton(error));
     }
 }

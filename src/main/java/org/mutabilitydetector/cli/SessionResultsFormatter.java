@@ -33,7 +33,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
+import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;

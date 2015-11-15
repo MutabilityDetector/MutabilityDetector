@@ -100,23 +100,6 @@ public abstract class AbstractMutabilityChecker extends AsmMutabilityChecker {
 
     }
 
-    @Override
-    public final void visitAnalysisException(Throwable toBeThrown) {
-        setResult(errorReasonDescription(toBeThrown), getCodeLocationForException(), MutabilityReason.CANNOT_ANALYSE);
-    }
-
-    private String errorReasonDescription(Throwable toBeThrown) {
-        return "Encountered an unhandled error in analysis.";
-    }
-    
-    
-
-    public CodeLocation<?> getCodeLocationForException() {
-        return ownerClass != null 
-                ? ClassLocation.from(slashed(ownerClass))
-                : CodeLocation.UnknownCodeLocation.UNKNOWN;
-    }
-
     protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
         return MutableReasonDetail.newMutableReasonDetail(message, location, reason);
     }

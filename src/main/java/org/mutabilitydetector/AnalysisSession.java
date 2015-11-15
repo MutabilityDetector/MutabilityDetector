@@ -24,7 +24,6 @@ package org.mutabilitydetector;
 
 import java.util.Map;
 
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -32,8 +31,6 @@ public interface AnalysisSession {
     AnalysisResult resultFor(Dotted className);
     AnalysisResult processTransitiveAnalysis(Dotted className, AnalysisInProgress analysisInProgress);
 
-    AnalysisErrorReporter errorReporter();
-    
     Iterable<AnalysisResult> getResults();
     Map<Dotted, AnalysisResult> resultsByClass();
     

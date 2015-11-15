@@ -21,20 +21,9 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static com.google.common.collect.Iterables.addAll;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableList;
-import org.mutabilitydetector.AnalysisErrorReporter;
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
+import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
@@ -42,6 +31,13 @@ import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
+
+import java.util.Collection;
+import java.util.Map;
+
+import static com.google.common.collect.Iterables.addAll;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
 public final class AllChecksRunner {
 
@@ -60,13 +56,13 @@ public final class AllChecksRunner {
         this.toAnalyse = toAnalyse;
     }
 
-    public AnalysisResult runCheckers(ImmutableList<AnalysisResult> knownResultsSoFar,
-                                      AnalysisErrorReporter errorReporter,
+    public ResultAndErrors runCheckers(ImmutableList<AnalysisResult> knownResultsSoFar,
                                       AnalysisDatabase database,
                                       MutableTypeInformation mutableTypeInformation,
                                       AnalysisInProgress analysisInProgress) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
+        Collection<AnalysisError> errors = newArrayList();
 
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(
                 database,
@@ -77,20 +73,37 @@ public final class AllChecksRunner {
         CheckerRunner checkerRunner = checkerRunnerFactory.createRunner();
 
         for (AsmMutabilityChecker checker : checkers) {
-            CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, errorReporter, knownResultsSoFar);
+            CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, knownResultsSoFar);
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
             addAll(reasons, checkerResult.reasons);
+            addAll(errors, checkerResult.errors);
         }
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
-        return AnalysisResult.analysisResult(toAnalyse.asString(), isImmutable, reasons);
+        return new ResultAndErrors(
+                AnalysisResult.analysisResult(toAnalyse.asString(), isImmutable, reasons),
+                ImmutableList.copyOf(errors));
     }
 
     private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {
         Integer oldCount = results.get(result);
         if (oldCount == null) oldCount = 0;
         return (oldCount + 1);
+    }
+
+    /**
+     * Refactoring cheat to save adding the errors into AnalysisResult, as that's a bigger change. Take a "snapshot" by
+     * creating a new class to hold them both.
+     */
+    public static final class ResultAndErrors {
+        public final AnalysisResult result;
+        public final Collection<AnalysisError> errors;
+
+        public ResultAndErrors(AnalysisResult result, Collection<AnalysisError> errors) {
+            this.result = result;
+            this.errors = errors;
+        }
     }
 
 }

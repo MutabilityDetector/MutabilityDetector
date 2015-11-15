@@ -26,17 +26,20 @@ import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.settermethod.singlecheck.WithAlias;
 
 public final class ValidSingleCheckLazyInitialisationWithAlias {
 
+    @Ignore
     @Test
     public void byteWithJvmInitialValue() {
         final Class<?> klasse = WithAlias.WithJvmInitialValue.ByteValid.class;
         AsserterWithLazyInitialisationAlgorithm.ASSERTER.assertImmutable(klasse);
     }
 
+    @Ignore
     @Test
     public void shortWithJvmInitialValue() {
         final Class<?> klasse = WithAlias.WithJvmInitialValue.ShortValid.class;

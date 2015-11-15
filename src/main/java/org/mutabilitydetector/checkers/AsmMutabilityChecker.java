@@ -43,6 +43,4 @@ public abstract class AsmMutabilityChecker extends ClassVisitor {
     
     public abstract CheckerResult checkerResult();
 
-    public abstract void visitAnalysisException(Throwable toBeThrown);
-
 }
