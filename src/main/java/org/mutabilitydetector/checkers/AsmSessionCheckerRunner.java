@@ -26,6 +26,6 @@ import org.mutabilitydetector.locations.ClassIdentifier;
 
 public interface AsmSessionCheckerRunner {
 
-    public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier);
+    void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier);
 
 }

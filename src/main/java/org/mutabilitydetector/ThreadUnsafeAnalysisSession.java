@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AllChecksRunner;
@@ -40,6 +41,7 @@ import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
@@ -56,14 +58,15 @@ import javax.annotation.concurrent.NotThreadSafe;
 public final class ThreadUnsafeAnalysisSession implements AnalysisSession, AnalysisErrorReporter {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
-    private final List<AnalysisErrorReporter.AnalysisError> analysisErrors = newArrayList();
+    private final List<AnalysisError> analysisErrors = newArrayList();
 
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisDatabase database;
     private final AsmVerifierFactory verifierFactory;
-    private final MutableTypeInformation mutableTypeInformation;
-    
+    private final Configuration configuration;
+    private final CyclicReferences cyclicReferences = new CyclicReferences();
+
     private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
                              MutabilityCheckerFactory checkerFactory,
                              AsmVerifierFactory verifierFactory,
@@ -71,7 +74,8 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
         this.verifierFactory = verifierFactory;
-        mutableTypeInformation = new MutableTypeInformation(this, configuration);
+        this.configuration = configuration;
+
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
     }
@@ -125,7 +129,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         if (existingResult != null) {
             return existingResult;
         }
-        
+
+        MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(this, configuration, cyclicReferences);
+
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
                                                               checkerRunnerFactory,
                                                               verifierFactory, 

@@ -30,7 +30,7 @@ public interface AnalysisErrorReporter {
     void addAnalysisError(AnalysisError error);
 
     @Immutable
-    public static final class AnalysisError {
+    final class AnalysisError {
         public final String checkerName;
         public final String description;
         public final String onClass;

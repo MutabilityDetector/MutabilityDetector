@@ -60,7 +60,8 @@ public final class AllChecksRunner {
     public AnalysisResult runCheckers(AnalysisSession analysisSession,
                                       AnalysisErrorReporter errorReporter,
                                       AnalysisDatabase database,
-                                      MutableTypeInformation mutableTypeInformation, AnalysisInProgress analysisInProgress) {
+                                      MutableTypeInformation mutableTypeInformation,
+                                      AnalysisInProgress analysisInProgress) {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
 

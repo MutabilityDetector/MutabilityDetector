@@ -20,8 +20,6 @@ package org.mutabilitydetector.checkers.util;
  * #L%
  */
 
-
-
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
@@ -44,7 +42,9 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
 
     public boolean isPrivateMethodCalledOnlyFromConstructor(String methodDescriptor) {
         MethodIdentifier identifier = makeMethodIdentifier(methodDescriptor);
-        if (privateMethodCalledFromConstructorMap.containsKey(identifier)) { return privateMethodCalledFromConstructorMap.get(identifier); }
+        if (privateMethodCalledFromConstructorMap.containsKey(identifier)) {
+            return privateMethodCalledFromConstructorMap.get(identifier);
+        }
 
         String message = format("Could not find method descriptor %s. Available descriptors are: %n%s",
                 identifier,

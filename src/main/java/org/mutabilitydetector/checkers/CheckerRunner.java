@@ -57,7 +57,7 @@ public final class CheckerRunner {
         return createWithClasspath(new ClassPathFactory().createFromJVM(), exceptionPolicy);
     }
     
-    public static enum ExceptionPolicy {
+    public enum ExceptionPolicy {
         FAIL_FAST, CARRY_ON
     }
 

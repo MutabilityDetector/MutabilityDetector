@@ -21,34 +21,30 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
+import org.mutabilitydetector.checkers.info.CyclicReferences.CyclicReference;
 import org.mutabilitydetector.locations.Dotted;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.newSetFromMap;
 
 public final class MutableTypeInformation {
 
     private final AnalysisSession analysisSession;
     private final Configuration configuration;
-    
-    private final KnownCyclicReferences knownCyclicReferences = new KnownCyclicReferences();
+    private final CyclicReferences cyclicReferences;
 
-    public MutableTypeInformation(AnalysisSession analysisSession, Configuration configuration) {
+    public MutableTypeInformation(AnalysisSession analysisSession,
+                                  Configuration configuration,
+                                  CyclicReferences cyclicReferences) {
         this.analysisSession = analysisSession;
         this.configuration = configuration;
+        this.cyclicReferences = cyclicReferences;
     }
     
     public ImmutableMultimap<String, CopyMethod> hardcodedCopyMethods() {
@@ -64,21 +60,14 @@ public final class MutableTypeInformation {
     }
 
     private MutabilityLookup requestAnalysisIfNoCyclicReferenceDetected(Dotted ownerClass, Dotted fieldClass, AnalysisInProgress analysisInProgress) {
-        if (knownCyclicReferences.includes(ownerClass, fieldClass)) {
-            CyclicReference cyclicReference = new CyclicReference(ownerClass, fieldClass);
-            return MutabilityLookup.foundCyclicReference(cyclicReference);
-        } else if (fieldClass.equals(ownerClass)) {
-            CyclicReference cyclicReference = new CyclicReference(ownerClass, fieldClass);
-            knownCyclicReferences.register(cyclicReference);
-            return MutabilityLookup.foundCyclicReference(cyclicReference);
-        } else if (analysisInProgress.contains(fieldClass)) {
-            CyclicReference cyclicReference = new CyclicReference(analysisInProgress);
-            knownCyclicReferences.register(cyclicReference);
-            return MutabilityLookup.foundCyclicReference(cyclicReference);
+        Optional<CyclicReference> cyclicReference = cyclicReferences.detectedBetween(ownerClass, fieldClass, analysisInProgress);
+        if (cyclicReference.isPresent()) {
+            return MutabilityLookup.foundCyclicReference(cyclicReference.get());
         } else {
             AnalysisResult result = analysisSession.processTransitiveAnalysis(fieldClass, analysisInProgress.analysisStartedFor(ownerClass));
             return MutabilityLookup.complete(result);
         }
+
     }
 
     private Optional<AnalysisResult> existingResult(final Dotted fieldClass) {
@@ -89,51 +78,7 @@ public final class MutableTypeInformation {
 
         return Optional.fromNullable(analysisSession.resultsByClass().get(fieldClass));
     }
-    
-    private final static class KnownCyclicReferences {
-        private final Set<CyclicReference> knownCyclicReferenceClass = newSetFromMap(new ConcurrentHashMap<CyclicReference, Boolean>());
 
-        boolean includes(Dotted ownerClass, Dotted fieldClass) {
-            return knownCyclicReferenceClass.contains(new CyclicReference(fieldClass, ownerClass));
-        }
-
-        void register(CyclicReference cyclicReference) {
-            knownCyclicReferenceClass.add(cyclicReference);
-        }
-
-    }
-
-    @Immutable
-    public static final class CyclicReference {
-        public final ImmutableList<Dotted> references;
-
-        public CyclicReference(Dotted first, Dotted second) {
-            this.references = ImmutableList.of(first, second);
-        }
-
-        public CyclicReference(AnalysisInProgress analysisInProgress) {
-            this.references = analysisInProgress.inProgress;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            CyclicReference that = (CyclicReference) o;
-            return Objects.equal(ImmutableSet.copyOf(references), ImmutableSet.copyOf(that.references));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(references);
-        }
-
-        @Override
-        public String toString() {
-            return "CyclicReference{" + Joiner.on(" -> ").join(references) + "}";
-        }
-    }
-    
     @Immutable
     public static final class MutabilityLookup {
         public final AnalysisResult result;

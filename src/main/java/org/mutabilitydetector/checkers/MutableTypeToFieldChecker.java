@@ -38,6 +38,7 @@ import com.google.common.base.Joiner;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -258,7 +259,7 @@ public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
                     fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
 
-        private void setCyclicReferenceResult(FieldLocation fieldLocation, MutableTypeInformation.CyclicReference cyclicReference) {
+        private void setCyclicReferenceResult(FieldLocation fieldLocation, CyclicReferences.CyclicReference cyclicReference) {
             setResult("There is a field assigned which creates a cyclic reference. " +
                             "(" + Joiner.on(" -> ").join(cyclicReference.references) + ")",
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
