@@ -44,6 +44,7 @@ import org.mutabilitydetector.checkers.CanSubclassChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
@@ -55,7 +56,10 @@ import java.util.Set;
 public class AssumingArrayFieldsTest {
 
 
-    private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(testAnalysisSession(), OUT_OF_THE_BOX_CONFIGURATION);
+    private final MutableTypeInformation mutableTypeInfo = new MutableTypeInformation(
+            testAnalysisSession(),
+            OUT_OF_THE_BOX_CONFIGURATION,
+            CyclicReferences.newEmptyMutableInstance());
     private final TypeStructureInformation typeStructureInfo = analysisDatabase().requestInformation(TYPE_STRUCTURE);
     private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
     private final AnalysisInProgress analysisInProgress = AnalysisInProgress.noAnalysisUnderway();

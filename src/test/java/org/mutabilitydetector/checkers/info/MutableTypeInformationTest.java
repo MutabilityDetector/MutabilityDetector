@@ -45,6 +45,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.NON_FINAL_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
@@ -70,7 +71,7 @@ public class MutableTypeInformationTest {
     public void returnsIsImmutableResultFromAnalysisSessionIfAvailable() throws Exception {
         when(session.resultsByClass()).thenReturn(ImmutableMap.of(needToKnowMutabilityOf, result));
 
-        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance());
 
         MutabilityLookup mutabilityLookup = information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, NO_ANALYSIS_IN_PROGRESS);
         assertThat(mutabilityLookup.result, is(result));
@@ -82,7 +83,7 @@ public class MutableTypeInformationTest {
     public void returnsKnownCyclicReferenceWhenRevisitingClassBeforeInProgressAnalysisHasComplete() {
         AnalysisInProgress analysisInProgress = noAnalysisUnderway().analysisStartedFor(needToKnowMutabilityOf).analysisStartedFor(dotted("e.f.g.H"));
 
-        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance());
 
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, analysisInProgress).foundCyclicReference, is(true));
     }
@@ -91,7 +92,7 @@ public class MutableTypeInformationTest {
     public void returnsKnownCyclicReferenceIfRequestingAnalysisOfFieldThatIsSameTypeAsCurrentAnalysisInProgress() {
         AnalysisInProgress analysisInProgress = noAnalysisUnderway();
 
-        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance());
 
         assertThat(information.resultOf(needToKnowMutabilityOf, needToKnowMutabilityOf, analysisInProgress).foundCyclicReference, is(true));
     }
@@ -103,7 +104,7 @@ public class MutableTypeInformationTest {
         when(session.resultsByClass()).thenReturn(Collections.<Dotted, AnalysisResult>emptyMap());
         when(session.processTransitiveAnalysis(needToKnowMutabilityOf, analysisInProgress.analysisStartedFor(mutabilityAskedOnBehalfOf))).thenReturn(result);
 
-        MutableTypeInformation information = new MutableTypeInformation(session, Configurations.NO_CONFIGURATION);
+        MutableTypeInformation information = new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance());
 
         MutabilityLookup mutabilityLookup = information.resultOf(mutabilityAskedOnBehalfOf, needToKnowMutabilityOf, analysisInProgress);
         assertThat(mutabilityLookup.result, is(result));
@@ -118,7 +119,7 @@ public class MutableTypeInformationTest {
                 hardcodeResult(harcodedResult);
             }
         }.build();
-        MutableTypeInformation information = new MutableTypeInformation(session, configuration);
+        MutableTypeInformation information = new MutableTypeInformation(session, configuration, CyclicReferences.newEmptyMutableInstance());
         
         assertThat(information.resultOf(mutabilityAskedOnBehalfOf, dotted("some.type.i.say.is.Immutable"), NO_ANALYSIS_IN_PROGRESS).result,
                 sameInstance(harcodedResult));

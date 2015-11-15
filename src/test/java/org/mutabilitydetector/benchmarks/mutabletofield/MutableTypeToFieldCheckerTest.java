@@ -43,6 +43,7 @@ import org.mutabilitydetector.benchmarks.mutabletofield.array.MutableByHavingArr
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
@@ -99,7 +100,10 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         return new MutableTypeToFieldChecker(
                 info,
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
+                new MutableTypeInformation(
+                        testAnalysisSession(),
+                        NO_CONFIGURATION,
+                        CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
                 AnalysisInProgress.noAnalysisUnderway());
@@ -112,7 +116,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         checkerWithMockedSession = new MutableTypeToFieldChecker(
                 info,
-                new MutableTypeInformation(session, NO_CONFIGURATION),
+                new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
                 AnalysisInProgress.noAnalysisUnderway());
@@ -125,7 +129,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo,
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
                 AnalysisInProgress.noAnalysisUnderway());
@@ -348,7 +352,7 @@ public class MutableTypeToFieldCheckerTest {
         TypeStructureInformation info = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         MutableTypeToFieldChecker checker = new MutableTypeToFieldChecker(
                 info,
-                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION),
+                new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)),
                 AnalysisInProgress.noAnalysisUnderway());

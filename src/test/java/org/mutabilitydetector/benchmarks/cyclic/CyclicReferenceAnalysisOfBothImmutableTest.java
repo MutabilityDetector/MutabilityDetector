@@ -34,6 +34,7 @@ import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.Dotted;
@@ -60,7 +61,10 @@ public class CyclicReferenceAnalysisOfBothImmutableTest {
         TypeStructureInformation information = analysisDatabase().requestInformation(TYPE_STRUCTURE);
         AsmMutabilityChecker mutableFieldChecker = new MutableTypeToFieldChecker(
                 information, 
-                new MutableTypeInformation(session, Configurations.NO_CONFIGURATION), 
+                new MutableTypeInformation(
+                        session,
+                        Configurations.NO_CONFIGURATION,
+                        CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 Collections.<Dotted>emptySet(),
                 AnalysisInProgress.noAnalysisUnderway());

@@ -52,6 +52,10 @@ public final class CyclicReferences {
         }
     }
 
+    public static CyclicReferences newEmptyMutableInstance() {
+        return new CyclicReferences();
+    }
+
     @Immutable
     public static final class CyclicReference {
         public final ImmutableList<Dotted> references;

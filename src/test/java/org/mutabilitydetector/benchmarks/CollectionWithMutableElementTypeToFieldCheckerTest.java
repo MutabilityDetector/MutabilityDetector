@@ -51,13 +51,17 @@ import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.SafelyC
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
 
 public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
     private final MutableTypeInformation mutableTypeInfo =
-            new MutableTypeInformation(testAnalysisSession(), Configurations.NO_CONFIGURATION);
+            new MutableTypeInformation(
+                    testAnalysisSession(),
+                    Configurations.NO_CONFIGURATION,
+                    CyclicReferences.newEmptyMutableInstance());
 
     private final AsmMutabilityChecker checker =
             new CollectionWithMutableElementTypeToFieldChecker(
