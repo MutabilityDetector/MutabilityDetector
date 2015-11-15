@@ -21,17 +21,21 @@ package org.mutabilitydetector.checkers;
  */
 
 
+import com.google.common.base.Throwables;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertSame;
@@ -134,20 +138,28 @@ public class CheckerRunnerTest {
 
         AnalysisError error = result.errors.iterator().next();
 
+        assertThat(error.checkerName, is("ExceptionThrowingMutabilityChecker"));
         assertThat(error.description,
                 containsString("It is likely that the class org.mutabilitydetector.benchmarks.ImmutableExample has " +
                         "dependencies outwith the given class path."));
     }
 
     private AsmMutabilityChecker checkerWhichThrows(Throwable toBeThrown) {
-        AsmMutabilityChecker checker = mock(AsmMutabilityChecker.class);
-        doThrow(toBeThrown).when(checker).visit(anyInt(),
-                anyInt(),
-                anyString(),
-                anyString(),
-                anyString(),
-                new String[] { anyString() });
-        return checker;
+        return new ExceptionThrowingMutabilityChecker(toBeThrown);
+    }
+
+    private static class ExceptionThrowingMutabilityChecker extends AbstractMutabilityChecker {
+
+        private final Throwable willThrow;
+
+        ExceptionThrowingMutabilityChecker(Throwable willThrow) {
+            this.willThrow = willThrow;
+        }
+
+        @Override
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            Throwables.propagate(willThrow);
+        }
     }
 
 }

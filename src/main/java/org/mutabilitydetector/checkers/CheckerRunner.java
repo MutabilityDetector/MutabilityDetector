@@ -142,7 +142,6 @@ public final class CheckerRunner {
     }
 
     private String getNameOfChecker(AsmMutabilityChecker checker) {
-        String checkerName = checker.getClass().getName();
-        return checkerName.substring(checkerName.lastIndexOf(".") + 1);
+        return checker.getClass().getSimpleName();
     }
 }
