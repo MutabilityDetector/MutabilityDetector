@@ -110,12 +110,12 @@ public final class CheckerRunner {
     private AnalysisError attemptRecovery(AsmMutabilityChecker checker,
                                  Dotted className,
                                  Iterable<AnalysisResult> resultsSoFar,
-                                 Throwable e) {
+                                 Throwable error) {
 
-        if (!isRecoverable(e) || exceptionPolicy == FAIL_FAST) {
-            throw unhandledExceptionBuilder.unhandledException(e, resultsSoFar, checker, className);
+        if (!isRecoverable(error) || exceptionPolicy == FAIL_FAST) {
+            throw unhandledExceptionBuilder.unhandledException(error, resultsSoFar, checker, className);
         } else {
-            return handleException(checker, className, e);
+            return handleException(checker, className);
         }
     }
     
@@ -132,7 +132,7 @@ public final class CheckerRunner {
         return rootCause;
     }
 
-    private AnalysisError handleException(AsmMutabilityChecker checker, Dotted onClass, Throwable e) {
+    private AnalysisError handleException(AsmMutabilityChecker checker, Dotted onClass) {
         String errorDescription = createErrorDescription(onClass);
         return new AnalysisError(onClass, getNameOfChecker(checker), errorDescription);
     }
