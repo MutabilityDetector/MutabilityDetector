@@ -21,27 +21,26 @@ package org.mutabilitydetector.checkers.util;
  */
 
 
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.info.TypeInformationRetriever;
+import org.mutabilitydetector.locations.Dotted;
 
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.type;
 import static org.mutabilitydetector.locations.Dotted.fromSlashedString;
 
-import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
-import org.mutabilitydetector.locations.Dotted;
-
-public class TypeStructureInformationChecker extends AbstractMutabilityChecker {
+public class TypeStructureInformationAnalyser extends TypeInformationRetriever {
 
     private final Dotted className;
     private Boolean isAbstract;
     private boolean isInterface;
 
-    private TypeStructureInformationChecker(Dotted className) {
+    private TypeStructureInformationAnalyser(Dotted className) {
         this.className = className;
     }
 
-    public static TypeStructureInformationChecker newChecker(Dotted className) {
-        return new TypeStructureInformationChecker(className);
+    public static TypeStructureInformationAnalyser newAnalyser(Dotted className) {
+        return new TypeStructureInformationAnalyser(className);
     }
 
     public boolean isAbstract() {

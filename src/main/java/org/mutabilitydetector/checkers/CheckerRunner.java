@@ -33,12 +33,14 @@ import java.io.InputStream;
 
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisError;
+import org.mutabilitydetector.asmoverride.AsmClassVisitor;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
+import org.objectweb.asm.ClassVisitor;
 
 public final class CheckerRunner {
 
@@ -82,23 +84,35 @@ public final class CheckerRunner {
         return checker.checkerResult();
     }
 
+    public void nonMutabilityCheckerRun(AsmClassVisitor visitor, Dotted className, Iterable<AnalysisResult> resultsSoFar) {
+        try {
+            try {
+                analyseFromStream(visitor, className);
+            } catch (Exception e) {
+                analyseFromClassLoader(visitor, className);
+            }
+        } catch (Throwable e) {
+            attemptRecovery(visitor, className, resultsSoFar, e);
+        }
+    }
+
     private CodeLocation<?> codeLocationOf(Dotted className) {
         return className != null
                 ? CodeLocation.ClassLocation.from(className)
                 : CodeLocation.UnknownCodeLocation.UNKNOWN;
     }
 
-    private void analyseFromStream(AsmMutabilityChecker checker, Dotted dottedClassPath) throws IOException {
+    private void analyseFromStream(ClassVisitor checker, Dotted dottedClassPath) throws IOException {
         InputStream classStream = classpath.getResourceAsStream(asResourceName(dottedClassPath));
         analyse(checker, classStream);
     }
 
-    private void analyseFromClassLoader(AsmMutabilityChecker checker, Dotted className) throws Exception {
+    private void analyseFromClassLoader(ClassVisitor checker, Dotted className) throws Exception {
         InputStream classStream = getClass().getClassLoader().getResourceAsStream(asResourceName(className));
         analyse(checker, classStream);
     }
 
-    private void analyse(AsmMutabilityChecker checker, InputStream classStream) throws IOException {
+    private void analyse(ClassVisitor checker, InputStream classStream) throws IOException {
         ClassReader cr = new ClassReader(classStream);
         cr.accept(checker, 0);
     }
@@ -107,7 +121,7 @@ public final class CheckerRunner {
         return className.asString().replace(".", "/").concat(".class");
     }
 
-    private AnalysisError attemptRecovery(AsmMutabilityChecker checker,
+    private AnalysisError attemptRecovery(ClassVisitor checker,
                                  Dotted className,
                                  Iterable<AnalysisResult> resultsSoFar,
                                  Throwable error) {
@@ -132,7 +146,7 @@ public final class CheckerRunner {
         return rootCause;
     }
 
-    private AnalysisError handleException(AsmMutabilityChecker checker, Dotted onClass) {
+    private AnalysisError handleException(ClassVisitor checker, Dotted onClass) {
         String errorDescription = createErrorDescription(onClass);
         return new AnalysisError(onClass, getNameOfChecker(checker), errorDescription);
     }
@@ -141,7 +155,7 @@ public final class CheckerRunner {
         return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClass.asString());
     }
 
-    private String getNameOfChecker(AsmMutabilityChecker checker) {
+    private String getNameOfChecker(ClassVisitor checker) {
         return checker.getClass().getSimpleName();
     }
 }

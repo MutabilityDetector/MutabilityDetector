@@ -1,10 +1,10 @@
-package org.mutabilitydetector.checkers;
+package org.mutabilitydetector.checkers.info;
 
 /*
  * #%L
  * MutabilityDetector
  * %%
- * Copyright (C) 2008 - 2014 Graham Allan
+ * Copyright (C) 2008 - 2015 Graham Allan
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,7 @@ package org.mutabilitydetector.checkers;
  * #L%
  */
 
-
-
 import org.mutabilitydetector.asmoverride.AsmClassVisitor;
-import org.mutabilitydetector.locations.ClassIdentifier;
 
-public interface AsmSessionCheckerRunner {
-
-    void run(AsmClassVisitor visitor, ClassIdentifier classIdentifier);
-
+public abstract class TypeInformationRetriever extends AsmClassVisitor {
 }

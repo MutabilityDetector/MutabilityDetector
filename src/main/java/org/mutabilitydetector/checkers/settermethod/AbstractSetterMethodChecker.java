@@ -32,7 +32,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.Reason;
-import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
+import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import org.objectweb.asm.*;
@@ -44,7 +44,7 @@ import org.objectweb.asm.tree.FieldNode;
  * @version 13.03.2013
  */
 @NotThreadSafe
-abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
+abstract class AbstractSetterMethodChecker extends AsmMutabilityChecker {
 
     protected CandidatesInitialisersMapping candidatesInitialisersMapping;
     private final ClassNode classNode;
@@ -97,14 +97,14 @@ abstract class AbstractSetterMethodChecker extends AbstractMutabilityChecker {
     @Override
     public final FieldVisitor visitField(final int access, final String name, final String desc,
             final String signature, final Object value) {
-        FieldVisitor result = null;
+        FieldVisitor result = super.visitField(0, null, null, null, null);
         if (isCandidate(access)) {
             result = new FieldNode(access, name, desc, signature, value);
             candidatesInitialisersMapping.addCandidate((FieldNode) result);
         } else if (field(access).isNotFinal() && field(access).isNotStatic()) {
             setNonFinalFieldResult(name);
         }
-        if (null == result) {
+        if (super.visitField(0, null, null, null, null) == result) {
             result = classNode.visitField(access, name, desc, signature, value);
         }
         return result;

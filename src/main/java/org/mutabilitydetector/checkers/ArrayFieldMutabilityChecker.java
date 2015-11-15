@@ -30,7 +30,7 @@ import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
 
-public class ArrayFieldMutabilityChecker extends AbstractMutabilityChecker {
+public class ArrayFieldMutabilityChecker extends AsmMutabilityChecker {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {

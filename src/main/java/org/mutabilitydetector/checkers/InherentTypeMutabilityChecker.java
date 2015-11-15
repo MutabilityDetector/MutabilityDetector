@@ -40,7 +40,7 @@ import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
  */
-public final class InherentTypeMutabilityChecker extends AbstractMutabilityChecker {
+public final class InherentTypeMutabilityChecker extends AsmMutabilityChecker {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {

@@ -21,26 +21,99 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.Reason;
+import org.mutabilitydetector.locations.CodeLocation;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.Collection;
 
-
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.MutableReasonDetail;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
+import static com.google.common.collect.Lists.newArrayList;
 
 public abstract class AsmMutabilityChecker extends ClassVisitor {
+
+    protected Collection<MutableReasonDetail> reasons = newArrayList();
+    private IsImmutable isImmutable = IsImmutable.IMMUTABLE;
 
     public AsmMutabilityChecker() {
         super(Opcodes.ASM5);
     }
-    
-    public abstract Collection<MutableReasonDetail> reasons();
 
-    public abstract IsImmutable result();
-    
-    public abstract CheckerResult checkerResult();
+    protected String ownerClass;
 
+    public String ownerClass() {
+        return ownerClass;
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        ownerClass = name;
+    }
+
+    public Collection<MutableReasonDetail> reasons() {
+        return reasons;
+    }
+
+    public IsImmutable result() {
+        return isImmutable;
+    }
+
+    public CheckerResult checkerResult() {
+        return new CheckerResult(isImmutable, reasons);
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        return null;
+    }
+
+    @Override
+    public void visitAttribute(Attribute attr) {
+
+    }
+
+    @Override
+    public void visitEnd() {
+
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        return null;
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+
+    }
+
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return null;
+    }
+
+    @Override
+    public void visitOuterClass(String owner, String name, String desc) {
+
+    }
+
+    @Override
+    public void visitSource(String source, String debug) {
+
+    }
+
+    protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
+        return MutableReasonDetail.newMutableReasonDetail(message, location, reason);
+    }
+
+    protected void setResult(String message, CodeLocation<?> location, Reason reason) {
+        reasons.add(createResult(message, location, reason));
+        isImmutable = reason.createsResult();
+    }
 }

@@ -29,7 +29,7 @@ import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.MethodVisitor;
 
-public final class CanSubclassChecker extends AbstractMutabilityChecker {
+public final class CanSubclassChecker extends AsmMutabilityChecker {
 
     private boolean isFinal = true;
     private boolean hasOnlyPrivateConstructors = true;

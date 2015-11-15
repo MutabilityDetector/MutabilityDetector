@@ -59,7 +59,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public final class MutableTypeToFieldChecker extends AbstractMutabilityChecker {
+public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
 
     private final TypeStructureInformation typeStructureInformation;
     private final MutableTypeInformation mutableTypeInfo;

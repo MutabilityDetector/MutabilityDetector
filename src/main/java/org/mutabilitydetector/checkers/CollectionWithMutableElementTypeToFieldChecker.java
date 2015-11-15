@@ -45,7 +45,7 @@ import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
-public final class CollectionWithMutableElementTypeToFieldChecker extends AbstractMutabilityChecker {
+public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMutabilityChecker {
 
     private final MutableTypeInformation mutableTypeInfo;
     private final AsmVerifierFactory verifierFactory;

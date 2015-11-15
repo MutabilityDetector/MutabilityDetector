@@ -26,6 +26,7 @@ import static java.lang.String.format;
 
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.ClassVisitor;
 
 public final class UnhandledExceptionBuilder {
 
@@ -45,7 +46,7 @@ public final class UnhandledExceptionBuilder {
     
     public MutabilityAnalysisException unhandledException(Throwable cause, 
                                                            Iterable<AnalysisResult> resultsSoFar,
-                                                           AsmMutabilityChecker checker, 
+                                                           ClassVisitor checker,
                                                            Dotted className) {
         
         StringBuilder errorMessage = new StringBuilder();

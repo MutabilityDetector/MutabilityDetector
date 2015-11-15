@@ -26,22 +26,17 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
@@ -148,7 +143,7 @@ public class CheckerRunnerTest {
         return new ExceptionThrowingMutabilityChecker(toBeThrown);
     }
 
-    private static class ExceptionThrowingMutabilityChecker extends AbstractMutabilityChecker {
+    private static class ExceptionThrowingMutabilityChecker extends AsmMutabilityChecker {
 
         private final Throwable willThrow;
 

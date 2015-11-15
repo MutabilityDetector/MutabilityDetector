@@ -28,12 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
-import org.mutabilitydetector.checkers.util.PrivateMethodInvocationChecker;
+import org.mutabilitydetector.checkers.util.PrivateMethodInvocationAnalyser;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class PrivateMethodInvocationInformation implements AnalysisInformation {
 
-    private final Map<Dotted, PrivateMethodInvocationChecker> checkerCache = new HashMap<Dotted, PrivateMethodInvocationChecker>();
+    private final Map<Dotted, PrivateMethodInvocationAnalyser> checkerCache = new HashMap<Dotted, PrivateMethodInvocationAnalyser>();
     private final AsmSessionCheckerRunner sessionCheckerRunner;
 
     public PrivateMethodInvocationInformation(AsmSessionCheckerRunner sessionCheckerRunner) {
@@ -41,18 +41,18 @@ public final class PrivateMethodInvocationInformation implements AnalysisInforma
     }
 
     public boolean isOnlyCalledFromConstructor(MethodIdentifier forMethod) {
-        PrivateMethodInvocationChecker checker;
+        PrivateMethodInvocationAnalyser checker;
         if (checkerCache.containsKey(forMethod.dottedClassName())) {
             checker = checkerCache.get(forMethod.dottedClassName());
         } else {
-            checker = new PrivateMethodInvocationChecker();
+            checker = new PrivateMethodInvocationAnalyser();
             sessionCheckerRunner.run(checker, forClass(forMethod.dottedClassName()));
             checkerCache.put(forMethod.dottedClassName(), checker);
         }
         return result(checker, forMethod);
     }
 
-    private boolean result(PrivateMethodInvocationChecker checker, MethodIdentifier forMethod) {
+    private boolean result(PrivateMethodInvocationAnalyser checker, MethodIdentifier forMethod) {
         return checker.isPrivateMethodCalledOnlyFromConstructor(forMethod.methodDescriptor());
     }
 

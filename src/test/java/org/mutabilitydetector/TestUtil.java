@@ -28,9 +28,11 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.checkers.info.TypeInformationRetriever;
 import org.mutabilitydetector.classloading.AnalysisClassLoader;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
+import org.mutabilitydetector.locations.ClassIdentifier;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.Dotted;
@@ -67,9 +69,9 @@ public class TestUtil {
     }
 
     public static MutableReasonDetail unusedMutableReasonDetail() {
-        return newMutableReasonDetail("this reason is not meant to be involved", 
-                                       ClassLocation.fromInternalName("some made up class name"), 
-                                       NULL_REASON);
+        return newMutableReasonDetail("this reason is not meant to be involved",
+                ClassLocation.fromInternalName("some made up class name"),
+                NULL_REASON);
     }
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
@@ -80,6 +82,10 @@ public class TestUtil {
 
     public static SessionCheckerRunner sessionCheckerRunner() {
         return new SessionCheckerRunner(testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
+    }
+
+    public static void retrieveInformation(TypeInformationRetriever checker, Class<?> toAnalyse) {
+        TestUtil.sessionCheckerRunner().run(checker, ClassIdentifier.forClass(fromClass(toAnalyse)));
     }
 
     public static AnalysisDatabase analysisDatabase() {

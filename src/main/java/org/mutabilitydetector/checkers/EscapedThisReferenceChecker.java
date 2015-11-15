@@ -37,7 +37,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-public final class EscapedThisReferenceChecker extends AbstractMutabilityChecker {
+public final class EscapedThisReferenceChecker extends AsmMutabilityChecker {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {

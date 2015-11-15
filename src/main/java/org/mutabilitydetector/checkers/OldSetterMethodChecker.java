@@ -48,7 +48,7 @@ import org.objectweb.asm.tree.analysis.Frame;
  * @author Graham Allan / Grundlefleck at gmail dot com
  * 
  */
-public final class OldSetterMethodChecker extends AbstractMutabilityChecker {
+public final class OldSetterMethodChecker extends AsmMutabilityChecker {
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
     private final AsmVerifierFactory verifierFactory;

@@ -22,7 +22,7 @@ package org.mutabilitydetector.checkers.info;
 
 
 import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.asmoverride.AsmClassVisitor;
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.locations.ClassIdentifier;
@@ -38,8 +38,8 @@ public class SessionCheckerRunner implements AsmSessionCheckerRunner {
     }
 
     @Override
-    public void run(AsmMutabilityChecker checker, ClassIdentifier classIdentifier) {
-        checkerRunner.run(checker, classIdentifier.asDotted(), analysisSession.getResults());
+    public void run(AsmClassVisitor visitor, ClassIdentifier classIdentifier) {
+        checkerRunner.nonMutabilityCheckerRun(visitor, classIdentifier.asDotted(), analysisSession.getResults());
     }
 
 }

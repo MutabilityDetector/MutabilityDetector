@@ -22,14 +22,14 @@ package org.mutabilitydetector.checkers.info;
 
 
 
-import static org.mutabilitydetector.checkers.util.TypeStructureInformationChecker.newChecker;
+import static org.mutabilitydetector.checkers.util.TypeStructureInformationAnalyser.newAnalyser;
 import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
-import org.mutabilitydetector.checkers.util.TypeStructureInformationChecker;
+import org.mutabilitydetector.checkers.util.TypeStructureInformationAnalyser;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class TypeStructureInformation implements AnalysisInformation {
@@ -43,7 +43,7 @@ public final class TypeStructureInformation implements AnalysisInformation {
     }
 
     private void runCheckerAndPopulateResultMaps(Dotted className) {
-        TypeStructureInformationChecker checker = newChecker(className);
+        TypeStructureInformationAnalyser checker = newAnalyser(className);
         sessionCheckerRunner.run(checker, forClass(className));
 
         isAbstractMap.put(className, checker.isAbstract());

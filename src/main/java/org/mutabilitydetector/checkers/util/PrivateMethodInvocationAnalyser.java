@@ -20,23 +20,24 @@ package org.mutabilitydetector.checkers.util;
  * #L%
  */
 
+import org.mutabilitydetector.checkers.MethodIs;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.asmoverride.AsmClassVisitor;
+import org.mutabilitydetector.checkers.info.MethodIdentifier;
+import org.mutabilitydetector.checkers.info.TypeInformationRetriever;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.MethodNode;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.lang.String.format;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.mutabilitydetector.checkers.AbstractMutabilityChecker;
-import org.mutabilitydetector.checkers.MethodIs;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
-import org.mutabilitydetector.checkers.info.MethodIdentifier;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.MethodNode;
-
-public final class PrivateMethodInvocationChecker extends AbstractMutabilityChecker {
+public final class PrivateMethodInvocationAnalyser extends TypeInformationRetriever {
 
     private final Map<MethodIdentifier, Boolean> privateMethodCalledFromConstructorMap = new HashMap<MethodIdentifier, Boolean>();
 
@@ -68,7 +69,7 @@ public final class PrivateMethodInvocationChecker extends AbstractMutabilityChec
     }
 
     private MethodIdentifier makeMethodIdentifier(String desc) {
-        return forMethod(slashed(ownerClass), desc);
+        return forMethod(slashed(ownerClass()), desc);
     }
 
     private class MethodInvocationVisitor extends MethodNode {

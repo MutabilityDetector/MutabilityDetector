@@ -29,7 +29,7 @@ import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 
-public final class NonFinalFieldChecker extends AbstractMutabilityChecker {
+public final class NonFinalFieldChecker extends AsmMutabilityChecker {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {

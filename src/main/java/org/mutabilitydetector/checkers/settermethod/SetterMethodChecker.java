@@ -36,16 +36,6 @@
  */
 
 
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.String.format;
-import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
-import static org.mutabilitydetector.locations.Slashed.slashed;
-
-import java.util.*;
-
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
@@ -55,6 +45,19 @@ import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMappin
 import org.mutabilitydetector.locations.Slashed;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
+import static org.mutabilitydetector.checkers.info.MethodIdentifier.forMethod;
+import static org.mutabilitydetector.locations.Slashed.slashed;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -73,30 +76,25 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         public MethodIdentifier getMethodIdentifier() {
             final Slashed className = getSlashedClassName();
             final String methodDescriptor = getMethodDescriptor();
-            final MethodIdentifier result = forMethod(className, methodDescriptor);
-            return result;
+            return forMethod(className, methodDescriptor);
         }
 
         private Slashed getSlashedClassName() {
             final String owner = getEnhancedClassNode().getName();
-            final Slashed result = slashed(owner);
-            return result;
+            return slashed(owner);
         }
 
         private String getMethodDescriptor() {
             final String methodName = method.name;
             final String methodDesc = method.desc;
-            final String result = String.format("%s:%s", methodName, methodDesc);
-            return result;
+            return String.format("%s:%s", methodName, methodDesc);
         }
 
         @Override
         public String toString() {
-            final StringBuilder builder = new StringBuilder();
-            builder.append(getClass().getSimpleName()).append(" [method=").append(method).append("]");
-            return builder.toString();
+            return getClass().getSimpleName() + " [method=" + method + "]";
         }
-    } // class MethodIdentifierFactory
+    }
 
 
     private final PrivateMethodInvocationInformation privateMethodInvocationInfo;
@@ -337,14 +335,10 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
 
     @Override
     public String toString() {
-        final StringBuilder b = new StringBuilder();
-        b.append(getClass().getSimpleName()).append(" [initialValues=");
-        b.append(initialValues);
-        b.append(", assignmentGuards=").append(assignmentGuards);
-        b.append(", effectiveAssignmentInstructions=").append(effectiveAssignmentInstructions);
-        b.append(", candidatesInitialisersMapping=").append(candidatesInitialisersMapping);
-        b.append("]");
-        return b.toString();
+        return getClass().getSimpleName() + " [initialValues=" + initialValues
+                + ", assignmentGuards=" + assignmentGuards
+                + ", effectiveAssignmentInstructions=" + effectiveAssignmentInstructions
+                + ", candidatesInitialisersMapping=" + candidatesInitialisersMapping + "]";
     }
 
 }
