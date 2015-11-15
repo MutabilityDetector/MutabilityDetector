@@ -21,17 +21,12 @@ package org.mutabilitydetector;
  */
 
 
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AllChecksRunner;
@@ -47,25 +42,28 @@ import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 @NotThreadSafe
 public final class ThreadUnsafeAnalysisSession implements AnalysisSession, AnalysisErrorReporter {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
-    private final List<AnalysisError> analysisErrors = newArrayList();
+    private final List<AnalysisError> analysisErrors = Lists.newCopyOnWriteArrayList();
 
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
     private final AnalysisDatabase database;
     private final AsmVerifierFactory verifierFactory;
     private final Configuration configuration;
-    private final CyclicReferences cyclicReferences = new CyclicReferences();
+    private final CyclicReferences cyclicReferences;
 
     private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
                              MutabilityCheckerFactory checkerFactory,
@@ -75,6 +73,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
         this.checkerFactory = checkerFactory;
         this.verifierFactory = verifierFactory;
         this.configuration = configuration;
+        this.cyclicReferences = new CyclicReferences();
 
         AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(sessionCheckerRunner);
@@ -137,7 +136,12 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession, Analy
                                                               verifierFactory, 
                                                               className);
         
-        return addAnalysisResult(allChecksRunner.runCheckers(this, this, database, mutableTypeInformation, analysisInProgress));
+        return addAnalysisResult(allChecksRunner.runCheckers(
+                ImmutableList.copyOf(getResults()),
+                this,
+                database,
+                mutableTypeInformation,
+                analysisInProgress));
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {

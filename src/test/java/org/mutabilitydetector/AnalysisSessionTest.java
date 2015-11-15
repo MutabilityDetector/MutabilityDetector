@@ -27,6 +27,7 @@ import static org.mutabilitydetector.TestUtil.analysisDatabase;
 import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.checkers.AllChecksRunner;
@@ -62,7 +63,7 @@ public class AnalysisSessionTest {
                 testingVerifierFactory(), 
                 immutableClass);
 
-        checker.runCheckers(analysisSession, errorReporter, analysisDatabase(), mutableTypeInformation, analysisInProgress);
+        checker.runCheckers(ImmutableList.<AnalysisResult>of(), errorReporter, analysisDatabase(), mutableTypeInformation, analysisInProgress);
 
         AnalysisResult result = analysisSession.resultFor(immutableClass);
         assertThat(result, areImmutable());

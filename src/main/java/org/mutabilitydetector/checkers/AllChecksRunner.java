@@ -27,9 +27,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import org.mutabilitydetector.AnalysisErrorReporter;
+import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.IsImmutable;
@@ -57,7 +60,7 @@ public final class AllChecksRunner {
         this.toAnalyse = toAnalyse;
     }
 
-    public AnalysisResult runCheckers(AnalysisSession analysisSession,
+    public AnalysisResult runCheckers(ImmutableList<AnalysisResult> knownResultsSoFar,
                                       AnalysisErrorReporter errorReporter,
                                       AnalysisDatabase database,
                                       MutableTypeInformation mutableTypeInformation,
@@ -74,8 +77,7 @@ public final class AllChecksRunner {
         CheckerRunner checkerRunner = checkerRunnerFactory.createRunner();
 
         for (AsmMutabilityChecker checker : checkers) {
-            CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, errorReporter,
-                    analysisSession.getResults());
+            CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, errorReporter, knownResultsSoFar);
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
             addAll(reasons, checkerResult.reasons);
         }

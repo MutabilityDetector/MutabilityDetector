@@ -21,24 +21,28 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.annotation.concurrent.Immutable;
-
+import com.google.common.collect.ImmutableList;
+import org.mutabilitydetector.AnalysisErrorReporter.AnalysisError;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
+
+import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
+import java.util.Collections;
 
 @Immutable
 public final class CheckerResult {
     public final IsImmutable isImmutable;
     public final Collection<MutableReasonDetail> reasons;
+    public final Collection<AnalysisError> errors;
     
-    public CheckerResult(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons) {
+    public CheckerResult(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons, Iterable<AnalysisError> errors) {
         this.isImmutable = isImmutable;
-        this.reasons = Collections.unmodifiableCollection(newArrayList(reasons));
+        this.reasons = ImmutableList.copyOf(reasons);
+        this.errors = ImmutableList.copyOf(errors);
+    }
+
+    public CheckerResult(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons) {
+        this(isImmutable, reasons, Collections.<AnalysisError>emptyList());
     }
 }

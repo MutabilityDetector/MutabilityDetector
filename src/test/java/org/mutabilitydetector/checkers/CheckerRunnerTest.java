@@ -21,6 +21,13 @@ package org.mutabilitydetector.checkers;
  */
 
 
+import org.junit.Test;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -32,17 +39,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
-
-import java.util.Collections;
-
-import org.junit.Test;
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.CheckerRunner;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
-import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 
 public class CheckerRunnerTest {
 
