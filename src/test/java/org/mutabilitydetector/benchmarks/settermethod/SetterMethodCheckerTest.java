@@ -59,8 +59,8 @@ import org.mutabilitydetector.benchmarks.settermethod.SetsFieldsOfDifferentTypes
 import org.mutabilitydetector.benchmarks.types.EnumType;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.OldSetterMethodChecker;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.CodeLocation;
@@ -72,9 +72,6 @@ public final class SetterMethodCheckerTest {
     @Rule public MethodRule rule = new IncorrectAnalysisRule();
 
     private OldSetterMethodChecker checker;
-    private CheckerRunner checkerRunner;
-    private AnalysisSession analysisSession;
-    private PrivateMethodInvocationInformation info;
 
     @DataPoints
     public static Class<?>[] classes = new Class[] { SetsBoolean.class, SetsByte.class, SetsChar.class,
@@ -83,9 +80,9 @@ public final class SetterMethodCheckerTest {
 
     @Before
     public void setUp() {
-        checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
-        analysisSession = TestUtil.testAnalysisSession();
-        info = new PrivateMethodInvocationInformation(new SessionCheckerRunner(analysisSession, checkerRunner));
+        CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
+        AnalysisSession analysisSession = TestUtil.testAnalysisSession();
+        PrivateMethodInvocationInformation info = new PrivateMethodInvocationInformation(new InformationRetrievalRunner(analysisSession, checkerRunner));
         checker = OldSetterMethodChecker.newSetterMethodChecker(info, TestUtil.testingVerifierFactory());
     }
 

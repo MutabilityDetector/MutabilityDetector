@@ -1,4 +1,4 @@
-package org.mutabilitydetector.checkers;
+package org.mutabilitydetector.checkers.info;
 
 /*
  * #%L
@@ -21,12 +21,23 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
+import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.asmoverride.AsmClassVisitor;
+import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.locations.ClassIdentifier;
 
-public interface AsmSessionCheckerRunner {
+public final class InformationRetrievalRunner {
 
-    void run(AsmClassVisitor visitor, ClassIdentifier classIdentifier);
+    private final CheckerRunner checkerRunner;
+    private final AnalysisSession analysisSession;
+
+    public InformationRetrievalRunner(AnalysisSession analysisSession, CheckerRunner checkerRunner) {
+        this.analysisSession = analysisSession;
+        this.checkerRunner = checkerRunner;
+    }
+
+    public void run(AsmClassVisitor visitor, ClassIdentifier classIdentifier) {
+        checkerRunner.runVisitor(visitor, classIdentifier.asDotted(), analysisSession.getResults());
+    }
 
 }

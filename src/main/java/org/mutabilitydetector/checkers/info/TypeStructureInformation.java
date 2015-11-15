@@ -28,26 +28,25 @@ import static org.mutabilitydetector.locations.ClassIdentifier.forClass;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.util.TypeStructureInformationAnalyser;
 import org.mutabilitydetector.locations.Dotted;
 
 public final class TypeStructureInformation implements AnalysisInformation {
 
-    private final AsmSessionCheckerRunner sessionCheckerRunner;
+    private final InformationRetrievalRunner sessionCheckerRunner;
     private final Map<Dotted, Boolean> isAbstractMap = new HashMap<Dotted, Boolean>();
     private final Map<Dotted, Boolean> isInterfaceMap = new HashMap<Dotted, Boolean>();
 
-    public TypeStructureInformation(AsmSessionCheckerRunner sessionCheckerRunner) {
+    public TypeStructureInformation(InformationRetrievalRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
     }
 
     private void runCheckerAndPopulateResultMaps(Dotted className) {
-        TypeStructureInformationAnalyser checker = newAnalyser(className);
-        sessionCheckerRunner.run(checker, forClass(className));
+        TypeStructureInformationAnalyser analyser = newAnalyser(className);
+        sessionCheckerRunner.run(analyser, forClass(className));
 
-        isAbstractMap.put(className, checker.isAbstract());
-        isInterfaceMap.put(className, checker.isInterface());
+        isAbstractMap.put(className, analyser.isAbstract());
+        isInterfaceMap.put(className, analyser.isInterface());
     }
 
     private Boolean getResultFrom(Dotted className, Map<Dotted, Boolean> resultMap) {

@@ -44,8 +44,8 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.CyclicReferences;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
@@ -125,7 +125,7 @@ public class MutableTypeToFieldCheckerTest {
 
     @Before
     public void setUpWithRealSession() {
-        SessionCheckerRunner runner = new SessionCheckerRunner(TestUtil.testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
+        InformationRetrievalRunner runner = new InformationRetrievalRunner(TestUtil.testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
         TypeStructureInformation typeInfo = new TypeStructureInformation(runner);
         checkerWithRealSession = new MutableTypeToFieldChecker(
                 typeInfo,

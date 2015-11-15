@@ -33,11 +33,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase.InfoKey;
 import org.mutabilitydetector.checkers.info.AnalysisInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 
 public class AnalysisDatabaseTest {
 
@@ -45,7 +44,7 @@ public class AnalysisDatabaseTest {
 
     @Before
     public void setUp() {
-        AsmSessionCheckerRunner sessionRunner = new SessionCheckerRunner(
+        InformationRetrievalRunner sessionRunner = new InformationRetrievalRunner(
                 TestUtil.testAnalysisSession(),
                 createWithCurrentClasspath(FAIL_FAST));
         db = newAnalysisDatabase(sessionRunner);

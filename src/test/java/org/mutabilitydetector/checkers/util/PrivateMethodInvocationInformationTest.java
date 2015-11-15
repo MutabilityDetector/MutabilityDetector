@@ -31,17 +31,16 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import org.junit.Test;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.benchmarks.settermethod.ImmutableUsingPrivateFieldSettingMethod;
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.CheckerRunner;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 
 public class PrivateMethodInvocationInformationTest {
 
     private CheckerRunner checkerRunner = CheckerRunner.createWithCurrentClasspath(FAIL_FAST);
 
     private PrivateMethodInvocationInformation createInfo() {
-        AsmSessionCheckerRunner sessionRunner = new SessionCheckerRunner(TestUtil.testAnalysisSession(), checkerRunner);
+        InformationRetrievalRunner sessionRunner = new InformationRetrievalRunner(TestUtil.testAnalysisSession(), checkerRunner);
         return new PrivateMethodInvocationInformation(sessionRunner);
     }
 

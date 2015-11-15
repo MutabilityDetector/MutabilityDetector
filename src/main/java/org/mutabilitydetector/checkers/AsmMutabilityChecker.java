@@ -24,6 +24,7 @@ package org.mutabilitydetector.checkers;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.Reason;
+import org.mutabilitydetector.asmoverride.AsmClassVisitor;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -36,14 +37,10 @@ import java.util.Collection;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public abstract class AsmMutabilityChecker extends ClassVisitor {
+public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
     protected Collection<MutableReasonDetail> reasons = newArrayList();
     private IsImmutable isImmutable = IsImmutable.IMMUTABLE;
-
-    public AsmMutabilityChecker() {
-        super(Opcodes.ASM5);
-    }
 
     protected String ownerClass;
 

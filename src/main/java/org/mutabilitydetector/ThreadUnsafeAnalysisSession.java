@@ -31,15 +31,14 @@ import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AllChecksRunner;
 import org.mutabilitydetector.checkers.AllChecksRunner.ResultAndErrors;
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
 import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.CyclicReferences;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
@@ -76,8 +75,8 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
         this.configuration = configuration;
         this.cyclicReferences = new CyclicReferences();
 
-        AsmSessionCheckerRunner sessionCheckerRunner = new SessionCheckerRunner(this, checkerRunnerFactory.createRunner());
-        this.database = newAnalysisDatabase(sessionCheckerRunner);
+        InformationRetrievalRunner informationRetrievalRunner = new InformationRetrievalRunner(this, checkerRunnerFactory.createRunner());
+        this.database = newAnalysisDatabase(informationRetrievalRunner);
     }
 
     public static AnalysisSession createWithGivenClassPath(ClassPath classpath,

@@ -21,26 +21,25 @@ package org.mutabilitydetector.checkers;
  */
 
 
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
+import com.google.common.base.Optional;
+import org.mutabilitydetector.AnalysisError;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.asmoverride.AsmClassVisitor;
+import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static java.lang.String.format;
 import static java.util.Collections.singleton;
 import static org.mutabilitydetector.MutabilityReason.CANNOT_ANALYSE;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisError;
-import org.mutabilitydetector.asmoverride.AsmClassVisitor;
-import org.mutabilitydetector.locations.CodeLocation;
-import org.mutabilitydetector.locations.Dotted;
-import org.objectweb.asm.ClassReader;
-
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import org.objectweb.asm.ClassVisitor;
 
 public final class CheckerRunner {
 
@@ -67,24 +66,19 @@ public final class CheckerRunner {
     }
 
     public CheckerResult run(AsmMutabilityChecker checker, Dotted className, Iterable<AnalysisResult> resultsSoFar) {
-        try {
-            try {
-                analyseFromStream(checker, className);
-            } catch (Exception e) {
-                analyseFromClassLoader(checker, className);
-            }
-        } catch (Throwable e) {
-            AnalysisError error = attemptRecovery(checker, className, resultsSoFar, e);
+        Optional<AnalysisError> potentialError = runVisitor(checker, className, resultsSoFar);
 
+        if (potentialError.isPresent()) {
             return new CheckerResult(
                     CANNOT_ANALYSE.createsResult(),
                     singleton(newMutableReasonDetail("Encountered an unhandled error in analysis.", codeLocationOf(className), CANNOT_ANALYSE)),
-                    singleton(error));
+                    singleton(potentialError.get()));
+        } else {
+            return checker.checkerResult();
         }
-        return checker.checkerResult();
     }
 
-    public void nonMutabilityCheckerRun(AsmClassVisitor visitor, Dotted className, Iterable<AnalysisResult> resultsSoFar) {
+    public Optional<AnalysisError> runVisitor(AsmClassVisitor visitor, Dotted className, Iterable<AnalysisResult> resultsSoFar) {
         try {
             try {
                 analyseFromStream(visitor, className);
@@ -92,8 +86,9 @@ public final class CheckerRunner {
                 analyseFromClassLoader(visitor, className);
             }
         } catch (Throwable e) {
-            attemptRecovery(visitor, className, resultsSoFar, e);
+            return Optional.of(attemptRecovery(visitor, className, resultsSoFar, e));
         }
+        return Optional.absent();
     }
 
     private CodeLocation<?> codeLocationOf(Dotted className) {
@@ -121,15 +116,15 @@ public final class CheckerRunner {
         return className.asString().replace(".", "/").concat(".class");
     }
 
-    private AnalysisError attemptRecovery(ClassVisitor checker,
+    private AnalysisError attemptRecovery(ClassVisitor visitor,
                                  Dotted className,
                                  Iterable<AnalysisResult> resultsSoFar,
                                  Throwable error) {
 
         if (!isRecoverable(error) || exceptionPolicy == FAIL_FAST) {
-            throw unhandledExceptionBuilder.unhandledException(error, resultsSoFar, checker, className);
+            throw unhandledExceptionBuilder.unhandledException(error, resultsSoFar, visitor, className);
         } else {
-            return handleException(checker, className);
+            return handleException(visitor, className);
         }
     }
     
@@ -155,7 +150,7 @@ public final class CheckerRunner {
         return format("It is likely that the class %s has dependencies outwith the given class path.", dottedClass.asString());
     }
 
-    private String getNameOfChecker(ClassVisitor checker) {
-        return checker.getClass().getSimpleName();
+    private String getNameOfChecker(ClassVisitor visitor) {
+        return visitor.getClass().getSimpleName();
     }
 }

@@ -27,7 +27,7 @@ import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
-import org.mutabilitydetector.checkers.info.SessionCheckerRunner;
+import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.TypeInformationRetriever;
 import org.mutabilitydetector.classloading.AnalysisClassLoader;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
@@ -80,8 +80,8 @@ public class TestUtil {
         return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
     }
 
-    public static SessionCheckerRunner sessionCheckerRunner() {
-        return new SessionCheckerRunner(testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
+    public static InformationRetrievalRunner sessionCheckerRunner() {
+        return new InformationRetrievalRunner(testAnalysisSession(), createWithCurrentClasspath(FAIL_FAST));
     }
 
     public static void retrieveInformation(TypeInformationRetriever checker, Class<?> toAnalyse) {

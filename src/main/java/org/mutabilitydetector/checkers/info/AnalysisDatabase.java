@@ -25,8 +25,6 @@ package org.mutabilitydetector.checkers.info;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mutabilitydetector.checkers.AsmSessionCheckerRunner;
-
 public final class AnalysisDatabase {
 
     public static final class InfoKey<C> {
@@ -48,13 +46,13 @@ public final class AnalysisDatabase {
     @SuppressWarnings("rawtypes")
     private final Map infoMap = new HashMap();
 
-    private final AsmSessionCheckerRunner sessionCheckerRunner;
+    private final InformationRetrievalRunner sessionCheckerRunner;
 
-    private AnalysisDatabase(AsmSessionCheckerRunner sessionCheckerRunner) {
+    private AnalysisDatabase(InformationRetrievalRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
     }
 
-    public static AnalysisDatabase newAnalysisDatabase(AsmSessionCheckerRunner sessionCheckerRunner) {
+    public static AnalysisDatabase newAnalysisDatabase(InformationRetrievalRunner sessionCheckerRunner) {
         return new AnalysisDatabase(sessionCheckerRunner);
     }
 
