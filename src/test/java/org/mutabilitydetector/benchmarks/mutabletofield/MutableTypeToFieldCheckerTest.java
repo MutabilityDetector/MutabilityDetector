@@ -211,7 +211,7 @@ public class MutableTypeToFieldCheckerTest {
         when(session.processTransitiveAnalysis(eq(mutableExample), any(AnalysisInProgress.class))).thenReturn(unusedAnalysisResult);
 
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
-        FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.reasons().iterator().next().codeLocation();
+        FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.checkerResult().reasons.iterator().next().codeLocation();
 
         assertThat(codeLocation.typeName(), is(MutableByHavingMutableFieldAssigned.class.getName()));
         assertThat(codeLocation.fieldName(), is("mutableField"));
@@ -220,7 +220,7 @@ public class MutableTypeToFieldCheckerTest {
     @Test
     public void codeLocationIsFieldLocationForArrayField() throws Exception {
         runChecker(checkerWithMockedSession, MutableByHavingArrayTypeAsField.class);
-        FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.reasons().iterator().next().codeLocation();
+        FieldLocation codeLocation = (FieldLocation) checkerWithMockedSession.checkerResult().reasons.iterator().next().codeLocation();
 
         assertThat(codeLocation.typeName(), is(MutableByHavingArrayTypeAsField.class.getName()));
         assertThat(codeLocation.fieldName(), is("names"));

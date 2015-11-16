@@ -75,7 +75,7 @@ public class ArrayFieldMutabilityCheckerTest {
     @Test
     public void arrayFieldCodeLocationIsFieldLocationWithNameOfField() throws Exception {
         runChecker(checker, ClassWithAllPrimitives.Array.class);
-        FieldLocation sourceLocation = (FieldLocation) checker.reasons().iterator().next().codeLocation();
+        FieldLocation sourceLocation = (FieldLocation) checker.checkerResult().reasons.iterator().next().codeLocation();
 
         assertThat(sourceLocation.typeName(), is(ClassWithAllPrimitives.Array.class.getName()));
         assertThat(sourceLocation.fieldName(), is("anArray"));

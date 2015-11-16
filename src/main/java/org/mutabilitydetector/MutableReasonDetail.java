@@ -32,7 +32,6 @@ import org.mutabilitydetector.locations.CodeLocation;
 
 import com.google.common.base.Objects;
 
-@Immutable
 public final class MutableReasonDetail {
 
     private final String message;

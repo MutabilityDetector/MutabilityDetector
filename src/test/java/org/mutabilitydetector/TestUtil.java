@@ -25,6 +25,7 @@ import org.junit.Ignore;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
+import org.mutabilitydetector.checkers.CheckerResult;
 import org.mutabilitydetector.checkers.CheckerRunner;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
@@ -76,8 +77,8 @@ public class TestUtil {
 
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
         AnalysisSession analysisSession = testAnalysisSession();
-        CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.getResults());
-        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), checker.result(), checker.reasons());
+        CheckerResult result = CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.getResults());
+        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), result.isImmutable, result.reasons);
     }
 
     public static InformationRetrievalRunner sessionCheckerRunner() {

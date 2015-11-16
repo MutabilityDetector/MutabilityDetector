@@ -21,26 +21,30 @@ package org.mutabilitydetector.checkers;
  */
 
 
-import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.asmoverride.AsmClassVisitor;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
+import java.util.Collections;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 
+@NotThreadSafe
 public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
+    private static final CheckerResult DEFAULT_RESULT = new CheckerResult(IMMUTABLE, Collections.<MutableReasonDetail>emptyList());
+
+    private CheckerResult checkerResult = DEFAULT_RESULT;
+
     protected Collection<MutableReasonDetail> reasons = newArrayList();
-    private IsImmutable isImmutable = IsImmutable.IMMUTABLE;
 
     protected String ownerClass;
 
@@ -48,21 +52,18 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
         return ownerClass;
     }
 
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        ownerClass = name;
-    }
-
-    public Collection<MutableReasonDetail> reasons() {
-        return reasons;
-    }
-
-    public IsImmutable result() {
-        return isImmutable;
+    protected void setResult(String message, CodeLocation<?> location, Reason reason) {
+        reasons.add(createReasonDetail(message, location, reason));
+        this.checkerResult = new CheckerResult(reason.createsResult(), reasons);
     }
 
     public CheckerResult checkerResult() {
-        return new CheckerResult(isImmutable, reasons);
+        return checkerResult;
+    }
+
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        ownerClass = name;
     }
 
     @Override
@@ -105,12 +106,8 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
     }
 
-    protected MutableReasonDetail createResult(String message, CodeLocation<?> location, Reason reason) {
+    protected MutableReasonDetail createReasonDetail(String message, CodeLocation<?> location, Reason reason) {
         return MutableReasonDetail.newMutableReasonDetail(message, location, reason);
     }
 
-    protected void setResult(String message, CodeLocation<?> location, Reason reason) {
-        reasons.add(createResult(message, location, reason));
-        isImmutable = reason.createsResult();
-    }
 }

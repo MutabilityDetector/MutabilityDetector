@@ -25,6 +25,7 @@ package org.mutabilitydetector.benchmarks.settermethod;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
 import static org.mutabilitydetector.TestUtil.runChecker;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -142,7 +143,7 @@ public final class SetterMethodCheckerTest {
     public void subclassOfSettingFieldOfMutableFieldRendersClassMutable() throws Exception {
         AnalysisResult result = doCheck(StillMutableSubclass.class);
 
-        assertThat(checker.reasons().size(), is(not(0)));
+        assertThat(checker, hasReasons());
         assertThat(result, areNotImmutable());
     }
 

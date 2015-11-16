@@ -21,21 +21,7 @@ package org.mutabilitydetector.benchmarks;
  */
 
 
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
-import static org.mutabilitydetector.TestMatchers.hasReasons;
-import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testAnalysisSession;
-import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.locations.Dotted.fromClass;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
-
 import com.google.common.collect.ImmutableSet;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configurations;
@@ -54,6 +40,19 @@ import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.locations.Dotted;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
+import static org.mutabilitydetector.TestMatchers.hasNoReasons;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
+import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.TestUtil.testAnalysisSession;
+import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
@@ -81,7 +80,7 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
     public void doesNotRaiseErrorWhenElementTypeIsImmutable() throws Exception {
         AnalysisResult result = runChecker(checker, SafelyCopiedMapGenericOnImmutableTypeForKey_ManyFields.class);
         assertThat(result, areImmutable());
-        assertThat(checker.reasons(), Matchers.<MutableReasonDetail>empty());
+        assertThat(checker, hasNoReasons());
     }
 
     @Test
@@ -96,7 +95,8 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         AnalysisResult result = runChecker(checker, SafelyCopiedMap_UsesGenericTypeOfClass.class);
         assertThat(result, areNotImmutable());
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
-        assertThat(checker.reasons().iterator().next().message(), containsString("<org.mutabilitydetector.benchmarks.ImmutableExample, SOME_GENERIC_TYPE>"));
+        assertThat(checker.checkerResult().reasons.iterator().next().message(),
+                containsString("<org.mutabilitydetector.benchmarks.ImmutableExample, SOME_GENERIC_TYPE>"));
     }
 
     @Test

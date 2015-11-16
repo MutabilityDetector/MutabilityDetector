@@ -36,6 +36,7 @@ import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import org.mutabilitydetector.checkers.CheckerResult;
 
 /*
  * Mutability Detector
@@ -56,7 +57,7 @@ public class TestMatchers {
             @Override
             protected boolean matchesSafely(AsmMutabilityChecker item, Description mismatchDescription) {
                 mismatchDescription.appendText(" got a checker (" + item.toString() + ") containing zero reasons ");
-                return !(item.reasons().isEmpty());
+                return !(item.checkerResult().reasons.isEmpty());
             }
 
             @Override
@@ -103,11 +104,12 @@ public class TestMatchers {
 
             @Override
             protected boolean matchesSafely(AsmMutabilityChecker checker, Description mismatchDescription) {
+                CheckerResult result = checker.checkerResult();
                 String mismatch = format(" got a checker containing %d reasons, %n%s",
-                        checker.reasons().size(),
-                        formatReasons(checker.reasons()));
+                        result.reasons.size(),
+                        formatReasons(result.reasons));
                 mismatchDescription.appendText(mismatch);
-                return (checker.reasons().isEmpty());
+                return (result.reasons.isEmpty());
             }
 
             @Override

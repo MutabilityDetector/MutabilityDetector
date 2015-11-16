@@ -93,7 +93,7 @@ public class InherentTypeMutabilityCheckerTest {
     @Test
     public void codeLocationOfAbstractTypeIsClassLocationWithNameOfClass() throws Exception {
         runChecker(checker, AbstractType.class);
-        ClassLocation codeLocation = (ClassLocation) checker.reasons().iterator().next().codeLocation();
+        ClassLocation codeLocation = (ClassLocation) checker.checkerResult().reasons.iterator().next().codeLocation();
 
         assertThat(codeLocation.typeName(), is(AbstractType.class.getName()));
     }
