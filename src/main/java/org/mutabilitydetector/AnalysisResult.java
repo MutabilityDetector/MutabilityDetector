@@ -23,7 +23,6 @@ package org.mutabilitydetector;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Predicate;
 import org.mutabilitydetector.locations.Dotted;
 
 import javax.annotation.Nonnull;
@@ -103,12 +102,6 @@ public final class AnalysisResult {
         if (isImmutable != IMMUTABLE && reasons.isEmpty()) { 
             throw new IllegalArgumentException("Reasons must be given when a class is not " + IsImmutable.IMMUTABLE); 
         }
-    }
-
-    public static Predicate<AnalysisResult> forClass(@Nonnull final Dotted className) {
-        return new Predicate<AnalysisResult>() { @Override public boolean apply(@Nonnull AnalysisResult input) {
-            return input.className.equals(className);
-        }};
     }
 
     public static final Function<AnalysisResult, Dotted> TO_DOTTED_CLASSNAME = new Function<AnalysisResult, Dotted>() {
