@@ -33,8 +33,6 @@ import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
-import com.google.common.collect.ImmutableMultimap;
-
 /**
  * Allows customisation of Mutability Detector's analysis.
  * <p>
@@ -46,7 +44,7 @@ import com.google.common.collect.ImmutableMultimap;
  * @see ConfigurationBuilder
  * @see MutabilityAsserter#configured(Configuration)
  * @see MutabilityAsserter#configured(ConfigurationBuilder)
- * @see ThreadUnsafeAnalysisSession#createWithCurrentClassPath(Configuration)
+ * @see DefaultCachingAnalysisSession#createWithCurrentClassPath(Configuration)
  */
 public interface Configuration {
 

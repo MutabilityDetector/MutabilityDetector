@@ -37,7 +37,7 @@ import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.ThreadUnsafeAnalysisSession;
+import org.mutabilitydetector.DefaultCachingAnalysisSession;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
@@ -75,7 +75,7 @@ public class MutabilityAsserter {
      */
     public static MutabilityAsserter configured(Configuration configuration) {
         return new MutabilityAsserter(new AssertionReporter(), 
-                ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration));
+                DefaultCachingAnalysisSession.createWithCurrentClassPath(configuration));
     }
 
     /**
@@ -98,7 +98,7 @@ public class MutabilityAsserter {
      */
     public static MutabilityAsserter configured(ConfigurationBuilder configuration) {
         return new MutabilityAsserter(new AssertionReporter(), 
-                ThreadUnsafeAnalysisSession.createWithCurrentClassPath(configuration.build()));
+                DefaultCachingAnalysisSession.createWithCurrentClassPath(configuration.build()));
     }
 
     /**

@@ -111,7 +111,7 @@ public abstract class ConfigurationBuilder {
      * });
      * </code>
      * </pre>
-     * Similarly for {@link ThreadUnsafeAnalysisSession#createWithCurrentClassPath(Configuration)}
+     * Similarly for {@link DefaultCachingAnalysisSession#createWithCurrentClassPath(Configuration)}
      * <p>
      * The available configuration methods are listed below.
      * 

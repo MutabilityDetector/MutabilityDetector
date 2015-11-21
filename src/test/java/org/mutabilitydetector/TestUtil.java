@@ -58,7 +58,7 @@ public class TestUtil {
     }
 
     public static AnalysisSession testAnalysisSession() {
-        return ThreadUnsafeAnalysisSession.createWithCurrentClassPath(OUT_OF_THE_BOX_CONFIGURATION);
+        return DefaultCachingAnalysisSession.createWithCurrentClassPath(OUT_OF_THE_BOX_CONFIGURATION);
     }
 
     public static String formatReasons(Collection<MutableReasonDetail> reasons) {

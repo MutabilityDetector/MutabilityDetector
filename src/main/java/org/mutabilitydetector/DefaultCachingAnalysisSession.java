@@ -42,7 +42,6 @@ import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -50,8 +49,7 @@ import java.util.Map;
 import static org.mutabilitydetector.AnalysisResult.TO_ERRORS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 
-@NotThreadSafe
-public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
+public final class DefaultCachingAnalysisSession implements AnalysisSession {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
 
@@ -62,10 +60,10 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     private final Configuration configuration;
     private final CyclicReferences cyclicReferences;
 
-    private ThreadUnsafeAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
-                             MutabilityCheckerFactory checkerFactory,
-                             AsmVerifierFactory verifierFactory,
-                             Configuration configuration) {
+    private DefaultCachingAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
+                                          MutabilityCheckerFactory checkerFactory,
+                                          AsmVerifierFactory verifierFactory,
+                                          Configuration configuration) {
         this.checkerRunnerFactory = checkerRunnerFactory;
         this.checkerFactory = checkerFactory;
         this.verifierFactory = verifierFactory;
@@ -104,7 +102,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     private static AnalysisSession createWithGivenClassPath(ClassPath classpath,
                                                             Configuration configuration,
                                                             AsmVerifierFactory verifierFactory) {
-        return new ThreadUnsafeAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
+        return new DefaultCachingAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
                                                new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm(), configuration.immutableContainerClasses()),
                                                verifierFactory, 
                                                configuration);
