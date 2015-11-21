@@ -43,8 +43,16 @@ public final class AnalysisResult {
     public final Collection<MutableReasonDetail> reasons;
     private final int hashCode;
 
+    /**
+     * The field {@link #className} contains the same class name.
+     * Access the same string via <code>className.asString()</code>
+     */
+    @Deprecated
+    public final String dottedClassName;
+
     private AnalysisResult(Dotted className, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         this.className = className;
+        this.dottedClassName = className.asString();
         this.isImmutable = isImmutable;
         this.reasons = Collections.unmodifiableList(new ArrayList<MutableReasonDetail>(reasons));
         
