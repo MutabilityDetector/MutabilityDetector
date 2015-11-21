@@ -386,7 +386,9 @@ public class ErrorLocationTest {
                     "Expected: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        There is a field assigned which creates a circular reference. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass]\n" +
+                    "        There is a field assigned which creates a cyclic reference. " +
+                    "(org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass -> org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass) " +
+                    "[Field: field, Class: org.mutabilitydetector.ErrorLocationTest$OwnCyclicDependencyClass]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
