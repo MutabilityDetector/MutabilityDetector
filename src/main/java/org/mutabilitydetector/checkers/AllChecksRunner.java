@@ -56,7 +56,7 @@ public final class AllChecksRunner {
         this.toAnalyse = toAnalyse;
     }
 
-    public ResultAndErrors runCheckers(ImmutableList<AnalysisResult> knownResultsSoFar,
+    public AnalysisResult runCheckers(ImmutableList<AnalysisResult> knownResultsSoFar,
                                       AnalysisDatabase database,
                                       MutableTypeInformation mutableTypeInformation,
                                       AnalysisInProgress analysisInProgress) {
@@ -81,29 +81,13 @@ public final class AllChecksRunner {
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
-        return new ResultAndErrors(
-                AnalysisResult.analysisResult(toAnalyse, isImmutable, reasons),
-                ImmutableList.copyOf(errors));
+        return AnalysisResult.analysisResult(toAnalyse, isImmutable, reasons, errors);
     }
 
     private Integer getNewCount(Map<IsImmutable, Integer> results, IsImmutable result) {
         Integer oldCount = results.get(result);
         if (oldCount == null) oldCount = 0;
         return (oldCount + 1);
-    }
-
-    /**
-     * Refactoring cheat to save adding the errors into AnalysisResult, as that's a bigger change. Take a "snapshot" by
-     * creating a new class to hold them both.
-     */
-    public static final class ResultAndErrors {
-        public final AnalysisResult result;
-        public final Collection<AnalysisError> errors;
-
-        public ResultAndErrors(AnalysisResult result, Collection<AnalysisError> errors) {
-            this.result = result;
-            this.errors = errors;
-        }
     }
 
 }

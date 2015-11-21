@@ -70,8 +70,6 @@ public class AnalysisResultTest {
         assertEquals(first, second);
     }
 
-
-
     @Test
     public void definitelyImmutableResultsAreEqual() throws Exception {
         AnalysisResult first = AnalysisResult.definitelyImmutable("some.Class");
@@ -79,6 +77,4 @@ public class AnalysisResultTest {
         
         assertEquals(first, second);
     }
-
-
 }

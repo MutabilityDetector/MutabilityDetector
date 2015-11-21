@@ -41,22 +41,29 @@ public final class AnalysisResult {
     public final Dotted className;
     public final IsImmutable isImmutable;
     public final Collection<MutableReasonDetail> reasons;
+    public final Collection<AnalysisError> errors;
     private final int hashCode;
 
     /**
      * The field {@link #className} contains the same class name.
      * Access the same string via <code>className.asString()</code>
+     *
      */
     @Deprecated
     public final String dottedClassName;
 
-    private AnalysisResult(Dotted className, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
+    private AnalysisResult(
+            Dotted className,
+            IsImmutable isImmutable,
+            Collection<MutableReasonDetail> reasons,
+            Collection<AnalysisError> errors) {
         this.className = className;
         this.dottedClassName = className.asString();
         this.isImmutable = isImmutable;
         this.reasons = Collections.unmodifiableList(new ArrayList<MutableReasonDetail>(reasons));
+        this.errors = Collections.unmodifiableList(new ArrayList<AnalysisError>(errors));
         
-        this.hashCode = Objects.hashCode(className, isImmutable, reasons);
+        this.hashCode = Objects.hashCode(className, isImmutable, reasons, errors);
     }
 
     @Override
@@ -64,6 +71,8 @@ public final class AnalysisResult {
         return Objects.toStringHelper(getClass())
                 .add("class", className)
                 .add("isImmutable", isImmutable)
+                .add("reasons", reasons)
+                .add("errors", errors)
                 .toString();
     }
 
@@ -86,7 +95,8 @@ public final class AnalysisResult {
         AnalysisResult other = (AnalysisResult) obj;
         return className.equals(other.className)
                 && isImmutable.equals(other.isImmutable)
-                && reasons.equals(other.reasons);
+                && reasons.equals(other.reasons)
+                && errors.equals(other.errors);
     }
 
     private static void check(IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
@@ -113,6 +123,12 @@ public final class AnalysisResult {
         }
     };
 
+    public static final Function<AnalysisResult, Collection<AnalysisError>> TO_ERRORS = new Function<AnalysisResult, Collection<AnalysisError>>() {
+        @Override public Collection<AnalysisError> apply(AnalysisResult input) {
+            return input.errors;
+        }
+    };
+
 
     public static AnalysisResult analysisResult(Dotted className, IsImmutable isImmutable, MutableReasonDetail... reasons) {
         return analysisResult(className, isImmutable, asList(reasons));
@@ -120,7 +136,15 @@ public final class AnalysisResult {
 
     public static AnalysisResult analysisResult(Dotted className, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
         check(isImmutable, reasons);
-        return new AnalysisResult(className, isImmutable, reasons);
+        return new AnalysisResult(className, isImmutable, reasons, Collections.<AnalysisError>emptyList());
+    }
+
+    public static AnalysisResult analysisResult(
+            Dotted className,
+            IsImmutable isImmutable,
+            Collection<MutableReasonDetail> reasons,
+            Collection<AnalysisError> errors) {
+        return new AnalysisResult(className, isImmutable, reasons, errors);
     }
 
     public static AnalysisResult definitelyImmutable(Dotted className) {
@@ -146,5 +170,4 @@ public final class AnalysisResult {
     public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, MutableReasonDetail reason) {
         return analysisResult(dottedClassName, isImmutable, asList(reason));
     }
-
 }

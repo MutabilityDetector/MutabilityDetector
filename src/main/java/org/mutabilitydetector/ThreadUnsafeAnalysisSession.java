@@ -25,12 +25,11 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.AllChecksRunner;
-import org.mutabilitydetector.checkers.AllChecksRunner.ResultAndErrors;
 import org.mutabilitydetector.checkers.CheckerRunnerFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
@@ -46,17 +45,15 @@ import org.mutabilitydetector.locations.Dotted;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
+import static org.mutabilitydetector.AnalysisResult.TO_ERRORS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
-import static org.mutabilitydetector.locations.Dotted.dotted;
 
 @NotThreadSafe
 public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 
     private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
-    private final List<AnalysisError> analysisErrors = Lists.newCopyOnWriteArrayList();
 
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
@@ -136,15 +133,13 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
                                                               verifierFactory, 
                                                               className);
 
-        ResultAndErrors resultAndErrors = allChecksRunner.runCheckers(
+        AnalysisResult result = allChecksRunner.runCheckers(
                 ImmutableList.copyOf(getResults()),
                 database,
                 mutableTypeInformation,
                 analysisInProgress);
 
-        analysisErrors.addAll(resultAndErrors.errors);
-
-        return addAnalysisResult(resultAndErrors.result);
+        return addAnalysisResult(result);
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
@@ -164,6 +159,9 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
 
     @Override
     public Collection<AnalysisError> getErrors() {
-        return Collections.unmodifiableCollection(analysisErrors);
+        return FluentIterable
+                .from(analysedClasses.asMap().values())
+                .transformAndConcat(TO_ERRORS)
+                .toList();
     }
 }
