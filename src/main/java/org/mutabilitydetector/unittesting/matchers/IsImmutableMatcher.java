@@ -44,13 +44,13 @@ public final class IsImmutableMatcher extends TypeSafeDiagnosingMatcher<Analysis
     @Override
     public boolean matchesSafely(AnalysisResult item, Description mismatchDescription) {
         this.result = item;
-        mismatchDescription.appendText(format("%s is actually %s%n", item.dottedClassName, item.isImmutable));
+        mismatchDescription.appendText(format("%s is actually %s%n", item.className.asString(), item.isImmutable));
         return this.isImmutable == item.isImmutable;
     }
 
     @Override
     public void describeTo(Description description) {
-        description.appendText(result.dottedClassName + " to be " + isImmutable);
+        description.appendText(result.className.asString() + " to be " + isImmutable);
     }
 
 }

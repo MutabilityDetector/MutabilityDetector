@@ -21,34 +21,6 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
  */
 
 
-
-import static java.lang.String.format;
-import static java.lang.System.getProperty;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mutabilitydetector.AnalysisResult.analysisResult;
-import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
-import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
-import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
-import static org.mutabilitydetector.TestUtil.unusedReason;
-import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
-import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
-import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
-
-import java.util.Collections;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -61,6 +33,32 @@ import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
 import org.mutabilitydetector.locations.CodeLocation;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
+
+import java.util.Collections;
+
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
+import static java.util.Collections.singleton;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.CAN_BE_SUBCLASSED;
+import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
+import static org.mutabilitydetector.AnalysisResult.analysisResult;
+import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
+import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetail;
+import static org.mutabilitydetector.TestUtil.unusedReason;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed.noReasonsAllowed;
+import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
 
 @SuppressWarnings("unchecked")
 public class WithAllowedReasonsMatcherTest {
@@ -82,7 +80,7 @@ public class WithAllowedReasonsMatcherTest {
     @Test
     public void failsWhenPrimaryResultFailsAndNoReasonsAreAllowed() throws Exception {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(NOT_IMMUTABLE);
-        AnalysisResult analysisResult = AnalysisResult.definitelyImmutable("some class");
+        AnalysisResult analysisResult = definitelyImmutable("some class");
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, 
                 Collections.<Matcher<MutableReasonDetail>>emptyList());
@@ -93,7 +91,7 @@ public class WithAllowedReasonsMatcherTest {
     @Test
     public void failsWhenExpectingNotImmutableAndRealResultIsImmutableWithNoReasons() throws Exception {
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
-        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedMutableReasonDetails());
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, unusedMutableReasonDetail());
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(noReasonsAllowed));
         
@@ -101,7 +99,7 @@ public class WithAllowedReasonsMatcherTest {
     }
     
     @Test public void passesWhenResultDoesNotMatchButTheOffendingReasonsAreAllowed() {
-        MutableReasonDetail anyReason = TestUtil.unusedMutableReasonDetail(); 
+        MutableReasonDetail anyReason = unusedMutableReasonDetail();
         
         Matcher<MutableReasonDetail> allowWhateverReason = mock(Matcher.class);
         when(allowWhateverReason.matches(anyReason)).thenReturn(true);
@@ -123,7 +121,7 @@ public class WithAllowedReasonsMatcherTest {
         when(onlyAllowOneReason.matches(disallowedReason)).thenReturn(false);
         
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
-        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, asList(allowedReason, disallowedReason));
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, allowedReason, disallowedReason);
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(onlyAllowOneReason));
         
@@ -140,7 +138,7 @@ public class WithAllowedReasonsMatcherTest {
         when(onlyAllowOneReason.matches(disallowedReason)).thenReturn(false);
         
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
-        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, asList(allowedReason, disallowedReason));
+        AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, allowedReason, disallowedReason);
         
         WithAllowedReasonsMatcher withReasonsMatcher = withAllowedReasons(isImmutable, singleton(onlyAllowOneReason));
         

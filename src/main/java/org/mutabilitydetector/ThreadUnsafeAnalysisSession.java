@@ -148,7 +148,7 @@ public final class ThreadUnsafeAnalysisSession implements AnalysisSession {
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
-        analysedClasses.put(dotted(result.dottedClassName), result);
+        analysedClasses.put(result.className, result);
         return result;
     }
 

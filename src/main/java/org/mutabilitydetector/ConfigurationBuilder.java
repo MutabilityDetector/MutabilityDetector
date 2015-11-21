@@ -248,7 +248,7 @@ public abstract class ConfigurationBuilder {
      * @see AnalysisResult#definitelyImmutable(String)
      */
     protected final void hardcodeAsDefinitelyImmutable(Class<?> immutableClass) {
-        hardcodeResult(AnalysisResult.definitelyImmutable(immutableClass.getName()));
+        hardcodeResult(AnalysisResult.definitelyImmutable(Dotted.fromClass(immutableClass)));
     }
     
 
@@ -264,7 +264,7 @@ public abstract class ConfigurationBuilder {
      * @see AnalysisResult#definitelyImmutable(String)
      */
     protected final void hardcodeAsDefinitelyImmutable(String immutableClassName) {
-        hardcodeResult(AnalysisResult.definitelyImmutable(CONVERTER.dotted(immutableClassName)));
+        hardcodeResult(AnalysisResult.definitelyImmutable(dotted(immutableClassName)));
     }
     
     /**

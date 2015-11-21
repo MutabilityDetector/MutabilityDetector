@@ -82,7 +82,7 @@ public final class AllChecksRunner {
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);
 
         return new ResultAndErrors(
-                AnalysisResult.analysisResult(toAnalyse.asString(), isImmutable, reasons),
+                AnalysisResult.analysisResult(toAnalyse, isImmutable, reasons),
                 ImmutableList.copyOf(errors));
     }
 

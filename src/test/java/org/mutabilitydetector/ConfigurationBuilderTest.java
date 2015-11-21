@@ -21,7 +21,16 @@ package org.mutabilitydetector;
  */
 
 
+import org.junit.Test;
+import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
+import org.mutabilitydetector.checkers.info.CopyMethod;
+import org.mutabilitydetector.locations.Dotted;
+import org.mutabilitydetector.unittesting.internal.CloneList;
 
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -35,22 +44,6 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-import org.mutabilitydetector.benchmarks.mutabletofield.jdktypefields.HasAStringField;
-import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
-import org.mutabilitydetector.checkers.MutabilityAnalysisException;
-import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
-import org.mutabilitydetector.checkers.info.CopyMethod;
-import org.mutabilitydetector.locations.Dotted;
-import org.mutabilitydetector.unittesting.internal.CloneList;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 
 public class ConfigurationBuilderTest {
 

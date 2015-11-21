@@ -54,7 +54,7 @@ import static org.mutabilitydetector.locations.Dotted.fromClass;
 public class TestUtil {
 
     public static AnalysisResult getAnalysisResult(Class<?> toAnalyse) {
-        return testAnalysisSession().resultFor(Dotted.fromClass(toAnalyse));
+        return testAnalysisSession().resultFor(fromClass(toAnalyse));
     }
 
     public static AnalysisSession testAnalysisSession() {
@@ -78,7 +78,7 @@ public class TestUtil {
     public static AnalysisResult runChecker(AsmMutabilityChecker checker, Class<?> toAnalyse) {
         AnalysisSession analysisSession = testAnalysisSession();
         CheckerResult result = CheckerRunner.createWithCurrentClasspath(FAIL_FAST).run(checker, fromClass(toAnalyse), analysisSession.getResults());
-        return AnalysisResult.analysisResult(toAnalyse.getCanonicalName(), result.isImmutable, result.reasons);
+        return AnalysisResult.analysisResult(fromClass(toAnalyse), result.isImmutable, result.reasons);
     }
 
     public static InformationRetrievalRunner sessionCheckerRunner() {
@@ -93,8 +93,8 @@ public class TestUtil {
         return newAnalysisDatabase(sessionCheckerRunner());
     }
 
-    public static AnalysisResult unusedAnalysisResult(String dottedClassName, IsImmutable isImmutable) {
-        return AnalysisResult.analysisResult(dottedClassName, isImmutable, unusedMutableReasonDetails());
+    public static AnalysisResult unusedAnalysisResult(Dotted className, IsImmutable isImmutable) {
+        return AnalysisResult.analysisResult(className, isImmutable, unusedMutableReasonDetails());
     }
 
     public static CodeLocation<?> unusedCodeLocation() {

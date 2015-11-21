@@ -98,7 +98,7 @@ public final class WithAllowedReasonsMatcher extends BaseMatcher<AnalysisResult>
         try {
             isImmutable.describeMismatch(analysisResult, mismatchDescription);
         } catch (NoSuchMethodError e) {
-            mismatchDescription.appendText(format("%s is actually %s%n", analysisResult.dottedClassName, analysisResult.isImmutable));
+            mismatchDescription.appendText(format("%s is actually %s%n", analysisResult.className.asString(), analysisResult.isImmutable));
         }
     }
     

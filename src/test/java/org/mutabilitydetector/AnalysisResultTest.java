@@ -54,7 +54,7 @@ public class AnalysisResultTest {
     
     @Test
     public void isImmutable() throws Exception {
-        assertInstancesOf(AnalysisResult.class, areImmutable(), 
+        assertInstancesOf(AnalysisResult.class, areImmutable(),
                 provided(String.class, MutableReasonDetail.class).isAlsoImmutable());
     }
     
@@ -69,6 +69,8 @@ public class AnalysisResultTest {
 
         assertEquals(first, second);
     }
+
+
 
     @Test
     public void definitelyImmutableResultsAreEqual() throws Exception {

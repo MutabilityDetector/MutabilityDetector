@@ -21,15 +21,15 @@ package org.mutabilitydetector;
  */
 
 
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.locations.Dotted.dotted;
+import org.junit.Test;
+import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Map;
 
-import org.junit.Test;
-import org.mutabilitydetector.locations.Dotted;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public class ConfigurationTest {
 
@@ -37,12 +37,12 @@ public class ConfigurationTest {
     public void hasHardcodedResultForClass() throws Exception {
         Configuration hasIt = new ConfigurationBuilder() {
             @Override public void configure() {
-                hardcodeResult(AnalysisResult.definitelyImmutable("i.am.hardcoded"));
+                hardcodeResult(definitelyImmutable("i.am.hardcoded"));
             }
         }.build();
         Configuration doesNotHaveIt = new ConfigurationBuilder() {
             @Override public void configure() {
-                hardcodeResult(AnalysisResult.definitelyImmutable("i.am.not.the.same.hardcoded.class"));
+                hardcodeResult(definitelyImmutable("i.am.not.the.same.hardcoded.class"));
             }
         }.build();
 

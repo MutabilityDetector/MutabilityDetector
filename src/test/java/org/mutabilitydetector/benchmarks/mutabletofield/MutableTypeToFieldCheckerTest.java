@@ -79,6 +79,7 @@ import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
@@ -91,7 +92,7 @@ public class MutableTypeToFieldCheckerTest {
     private AsmMutabilityChecker checkerWithRealSession;
 
     private AnalysisResult result;
-    private final AnalysisResult unusedAnalysisResult = unusedAnalysisResult("some.class.Name", NOT_IMMUTABLE);
+    private final AnalysisResult unusedAnalysisResult = unusedAnalysisResult(dotted("some.class.Name"), NOT_IMMUTABLE);
 
     private final Dotted mutableExample = Dotted.fromClass(MutableExample.class);
     private final Set<Dotted> immutableContainerClasses = Collections.emptySet();
@@ -160,7 +161,7 @@ public class MutableTypeToFieldCheckerTest {
 
         String unusedMessage = "";
         AnalysisResult mutableResult = AnalysisResult.analysisResult(
-                "",
+                dotted("a.b.Whatever"),
                 NOT_IMMUTABLE,
                 newMutableReasonDetail(unusedMessage, unusedCodeLocation(), ABSTRACT_COLLECTION_TYPE_TO_FIELD));
 

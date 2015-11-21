@@ -100,7 +100,7 @@ public final class SessionResultsFormatter {
 
     private void addResultForClass(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
 
-        if (options.isUsingClassList() && !classesToReport.contains(result.dottedClassName)) return;
+        if (options.isUsingClassList() && !classesToReport.contains(result.className)) return;
 
         if (reportMode.equals(ReportMode.ALL)) {
             appendClassResult(output, result, isImmutable);
@@ -117,7 +117,7 @@ public final class SessionResultsFormatter {
     }
 
     private void appendClassResult(StringBuilder output, AnalysisResult result, IsImmutable isImmutable) {
-        output.append(String.format("%s is %s%n", result.dottedClassName, isImmutable.name()));
+        output.append(String.format("%s is %s%n", result.className, isImmutable.name()));
         if (!result.isImmutable.equals(IMMUTABLE)) {
             addReasons(result, output);
         }
@@ -137,7 +137,7 @@ public final class SessionResultsFormatter {
 
         @Override
         public int compare(AnalysisResult first, AnalysisResult second) {
-            return first.dottedClassName.compareToIgnoreCase(second.dottedClassName);
+            return first.className.asString().compareToIgnoreCase(second.className.asString());
         }
 
     }

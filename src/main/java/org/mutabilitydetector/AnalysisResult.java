@@ -21,44 +21,40 @@ package org.mutabilitydetector;
  */
 
 
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.base.Predicate;
+import org.mutabilitydetector.locations.Dotted;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import static java.util.Arrays.asList;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import org.mutabilitydetector.locations.Dotted;
-
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Predicate;
-
 @Immutable
 public final class AnalysisResult {
-    public final String dottedClassName;
+    public final Dotted className;
     public final IsImmutable isImmutable;
     public final Collection<MutableReasonDetail> reasons;
     private final int hashCode;
 
-    private AnalysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
-        this.dottedClassName = dottedClassName;
+    private AnalysisResult(Dotted className, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
+        this.className = className;
         this.isImmutable = isImmutable;
         this.reasons = Collections.unmodifiableList(new ArrayList<MutableReasonDetail>(reasons));
         
-        this.hashCode = Objects.hashCode(dottedClassName, isImmutable, reasons);
+        this.hashCode = Objects.hashCode(className, isImmutable, reasons);
     }
 
-    
     @Override
     public String toString() {
         return Objects.toStringHelper(getClass())
-                .add("class", dottedClassName)
+                .add("class", className)
                 .add("isImmutable", isImmutable)
                 .toString();
     }
@@ -80,18 +76,9 @@ public final class AnalysisResult {
             return false;
         }
         AnalysisResult other = (AnalysisResult) obj;
-        return dottedClassName.equals(other.dottedClassName)
+        return className.equals(other.className)
                 && isImmutable.equals(other.isImmutable)
                 && reasons.equals(other.reasons);
-    }
-
-    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, MutableReasonDetail... reasons) {
-        return analysisResult(dottedClassName, isImmutable, asList(reasons));
-    }
-    
-    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
-        check(isImmutable, reasons);
-        return new AnalysisResult(dottedClassName, isImmutable, reasons);
     }
 
     private static void check(IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
@@ -100,26 +87,56 @@ public final class AnalysisResult {
         }
     }
 
-    public static AnalysisResult definitelyImmutable(String dottedClassName) {
-        return analysisResult(dottedClassName, IsImmutable.IMMUTABLE);
-    }
-    
-    public static final Predicate<AnalysisResult> forClass(@Nonnull final Dotted className) {
+    public static Predicate<AnalysisResult> forClass(@Nonnull final Dotted className) {
         return new Predicate<AnalysisResult>() { @Override public boolean apply(@Nonnull AnalysisResult input) {
-            return input.dottedClassName.equals(className.asString());
+            return input.className.equals(className);
         }};
     }
 
     public static final Function<AnalysisResult, Dotted> TO_DOTTED_CLASSNAME = new Function<AnalysisResult, Dotted>() {
         @Override public Dotted apply(@Nonnull AnalysisResult input) {
-            return dotted(input.dottedClassName);
+            return input.className;
         }
     };
 
     public static final Function<AnalysisResult, String> TO_CLASSNAME = new Function<AnalysisResult, String>() {
         @Override public String apply(@Nonnull AnalysisResult input) {
-            return input.dottedClassName;
+            return input.className.asString();
         }
     };
-    
+
+
+    public static AnalysisResult analysisResult(Dotted className, IsImmutable isImmutable, MutableReasonDetail... reasons) {
+        return analysisResult(className, isImmutable, asList(reasons));
+    }
+
+    public static AnalysisResult analysisResult(Dotted className, IsImmutable isImmutable, Collection<MutableReasonDetail> reasons) {
+        check(isImmutable, reasons);
+        return new AnalysisResult(className, isImmutable, reasons);
+    }
+
+    public static AnalysisResult definitelyImmutable(Dotted className) {
+        return analysisResult(className, IsImmutable.IMMUTABLE);
+    }
+
+    public static AnalysisResult definitelyImmutable(String dottedClassName) {
+        return definitelyImmutable(dotted(dottedClassName));
+    }
+
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable) {
+        return analysisResult(dotted(dottedClassName), isImmutable);
+    }
+
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, Collection<MutableReasonDetail> mutableReasonDetails) {
+        return analysisResult(dotted(dottedClassName), isImmutable, mutableReasonDetails);
+    }
+
+    public static AnalysisResult analysisResult(String className, IsImmutable isImmutable, MutableReasonDetail... reasons) {
+        return analysisResult(className, isImmutable, asList(reasons));
+    }
+
+    public static AnalysisResult analysisResult(String dottedClassName, IsImmutable isImmutable, MutableReasonDetail reason) {
+        return analysisResult(dottedClassName, isImmutable, asList(reason));
+    }
+
 }

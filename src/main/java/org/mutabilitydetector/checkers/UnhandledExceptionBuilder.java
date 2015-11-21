@@ -63,7 +63,7 @@ public final class UnhandledExceptionBuilder {
 
     private void appendClassesAnalysed(StringBuilder errorMessage, Iterable<AnalysisResult> resultsSoFar) {
         for (AnalysisResult result : resultsSoFar) {
-            errorMessage.append(format("    %s%n", result.dottedClassName));
+            errorMessage.append(format("    %s%n", result.className.asString()));
         }
     }
 
