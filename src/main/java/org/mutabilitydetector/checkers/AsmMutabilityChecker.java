@@ -32,17 +32,14 @@ import org.objectweb.asm.MethodVisitor;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
-import java.util.Collections;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.checkers.CheckerResult.IMMUTABLE_CHECKER_RESULT;
 
 @NotThreadSafe
 public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
-    private static final CheckerResult DEFAULT_RESULT = new CheckerResult(IMMUTABLE, Collections.<MutableReasonDetail>emptyList());
-
-    private CheckerResult checkerResult = DEFAULT_RESULT;
+    private CheckerResult checkerResult = IMMUTABLE_CHECKER_RESULT;
 
     protected Collection<MutableReasonDetail> reasons = newArrayList();
 
@@ -54,7 +51,7 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
     protected void setResult(String message, CodeLocation<?> location, Reason reason) {
         reasons.add(createReasonDetail(message, location, reason));
-        this.checkerResult = new CheckerResult(reason.createsResult(), reasons);
+        this.checkerResult = CheckerResult.withNoErrors(reason.createsResult(), reasons);
     }
 
     public CheckerResult checkerResult() {

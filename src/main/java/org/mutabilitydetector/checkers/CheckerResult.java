@@ -32,6 +32,12 @@ import java.util.Collections;
 
 @Immutable
 public final class CheckerResult {
+
+    public static final CheckerResult IMMUTABLE_CHECKER_RESULT = new CheckerResult(
+            IsImmutable.IMMUTABLE,
+            Collections.<MutableReasonDetail>emptyList(),
+            Collections.<AnalysisError>emptyList());
+
     public final IsImmutable isImmutable;
     public final Collection<MutableReasonDetail> reasons;
     public final Collection<AnalysisError> errors;
@@ -42,11 +48,8 @@ public final class CheckerResult {
         this.errors = ImmutableList.copyOf(errors);
     }
 
-    public CheckerResult(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons) {
-        this(isImmutable, reasons, Collections.<AnalysisError>emptyList());
+    public static CheckerResult withNoErrors(IsImmutable isImmutable, Iterable<MutableReasonDetail> reasons) {
+        return new CheckerResult(isImmutable, reasons, Collections.<AnalysisError>emptyList());
     }
 
-    public CheckerResult withError(AnalysisError error) {
-        return new CheckerResult(this.isImmutable, this.reasons, Collections.singleton(error));
-    }
 }
