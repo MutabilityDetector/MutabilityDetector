@@ -35,6 +35,7 @@ import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
+import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
@@ -51,7 +52,9 @@ import java.util.Set;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
+import static org.mutabilitydetector.config.HardcodedResultsUsage.LOOKUP_WHEN_REFERENCED;
 import static org.mutabilitydetector.locations.ClassNameConverter.CONVERTER;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
@@ -120,7 +123,9 @@ public abstract class ConfigurationBuilder {
      * @see #hardcodeResults(Iterable)
      * @see #hardcodeAsDefinitelyImmutable(Class)
      * @see #hardcodeAsDefinitelyImmutable(String)
-     * 
+     *
+     * @see #setHowToUseHardcodedResults(HardcodedResultsUsage)
+     *
      * @see #mergeHardcodedResultsFrom(Configuration)
      * @see #setExceptionPolicy(ExceptionPolicy)
      * 
@@ -142,7 +147,9 @@ public abstract class ConfigurationBuilder {
     };
 
     
-    private static final ExceptionPolicy DEFAULT_EXCEPTION_POLICY = ExceptionPolicy.FAIL_FAST;
+    public static final ExceptionPolicy DEFAULT_EXCEPTION_POLICY = FAIL_FAST;
+    public static final HardcodedResultsUsage DEFAULT_HARDCODED_RESULT_USAGE = LOOKUP_WHEN_REFERENCED;
+    public static final ReassignedFieldAnalysisChoice DEFAULT_REASSIGNED_FIELD_ANALYSIS_CHOICE = NAIVE_PUT_FIELD_ANALYSIS;
     
     public final Configuration build() {
         configure();
@@ -151,14 +158,16 @@ public abstract class ConfigurationBuilder {
                 hardcodedImmutableContainerClasses.build(),
                 exceptionPolicy,
                 reassignedFieldAlgorithm,
-                validCopyMethods.build());
+                validCopyMethods.build(),
+                howToUseHardcodedResults);
     }
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
-    private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = NAIVE_PUT_FIELD_ANALYSIS;
+    private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = DEFAULT_REASSIGNED_FIELD_ANALYSIS_CHOICE;
     private ImmutableSetMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableSetMultimap.builder();
+    private HardcodedResultsUsage howToUseHardcodedResults = DEFAULT_HARDCODED_RESULT_USAGE;
 
     
     /**
@@ -250,7 +259,6 @@ public abstract class ConfigurationBuilder {
     protected final void hardcodeAsDefinitelyImmutable(Class<?> immutableClass) {
         hardcodeResult(AnalysisResult.definitelyImmutable(Dotted.fromClass(immutableClass)));
     }
-    
 
     /**
      * Hardcodes a result indicating the given class is Immutable.
@@ -265,6 +273,18 @@ public abstract class ConfigurationBuilder {
      */
     protected final void hardcodeAsDefinitelyImmutable(String immutableClassName) {
         hardcodeResult(AnalysisResult.definitelyImmutable(dotted(immutableClassName)));
+    }
+
+    /**
+     * Specifies how hardcoded results should be used.
+     * <br>
+     * The default is {@link HardcodedResultsUsage#LOOKUP_WHEN_REFERENCED} which was the implicit behaviour in
+     * Mutability Detector prior to the introduction of this configuration setting.
+     *
+     * @see HardcodedResultsUsage#LOOKUP_WHEN_REFERENCED
+     */
+    protected final void setHowToUseHardcodedResults(HardcodedResultsUsage usage) {
+        this.howToUseHardcodedResults = usage;
     }
     
     /**
@@ -451,6 +471,7 @@ public abstract class ConfigurationBuilder {
     private static final class DefaultConfiguration implements Configuration {
 
         private final ImmutableSet<AnalysisResult> hardcodedResults;
+        private final HardcodedResultsUsage howToUseHardcodedResults;
         private final ImmutableMap<Dotted, AnalysisResult> resultsByClassname;
         private final ImmutableSet<Dotted> immutableContainerClasses;
         private final ImmutableSetMultimap<String, CopyMethod> validCopyMethods;
@@ -462,10 +483,12 @@ public abstract class ConfigurationBuilder {
                                      ImmutableSet<Dotted> immutableContainerClasses,
                                      ExceptionPolicy exceptionPolicy,
                                      ReassignedFieldAnalysisChoice reassignedFieldAlgorithm,
-                                     ImmutableSetMultimap<String, CopyMethod> validCopyMethods) {
+                                     ImmutableSetMultimap<String, CopyMethod> validCopyMethods,
+                                     HardcodedResultsUsage howToUseHardcodedResults) {
             this.immutableContainerClasses = immutableContainerClasses;
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = predefinedResults;
+            this.howToUseHardcodedResults = howToUseHardcodedResults;
             this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
             this.validCopyMethods = validCopyMethods;
@@ -474,6 +497,11 @@ public abstract class ConfigurationBuilder {
         @Override
         public Map<Dotted, AnalysisResult> hardcodedResults() {
             return resultsByClassname;
+        }
+
+        @Override
+        public HardcodedResultsUsage howToUseHardcodedResults() {
+            return howToUseHardcodedResults;
         }
 
         @Override

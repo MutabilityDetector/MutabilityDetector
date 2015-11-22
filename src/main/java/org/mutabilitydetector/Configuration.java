@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableSetMultimap;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
+import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
@@ -64,6 +65,17 @@ public interface Configuration {
      * @see AnalysisSession#resultFor(org.mutabilitydetector.locations.Dotted)
      */
     Map<Dotted, AnalysisResult> hardcodedResults();
+
+
+    /**
+     * Decide how hardcoded results should be used.
+     * <p>
+     * The default is {@link HardcodedResultsUsage#LOOKUP_WHEN_REFERENCED}.
+     *
+     * @see HardcodedResultsUsage#LOOKUP_WHEN_REFERENCED
+     * @see HardcodedResultsUsage#DIRECTLY_IN_ASSERTION
+     */
+    HardcodedResultsUsage howToUseHardcodedResults();
 
     /**
      *
@@ -117,4 +129,5 @@ public interface Configuration {
      * @return
      */
     ImmutableSetMultimap<String, CopyMethod> hardcodedCopyMethods();
+
 }
