@@ -26,6 +26,7 @@ import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
+import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.CloneList;
 
@@ -40,6 +41,11 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.mutabilitydetector.AnalysisResult.analysisResult;
 import static org.mutabilitydetector.AnalysisResult.definitelyImmutable;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.CARRY_ON;
+import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
+import static org.mutabilitydetector.config.HardcodedResultsUsage.DIRECTLY_IN_ASSERTION;
+import static org.mutabilitydetector.config.HardcodedResultsUsage.LOOKUP_WHEN_REFERENCED;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
@@ -112,6 +118,7 @@ public class ConfigurationBuilderTest {
                 hardcodeResult(definitelyImmutable("hardcoded.in.both.Configurations"));
                 hardcodeResult(definitelyImmutable("only.in.existing.Configuration"));
                 useAdvancedReassignedFieldAlgorithm();
+                setHowToUseHardcodedResults(DIRECTLY_IN_ASSERTION);
             }
         }.build();
 
@@ -120,7 +127,8 @@ public class ConfigurationBuilderTest {
                 hardcodeAsDefinitelyImmutable("only.in.second.Configuration");
                 hardcodeAsImmutableContainerType("container.only.in.second.Configuration");
                 hardcodeValidCopyMethod(List.class, "com.google.common.collect.Lists.newArrayList", Iterable.class);
-                setExceptionPolicy(ExceptionPolicy.FAIL_FAST);
+                setExceptionPolicy(FAIL_FAST);
+                setHowToUseHardcodedResults(LOOKUP_WHEN_REFERENCED);
             }
         }.build();
 
@@ -130,7 +138,8 @@ public class ConfigurationBuilderTest {
 
         final Configuration current = new ConfigurationBuilder() {
             @Override public void configure() {
-                setExceptionPolicy(ExceptionPolicy.CARRY_ON);
+                setExceptionPolicy(CARRY_ON);
+                setHowToUseHardcodedResults(DIRECTLY_IN_ASSERTION);
                 hardcodeResult(resultInCurrentConfig);
                 merge(first);
                 merge(second);
@@ -141,8 +150,9 @@ public class ConfigurationBuilderTest {
         assertThat(current.immutableContainerClasses(), contains(Dotted.dotted("container.only.in.second.Configuration")));
         assertThat(current.hardcodedCopyMethods().get("java.util.List"),
             contains(new CopyMethod(dotted("com.google.common.collect.Lists"), "newArrayList", "(Ljava/lang/Iterable;)Ljava/util/ArrayList;")));
-        assertThat(current.exceptionPolicy(), is(ExceptionPolicy.CARRY_ON));
-        assertThat(current.reassignedFieldAlgorithm(), is(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS));
+        assertThat(current.exceptionPolicy(), is(CARRY_ON));
+        assertThat(current.howToUseHardcodedResults(), is(DIRECTLY_IN_ASSERTION));
+        assertThat(current.reassignedFieldAlgorithm(), is(NAIVE_PUT_FIELD_ANALYSIS));
     }
     
     @Test
@@ -168,7 +178,6 @@ public class ConfigurationBuilderTest {
 
         }.build();
         
-//        assertThat(merged.hardcodedCopyMethods().size(), is(3));
         assertThat(merged.hardcodedCopyMethods().values(), containsInAnyOrder(a, b, c));
     }
     

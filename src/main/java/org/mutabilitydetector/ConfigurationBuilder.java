@@ -146,11 +146,7 @@ public abstract class ConfigurationBuilder {
         @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
     };
 
-    
-    public static final ExceptionPolicy DEFAULT_EXCEPTION_POLICY = FAIL_FAST;
-    public static final HardcodedResultsUsage DEFAULT_HARDCODED_RESULT_USAGE = LOOKUP_WHEN_REFERENCED;
-    public static final ReassignedFieldAnalysisChoice DEFAULT_REASSIGNED_FIELD_ANALYSIS_CHOICE = NAIVE_PUT_FIELD_ANALYSIS;
-    
+
     public final Configuration build() {
         configure();
         return new DefaultConfiguration(
@@ -164,10 +160,10 @@ public abstract class ConfigurationBuilder {
     
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
-    private ExceptionPolicy exceptionPolicy = DEFAULT_EXCEPTION_POLICY;
-    private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = DEFAULT_REASSIGNED_FIELD_ANALYSIS_CHOICE;
+    private ExceptionPolicy exceptionPolicy = FAIL_FAST;
+    private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = NAIVE_PUT_FIELD_ANALYSIS;
     private ImmutableSetMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableSetMultimap.builder();
-    private HardcodedResultsUsage howToUseHardcodedResults = DEFAULT_HARDCODED_RESULT_USAGE;
+    private HardcodedResultsUsage howToUseHardcodedResults = LOOKUP_WHEN_REFERENCED;
 
     
     /**
@@ -408,7 +404,7 @@ public abstract class ConfigurationBuilder {
         mergeImmutableContainerTypesFrom(otherConfiguration);
         mergeValidCopyMethodsFrom(otherConfiguration);
     }
-    
+
     protected void useAdvancedReassignedFieldAlgorithm() {
         this.reassignedFieldAlgorithm = ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
     }
