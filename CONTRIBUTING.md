@@ -2,6 +2,8 @@
 
 If you're looking to contribute to Mutability Detector in some way, this guide will let you know the best way to go about it.
 
+I'm really eager to have people involved, this [blog entry](http://mutability-detector.blogspot.co.uk/2013/08/meet-project-opportunity-to-join-open.html) explains what's in it for both of us, check it out!
+
 ## For users of Mutability Detector
 If you use Mutability Detector in your own unit tests, you can help out in the following ways:
   * feedback - any and all feedback is welcome, and should be sent to the [mailing list](http://groups.google.com/group/mutability-detector). Whether you think Mutability Detector sucks, or is the bee's knees, I want to hear about it!
