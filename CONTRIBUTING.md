@@ -8,6 +8,7 @@ I'm really eager to have people involved, this [blog entry](http://mutability-de
 If you use Mutability Detector in your own unit tests, you can help out in the following ways:
   * feedback - any and all feedback is welcome, and should be sent to the [mailing list](http://groups.google.com/group/mutability-detector). Whether you think Mutability Detector sucks, or is the bee's knees, I want to hear about it!
   * reporting issues - if you find a bug, from getting false positives or false negatives, or the API not letting you do what you want to do, file an issue on the open [bug tracker](https://github.com/MutabilityDetector/MutabilityDetector/issues)
+  * check out open, unfixed issues which have been [specifically earmarked](https://github.com/MutabilityDetector/MutabilityDetector/labels/newcomer) for new contributors.
 
 ## For potential developers of Mutability Detector
 If you want to hack on the code, to fix a bug that's holding you back, or just to scratch an itch, you can get involved by sending a patch, making a pull request, or any other esoteric way you want to throw your code at me. If it's a feature or a bug fix, it should be accompanied by an issue in the bug tracker.
