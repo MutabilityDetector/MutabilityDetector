@@ -158,14 +158,7 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
 
     @Override
     public Collection<AnalysisResult> getResults() {
-        final ConcurrentMap<Dotted, AnalysisResult> analysedClassesMap = this.analysedClasses.asMap();
-//        if (configuration.howToUseHardcodedResults() == HardcodedResultsUsage.DIRECTLY_IN_ASSERTION) {
-//            for (Map.Entry<Dotted,AnalysisResult> hardCodedAnalysisResultEntry : configuration.hardcodedResults().entrySet()) {
-//                analysedClassesMap.put(hardCodedAnalysisResultEntry.getKey(), hardCodedAnalysisResultEntry.getValue());
-//            }
-//        }
-
-        return Collections.unmodifiableCollection(analysedClassesMap.values());
+        return Collections.unmodifiableCollection(this.analysedClasses.asMap().values());
     }
 
     @Override
