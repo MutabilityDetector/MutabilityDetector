@@ -25,6 +25,7 @@ package org.mutabilitydetector;
 import java.util.Date;
 
 import org.junit.Test;
+import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
 import org.mutabilitydetector.unittesting.MutabilityMatchers;
 
@@ -62,5 +63,30 @@ public class MutabilityAsserterTest {
         
         asserter.assertInstancesOf(HasADateField.class, MutabilityMatchers.areNotImmutable());
     }
+
+    @Test
+    public void assertingOnAHardcodedActuallyImmutableClassIfDirectlyAsserted() throws Exception {
+        MutabilityAsserter asserter = MutabilityAsserter.configured(new ConfigurationBuilder() {
+            @Override
+            public void configure() {
+                setHowToUseHardcodedResults(HardcodedResultsUsage.DIRECTLY_IN_ASSERTION);
+                hardcodeAsDefinitelyImmutable(String.class);
+            }
+        });
+        asserter.assertInstancesOf(String.class, MutabilityMatchers.areImmutable());
+    }
+
+    @Test
+    public void assertingOnAHardcodedActuallyImmutableClassOnLookupWhenReferenced() throws Exception {
+        MutabilityAsserter asserter = MutabilityAsserter.configured(new ConfigurationBuilder() {
+            @Override
+            public void configure() {
+                setHowToUseHardcodedResults(HardcodedResultsUsage.LOOKUP_WHEN_REFERENCED);
+                hardcodeAsDefinitelyImmutable(String.class);
+            }
+        });
+        asserter.assertInstancesOf(String.class, MutabilityMatchers.areNotImmutable());
+    }
+
 
 }

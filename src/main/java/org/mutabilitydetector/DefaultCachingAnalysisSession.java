@@ -40,11 +40,13 @@ import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
+import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.mutabilitydetector.AnalysisResult.TO_ERRORS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
@@ -131,13 +133,22 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
                                                               verifierFactory, 
                                                               className);
 
-        AnalysisResult result = allChecksRunner.runCheckers(
-                ImmutableList.copyOf(getResults()),
-                database,
-                mutableTypeInformation,
-                analysisInProgress);
+        AnalysisResult result = getAnalysisResult(className, analysisInProgress, mutableTypeInformation, allChecksRunner);
 
         return addAnalysisResult(result);
+    }
+
+    private AnalysisResult getAnalysisResult(Dotted className, AnalysisInProgress analysisInProgress, MutableTypeInformation mutableTypeInformation, AllChecksRunner allChecksRunner) {
+        if (configuration.howToUseHardcodedResults() == HardcodedResultsUsage.DIRECTLY_IN_ASSERTION &&
+                configuration.hardcodedResults().containsKey(className)) {
+            return configuration.hardcodedResults().get(className);
+        } else {
+            return allChecksRunner.runCheckers(
+                    ImmutableList.copyOf(getResults()),
+                    database,
+                    mutableTypeInformation,
+                    analysisInProgress);
+        }
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
@@ -147,7 +158,7 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
 
     @Override
     public Collection<AnalysisResult> getResults() {
-        return Collections.unmodifiableCollection(analysedClasses.asMap().values());
+        return Collections.unmodifiableCollection(this.analysedClasses.asMap().values());
     }
 
     @Override
