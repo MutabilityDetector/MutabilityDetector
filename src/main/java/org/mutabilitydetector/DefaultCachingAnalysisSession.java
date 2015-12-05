@@ -40,20 +40,17 @@ import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
-import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 import static org.mutabilitydetector.AnalysisResult.TO_ERRORS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
+import static org.mutabilitydetector.config.HardcodedResultsUsage.DIRECTLY_IN_ASSERTION;
 
 public final class DefaultCachingAnalysisSession implements AnalysisSession {
-
-    private final Cache<Dotted, AnalysisResult> analysedClasses = CacheBuilder.newBuilder().recordStats().build();
 
     private final MutabilityCheckerFactory checkerFactory;
     private final CheckerRunnerFactory checkerRunnerFactory;
@@ -61,6 +58,7 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
     private final AsmVerifierFactory verifierFactory;
     private final Configuration configuration;
     private final CyclicReferences cyclicReferences;
+    private final Cache<Dotted, AnalysisResult> analysedClasses;
 
     private DefaultCachingAnalysisSession(CheckerRunnerFactory checkerRunnerFactory,
                                           MutabilityCheckerFactory checkerFactory,
@@ -71,9 +69,17 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
         this.verifierFactory = verifierFactory;
         this.configuration = configuration;
         this.cyclicReferences = new CyclicReferences();
+        this.analysedClasses = CacheBuilder.<Dotted, AnalysisResult>newBuilder().recordStats().build();
+        this.analysedClasses.putAll(hardcodedResultsForDirectAssertion(configuration));
 
         InformationRetrievalRunner informationRetrievalRunner = new InformationRetrievalRunner(this, checkerRunnerFactory.createRunner());
         this.database = newAnalysisDatabase(informationRetrievalRunner);
+    }
+
+    private Map<Dotted, AnalysisResult> hardcodedResultsForDirectAssertion(Configuration configuration) {
+        return configuration.howToUseHardcodedResults() == DIRECTLY_IN_ASSERTION
+                ? configuration.hardcodedResults()
+                : Collections.<Dotted, AnalysisResult>emptyMap();
     }
 
     public static AnalysisSession createWithGivenClassPath(ClassPath classpath,
@@ -84,15 +90,15 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
         return createWithGivenClassPath(classpath, configuration, verifierFactory);
     }
 
-    
+
     /**
      * Creates an analysis session based suitable for runtime analysis.
      * <p>
      * For analysis, classes will be accessed through the runtime classpath.
-     * 
-     * @see ConfigurationBuilder
+     *
      * @param configuration custom configuration for analysis.
      * @return AnalysisSession for runtime analysis.
+     * @see ConfigurationBuilder
      */
     public static AnalysisSession createWithCurrentClassPath(Configuration configuration) {
         ClassPath classpath = new ClassPathFactory().createFromJVM();
@@ -105,9 +111,9 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
                                                             Configuration configuration,
                                                             AsmVerifierFactory verifierFactory) {
         return new DefaultCachingAnalysisSession(new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
-                                               new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm(), configuration.immutableContainerClasses()),
-                                               verifierFactory, 
-                                               configuration);
+                new MutabilityCheckerFactory(configuration.reassignedFieldAlgorithm(), configuration.immutableContainerClasses()),
+                verifierFactory,
+                configuration);
     }
 
     @Override
@@ -129,26 +135,17 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
         MutableTypeInformation mutableTypeInformation = new MutableTypeInformation(this, configuration, cyclicReferences);
 
         AllChecksRunner allChecksRunner = new AllChecksRunner(checkerFactory,
-                                                              checkerRunnerFactory,
-                                                              verifierFactory, 
-                                                              className);
+                checkerRunnerFactory,
+                verifierFactory,
+                className);
 
-        AnalysisResult result = getAnalysisResult(className, analysisInProgress, mutableTypeInformation, allChecksRunner);
+        AnalysisResult result = allChecksRunner.runCheckers(
+                ImmutableList.copyOf(getResults()),
+                database,
+                mutableTypeInformation,
+                analysisInProgress);
 
         return addAnalysisResult(result);
-    }
-
-    private AnalysisResult getAnalysisResult(Dotted className, AnalysisInProgress analysisInProgress, MutableTypeInformation mutableTypeInformation, AllChecksRunner allChecksRunner) {
-        if (configuration.howToUseHardcodedResults() == HardcodedResultsUsage.DIRECTLY_IN_ASSERTION &&
-                configuration.hardcodedResults().containsKey(className)) {
-            return configuration.hardcodedResults().get(className);
-        } else {
-            return allChecksRunner.runCheckers(
-                    ImmutableList.copyOf(getResults()),
-                    database,
-                    mutableTypeInformation,
-                    analysisInProgress);
-        }
     }
 
     private AnalysisResult addAnalysisResult(AnalysisResult result) {
