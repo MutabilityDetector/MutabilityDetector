@@ -21,6 +21,8 @@ package org.mutabilitydetector;
  */
 
 import org.junit.Test;
+import org.mutabilitydetector.benchmarks.ImmutableExample;
+import org.mutabilitydetector.benchmarks.settermethod.MutableByHavingSetterMethod;
 import org.mutabilitydetector.classpath.ClassPathScanner;
 
 import java.util.Set;
@@ -28,6 +30,8 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 
 public class ClassPathScannerTest {
 
@@ -35,7 +39,7 @@ public class ClassPathScannerTest {
     public void scanClassPath() throws Exception {
         Set<Class<?>> immutableClasses = ClassPathScanner.findImmutableClasses("org.mutabilitydetector");
 
-        assertThat(immutableClasses, notNullValue());
-        assertThat(immutableClasses.size() > 0, is(true));
+        assertThat(immutableClasses, hasItem(ImmutableExample.class));
+        assertThat(immutableClasses, not(hasItem(MutableByHavingSetterMethod.class)));
     }
 }
