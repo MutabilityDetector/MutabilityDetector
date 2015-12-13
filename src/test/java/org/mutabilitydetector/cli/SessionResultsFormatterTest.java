@@ -107,8 +107,43 @@ public class SessionResultsFormatterTest {
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(), 
-                   containsString("a.b.c is NOT_IMMUTABLE" + newline + 
-                                  "\t1st checker reason message [Class: path.to.MyClass]" + newline + 
-                                  "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]" + newline));
+                   containsString("a.b.c is NOT_IMMUTABLE" + newline +
+                           "\t1st checker reason message [Class: path.to.MyClass]" + newline +
+                           "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]" + newline));
+    }
+
+
+    @Test
+    public void printsSummaryOfInformationAlongWithReadableMessage() throws Exception {
+        BatchAnalysisOptions options = mock(BatchAnalysisOptions.class);
+        when(options.reportMode()).thenReturn(ReportMode.ALL);
+        when(options.isUsingClassList()).thenReturn(false);
+        when(options.showSummary()).thenReturn(true);
+
+        AnalysisSession analysisSession = mock(AnalysisSession.class);
+        Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c",
+                        IsImmutable.IMMUTABLE,
+                        unusedMutableReasonDetails()),
+                analysisResult("d.e.f",
+                        IsImmutable.EFFECTIVELY_IMMUTABLE,
+                        unusedMutableReasonDetails()),
+                analysisResult("g.h.i",
+                        IsImmutable.NOT_IMMUTABLE,
+                        unusedMutableReasonDetails()));
+        when(analysisSession.getResults()).thenReturn(analysisResults);
+
+        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
+
+        StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
+
+        assertThat(result.toString(),
+                allOf(containsString("a.b.c is IMMUTABLE" + newline),
+                        containsString("d.e.f is EFFECTIVELY_IMMUTABLE" + newline),
+                        containsString("g.h.i is NOT_IMMUTABLE" + newline),
+                        containsString("3 Total number of classes scanned." + newline),
+                        containsString("2 IMMUTABLE class(es)." + newline),
+                        containsString("1 NOT_IMMUTABLE class(es)." + newline),
+                        containsString("seconds runtime." + newline)
+                        ));
     }
 }

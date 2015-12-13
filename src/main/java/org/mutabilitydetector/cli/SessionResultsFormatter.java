@@ -22,14 +22,17 @@ package org.mutabilitydetector.cli;
 
 
 
+import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -45,6 +48,7 @@ import com.google.common.collect.Ordering;
 public final class SessionResultsFormatter {
 
     private final boolean verbose;
+    private final boolean showSummary;
     private final ReportMode reportMode;
     private final Collection<String> classesToReport;
     private final BatchAnalysisOptions options;
@@ -52,6 +56,7 @@ public final class SessionResultsFormatter {
     public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
         this.options = options;
         this.verbose = options.verbose();
+        this.showSummary = options.showSummary();
         this.reportMode = options.reportMode();
         this.classesToReport = getClassesToReport(options.isUsingClassList(), readerFactory);
     }
@@ -88,10 +93,30 @@ public final class SessionResultsFormatter {
     private void appendAnalysisResults(Iterable<AnalysisResult> results, StringBuilder output) {
         List<AnalysisResult> sortedList = sortByClassname(results);
 
+        int total = 0;
+        int totalNotImmutable = 0;
         for (AnalysisResult result : sortedList) {
             IsImmutable isImmutable = result.isImmutable;
+            if (isImmutable.equals(NOT_IMMUTABLE)) {
+                totalNotImmutable++;
+            }
+            total++;
             addResultForClass(output, result, isImmutable);
         }
+
+        if (showSummary) {
+            int totalImmutable = total - totalNotImmutable;
+            appendSummaryOfResults(output, total, totalImmutable, totalNotImmutable);
+        }
+
+    }
+
+    private void appendSummaryOfResults(StringBuilder output, int total, int totalImmutable, int totalMutable) {
+        output.append(String.format("\n\t%d %s%n", total, "Total number of classes scanned."));
+        output.append(String.format("\t%d %s%n", totalImmutable, "IMMUTABLE class(es)."));
+        output.append(String.format("\t%d %s%n", totalMutable,  "NOT_IMMUTABLE class(es)."));
+        final long processRuntime = ManagementFactory.getRuntimeMXBean().getStartTime() - System.currentTimeMillis();
+        output.append(String.format("\t%d %s%n", processRuntime, "seconds runtime."));
     }
 
     private List<AnalysisResult> sortByClassname(Iterable<AnalysisResult> sessionResults) {
