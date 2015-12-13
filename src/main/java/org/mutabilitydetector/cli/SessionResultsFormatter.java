@@ -21,28 +21,23 @@ package org.mutabilitydetector.cli;
  */
 
 
-
-import static org.mutabilitydetector.IsImmutable.EFFECTIVELY_IMMUTABLE;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-
-import java.io.Serializable;
-import java.lang.management.ManagementFactory;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.StreamSupport;
-
-import javax.annotation.concurrent.Immutable;
-
+import com.google.common.collect.Ordering;
 import org.mutabilitydetector.AnalysisError;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
-import com.google.common.collect.Ordering;
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+import java.lang.management.ManagementFactory;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 
 @Immutable
 public final class SessionResultsFormatter {
