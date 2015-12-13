@@ -108,11 +108,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
                         + "the time taken to perform analysis.",
                 "classlist",
                 "cl");
-        createAndAddOption(opts,
-                "summary",
-                "Create analysis summary of result.",
-                "summary",
-                "s");
+        opts.addOption("s", "summary", false, "Show summary of analysis result.");
         opts.addOption("v", "verbose", false, "Print details of analysis and reasons for results.");
         opts.addOption("r",
                 "report",
@@ -268,6 +264,11 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     @Override
     public boolean verbose() {
         return verbose;
+    }
+
+    @Override
+    public boolean showSummary() {
+        return showSummary;
     }
 
     @Override
