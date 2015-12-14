@@ -44,6 +44,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private boolean isUsingClassList;
     private boolean reportErrors;
     private boolean failFast = false;
+    private boolean showSummary = false;
     
     private final PrintStream errorStream;
 
@@ -58,8 +59,11 @@ public class CommandLineOptions implements BatchAnalysisOptions {
             extractClassListFile(line);
             extractShowErrorsOption(line);
             extractFailFastOption(line);
+            extractShowSummaryOption(line);
             printHelpIfNoOptionsGiven(line);
         }
+
+
 
     }
 
@@ -104,6 +108,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
                         + "the time taken to perform analysis.",
                 "classlist",
                 "cl");
+        opts.addOption("s", "summary", false, "Show summary of analysis result.");
         opts.addOption("v", "verbose", false, "Print details of analysis and reasons for results.");
         opts.addOption("r",
                 "report",
@@ -113,8 +118,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         opts.addOption("h", "help", false, "print this message");
         opts.addOption("e", "reportErrors", false, "Reports on errors in the analysis. Defaults to false.");
         opts.addOption("f", "failFast", false, "When true, encountering an unhandled exception will cause analysis to abort immediately. " +
-                   "When false, exceptions during analysis of a particular class will be reflected in the result assigned to " +
-                   "that class. Defaults to false.");
+                "When false, exceptions during analysis of a particular class will be reflected in the result assigned to " +
+                "that class. Defaults to false.");
+
         return opts;
     }
 
@@ -152,6 +158,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         } else {
             this.reportMode = ReportMode.ALL;
         }
+    }
+
+    private void extractShowSummaryOption(CommandLine line) {
+        this.showSummary = (line.hasOption("s") || line.hasOption("summary"));
     }
 
     private void extractVerboseOption(CommandLine line) {
@@ -254,6 +264,11 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     @Override
     public boolean verbose() {
         return verbose;
+    }
+
+    @Override
+    public boolean showSummary() {
+        return showSummary;
     }
 
     @Override

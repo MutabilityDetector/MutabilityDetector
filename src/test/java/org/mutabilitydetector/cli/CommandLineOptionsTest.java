@@ -75,6 +75,20 @@ public class CommandLineOptionsTest {
     }
 
     @Test
+    public void showSummaryOptionCanBeSetWithShortOpt() throws Exception {
+        String[] args = makeArgs("-s");
+        options = createOptions(args);
+        assertEquals(true, options.showSummary());
+    }
+
+    @Test
+    public void showSummaryOptionCanBeSetWithLongOpt() throws Exception {
+        String[] args = makeArgs("-summary");
+        options = createOptions(args);
+        assertEquals(true, options.showSummary());
+    }
+
+    @Test
     public void reportModeCanBeSetToAll() throws Exception {
         String[] args = makeArgs("-report", "all");
         options = createOptions(args);

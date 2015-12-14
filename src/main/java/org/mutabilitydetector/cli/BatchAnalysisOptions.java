@@ -34,6 +34,8 @@ public interface BatchAnalysisOptions {
 
     public abstract boolean verbose();
 
+    boolean showSummary();
+
     public abstract ReportMode reportMode();
 
     public abstract File classListFile();
