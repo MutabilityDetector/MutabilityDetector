@@ -240,7 +240,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
         }
 
         private void setUnsafeWrappingResult(FieldLocation fieldLocation) {
-            setResult("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method.",
+            setResult("Field is not a wrapped collection type.",
                       fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
         }
 
