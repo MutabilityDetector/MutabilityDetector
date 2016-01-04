@@ -259,7 +259,7 @@ public class MutableTypeToFieldCheckerTest {
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method."));
+        assertThat(reasonDetail.message(), is("Field is not a wrapped collection type."));
     }
 
     @Test
