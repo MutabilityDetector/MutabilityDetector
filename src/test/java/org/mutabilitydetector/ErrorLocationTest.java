@@ -494,7 +494,7 @@ public class ErrorLocationTest {
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassNotWrappingCollection to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassNotWrappingCollection is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method. [Field: collection, Class: org.mutabilitydetector.ErrorLocationTest$ClassNotWrappingCollection]\n" +
+                    "        Field is not a wrapped collection type. [Field: collection, Class: org.mutabilitydetector.ErrorLocationTest$ClassNotWrappingCollection]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
@@ -525,7 +525,7 @@ public class ErrorLocationTest {
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWrappingWithNonWhitelistedMethod to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWrappingWithNonWhitelistedMethod is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Attempts to wrap mutable collection type using a non-whitelisted unmodifiable wrapper method. [Field: collection, Class: org.mutabilitydetector.ErrorLocationTest$ClassWrappingWithNonWhitelistedMethod]\n" +
+                    "        Field is not a wrapped collection type. [Field: collection, Class: org.mutabilitydetector.ErrorLocationTest$ClassWrappingWithNonWhitelistedMethod]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
