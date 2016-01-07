@@ -21,33 +21,24 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static org.junit.Assert.assertSame;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.mutabilitydetector.checkers.CollectionField.GenericType.wildcard;
-import static org.mutabilitydetector.locations.Dotted.fromClass;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Assert;
-
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
-import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
+
+import java.io.IOException;
+import java.lang.ref.Reference;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mutabilitydetector.checkers.CollectionField.GenericType.exact;
+import static org.mutabilitydetector.checkers.CollectionField.GenericType.wildcard;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 @SuppressWarnings("unused")
 public class CollectionFieldTest {
@@ -59,7 +50,7 @@ public class CollectionFieldTest {
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
         
         assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
-        assertThat(collectionField.genericParameterTypes, contains(GenericType.exact(fromClass(String.class))));
+        assertThat(collectionField.getGenericParameterTypes(), contains(GenericType.exact(fromClass(String.class))));
         assertThat(collectionField.asString(), equalTo("java.util.List<java.lang.String>"));
     }
 
@@ -70,22 +61,10 @@ public class CollectionFieldTest {
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
         
         assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
-        assertThat(collectionField.genericParameterTypes, is(nullValue()));
+        assertThat(collectionField.getGenericParameterTypes(), is(nullValue()));
         assertThat(collectionField.asString(), equalTo("raw java.util.List"));
     }
 
-    @Test
-    public void retrievesGenericTypeOfMapField() throws Exception {
-        String[] descAndSignature = descAndSignatureOfSingleFieldIn(WithGenericMapField.class);
-        
-        CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
-        
-        assertThat(collectionField.collectionType, equalTo(fromClass(Map.class)));
-        assertThat(collectionField.genericParameterTypes, contains(GenericType.exact(fromClass(String.class)), 
-                                                          GenericType.exact(fromClass(Date.class))));
-        assertThat(collectionField.asString(), equalTo("java.util.Map<java.lang.String, java.util.Date>"));
-    }
-    
     @Test
     public void retrievesGenericTypeOfListFieldWithExtendsWildcard() throws Exception {
         String[] descAndSignature = descAndSignatureOfSingleFieldIn(WithExtendsWildcardsGenericsListField.class);
@@ -93,7 +72,7 @@ public class CollectionFieldTest {
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
         
         assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
-        assertThat(collectionField.genericParameterTypes, contains(GenericType.extends_(fromClass(String.class))));
+        assertThat(collectionField.getGenericParameterTypes(), contains(GenericType.extends_(fromClass(String.class))));
         assertThat(collectionField.asString(), equalTo("java.util.List<? extends java.lang.String>"));
     }
 
@@ -104,7 +83,7 @@ public class CollectionFieldTest {
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
         
         assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
-        assertThat(collectionField.genericParameterTypes, contains(GenericType.super_(fromClass(String.class))));
+        assertThat(collectionField.getGenericParameterTypes(), contains(GenericType.super_(fromClass(String.class))));
         assertThat(collectionField.asString(), equalTo("java.util.List<? super java.lang.String>"));
     }
 
@@ -115,8 +94,31 @@ public class CollectionFieldTest {
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
         
         assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
-        assertThat(collectionField.genericParameterTypes, contains(wildcard()));
+        assertThat(collectionField.getGenericParameterTypes(), contains(wildcard()));
         assertThat(collectionField.asString(), equalTo("java.util.List<?>"));
+    }
+
+    @Test
+    public void retrievesGenericTypeOfMapField() throws Exception {
+        String[] descAndSignature = descAndSignatureOfSingleFieldIn(WithGenericMapField.class);
+
+        CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
+        
+        assertThat(collectionField.collectionType, equalTo(fromClass(Map.class)));
+        assertThat(collectionField.getGenericParameterTypes(), contains(GenericType.exact(fromClass(String.class)),
+                GenericType.exact(fromClass(Date.class))));
+        assertThat(collectionField.asString(), equalTo("java.util.Map<java.lang.String, java.util.Date>"));
+    }
+
+    @Test
+    public void retrievesGenericTypeOfNestedListField() throws Exception {
+        String[] descAndSignature = descAndSignatureOfSingleFieldIn(WithNestedListField.class);
+
+        CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
+
+        assertThat(collectionField.collectionType, equalTo(fromClass(List.class)));
+        assertThat(collectionField.getGenericParameterTypes(), contains(exact(fromClass(Reference.class)), exact(fromClass(Date.class))));
+        assertThat(collectionField.asString(), equalTo("java.util.List<java.lang.ref.Reference<java.util.Date>>"));
     }
 
     private static class WithGenericListField {
@@ -130,6 +132,10 @@ public class CollectionFieldTest {
 
     private static class WithGenericMapField {
         public Map<String, Date> stringToDateMap;
+    }
+
+    private static class WithNestedListField {
+        public List<Reference<Date>> stringToDateMap;
     }
 
     private static class WithExtendsWildcardsGenericsListField {

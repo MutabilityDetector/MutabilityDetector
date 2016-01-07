@@ -35,6 +35,17 @@ public abstract class ClassName {
         return asString;
     }
 
+    /**
+     * Similar to {@code ClassName#asString} but uses unqualified type names
+     */
+    public String asSimpleString() {
+        int dotIndex = asString.lastIndexOf('.');
+        if (dotIndex > 0) {
+            return asString().substring(dotIndex + 1);
+        }
+        return asString();
+    }
+
     @Override
     public String toString() {
         return asString();
