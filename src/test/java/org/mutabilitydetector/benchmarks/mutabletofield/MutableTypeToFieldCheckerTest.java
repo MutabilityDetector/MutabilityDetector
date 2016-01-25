@@ -22,15 +22,12 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 
 import com.google.common.collect.ImmutableSet;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.TestUtil;
+import org.mutabilitydetector.*;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.WrapsCollectionUsingNonWhitelistedMethod;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
@@ -42,40 +39,30 @@ import org.mutabilitydetector.benchmarks.mutabletofield.array.ImmutableWhenArray
 import org.mutabilitydetector.benchmarks.mutabletofield.array.MutableByHavingArrayTypeAsField;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
-import org.mutabilitydetector.checkers.info.AnalysisInProgress;
-import org.mutabilitydetector.checkers.info.CyclicReferences;
-import org.mutabilitydetector.checkers.info.InformationRetrievalRunner;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.checkers.info.*;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
-import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collections;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutableReasonDetail.newMutableReasonDetail;
 import static org.mutabilitydetector.TestMatchers.hasReasons;
-import static org.mutabilitydetector.TestUtil.analysisDatabase;
-import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testAnalysisSession;
-import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.TestUtil.unusedAnalysisResult;
-import static org.mutabilitydetector.TestUtil.unusedCodeLocation;
+import static org.mutabilitydetector.TestUtil.*;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.CheckerRunner.createWithCurrentClasspath;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
@@ -246,7 +233,7 @@ public class MutableTypeToFieldCheckerTest {
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
+        assertThat(reasonDetail.message(), startsWith("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
 
     @Test
@@ -259,7 +246,7 @@ public class MutableTypeToFieldCheckerTest {
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Field is not a wrapped collection type."));
+        assertThat(reasonDetail.message(), Matchers.startsWith("Field is not a wrapped collection type."));
     }
 
     @Test
@@ -272,7 +259,7 @@ public class MutableTypeToFieldCheckerTest {
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
+        assertThat(reasonDetail.message(), startsWith("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
 
     @Test
@@ -293,7 +280,7 @@ public class MutableTypeToFieldCheckerTest {
         MutableReasonDetail reasonDetail = result.reasons.iterator().next();
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
-        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first."));
+        assertThat(reasonDetail.message(), startsWith("Attempts to wrap mutable collection type without safely performing a copy first."));
     }
 
     @Test

@@ -21,16 +21,7 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_AND_COPIES_SAFELY;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.WRAPS_BUT_DOES_NOT_COPY;
-import static org.objectweb.asm.Type.getType;
-
-import java.util.List;
-
+import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -41,14 +32,15 @@ import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
-import com.google.common.collect.ImmutableMultimap;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.*;
+import static org.objectweb.asm.Type.getType;
 
 @RunWith(Theories.class)
 public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
@@ -67,17 +59,18 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "the/field/Type");
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, getType("the/assigned/Type"), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable(), is(UnmodifiableWrapResult.FIELD_TYPE_CANNOT_BE_WRAPPED));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(FIELD_TYPE_CANNOT_BE_WRAPPED));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
 
     @Test
     public void onlyUnmodifiableTypesOfferedByCollectionsAreRecognised() throws Exception {
-        assertThat(checkerForAssigningToFieldOfType("java/util/Collection").checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checkerForAssigningToFieldOfType("java/util/List").checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checkerForAssigningToFieldOfType("java/util/Set").checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checkerForAssigningToFieldOfType("java/util/SortedSet").checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checkerForAssigningToFieldOfType("java/util/Map").checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checkerForAssigningToFieldOfType("java/util/SortedMap").checkWrappedInUnmodifiable().canBeWrapped, is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/Collection").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/List").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/Set").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/SortedSet").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/Map").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checkerForAssigningToFieldOfType("java/util/SortedMap").checkWrappedInUnmodifiable().canBeWrapped(), is(true));
     }
 
     @Test
@@ -88,8 +81,9 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
+        assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(false));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), not(""));
     }
 
     private static class StaticConcreteMethodInsnNode extends MethodInsnNode {
@@ -106,24 +100,25 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(false));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
+        assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(false));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), not(""));
     }
 
     @Test
     public void findsAssignmentDoesTryToWrapInWhitelistedMethodIfCallingCollections_unmodifiableMethod() throws Exception {
         assertThat(checkerOfPutFieldPrecededByCall("java/util/List", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
         assertThat(checkerOfPutFieldPrecededByCall("java/util/Set", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
         assertThat(checkerOfPutFieldPrecededByCall("java/util/SortedSet", "unmodifiableSortedSet", "(Ljava/util/SortedSet;)Ljava/util/SortedSet;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
         assertThat(checkerOfPutFieldPrecededByCall("java/util/Map", "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
         assertThat(checkerOfPutFieldPrecededByCall("java/util/SortedMap", "unmodifiableSortedMap", "(Ljava/util/SortedMap;)Ljava/util/SortedMap;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
         assertThat(checkerOfPutFieldPrecededByCall("java/util/Collection", "unmodifiableCollection", "(Ljava/util/Collection;)Ljava/util/Collection;")
-                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod, is(true));
+                .checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(true));
     }
 
     @Test
@@ -137,8 +132,9 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
+        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(false));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_BUT_DOES_NOT_COPY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), not(""));
     }
 
     @Test
@@ -152,8 +148,9 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(false));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_BUT_DOES_NOT_COPY));
+        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(false));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_BUT_DOES_NOT_COPY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), not(""));
     }
 
     @Test
@@ -167,9 +164,10 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().canBeWrapped, is(true));
-        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().canBeWrapped(), is(true));
+        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(true));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
 
     @Test
@@ -186,8 +184,9 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         };
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
-        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping, is(true));
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(true));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
 
     @Test
@@ -213,9 +212,10 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
 
         UnmodifiableWrapResult result = checker.checkWrappedInUnmodifiable();
 
-        assertThat(result.invokesWhitelistedWrapperMethod, is(true));
-        assertThat(result.safelyCopiesBeforeWrapping, is(true));
-        assertThat(result, is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(result.invokesWhitelistedWrapperMethod(), is(true));
+        assertThat(result.safelyCopiesBeforeWrapping(), is(true));
+        assertThat(result.status, is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
 
     @Theory
@@ -226,7 +226,8 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
                 dataPoint.copyMethodDesc,
                 dataPoint.wrappingMethodName,
                 dataPoint.fieldType);
-        assertThat(checker.checkWrappedInUnmodifiable(), is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_AND_COPIES_SAFELY));
+        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
 
     @DataPoints public static ValidUnmodifiableAssignment[] java_util_List = new ValidUnmodifiableAssignment[] {

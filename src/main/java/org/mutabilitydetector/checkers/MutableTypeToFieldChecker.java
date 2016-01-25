@@ -21,20 +21,10 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static java.lang.String.format;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.MutabilityReason.ABSTRACT_COLLECTION_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
-import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
@@ -43,8 +33,8 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
-import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -55,9 +45,15 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.lang.String.format;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.MutabilityReason.*;
+import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
 
@@ -68,6 +64,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     private final List<String> genericTypesOfClass = Lists.newLinkedList();
     private final Map<String, String> genericFields = Maps.newHashMap();
     private final AnalysisInProgress analysisInProgress;
+    private final Map<String, String> typeSignatureByFieldName = Maps.newHashMap();
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
@@ -98,6 +95,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (signature == null) { return null ; }
+        typeSignatureByFieldName.put(name, signature);
 
         GenericFieldVisitor visitor = new GenericFieldVisitor();
         new SignatureReader(signature).acceptType(visitor);
@@ -184,21 +182,25 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                      */
                     break;
                 } else if (!isConcreteType(assignedToField)) {
+                    String fieldSignature = typeSignatureByFieldName.get(fieldName);
                     UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomChecker(
-                            fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods()).checkWrappedInUnmodifiable();
+                            fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods(), fieldSignature)
+                            .checkWrappedInUnmodifiable();
 
-                    if (!unmodifiableWrapResult.canBeWrapped) {
+                    if (!unmodifiableWrapResult.canBeWrapped()) {
                         setAbstractFieldAssignmentResult(fieldLocation, assignedToField);
                         break;
-                    } else if (unmodifiableWrapResult.invokesWhitelistedWrapperMethod) {
-                        if (unmodifiableWrapResult.safelyCopiesBeforeWrapping) {
+                    } else if (unmodifiableWrapResult.invokesWhitelistedWrapperMethod()) {
+                        if (unmodifiableWrapResult.safelyCopiesBeforeWrapping()) {
                             break;
                         } else {
-                            setWrappingWithoutFirstCopyingResult(fieldLocation);
+                            setWrappingWithoutFirstCopyingResult(fieldLocation, 
+                                    unmodifiableWrapResult.getWrappingHint(fieldLocation.fieldName()));
                             break;
                         }
                     } else {
-                        setUnsafeWrappingResult(fieldLocation);
+                        setUnsafeWrappingResult(fieldLocation, 
+                                unmodifiableWrapResult.getWrappingHint(fieldLocation.fieldName()));
                         break;
                     }
                 } else {
@@ -239,14 +241,15 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
             return !(typeStructureInformation.isTypeAbstract(className) || typeStructureInformation.isTypeInterface(className));
         }
 
-        private void setUnsafeWrappingResult(FieldLocation fieldLocation) {
-            setResult("Field is not a wrapped collection type.",
-                      fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
+        private void setUnsafeWrappingResult(FieldLocation fieldLocation, String wrappingHintMessage) {
+            String message = String.format("Field is not a wrapped collection type.%s", wrappingHintMessage);
+            setResult(message, fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
         }
 
-        private void setWrappingWithoutFirstCopyingResult(FieldLocation fieldLocation) {
-            setResult("Attempts to wrap mutable collection type without safely performing a copy first.",
-                    fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
+        private void setWrappingWithoutFirstCopyingResult(FieldLocation fieldLocation, String wrappingHintMessage) {
+            String message = String.format("Attempts to wrap mutable collection type without safely performing a copy first.%s", 
+                    wrappingHintMessage);
+            setResult(message, fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
         }
 
         private void setAbstractFieldAssignmentResult(FieldLocation fieldLocation, Dotted assignedToField) {
