@@ -22,6 +22,7 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 
 import com.google.common.collect.ImmutableSet;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -234,6 +235,19 @@ public class MutableTypeToFieldCheckerTest {
 
         assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
         assertThat(reasonDetail.message(), startsWith("Attempts to wrap mutable collection type without safely performing a copy first."));
+    }
+
+    @Test
+    public void providesHintIfWrappedInUnmodifiableCollectionTypeButIsNotCopiedFirst() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
+
+        result = runChecker(checkerWithRealSession, WrapWithUnmodifiableListWithoutCopyingFirst.class);
+
+        assertThat(result, areNotImmutable());
+        MutableReasonDetail reasonDetail = result.reasons.iterator().next();
+
+        assertEquals(ABSTRACT_COLLECTION_TYPE_TO_FIELD, reasonDetail.reason());
+        assertThat(reasonDetail.message(), is("Attempts to wrap mutable collection type without safely performing a copy first. You can use this expression: Collections.unmodifiableList(new ArrayList<ImmutableExample>(unmodifiable))"));
     }
 
     @Test
