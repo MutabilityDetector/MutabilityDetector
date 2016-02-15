@@ -24,13 +24,10 @@ package org.mutabilitydetector.locations;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation;
-import static org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 public class FieldLocationTest {
@@ -61,6 +58,6 @@ public class FieldLocationTest {
     public void prettyPrintIncludesFieldAndClassName() throws Exception {
         FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName",
                 ClassLocation.fromInternalName("a/b/MyClass"));
-        assertThat(fieldLocation.prettyPrint(), is("[Field: myFieldName, Class: a.b.MyClass]"));
+        assertThat(fieldLocation.prettyPrint(), is("[Field: a.b.MyClass.myFieldName]"));
     }
 }

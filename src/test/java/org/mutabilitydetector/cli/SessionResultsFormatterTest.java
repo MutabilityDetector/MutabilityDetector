@@ -21,6 +21,16 @@ package org.mutabilitydetector.cli;
  */
 
 
+import org.junit.Test;
+import org.mutabilitydetector.AnalysisResult;
+import org.mutabilitydetector.AnalysisSession;
+import org.mutabilitydetector.IsImmutable;
+import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,18 +46,6 @@ import static org.mutabilitydetector.TestUtil.unusedMutableReasonDetails;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.Slashed.slashed;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.junit.Test;
-import org.mutabilitydetector.AnalysisResult;
-import org.mutabilitydetector.AnalysisSession;
-import org.mutabilitydetector.IsImmutable;
-import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
-import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 
 public class SessionResultsFormatterTest {
 
@@ -109,7 +107,7 @@ public class SessionResultsFormatterTest {
         assertThat(result.toString(), 
                    containsString("a.b.c is NOT_IMMUTABLE" + newline +
                            "\t1st checker reason message [Class: path.to.MyClass]" + newline +
-                           "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]" + newline));
+                           "\t2nd checker reason message [Field: path.to.OtherClass.myField]" + newline));
     }
 
 

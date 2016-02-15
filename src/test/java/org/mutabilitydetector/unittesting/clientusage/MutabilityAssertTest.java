@@ -21,21 +21,7 @@ package org.mutabilitydetector.unittesting.clientusage;
  */
 
 
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingNonFinalFields;
-import static org.mutabilitydetector.unittesting.AllowedReason.provided;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areEffectivelyImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
-
+import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -60,7 +46,15 @@ import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.unittesting.AllowedReason;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
 
-import com.google.common.collect.Lists;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mutabilitydetector.unittesting.AllowedReason.*;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.*;
 
 public class MutabilityAssertTest {
 
@@ -71,9 +65,9 @@ public class MutabilityAssertTest {
             "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE%n" +
             "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" +
             "    Reasons:%n" +
-            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
-            "        Field is visible outwith this class, and is not declared final. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
-            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: name, Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
+            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField(MutableByHavingPublicNonFinalField.java:26)]%n" +
+            "        Field is visible outwith this class, and is not declared final. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name(MutableByHavingPublicNonFinalField.java:27)]%n" +
+            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name(MutableByHavingPublicNonFinalField.java:27)]%n" +
             "    Allowed reasons:%n" +
             "        None.");
 

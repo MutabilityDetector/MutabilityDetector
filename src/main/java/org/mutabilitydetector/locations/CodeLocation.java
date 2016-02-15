@@ -21,35 +21,38 @@ package org.mutabilitydetector.locations;
  */
 
 
+import org.mutabilitydetector.locations.line.LineNumbersUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 public abstract class CodeLocation<T extends CodeLocation<T>> implements Comparable<T> {
 
-    private CodeLocation() {}
+    private CodeLocation() {
+    }
 
     public abstract String typeName();
 
     public abstract String prettyPrint();
-    
+
     @Immutable
     public final static class UnknownCodeLocation extends CodeLocation<UnknownCodeLocation> {
 
         public static final UnknownCodeLocation UNKNOWN = new UnknownCodeLocation();
-        
-        private UnknownCodeLocation() { }
-        
+
+        private UnknownCodeLocation() {
+        }
+
         @Override
         public int compareTo(@Nonnull UnknownCodeLocation o) {
             return 0; // There can be only one.
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             return obj == this;
         }
-        
+
         @Override
         public int hashCode() {
             return 0;
@@ -64,13 +67,14 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         public String prettyPrint() {
             return "[Unknown code location]";
         }
-        
+
     }
 
     @Immutable
     public static final class ClassLocation extends CodeLocation<ClassLocation> {
 
-        private final @Nonnull
+        private final
+        @Nonnull
         String dottedClassName;
 
         public ClassLocation(String dottedClassName) {
@@ -94,9 +98,15 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) { return true; }
-            if (obj == null) { return false; }
-            if (getClass() != obj.getClass()) { return false; }
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
             ClassLocation other = (ClassLocation) obj;
 
             return dottedClassName.equals(other.dottedClassName);
@@ -118,16 +128,28 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Class: %s]", typeName());
+            return String.format("[Class: %s%s]", typeName(), sourceLocation());
         }
 
+        private String sourceLocation() {
+            try {
+                Class<?> sourceClass = Class.forName(typeName());
+                return LineNumbersUtil.newClassLocation(sourceClass).toString();
+            } catch (ClassNotFoundException e) {
+                return LineNumbersUtil.newUnknownLocation().toString();
+            }
+        }
     }
 
     @Immutable
     public static final class FieldLocation extends CodeLocation<FieldLocation> {
 
-        private final @Nonnull String fieldName;
-        private final @Nonnull ClassLocation ownerOfField;
+        private final
+        @Nonnull
+        String fieldName;
+        private final
+        @Nonnull
+        ClassLocation ownerOfField;
 
         private FieldLocation(String fieldName, ClassLocation ownerOfField) {
             this.fieldName = fieldName;
@@ -175,10 +197,16 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Field: %s, Class: %s]", fieldName(), typeName());
+            return String.format("[Field: %s.%s%s]", typeName(), fieldName(), sourceLocation());
         }
 
+        private String sourceLocation() {
+            try {
+                Class<?> sourceClass = Class.forName(typeName());
+                return LineNumbersUtil.newFieldLocation(sourceClass, fieldName).toString();
+            } catch (ClassNotFoundException e) {
+                return LineNumbersUtil.newUnknownLocation().toString();
+            }
+        }
     }
-
-
 }
