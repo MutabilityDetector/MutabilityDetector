@@ -77,7 +77,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         @Nonnull
         String dottedClassName;
 
-        public ClassLocation(String dottedClassName) {
+        private ClassLocation(String dottedClassName) {
             this.dottedClassName = dottedClassName;
         }
 
