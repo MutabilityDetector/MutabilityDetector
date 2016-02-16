@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Looks up line numbers for classes and their members.
- * <p/>Copypasted without modification from Guice.
+ * <p/>Copypasted from Guice with slight modifications.
  *
  * @author Chris Nokleberg
  */
@@ -143,9 +143,6 @@ final class LineNumbers {
 
         public MethodVisitor visitMethod(int access, String name, String desc,
                                          String signature, String[] exceptions) {
-            if ((access & Opcodes.ACC_PRIVATE) != 0) {
-                return null;
-            }
             pendingMethod = name + desc;
             line = -1;
             return new LineNumberMethodVisitor();

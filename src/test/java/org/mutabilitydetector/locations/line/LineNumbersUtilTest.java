@@ -26,25 +26,71 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class LineNumbersUtilTest {
-    private static class SomeClass {
-        public int someField = 42;
+    public static class SomeClass {
+        public int someFieldOfInnerClass = 42;
     }
 
+    private class SomePrivateNonstaticClass {
+        public int someFieldOfInnerPrivateNonstaticClass = 42;
+    }
+
+    public int someField = 42;
+
     @Test
-    public void unknownLocationStringIdEmpty() {
+    public void unknownLocationToString() {
         String unknownString = SourceLocation.newUnknownSourceLocation().toString();
         assertThat(unknownString, is(""));
     }
 
     @Test
-    public void classLocationIsDeterminedCorrect() {
+    public void classLocationToString() {
+        SourceLocation classLocation = LineNumbersUtil.newClassLocation(LineNumbersUtilTest.class);
+        assertThat(classLocation.toString(), is("(LineNumbersUtilTest.java:28)"));
+    }
+
+    @Test
+    public void initializedFieldOfLocationToString() {
+        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(LineNumbersUtilTest.class, "someField");
+        assertThat(fieldLocation.toString(), is("(LineNumbersUtilTest.java:37)"));
+    }
+
+    @Test
+    public void internalClassLocationToString() {
         SourceLocation classLocation = LineNumbersUtil.newClassLocation(SomeClass.class);
         assertThat(classLocation.toString(), is("(LineNumbersUtilTest.java:29)"));
     }
 
     @Test
-    public void initializedFieldIsDeterminedCorrect() {
-        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(SomeClass.class, "someField");
-        assertThat(fieldLocation.toString(), is("(LineNumberUtilTest.java:30)"));
+    public void initializedFieldOfInnerClassLocationToString() {
+        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(SomeClass.class, "someFieldOfInnerClass");
+        assertThat(fieldLocation.toString(), is("(LineNumbersUtilTest.java:30)"));
     }
+
+    @Test
+    public void privateInnerClassLocationToString() {
+        SourceLocation classLocation = LineNumbersUtil.newClassLocation(SomePrivateNonstaticClass.class);
+        assertThat(classLocation.toString(), is("(LineNumbersUtilTest.java:33)"));
+    }
+
+    @Test
+    public void privateInitializedFieldOfInnerClassLocationToString() {
+        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(SomePrivateNonstaticClass.class, "someFieldOfInnerPrivateNonstaticClass");
+        assertThat(fieldLocation.toString(), is("(LineNumbersUtilTest.java:34)"));
+    }
+
+    @Test
+    public void notInnerClassLocationToString() {
+        SourceLocation classLocation = LineNumbersUtil.newClassLocation(NotInnerPackagePrivateClass.class);
+        assertThat(classLocation.toString(), is("(LineNumbersUtilTest.java:94)"));
+    }
+
+    @Test
+    public void InitializedFieldOfNotInnerClassLocationToString() {
+        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(NotInnerPackagePrivateClass.class, "someFieldOfNotInnerPackagePrivateClass");
+        assertThat(fieldLocation.toString(), is("(LineNumbersUtilTest.java:95)"));
+    }
+}
+
+class NotInnerPackagePrivateClass {
+    public int someFieldOfNotInnerPackagePrivateClass = 42;
 }
