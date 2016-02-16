@@ -21,16 +21,17 @@ package org.mutabilitydetector.locations;
  */
 
 
+import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.Slashed.slashed;
-
-import org.junit.Test;
 
 public class ClassLocationTest {
 
@@ -42,7 +43,7 @@ public class ClassLocationTest {
 
     @Test
     public void canConstructFromSlashed() {
-        CodeLocation<ClassLocation> location = ClassLocation.from(slashed("some/package/Class"));
+        CodeLocation<ClassLocation> location = from(slashed("some/package/Class"));
         assertEquals("some.package.Class", location.typeName());
     }
 
@@ -62,4 +63,14 @@ public class ClassLocationTest {
         assertThat(location.prettyPrint(), is("[Class: some.package.MyClass]"));
     }
 
+    @Test
+    public void lineInfoIsIncludedInPrettyPrint() {
+        ClassLocation location = from(dotted(SomeClass.class.getName()));
+        assertThat(location.prettyPrint(),
+                is("[Class: org.mutabilitydetector.locations.ClassLocationTest$SomeClass(ClassLocationTest.java:73)]"));
+    }
+
+    private static class SomeClass {
+        public int someField = 42;
+    }
 }

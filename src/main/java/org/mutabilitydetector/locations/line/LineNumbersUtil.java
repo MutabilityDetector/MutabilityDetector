@@ -34,7 +34,7 @@ public final class LineNumbersUtil {
 
     public static <T> SourceLocation newFieldLocation(Class<T> klass, String fieldName) {
         try {
-            Field field = klass.getField(fieldName);
+            Field field = klass.getDeclaredField(fieldName);
             LineNumbers ln = new LineNumbers(klass);
             String sourceName = ln.getSource();
             Integer lineNumber = MoreObjects.firstNonNull(ln.getLineNumber(field), ln.getFirstLine());

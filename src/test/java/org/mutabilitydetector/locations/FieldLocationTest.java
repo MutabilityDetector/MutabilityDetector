@@ -26,9 +26,11 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.from;
 import static org.mutabilitydetector.locations.CodeLocation.ClassLocation.fromInternalName;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public class FieldLocationTest {
 
@@ -59,5 +61,17 @@ public class FieldLocationTest {
         FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName",
                 ClassLocation.fromInternalName("a/b/MyClass"));
         assertThat(fieldLocation.prettyPrint(), is("[Field: a.b.MyClass.myFieldName]"));
+    }
+
+    @Test
+    public void lineInfoIsIncludedInPrettyPrint() {
+        ClassLocation classLocation = from(dotted(SomeClass.class.getName()));
+        FieldLocation fieldLocation = FieldLocation.fieldLocation("someField", classLocation);
+        assertThat(fieldLocation.prettyPrint(),
+                is("[Field: org.mutabilitydetector.locations.FieldLocationTest$SomeClass.someField(FieldLocationTest.java:75)]"));
+    }
+
+    private static class SomeClass {
+        public int someField = 42;
     }
 }

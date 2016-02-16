@@ -31,7 +31,7 @@ public class LineNumbersUtilTest {
     }
 
     private class SomePrivateNonstaticClass {
-        public int someFieldOfInnerPrivateNonstaticClass = 42;
+        private int somePrivateFieldOfInnerPrivateNonstaticClass = 42;
     }
 
     public int someField = 42;
@@ -74,7 +74,7 @@ public class LineNumbersUtilTest {
 
     @Test
     public void privateInitializedFieldOfInnerClassLocationToString() {
-        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(SomePrivateNonstaticClass.class, "someFieldOfInnerPrivateNonstaticClass");
+        SourceLocation fieldLocation = LineNumbersUtil.newFieldLocation(SomePrivateNonstaticClass.class, "somePrivateFieldOfInnerPrivateNonstaticClass");
         assertThat(fieldLocation.toString(), is("(LineNumbersUtilTest.java:34)"));
     }
 
