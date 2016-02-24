@@ -21,36 +21,56 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.String.valueOf;
-import static java.util.Collections.unmodifiableList;
-import static org.mutabilitydetector.locations.Dotted.dotted;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLookup;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
+import com.google.common.collect.Iterables;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.valueOf;
+import static java.util.Collections.unmodifiableList;
+import static org.mutabilitydetector.locations.Dotted.dotted;
+import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 public abstract class CollectionField {
     public final Dotted collectionType;
-    public final Iterable<GenericType> genericParameterTypes;
+    public final Node root;
+
+    /**
+     * Get flat list of generics tree represented by {@code root}
+     */
+    public List<GenericType> getGenericParameterTypes() {
+        if (root.children.isEmpty()) {
+            return null;
+        }
+
+        List<GenericType> genericParameters = new ArrayList<GenericType>();
+        putAllChildren(root, genericParameters);
+        return unmodifiableList(new ArrayList<GenericType>(genericParameters));
+    }
+
+    private void putAllChildren(Node root, List<GenericType> genericParameters) {
+        for (Node child : root.children) {
+            genericParameters.add(child.type);
+            putAllChildren(child, genericParameters);
+        }
+    }
 
     private static final class RawCollection extends CollectionField {
         private RawCollection(Dotted collectionType) {
-            super(collectionType, null);
+            super(collectionType, Node.dummyRoot());
         }
+
         @Override
         public boolean isGeneric() {
             return false;
@@ -59,104 +79,162 @@ public abstract class CollectionField {
         public String asString() {
             return "raw " + collectionType.asString();
         }
+
+        @Override
+        public String asSimpleString() {
+            return "raw " + collectionType.asSimpleString();
+        }
+
+        @Override
+        public CollectionField transformGenericTree(Function<GenericType, GenericType> function) {
+            return this;
+        }
     }
-    
+
     private static final class GenericCollection extends CollectionField {
-        public GenericCollection(Dotted collectionType, Iterable<GenericType> elementTypes) {
-            super(collectionType, elementTypes);
+        public GenericCollection(Dotted collectionType, Node root) {
+            super(collectionType, root);
         }
 
         @Override
         public boolean isGeneric() {
             return true;
         }
+
         public String asString() {
-            return collectionType.asString() + "<" + Joiner.on(", ").join(genericParameterTypes) + ">";
+            return root.asString();
+        }
+
+        @Override
+        public String asSimpleString() {
+            return root.asSimpleString();
+        }
+
+        @Override
+        public CollectionField transformGenericTree(Function<GenericType, GenericType> function) {
+            Node newRoot = transformNode(root, function);
+            return new GenericCollection(collectionType, newRoot);
+        }
+
+        private Node transformNode(Node node, Function<GenericType, GenericType> function) {
+            Node transformed = new Node(function.apply(node.type));
+            for (Node child : node.children) {
+                transformed.addChild(transformNode(child, function));
+            }
+            
+            return transformed;
         }
     }
-    
+
     public abstract boolean isGeneric();
+
     public abstract String asString();
 
-    protected CollectionField(Dotted collectionType, Iterable<GenericType> elementTypes) {
+    /**
+     * Similar to {@code CollectionField#asString}, but uses unqualified class names
+     */
+    public abstract String asSimpleString();
+
+    protected CollectionField(Dotted collectionType, Node root) {
         this.collectionType = collectionType;
-        this.genericParameterTypes = elementTypes;
+        this.root = root;
     }
 
     public static CollectionField from(String collectionType, String signature) {
         if (signature == null) {
             return new RawCollection(dotted(collectionType));
         }
-        GenericCollectionReader collectionTypeReader = new GenericCollectionReader();
-        
+        GenericCollectionVisitor collectionTypeReader = new GenericCollectionVisitor(dotted(collectionType));
+
         new SignatureReader(signature).accept(collectionTypeReader);
-        
-        return new GenericCollection(collectionTypeReader.collectionType, 
-                                     unmodifiableList(collectionTypeReader.genericParameters()));
-        
+
+        return new GenericCollection(collectionTypeReader.state.collectionType,
+                collectionTypeReader.root);
     }
-    
-    private static final class GenericCollectionReader extends SignatureVisitor {
 
-        private Dotted collectionType;
-        private final Map<Integer, Dotted> elementTypes = Maps.newHashMap();
-        private final Map<Integer, Dotted> typeVariables = Maps.newHashMap();
-        private final Map<Integer, String> wildcards = Maps.newHashMap();
-        private int genericParameterIndex = 0;
+    /**
+     * Apply function to all generics tree nodes and return resulting tree
+     */
+    public abstract CollectionField transformGenericTree(Function<GenericType, GenericType> function);
 
-        boolean seenOuterCollectionType = false;
+    /**
+     * Constructs generics tree by visiting signature
+     */
+    private static class GenericCollectionVisitor extends SignatureVisitor {
+        private GenericCollectionReaderState state;
+        private Node root;
+        private Node lastStored;
 
-        public GenericCollectionReader() {
+        public GenericCollectionVisitor(Dotted collectionType) {
             super(Opcodes.ASM5);
+            state = new GenericCollectionReaderState();
+            root = new Node(GenericType.exact(collectionType));
+        }
+
+        private GenericCollectionVisitor(GenericCollectionReaderState state, Node root) {
+            super(Opcodes.ASM5);
+            this.state = state;
+            this.root = root;
         }
 
         @Override
         public void visitClassType(String name) {
-            if (!seenOuterCollectionType) {
-                this.collectionType = dotted(name);
-                seenOuterCollectionType = true;
+            if (!state.seenOuterCollectionType) {
+                state.collectionType = dotted(name);
+                state.seenOuterCollectionType = true;
             } else {
-                elementTypes.put(genericParameterIndex, dotted(name));
-                genericParameterIndex++;
+                state.elementType = dotted(name);
+                storeNode();
             }
         }
 
         @Override
         public void visitTypeVariable(String name) {
-            typeVariables.put(genericParameterIndex, dotted(name));
-            genericParameterIndex++;
+            state.typeVariable = dotted(name);
+            storeNode();
         }
 
         @Override
         public void visitTypeArgument() {
-            wildcards.put(genericParameterIndex, "?");
-            elementTypes.put(genericParameterIndex, null);
-            genericParameterIndex++;
+            state.wildcard = "?";
+            state.elementType = null;
+            storeNode();
         }
-        
+
         @Override
         public SignatureVisitor visitTypeArgument(char wildcard) {
-            wildcards.put(genericParameterIndex, valueOf(wildcard));
-            
-            return this;
-        }
-        
-        public List<GenericType> genericParameters() {
-            List<GenericType> genericParameters = new ArrayList<GenericType>();
-            for (int i = 0; i < genericParameterIndex; i++) {
-                Dotted elementType = elementTypes.get(i);
-                Dotted typeVariable = typeVariables.get(i);
-                boolean isVariable = typeVariable != null;
+            state.wildcard = valueOf(wildcard);
 
-                String wildcard = wildcards.get(i);
-                genericParameters.add(new GenericType(isVariable ? typeVariable : elementType, wildcard, isVariable));
-            }
-            
-            return unmodifiableList(new ArrayList<GenericType>(genericParameters));
+            return withRoot(firstNonNull(lastStored, root));
+        }
+
+        private void storeNode() {
+            lastStored = new Node(createGenericType());
+            root.addChild(lastStored);
+        }
+
+        private GenericType createGenericType() {
+            boolean isVariable = state.typeVariable != null;
+            return new GenericType(isVariable ? state.typeVariable : state.elementType, state.wildcard, isVariable);
+        }
+
+        /**
+         * Return visitor representing child node with the same state
+         */
+        private GenericCollectionVisitor withRoot(Node newRoot) {
+            return new GenericCollectionVisitor(state, newRoot);
+        }
+
+        private static final class GenericCollectionReaderState {
+            protected Dotted collectionType;
+            protected Dotted elementType;
+            protected Dotted typeVariable;
+            protected String wildcard;
+            protected boolean seenOuterCollectionType = false;
         }
     }
 
-    static class GenericType {
+    public static class GenericType {
         public final Dotted type;
         public final String wildcard;
         public final boolean isVariable;
@@ -166,6 +244,14 @@ public abstract class CollectionField {
             this.wildcard = checkNotNull(wildcard, "wildcard");
             this.isVariable = isVariable;
         }
+
+        public static final Function<GenericType, String> AS_SIMPLE_STRING = new Function<GenericType, String>() {
+            @Nullable
+            @Override
+            public String apply(GenericType input) {
+                return input.asSimpleString();
+            }
+        };
 
         public static GenericType wildcard() {
             return new GenericType(null, "?", false);
@@ -217,26 +303,94 @@ public abstract class CollectionField {
             return true;
         }
 
-        
+
         @Override
         public String toString() {
+            return toStringWithFunction(Functions.toStringFunction());
+        }
+
+        /**
+         * Similar to {@code GenericType#asString} but uses unqualified class names
+         */
+        public String asSimpleString() {
+            return toStringWithFunction(Dotted.AS_SIMPLE_STRING);
+        }
+
+        private String toStringWithFunction(Function<? super Dotted, String> toStringFunction) {
             if (type == null) {
                 return wildcard;
             } else {
                 if (wildcard.equals("=")) {
-                    return type.asString();
-                } else if (wildcard.equals("+")){
-                    return "? extends " + type.asString();
-                } else if (wildcard.equals("-")){
-                    return "? super " + type.asString();
+                    return toStringFunction.apply(type);
+                } else if (wildcard.equals("+")) {
+                    return "? extends " + toStringFunction.apply(type);
+                } else if (wildcard.equals("-")) {
+                    return "? super " + toStringFunction.apply(type);
                 }
             }
-            
+
             throw new IllegalStateException();
         }
 
-
-        
+        public GenericType withoutWildcard() {
+            if ("?".equals(wildcard)) {
+                return new GenericType(fromClass(Object.class), "=", false);
+            }
+            return new GenericType(type, "=", false);
+        }
     }
 
+    /**
+     * Represents a node of generic types tree in type declaration
+     */
+    private static final class Node {
+        public final List<Node> children = new ArrayList<Node>();
+        public final GenericType type;
+
+        public static Node dummyRoot() {
+            return new Node(null);
+        }
+
+        public Node(GenericType type) {
+            this.type = type;
+        }
+
+        public void addChild(Node child) {
+            children.add(checkNotNull(child));
+        }
+
+        public String asString() {
+            return asStringUsingFunctions(Functions.toStringFunction(), Functions.toStringFunction());
+        }
+
+        /**
+         * Similar to {@code GenericType#asString} but uses unqualified class names
+         */
+        public String asSimpleString() {
+            return asStringUsingFunctions(GenericType.AS_SIMPLE_STRING, AS_SIMPLE_STRING);
+        }
+
+        private String asStringUsingFunctions(Function<? super GenericType, String> genericTypeStringFunction,
+                                              Function<? super Node, String> nodeStringFunction) {
+            String childrenPart = "";
+            if (children.size() > 0) {
+                childrenPart = "<" + Joiner.on(", ").join(Iterables.transform(children, nodeStringFunction)) + ">";
+            }
+
+            return genericTypeStringFunction.apply(type) + childrenPart;
+        }
+
+        @Override
+        public String toString() {
+            return asString();
+        }
+
+        public static final Function<Node, String> AS_SIMPLE_STRING = new Function<Node, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable Node input) {
+                return input.asSimpleString();
+            }
+        };
+    }
 }

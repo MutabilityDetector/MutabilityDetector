@@ -21,11 +21,11 @@ package org.mutabilitydetector.locations;
  */
 
 
+import com.google.common.base.Function;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-
-import com.google.common.base.Function;
 
 @Immutable
 public final class Dotted extends ClassName {
@@ -33,7 +33,7 @@ public final class Dotted extends ClassName {
     private Dotted(String className) {
         super(className);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) { return true; }
@@ -42,18 +42,26 @@ public final class Dotted extends ClassName {
         Dotted other = (Dotted) obj;
         return asString().equals(other.asString());
     }
-    
+
     @Override
     public int hashCode() {
         return asString().hashCode();
     }
-    
+
     public static final Function<String, Dotted> STRING_NAME_TO_DOTTED = new Function<String, Dotted>() {
         @Override public Dotted apply(@Nonnull String className) { return dotted(className); }
     };
 
     public static final Function<Class<?>, Dotted> CLASS_TO_DOTTED = new Function<Class<?>, Dotted>() {
         @Override public Dotted apply(@Nonnull Class<?> clazz) { return fromClass(clazz); }
+    };
+
+    public static final Function<Dotted, String> AS_SIMPLE_STRING = new Function<Dotted, String>() {
+        @Nullable
+        @Override
+        public String apply(Dotted input) {
+            return input.asSimpleString();
+        }
     };
 
     public static Dotted dotted(String className) {

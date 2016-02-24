@@ -21,25 +21,28 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
-
-
-import javax.annotation.concurrent.Immutable;
-
+import com.google.common.base.Objects;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-import com.google.common.base.Objects;
+import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public final class CopyMethod {
-    private final Dotted owner;
-    private final String name;
-    private final String desc;
+    public final Dotted owner;
+    public final String name;
+    public final String desc;
+    public final boolean isGeneric;
 
     public CopyMethod(Dotted owner, String name, String desc) {
+        this(owner, name, desc, false);
+    }
+
+    public CopyMethod(Dotted owner, String name, String desc, boolean isGeneric) {
         this.owner = owner;
         this.name = name;
         this.desc = desc;
+        this.isGeneric = isGeneric;
     }
 
     public static CopyMethod from(MethodInsnNode methodNode) {

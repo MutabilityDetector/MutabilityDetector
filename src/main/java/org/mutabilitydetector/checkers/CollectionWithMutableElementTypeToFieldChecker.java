@@ -42,8 +42,8 @@ import java.util.Map;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.String.format;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMutabilityChecker {
 
@@ -109,7 +109,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
                 String fieldSignature = fieldSignatures.get(fieldName);
                 CollectionField collectionField = CollectionField.from(fieldInsnNode.desc, fieldSignature);
                 
-                Iterable<GenericType> genericParameters = collectionField.genericParameterTypes;
+                Iterable<GenericType> genericParameters = collectionField.getGenericParameterTypes();
                 
                 if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
                     setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
