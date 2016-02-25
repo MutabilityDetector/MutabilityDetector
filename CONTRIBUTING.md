@@ -38,7 +38,7 @@ Beyond the shell script which just installs a library not available from Maven C
 
 Currently Mutability Detector has a high level of unit test coverage, and patches should come with unit tests. For things like formatting, and naming, please try to be consistent with what you see around the rest of the code base - I believe it's important for readability to keep the code consistent. I'll most likely apply my own formatting settings to your patch anyway, so you shouldn't have to worry too much about that. I'm quite willing to just receive any kind of patch you throw at me and take the time to fix it up in whatever way it needs.
 
-Any questions or comments, or if this help guide is woefully insufficient, please get in touch, preferably on the [mailing list](http://groups.google.com/group/mutability-detector).
+Any questions or comments, or if this help guide is woefully insufficient, please get in touch, preferably on the [mailing list](http://groups.google.com/group/mutability-detector). You may also use Gitter to reach out to the project team [![Join the chat at https://gitter.im/MutabilityDetector/main](https://badges.gitter.im/MutabilityDetector/main.svg)](https://gitter.im/MutabilityDetector/main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Licensing
 Mutability Detector is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html). Any patches which are incorporated will be included under this license.
