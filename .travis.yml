@@ -1,9 +1,9 @@
-sudo: required
+sudo: true
 language: java
 jdk:
   - openjdk7
 script: "mvn install"
 
+# Fix OpenJDK build. Issue: https://github.com/travis-ci/travis-ci/issues/5227 
 addons:
-  # Fix OpenJDK build. Issue: https://github.com/travis-ci/travis-ci/issues/5227 
-hostname: short-hostname
+  hostname: short-hostname
