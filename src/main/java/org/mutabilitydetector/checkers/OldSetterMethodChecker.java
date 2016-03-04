@@ -123,9 +123,7 @@ public final class OldSetterMethodChecker extends AsmMutabilityChecker {
              * field is a parameter. But if the type is not included in the parameter list, we can guess it's not
              * (though it still may be).
              */
-            boolean reassignmentIsOnATypeIncludedInParameters = this.desc.contains(fieldInsnNode.owner);
-
-            return reassignmentIsOnATypeIncludedInParameters;
+            return this.desc.contains(fieldInsnNode.owner);
         }
 
         private boolean reassignedIsThisType(String ownerOfReassignedField) {

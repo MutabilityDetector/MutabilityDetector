@@ -146,8 +146,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
 
     private static BatchAnalysisOptions createOptionsFromArgs(String[] args) {
         try {
-            BatchAnalysisOptions options = new CommandLineOptions(System.err, args);
-            return options;
+            return new CommandLineOptions(System.err, args);
         } catch (Throwable e) {
             System.out.println("Exiting...");
             System.exit(1);

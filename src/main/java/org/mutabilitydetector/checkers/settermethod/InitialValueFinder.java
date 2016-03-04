@@ -223,8 +223,7 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
         final AssignmentInsn effectiveAssignmentInsn = f.find();
         final int indexOfAssignmentInstruction = effectiveAssignmentInsn.getIndexWithinMethod();
         final InsnList instructions = constructor.instructions;
-        final AbstractInsnNode result = instructions.get(indexOfAssignmentInstruction - 1);
-        return result;
+        return instructions.get(indexOfAssignmentInstruction - 1);
     }
 
     private void addSupposedInitialValueFor(final AbstractInsnNode variableValueSetupInsn) {
