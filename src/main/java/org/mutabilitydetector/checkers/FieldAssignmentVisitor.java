@@ -101,7 +101,6 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
 
     protected BasicValue getStackValue(Frame<BasicValue> assignmentFrame) {
         int stackSlot = assignmentFrame.getStackSize() - 1;
-        BasicValue stackValue = assignmentFrame.getStack(stackSlot);
-        return stackValue;
+        return assignmentFrame.getStack(stackSlot);
     }
 }

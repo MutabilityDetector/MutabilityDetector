@@ -398,8 +398,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
     }
 
     public int getIndexWithinBlock(final int indexWithinMethod) {
-        final int result = indexWithinMethod - rangeOfBlockInstructions.lowerBoundary;
-        return result;
+        return indexWithinMethod - rangeOfBlockInstructions.lowerBoundary;
     }
 
     public Set<ControlFlowBlock> getPredecessors() {
