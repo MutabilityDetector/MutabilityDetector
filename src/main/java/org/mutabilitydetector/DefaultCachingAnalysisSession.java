@@ -69,7 +69,7 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
         this.verifierFactory = verifierFactory;
         this.configuration = configuration;
         this.cyclicReferences = new CyclicReferences();
-        this.analysedClasses = CacheBuilder.<Dotted, AnalysisResult>newBuilder().recordStats().build();
+        this.analysedClasses = CacheBuilder.newBuilder().recordStats().build();
         this.analysedClasses.putAll(hardcodedResultsForDirectAssertion(configuration));
 
         InformationRetrievalRunner informationRetrievalRunner = new InformationRetrievalRunner(this, checkerRunnerFactory.createRunner());
