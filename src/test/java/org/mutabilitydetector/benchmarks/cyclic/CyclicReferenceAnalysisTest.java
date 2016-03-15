@@ -49,13 +49,6 @@ public class CyclicReferenceAnalysisTest {
     }
 
     @Test
-    public void stackOverflowExceptionIsNotThrown_FVDCodeBaseImpl() throws Exception {
-        if (classExistsInHostJdk("com.sun.corba.se.impl.io.FVDCodeBaseImpl")) {
-            asserter.assertInstancesOf(Class.forName("com.sun.corba.se.impl.io.FVDCodeBaseImpl"), areNotImmutable());
-        }
-    }
-
-    @Test
     public void stackOverflowExceptionIsNotThrown_Component$NativeInLightFixer() throws Exception {
         if (classExistsInHostJdk("java.awt.Component$NativeInLightFixer")) {
             asserter.assertInstancesOf(Class.forName("java.awt.Component$NativeInLightFixer"), areNotImmutable());
