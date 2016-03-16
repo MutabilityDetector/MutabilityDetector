@@ -20,19 +20,15 @@ package org.mutabilitydetector.locations.line;
  * #L%
  */
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.objectweb.asm.ClassReader.SKIP_FRAMES;
+import static org.objectweb.asm.Type.ARRAY;
 
 /**
  * Looks up line numbers for classes and their members.
@@ -42,7 +38,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class LineNumbers {
 
-    private final Class type;
     private final Map<String, Integer> lines = Maps.newHashMap();
     private String source;
     private int firstLine = Integer.MAX_VALUE;
@@ -52,23 +47,26 @@ final class LineNumbers {
      *
      * @param type the class to read line number information from
      * @throws IllegalArgumentException if the bytecode for the class cannot be found
-     * @throws java.io.IOException if an error occurs while reading bytecode
+     * @throws java.io.IOException      if an error occurs while reading bytecode
      */
-    public LineNumbers(Class type) throws IOException {
-        this.type = type;
-
-        if (!type.isArray()) {
-            InputStream in = type.getResourceAsStream("/" + type.getName().replace('.', '/') + ".class");
+    public LineNumbers(Type type) throws IOException {
+        if (isNotArray(type)) {
+            InputStream in = LineNumbers.class.getResourceAsStream("/" + type.getInternalName() + ".class");
             if (in != null) {
                 try {
-                    new ClassReader(in).accept(new LineNumberReader(), ClassReader.SKIP_FRAMES);
+                    new ClassReader(in).accept(new LineNumberReader(), SKIP_FRAMES);
                 } finally {
                     try {
                         in.close();
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
                 }
             }
         }
+    }
+
+    private boolean isNotArray(Type type) {
+        return ARRAY != type.getSort();
     }
 
     /**
@@ -80,50 +78,19 @@ final class LineNumbers {
         return source;
     }
 
-    /**
-     * Get the line number associated with the given member.
-     *
-     * @param member a field, constructor, or method belonging to the class used during construction
-     * @return the wrapped line number, or null if not available
-     * @throws IllegalArgumentException if the member does not belong to the class used during
-     * construction
-     */
-    public Integer getLineNumber(Member member) {
-        Preconditions.checkArgument(type == member.getDeclaringClass(),
-                "Member %s belongs to %s, not %s", member, member.getDeclaringClass(), type);
-        return lines.get(memberKey(member));
+    public Integer getLineNumberOfField(String fieldName) {
+        return lines.get(fieldMemberKey(fieldName));
     }
 
-    /** Gets the first line number. */
+    /**
+     * Gets the first line number.
+     */
     public int getFirstLine() {
         return firstLine == Integer.MAX_VALUE ? 1 : firstLine;
     }
 
-    private String memberKey(Member member) {
-        checkNotNull(member, "member");
-
-    /*if[AOP]*/
-        if (member instanceof Field) {
-            return member.getName();
-
-        } else if (member instanceof Method) {
-            return member.getName() + org.objectweb.asm.Type.getMethodDescriptor((Method) member);
-
-        } else if (member instanceof Constructor) {
-            StringBuilder sb = new StringBuilder().append("<init>(");
-            for (Class param : ((Constructor) member).getParameterTypes()) {
-                sb.append(org.objectweb.asm.Type.getDescriptor(param));
-            }
-            return sb.append(")V").toString();
-
-        } else {
-            throw new IllegalArgumentException(
-                    "Unsupported implementation class for Member, " + member.getClass());
-        }
-    /*end[AOP]*/
-    /*if[NO_AOP]
-    return "<NO_MEMBER_KEY>";
-    end[NO_AOP]*/
+    private String fieldMemberKey(String memberName) {
+        return memberName;
     }
 
     private class LineNumberReader extends ClassVisitor {
@@ -173,11 +140,6 @@ final class LineNumbers {
             return new LineNumberAnnotationVisitor();
         }
 
-        public AnnotationVisitor visitParameterAnnotation(int parameter,
-                                                          String desc, boolean visible) {
-            return new LineNumberAnnotationVisitor();
-        }
-
         class LineNumberMethodVisitor extends MethodVisitor {
             LineNumberMethodVisitor() {
                 super(Opcodes.ASM5);
@@ -208,16 +170,14 @@ final class LineNumbers {
             LineNumberAnnotationVisitor() {
                 super(Opcodes.ASM5);
             }
+
             public AnnotationVisitor visitAnnotation(String name, String desc) {
                 return this;
             }
+
             public AnnotationVisitor visitArray(String name) {
                 return this;
             }
-            public void visitLocalVariable(String name, String desc, String signature,
-                                           Label start, Label end, int index) {
-            }
-
         }
 
     }

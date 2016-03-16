@@ -21,8 +21,7 @@ package org.mutabilitydetector.locations.line;
  */
 
 import com.google.common.base.MoreObjects;
-
-import java.lang.reflect.Field;
+import org.objectweb.asm.Type;
 
 import static org.mutabilitydetector.locations.line.SourceLocation.newSourceLocation;
 import static org.mutabilitydetector.locations.line.SourceLocation.newUnknownSourceLocation;
@@ -32,21 +31,20 @@ public final class LineNumbersUtil {
     private LineNumbersUtil() {
     }
 
-    public static <T> SourceLocation newFieldLocation(Class<T> klass, String fieldName) {
+    public static SourceLocation newFieldLocation(Type type, String fieldName) {
         try {
-            Field field = klass.getDeclaredField(fieldName);
-            LineNumbers ln = new LineNumbers(klass);
+            LineNumbers ln = new LineNumbers(type);
             String sourceName = ln.getSource();
-            Integer lineNumber = MoreObjects.firstNonNull(ln.getLineNumber(field), ln.getFirstLine());
+            Integer lineNumber = MoreObjects.firstNonNull(ln.getLineNumberOfField(fieldName), ln.getFirstLine());
             return newSourceLocation(sourceName, lineNumber);
         } catch (Exception e) {
             return newUnknownSourceLocation();
         }
     }
 
-    public static <T> SourceLocation newClassLocation(Class<T> klass) {
+    public static SourceLocation newClassLocation(Type type) {
         try {
-            LineNumbers ln = new LineNumbers(klass);
+            LineNumbers ln = new LineNumbers(type);
             String sourceName = ln.getSource();
             return newSourceLocation(sourceName, ln.getFirstLine());
         } catch (Exception e) {

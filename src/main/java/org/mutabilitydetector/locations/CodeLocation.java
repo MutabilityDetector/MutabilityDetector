@@ -26,6 +26,8 @@ import org.mutabilitydetector.locations.line.LineNumbersUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import static org.objectweb.asm.Type.getType;
+
 public abstract class CodeLocation<T extends CodeLocation<T>> implements Comparable<T> {
 
     private CodeLocation() {
@@ -34,6 +36,10 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
     public abstract String typeName();
 
     public abstract String prettyPrint();
+
+    String typeInternalName() {
+        return typeName().replace(".", "/");
+    }
 
     @Immutable
     public final static class UnknownCodeLocation extends CodeLocation<UnknownCodeLocation> {
@@ -132,12 +138,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         }
 
         private String sourceLocation() {
-            try {
-                Class<?> sourceClass = Class.forName(typeName());
-                return LineNumbersUtil.newClassLocation(sourceClass).toString();
-            } catch (ClassNotFoundException e) {
-                return LineNumbersUtil.newUnknownLocation().toString();
-            }
+            return LineNumbersUtil.newClassLocation(getType(typeInternalName())).toString();
         }
     }
 
@@ -201,12 +202,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         }
 
         private String sourceLocation() {
-            try {
-                Class<?> sourceClass = Class.forName(typeName());
-                return LineNumbersUtil.newFieldLocation(sourceClass, fieldName).toString();
-            } catch (ClassNotFoundException e) {
-                return LineNumbersUtil.newUnknownLocation().toString();
-            }
+            return LineNumbersUtil.newFieldLocation(getType(typeInternalName()), fieldName).toString();
         }
     }
 }
