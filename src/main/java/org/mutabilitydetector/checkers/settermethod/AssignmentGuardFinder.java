@@ -206,7 +206,7 @@ final class AssignmentGuardFinder implements Finder<JumpInsn> {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [candidateName=").append(candidateName);
-        b.append(", controlFlowBlock=").append(controlFlowBlock).append("]");
+        b.append(", controlFlowBlock=").append(controlFlowBlock).append(']');
         return b.toString();
     }
 

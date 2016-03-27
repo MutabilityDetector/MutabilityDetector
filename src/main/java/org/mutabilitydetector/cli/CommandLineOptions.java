@@ -72,13 +72,13 @@ public class CommandLineOptions implements BatchAnalysisOptions {
 
         public static String validModes() {
             StringBuilder modes = new StringBuilder();
-            modes.append("[");
+            modes.append('[');
             for (ReportMode m : values()) {
                 modes.append(m.name());
-                modes.append("|");
+                modes.append('|');
             }
             modes.deleteCharAt(modes.length() - 1); // Remove last bar
-            modes.append("]");
+            modes.append(']');
             return modes.toString();
         }
     }

@@ -87,7 +87,7 @@ final class ControlFlowBlockCache {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" owner=").append(owner);
-        b.append(", controlFlowBlocks=").append(controlFlowBlocks).append("]");
+        b.append(", controlFlowBlocks=").append(controlFlowBlocks).append(']');
         return b.toString();
     }
 

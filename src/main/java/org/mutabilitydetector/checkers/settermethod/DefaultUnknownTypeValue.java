@@ -224,7 +224,7 @@ final class DefaultUnknownTypeValue implements UnknownTypeValue {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [").append("value=(").append(getValueTypeAsString());
-        b.append(") ").append(value).append("]");
+        b.append(") ").append(value).append(']');
         return b.toString();
     }
 

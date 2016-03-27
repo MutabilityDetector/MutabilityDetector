@@ -157,7 +157,7 @@ final class AliasFinder implements Finder<Alias> {
         final StringBuilder builder = new StringBuilder();
         builder.append("AliasFinder [").append("variableName=").append(variableName);
         builder.append(", controlFlowBlockToExamine=").append(controlFlowBlockToExamine);
-        builder.append(", alreadyVisited=").append(alreadyVisited).append("]");
+        builder.append(", alreadyVisited=").append(alreadyVisited).append(']');
         return builder.toString();
     }
 

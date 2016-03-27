@@ -125,7 +125,7 @@ final class DefaultAssignmentInsn implements AssignmentInsn {
         builder.append(", indexWithinMethod=").append(indexWithinMethod);
         builder.append(", assignmentInstructionNode=");
         final Opcode opcode = Opcode.forInt(assignmentInsnNode.getOpcode());
-        builder.append(opcode.name()).append(" ").append(assignmentInsnNode.name).append("]");
+        builder.append(opcode.name()).append(' ').append(assignmentInsnNode.name).append(']');
         return builder.toString();
     }
 

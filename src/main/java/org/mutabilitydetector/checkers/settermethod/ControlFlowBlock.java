@@ -130,7 +130,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             final StringBuilder builder = new StringBuilder();
             builder.append(getClass().getSimpleName());
             builder.append(" [lowerBoundary=").append(lowerBoundary).append(", upperBoundary=").append(upperBoundary);
-            builder.append(", allItems=").append(allItems).append("]");
+            builder.append(", allItems=").append(allItems).append(']');
             return builder.toString();
         }
     } // class Range
@@ -474,7 +474,7 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
             builder.append(", rangeOfBlockInstructionIndices=").append(rangeOfBlockInstructions);
             builder.append(", predecessors=").append(setToString(predecessors));
             builder.append(", successors=").append(setToString(successors));
-            builder.append("]");
+            builder.append(']');
             stringRepresentation = builder.toString();
         }
         return stringRepresentation;
@@ -482,14 +482,14 @@ final class ControlFlowBlock implements Comparable<ControlFlowBlock> {
 
     private static String setToString(final Set<ControlFlowBlock> cfbSet) {
         final StringBuilder result = new StringBuilder();
-        result.append("{");
+        result.append('{');
         final String separator = ", ";
         String sep = "";
         for (final ControlFlowBlock controlFlowBlock : cfbSet) {
             result.append(sep).append(controlFlowBlock.getBlockNumber());
             sep = separator;
         }
-        result.append("}");
+        result.append('}');
         return result.toString();
     }
 

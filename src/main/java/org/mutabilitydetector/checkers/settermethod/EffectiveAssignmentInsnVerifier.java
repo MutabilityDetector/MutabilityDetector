@@ -197,7 +197,7 @@ final class EffectiveAssignmentInsnVerifier {
         builder.append(effectiveAssignmentInstruction);
         builder.append(", candidate=").append(candidate.name);
         builder.append(", setterMethodChecker=").append(setterMethodChecker);
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 

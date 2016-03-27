@@ -165,20 +165,20 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
             final StringBuilder builder = new StringBuilder();
             builder.append(getClass().getSimpleName()).append(" [");
             builder.append("constructors=").append(concatenateMethodNames(constructors));
-            builder.append(", methods=").append(concatenateMethodNames(methods)).append("]");
+            builder.append(", methods=").append(concatenateMethodNames(methods)).append(']');
             return builder.toString();
         }
 
         private static String concatenateMethodNames(final List<MethodNode> methods) {
             final StringBuilder result = new StringBuilder();
-            result.append("[");
+            result.append('[');
             final String separator = ", ";
             String sep = "";
             for (final MethodNode method : methods) {
                 result.append(sep).append(method.name);
                 sep = separator;
             }
-            result.append("]");
+            result.append(']');
             return result.toString();
 
         }
@@ -465,13 +465,13 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
         final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" [");
         builder.append("candidatesAndInitialisers=").append(candidatesAndInitialisersToString());
-        builder.append(", visibleSetterMethods=").append(visibleSetterMethods).append("]");
+        builder.append(", visibleSetterMethods=").append(visibleSetterMethods).append(']');
         return builder.toString();
     }
 
     private String candidatesAndInitialisersToString() {
         final StringBuilder result = new StringBuilder();
-        result.append("{");
+        result.append('{');
         final String separator = ", ";
         String sep = "";
         for (final Entry entry : this) {
@@ -479,7 +479,7 @@ final class CandidatesInitialisersMapping implements Iterable<CandidatesInitiali
             result.append(sep).append(candidate.name).append(": ").append(entry.getInitialisers());
             sep = separator;
         }
-        result.append("}");
+        result.append('}');
         return result.toString();
     }
 
