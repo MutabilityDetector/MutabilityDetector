@@ -36,7 +36,7 @@ import static org.objectweb.asm.Type.ARRAY;
  *
  * @author Chris Nokleberg
  */
-final class LineNumbers {
+public final class LineNumbers {
 
     private final Map<String, Integer> lines = Maps.newHashMap();
     private String source;
@@ -78,6 +78,9 @@ final class LineNumbers {
         return source;
     }
 
+    /**
+     * Returns line number of field or {@code null} if unknown
+     */
     public Integer getLineNumberOfField(String fieldName) {
         return lines.get(fieldMemberKey(fieldName));
     }

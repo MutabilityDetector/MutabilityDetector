@@ -43,6 +43,8 @@ public final class AnalysisDatabase {
 
     public static final InfoKey<TypeStructureInformation> TYPE_STRUCTURE = new InfoKey<TypeStructureInformation>(TypeStructureInformation.class);
 
+    public static final InfoKey<LineNumberInformation> LINE_NUMBERS = new InfoKey<LineNumberInformation>(LineNumberInformation.class);
+
     @SuppressWarnings("rawtypes")
     private final Map infoMap = new HashMap();
 
@@ -74,6 +76,8 @@ public final class AnalysisDatabase {
             info = (I) new PrivateMethodInvocationInformation(sessionCheckerRunner);
         } else if (infoCategory == TYPE_STRUCTURE) {
             info = (I) new TypeStructureInformation(sessionCheckerRunner);
+        } else if (infoCategory == LINE_NUMBERS) {
+            info = (I) new LineNumberInformation(sessionCheckerRunner);
         }
 
         if (info == null) {

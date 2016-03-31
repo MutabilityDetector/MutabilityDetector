@@ -28,11 +28,11 @@ public final class SourceLocation {
 
     private static SourceLocation UNKNOWN = new SourceLocation("", 0);
 
-    static SourceLocation newUnknownSourceLocation() {
+    public static SourceLocation newUnknownSourceLocation() {
         return UNKNOWN;
     }
 
-    static SourceLocation newSourceLocation(String fileName, int lineNumber) {
+    public static SourceLocation newSourceLocation(String fileName, int lineNumber) {
         return new SourceLocation(checkNotNull(fileName), lineNumber);
     }
 

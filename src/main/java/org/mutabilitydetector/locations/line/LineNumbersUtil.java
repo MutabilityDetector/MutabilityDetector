@@ -26,6 +26,7 @@ import org.objectweb.asm.Type;
 import static org.mutabilitydetector.locations.line.SourceLocation.newSourceLocation;
 import static org.mutabilitydetector.locations.line.SourceLocation.newUnknownSourceLocation;
 
+// TODO: remove it
 public final class LineNumbersUtil {
     // Prevent instantiation.
     private LineNumbersUtil() {
