@@ -121,7 +121,8 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
+                AnalysisInProgress.noAnalysisUnderway(),
+                CodeLocationFactory.create());
     }
 
     @Test

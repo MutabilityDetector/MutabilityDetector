@@ -65,9 +65,9 @@ public class MutabilityAssertTest {
             "Expected: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField to be IMMUTABLE%n" +
             "     but: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField is actually NOT_IMMUTABLE%n" +
             "    Reasons:%n" +
-            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField(MutableByHavingPublicNonFinalField.java:26)]%n" +
-            "        Field is visible outwith this class, and is not declared final. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name(MutableByHavingPublicNonFinalField.java:27)]%n" +
-            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name(MutableByHavingPublicNonFinalField.java:27)]%n" +
+            "        Can be subclassed, therefore parameters declared to be this type could be mutable subclasses at runtime. [Class: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField]%n" +
+            "        Field is visible outwith this class, and is not declared final. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name]%n" +
+            "        Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read. [Field: org.mutabilitydetector.benchmarks.MutableByHavingPublicNonFinalField.name]%n" +
             "    Allowed reasons:%n" +
             "        None.");
 
