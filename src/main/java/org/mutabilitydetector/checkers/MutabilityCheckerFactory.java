@@ -21,24 +21,24 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
-import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.PRIVATE_METHOD_INVOCATION;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
+import com.google.common.collect.ImmutableSet;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.checkers.info.AnalysisDatabase;
+import org.mutabilitydetector.checkers.info.AnalysisInProgress;
+import org.mutabilitydetector.checkers.info.LineNumberProvider;
+import org.mutabilitydetector.checkers.info.MutableTypeInformation;
+import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
+import org.mutabilitydetector.locations.CodeLocationFactory;
+import org.mutabilitydetector.locations.Dotted;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
-import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.info.AnalysisDatabase;
-import org.mutabilitydetector.checkers.info.AnalysisInProgress;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
-import org.mutabilitydetector.locations.Dotted;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.LAZY_INITIALISATION_ANALYSIS;
+import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.*;
 
 public final class MutabilityCheckerFactory {
     
@@ -55,10 +55,11 @@ public final class MutabilityCheckerFactory {
             AsmVerifierFactory verifierFactory,
             MutableTypeInformation mutableTypeInformation,
             AnalysisInProgress analysisInProgress) {
+        LineNumberProvider lineNumbersInfo = database.requestInformation(LINE_NUMBERS);
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
-        
+
         if (analysisChoice == NAIVE_PUT_FIELD_ANALYSIS) {
             checkers.add(new NonFinalFieldChecker());
             checkers.add(OldSetterMethodChecker.newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION),
@@ -68,13 +69,14 @@ public final class MutabilityCheckerFactory {
         } else {
             throw new IllegalStateException();
         }
-        
+
         checkers.add(new MutableTypeToFieldChecker(
                 database.requestInformation(TYPE_STRUCTURE),
                 mutableTypeInformation,
                 verifierFactory,
                 immutableContainerClasses,
-                analysisInProgress));
+                analysisInProgress,
+                CodeLocationFactory.createWithLineNumbersInfo(lineNumbersInfo)));
 
         checkers.add(new InherentTypeMutabilityChecker());
         checkers.add(new ArrayFieldMutabilityChecker());

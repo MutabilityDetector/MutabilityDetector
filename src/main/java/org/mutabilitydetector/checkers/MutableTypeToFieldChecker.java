@@ -34,6 +34,7 @@ import org.mutabilitydetector.checkers.info.MutableTypeInformation.MutabilityLoo
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocationFactory;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -52,7 +53,6 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
 import static org.mutabilitydetector.MutabilityReason.*;
-import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
@@ -64,18 +64,21 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     private final List<String> genericTypesOfClass = Lists.newLinkedList();
     private final Map<String, String> genericFields = Maps.newHashMap();
     private final AnalysisInProgress analysisInProgress;
+    private final CodeLocationFactory codeLocationFactory;
     private final Map<String, String> typeSignatureByFieldName = Maps.newHashMap();
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
                                      AsmVerifierFactory verifierFactory,
                                      Set<Dotted> immutableContainerClasses,
-                                     AnalysisInProgress analysisInProgress) {
+                                     AnalysisInProgress analysisInProgress,
+                                     CodeLocationFactory codeLocationFactory) {
         this.typeStructureInformation = info;
         this.mutableTypeInfo = mutableTypeInfo;
         this.verifierFactory = verifierFactory;
         this.immutableContainerClasses = immutableContainerClasses;
         this.analysisInProgress = analysisInProgress;
+        this.codeLocationFactory = codeLocationFactory;
     }
 
     @Override
@@ -159,7 +162,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
         private void checkIfClassIsMutable(FieldInsnNode fieldInsnNode, Type typeAssignedToField) {
             int sort = typeAssignedToField.getSort();
             String fieldName = fieldInsnNode.name;
-            FieldLocation fieldLocation = fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass));
+            FieldLocation fieldLocation = codeLocationFactory.fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass));
 
             switch (sort) {
             case Type.OBJECT:
@@ -194,12 +197,12 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                         if (unmodifiableWrapResult.safelyCopiesBeforeWrapping()) {
                             break;
                         } else {
-                            setWrappingWithoutFirstCopyingResult(fieldLocation, 
+                            setWrappingWithoutFirstCopyingResult(fieldLocation,
                                     unmodifiableWrapResult.getWrappingHint(fieldLocation.fieldName()));
                             break;
                         }
                     } else {
-                        setUnsafeWrappingResult(fieldLocation, 
+                        setUnsafeWrappingResult(fieldLocation,
                                 unmodifiableWrapResult.getWrappingHint(fieldLocation.fieldName()));
                         break;
                     }
@@ -247,7 +250,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
         }
 
         private void setWrappingWithoutFirstCopyingResult(FieldLocation fieldLocation, String wrappingHintMessage) {
-            String message = String.format("Attempts to wrap mutable collection type without safely performing a copy first.%s", 
+            String message = String.format("Attempts to wrap mutable collection type without safely performing a copy first.%s",
                     wrappingHintMessage);
             setResult(message, fieldLocation, ABSTRACT_COLLECTION_TYPE_TO_FIELD);
         }

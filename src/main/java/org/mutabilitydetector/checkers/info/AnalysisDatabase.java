@@ -21,7 +21,6 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public final class AnalysisDatabase {
 
     @SuppressWarnings("unchecked")
     public <I extends AnalysisInformation> I requestInformation(InfoKey<I> infoCategory) {
-        return (infoMap.containsKey(infoCategory)) 
+        return (infoMap.containsKey(infoCategory))
                 ? (I) infoMap.get(infoCategory)
                 : createInfoForCategory(infoCategory);
     }
@@ -83,7 +82,7 @@ public final class AnalysisDatabase {
         if (info == null) {
             throw newException(infoCategory);
         }
-        
+
         infoMap.put(infoCategory, info);
         return info;
     }

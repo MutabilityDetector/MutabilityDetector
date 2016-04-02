@@ -21,12 +21,13 @@ package org.mutabilitydetector.locations;
  */
 
 
-import org.mutabilitydetector.locations.line.LineNumbersUtil;
+import org.mutabilitydetector.checkers.info.LineNumberProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static org.objectweb.asm.Type.getType;
+import static org.mutabilitydetector.checkers.info.LineNumberProvider.EmptyProvider.EMPTY_PROVIDER;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 public abstract class CodeLocation<T extends CodeLocation<T>> implements Comparable<T> {
 
@@ -73,7 +74,6 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         public String prettyPrint() {
             return "[Unknown code location]";
         }
-
     }
 
     @Immutable
@@ -83,8 +83,11 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         @Nonnull
         String dottedClassName;
 
-        private ClassLocation(String dottedClassName) {
+        private final LineNumberProvider provider;
+
+        private ClassLocation(String dottedClassName, LineNumberProvider provider) {
             this.dottedClassName = dottedClassName;
+            this.provider = provider;
         }
 
         @Override
@@ -119,26 +122,39 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         }
 
         public static ClassLocation fromInternalName(String internalClassName) {
+            return fromInternalName(internalClassName, EMPTY_PROVIDER);
+        }
+
+        public static ClassLocation fromInternalName(String internalClassName, LineNumberProvider provider) {
             String dottedClassName = new ClassNameConverter().dotted(internalClassName);
-            return new ClassLocation(dottedClassName);
+            return new ClassLocation(dottedClassName, provider);
         }
 
         public static ClassLocation from(Slashed slashed) {
+            return from(slashed, EMPTY_PROVIDER);
+        }
+
+        public static ClassLocation from(Slashed slashed, LineNumberProvider provider) {
             String dottedClassName = ClassIdentifier.forClass(slashed).asDotted().asString();
-            return new ClassLocation(dottedClassName);
+            return new ClassLocation(dottedClassName, provider);
         }
 
         public static ClassLocation from(Dotted dotted) {
-            return new ClassLocation(dotted.asString());
+            return from(dotted, EMPTY_PROVIDER);
+        }
+
+        public static ClassLocation from(Dotted dotted, LineNumberProvider provider) {
+            return new ClassLocation(dotted.asString(), provider);
         }
 
         @Override
         public String prettyPrint() {
-            return String.format("[Class: %s%s]", typeName(), sourceLocation());
+            return String.format("[Class: %s]", typeName());
         }
 
-        private String sourceLocation() {
-            return LineNumbersUtil.newClassLocation(getType(typeInternalName())).toString();
+        private String printWithLineNumber(LineNumberProvider provider) {
+            return String.format("[Class: %s%s]", typeName(),
+                    provider.classLocation(dotted(typeName())));
         }
     }
 
@@ -151,14 +167,21 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         private final
         @Nonnull
         ClassLocation ownerOfField;
+        private final LineNumberProvider provider;
 
-        private FieldLocation(String fieldName, ClassLocation ownerOfField) {
+        private FieldLocation(String fieldName, ClassLocation ownerOfField, LineNumberProvider provider) {
             this.fieldName = fieldName;
             this.ownerOfField = ownerOfField;
+            this.provider = provider;
         }
 
         public static FieldLocation fieldLocation(String fieldName, ClassLocation ownerOfField) {
-            return new FieldLocation(fieldName, ownerOfField);
+            return new FieldLocation(fieldName, ownerOfField, EMPTY_PROVIDER);
+        }
+
+        public static FieldLocation fieldLocation(String fieldName, ClassLocation ownerOfField,
+                                                  LineNumberProvider provider) {
+            return new FieldLocation(fieldName, ownerOfField, provider);
         }
 
         public String fieldName() {
@@ -198,11 +221,12 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Field: %s.%s%s]", typeName(), fieldName(), sourceLocation());
+            return printWithLineNumber(provider);
         }
 
-        private String sourceLocation() {
-            return LineNumbersUtil.newFieldLocation(getType(typeInternalName()), fieldName).toString();
+        private String printWithLineNumber(LineNumberProvider provider) {
+            return String.format("[Field: %s.%s%s]", typeName(), fieldName(),
+                    provider.fieldLocation(dotted(typeName()), fieldName));
         }
     }
 }

@@ -21,12 +21,6 @@ package org.mutabilitydetector.benchmarks.cyclic;
  */
 
 
-
-import static org.mutabilitydetector.TestUtil.analysisDatabase;
-import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
-
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configurations;
@@ -37,9 +31,13 @@ import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.locations.CodeLocationFactory;
 import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collections;
+
+import static org.mutabilitydetector.TestUtil.*;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
 
 public class CyclicReferenceAnalysisOfBothImmutableTest {
 
@@ -67,7 +65,7 @@ public class CyclicReferenceAnalysisOfBothImmutableTest {
                         CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 Collections.<Dotted>emptySet(),
-                AnalysisInProgress.noAnalysisUnderway());
+                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }

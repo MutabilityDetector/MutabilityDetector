@@ -22,7 +22,6 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 
 import com.google.common.collect.ImmutableSet;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,6 +43,7 @@ import org.mutabilitydetector.checkers.info.*;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocationFactory;
 import org.mutabilitydetector.locations.Dotted;
 
 import java.util.Collections;
@@ -95,7 +95,7 @@ public class MutableTypeToFieldCheckerTest {
                         CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway());
+                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
     }
 
 
@@ -108,7 +108,7 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway());
+                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
     }
 
 
@@ -121,7 +121,7 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway());
+                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)),
-                AnalysisInProgress.noAnalysisUnderway());
+                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
 
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 

@@ -34,23 +34,36 @@ import java.util.Set;
 import static org.mutabilitydetector.locations.line.SourceLocation.newSourceLocation;
 import static org.mutabilitydetector.locations.line.SourceLocation.newUnknownSourceLocation;
 
-public final class LineNumberInformation implements AnalysisInformation {
-    private InformationRetrievalRunner sessionCheckerRunner;
+public final class LineNumberInformation implements AnalysisInformation, LineNumberProvider {
     private Set<Dotted> lineNumberInfoMissing = new HashSet<Dotted>();
     private Map<Dotted, LineNumbers> lineNumbersInfoByClass = new HashMap<Dotted, LineNumbers>();
+    private InformationRetrievalRunner sessionCheckerRunner;
 
     public LineNumberInformation(InformationRetrievalRunner sessionCheckerRunner) {
         this.sessionCheckerRunner = sessionCheckerRunner;
     }
 
-    public SourceLocation getFieldLocation(Dotted type, String fieldName) {
-        // If we tried to analyze this type in past and failed
+    @Override
+    public SourceLocation classLocation(Dotted type) {
         if (lineNumberInfoMissing.contains(type)) {
             return newUnknownSourceLocation();
         }
 
         LineNumbers analyzer = getOrCreateAnalyzer(type);
-        // If analyzer can't be created
+        if (analyzer == null) {
+            return newUnknownSourceLocation();
+        }
+
+        return newSourceLocation(analyzer.getSource(), analyzer.getFirstLine());
+    }
+
+    @Override
+    public SourceLocation fieldLocation(Dotted type, String fieldName) {
+        if (lineNumberInfoMissing.contains(type)) {
+            return newUnknownSourceLocation();
+        }
+
+        LineNumbers analyzer = getOrCreateAnalyzer(type);
         if (analyzer == null) {
             return newUnknownSourceLocation();
         }
@@ -58,12 +71,10 @@ public final class LineNumberInformation implements AnalysisInformation {
         String sourceName = analyzer.getSource();
         Integer fieldLine = analyzer.getLineNumberOfField(fieldName);
 
-        // If type does not contain required field
         if (fieldLine == null) {
             return newSourceLocation(sourceName, analyzer.getFirstLine());
         }
 
-        // Everything is ok, return location
         return newSourceLocation(sourceName, fieldLine);
     }
 

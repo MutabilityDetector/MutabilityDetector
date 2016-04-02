@@ -21,27 +21,6 @@ package org.mutabilitydetector.unittesting.matchers.reasons;
  */
 
 
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.TestUtil.analysisDatabase;
-import static org.mutabilitydetector.TestUtil.testAnalysisSession;
-import static org.mutabilitydetector.TestUtil.testingVerifierFactory;
-import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
-import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -49,20 +28,23 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.TestUtil;
-import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-import org.mutabilitydetector.checkers.CanSubclassChecker;
-import org.mutabilitydetector.checkers.CollectionWithMutableElementTypeToFieldChecker;
-import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
-import org.mutabilitydetector.checkers.NonFinalFieldChecker;
-import org.mutabilitydetector.checkers.PublishedNonFinalFieldChecker;
-import org.mutabilitydetector.checkers.info.AnalysisDatabase;
-import org.mutabilitydetector.checkers.info.AnalysisInProgress;
-import org.mutabilitydetector.checkers.info.CyclicReferences;
-import org.mutabilitydetector.checkers.info.MutableTypeInformation;
-import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
-import org.mutabilitydetector.checkers.info.TypeStructureInformation;
+import org.mutabilitydetector.checkers.*;
+import org.mutabilitydetector.checkers.info.*;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
+import org.mutabilitydetector.locations.CodeLocationFactory;
 import org.mutabilitydetector.locations.Dotted;
+
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.TestUtil.*;
+import static org.mutabilitydetector.checkers.info.AnalysisDatabase.TYPE_STRUCTURE;
+import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
 
 @SuppressWarnings("unused")
 public class FieldAssumptionsTest {
@@ -80,7 +62,7 @@ public class FieldAssumptionsTest {
             mutableTypeInfo,
             testingVerifierFactory(),
             immutableContainerClasses,
-            analysisInProgress);
+            analysisInProgress, CodeLocationFactory.create());
 
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(
             mutableTypeInfo,
