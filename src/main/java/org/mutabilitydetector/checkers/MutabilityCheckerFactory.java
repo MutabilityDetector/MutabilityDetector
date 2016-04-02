@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableSet;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.info.AnalysisDatabase;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
-import org.mutabilitydetector.checkers.info.LineNumberProvider;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
 import org.mutabilitydetector.checkers.settermethod.SetterMethodChecker;
 import org.mutabilitydetector.locations.CodeLocationFactory;
@@ -41,7 +40,7 @@ import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.Reassigne
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.*;
 
 public final class MutabilityCheckerFactory {
-    
+
     private final ReassignedFieldAnalysisChoice analysisChoice;
     private final Set<Dotted> immutableContainerClasses;
 
@@ -55,7 +54,7 @@ public final class MutabilityCheckerFactory {
             AsmVerifierFactory verifierFactory,
             MutableTypeInformation mutableTypeInformation,
             AnalysisInProgress analysisInProgress) {
-        LineNumberProvider lineNumbersInfo = database.requestInformation(LINE_NUMBERS);
+        CodeLocationFactory codeLocationFactory = CodeLocationFactory.createWithLineNumbersInfo(database.requestInformation(LINE_NUMBERS));
         Collection<AsmMutabilityChecker> checkers = new ArrayList<AsmMutabilityChecker>();
         checkers.add(new CanSubclassChecker());
         checkers.add(new PublishedNonFinalFieldChecker());
@@ -63,7 +62,7 @@ public final class MutabilityCheckerFactory {
         if (analysisChoice == NAIVE_PUT_FIELD_ANALYSIS) {
             checkers.add(new NonFinalFieldChecker());
             checkers.add(OldSetterMethodChecker.newSetterMethodChecker(database.requestInformation(PRIVATE_METHOD_INVOCATION),
-                                                                       verifierFactory));
+                    verifierFactory));
         } else if (analysisChoice == LAZY_INITIALISATION_ANALYSIS) {
             checkers.add(SetterMethodChecker.newInstance(database.requestInformation(PRIVATE_METHOD_INVOCATION)));
         } else {
@@ -76,10 +75,10 @@ public final class MutabilityCheckerFactory {
                 verifierFactory,
                 immutableContainerClasses,
                 analysisInProgress,
-                CodeLocationFactory.createWithLineNumbersInfo(lineNumbersInfo)));
+                codeLocationFactory));
 
         checkers.add(new InherentTypeMutabilityChecker());
-        checkers.add(new ArrayFieldMutabilityChecker());
+        checkers.add(new ArrayFieldMutabilityChecker(codeLocationFactory));
         checkers.add(new EscapedThisReferenceChecker());
         checkers.add(new CollectionWithMutableElementTypeToFieldChecker(
                 mutableTypeInformation,
@@ -92,8 +91,8 @@ public final class MutabilityCheckerFactory {
     }
 
     public enum ReassignedFieldAnalysisChoice {
-        NAIVE_PUT_FIELD_ANALYSIS, 
+        NAIVE_PUT_FIELD_ANALYSIS,
         LAZY_INITIALISATION_ANALYSIS
     }
-    
+
 }

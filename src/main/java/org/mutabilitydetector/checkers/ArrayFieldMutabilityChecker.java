@@ -21,16 +21,20 @@ package org.mutabilitydetector.checkers;
  */
 
 
-
-import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
-import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
-
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import org.mutabilitydetector.locations.CodeLocationFactory;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
 
+import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
+
 public class ArrayFieldMutabilityChecker extends AsmMutabilityChecker {
+    private CodeLocationFactory codeLocationFactory;
+
+    public ArrayFieldMutabilityChecker(CodeLocationFactory codeLocationFactory) {
+        this.codeLocationFactory = codeLocationFactory;
+    }
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
@@ -45,7 +49,7 @@ public class ArrayFieldMutabilityChecker extends AsmMutabilityChecker {
              */
             if (isArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
                 setResult("Field is an array.",
-                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        codeLocationFactory.fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
                         MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
             }
         }
@@ -60,5 +64,5 @@ public class ArrayFieldMutabilityChecker extends AsmMutabilityChecker {
     private boolean isArray(String desc) {
         return Type.ARRAY == Type.getType(desc).getSort();
     }
-    
+
 }

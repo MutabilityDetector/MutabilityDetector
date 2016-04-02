@@ -149,7 +149,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Class: %s]", typeName());
+            return printWithLineNumber(provider);
         }
 
         private String printWithLineNumber(LineNumberProvider provider) {

@@ -62,7 +62,8 @@ public class FieldAssumptionsTest {
             mutableTypeInfo,
             testingVerifierFactory(),
             immutableContainerClasses,
-            analysisInProgress, CodeLocationFactory.create());
+            analysisInProgress,
+            CodeLocationFactory.createSimple());
 
     private final AsmMutabilityChecker mutableElementTypeChecker = new CollectionWithMutableElementTypeToFieldChecker(
             mutableTypeInfo,

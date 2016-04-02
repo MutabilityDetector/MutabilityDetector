@@ -63,9 +63,10 @@ public class AssumingArrayFieldsTest {
             mutableTypeInfo,
             testingVerifierFactory(),
             immutableContainerClasses,
-            analysisInProgress, CodeLocationFactory.create());
+            analysisInProgress,
+            CodeLocationFactory.createSimple());
 
-    private final AsmMutabilityChecker arrayFieldChecker = new ArrayFieldMutabilityChecker();
+    private final AsmMutabilityChecker arrayFieldChecker = new ArrayFieldMutabilityChecker(CodeLocationFactory.createSimple());
 
     @Test
     public void matchesWhenGivenFieldNameIsLinkedToArrayFieldReason() throws Exception {
@@ -112,7 +113,7 @@ public class AssumingArrayFieldsTest {
 
 
     private static final class ArrayFieldUsedSafely {
-        private final int[] myArrayField = new int[] { 1, 2 };
+        private final int[] myArrayField = new int[]{1, 2};
 
         public int getFirst() {
             return myArrayField[0];

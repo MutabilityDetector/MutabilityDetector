@@ -65,7 +65,8 @@ public class CyclicReferenceAnalysisOfBothImmutableTest {
                         CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 Collections.<Dotted>emptySet(),
-                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
+                AnalysisInProgress.noAnalysisUnderway(),
+                CodeLocationFactory.createSimple());
 
         runChecker(mutableFieldChecker, ImmutableClassA.class);
     }

@@ -95,7 +95,8 @@ public class MutableTypeToFieldCheckerTest {
                         CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
+                AnalysisInProgress.noAnalysisUnderway(),
+                CodeLocationFactory.createSimple());
     }
 
 
@@ -108,7 +109,8 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(session, NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 immutableContainerClasses,
-                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
+                AnalysisInProgress.noAnalysisUnderway(),
+                CodeLocationFactory.createSimple());
     }
 
 
@@ -122,7 +124,7 @@ public class MutableTypeToFieldCheckerTest {
                 testingVerifierFactory(),
                 immutableContainerClasses,
                 AnalysisInProgress.noAnalysisUnderway(),
-                CodeLocationFactory.create());
+                CodeLocationFactory.createSimple());
     }
 
     @Test
@@ -358,7 +360,8 @@ public class MutableTypeToFieldCheckerTest {
                 new MutableTypeInformation(testAnalysisSession(), NO_CONFIGURATION, CyclicReferences.newEmptyMutableInstance()),
                 testingVerifierFactory(),
                 ImmutableSet.of(Dotted.fromClass(AbstractStringContainer.class)),
-                AnalysisInProgress.noAnalysisUnderway(), CodeLocationFactory.create());
+                AnalysisInProgress.noAnalysisUnderway(),
+                CodeLocationFactory.createSimple());
 
         result = runChecker(checker, MutableByAssigningAbstractTypeToField.class);
 

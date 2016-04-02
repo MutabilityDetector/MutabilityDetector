@@ -21,17 +21,6 @@ package org.mutabilitydetector.benchmarks.mutabletofield.array;
  */
 
 
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
-import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
-import static org.mutabilitydetector.TestMatchers.hasReasons;
-import static org.mutabilitydetector.TestUtil.runChecker;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
-import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,6 +34,17 @@ import org.mutabilitydetector.benchmarks.types.ClassWithAllPrimitives;
 import org.mutabilitydetector.checkers.ArrayFieldMutabilityChecker;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.CodeLocationFactory;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mutabilitydetector.IsImmutable.IMMUTABLE;
+import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
+import static org.mutabilitydetector.TestMatchers.hasReasons;
+import static org.mutabilitydetector.TestUtil.runChecker;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
+import static org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher.hasIsImmutableStatusOf;
 
 @RunWith(Theories.class)
 public class ArrayFieldMutabilityCheckerTest {
@@ -54,7 +54,7 @@ public class ArrayFieldMutabilityCheckerTest {
 
     @Before
     public void setUp() {
-        checker = new ArrayFieldMutabilityChecker();
+        checker = new ArrayFieldMutabilityChecker(CodeLocationFactory.createSimple());
     }
 
     @Test
@@ -82,14 +82,14 @@ public class ArrayFieldMutabilityCheckerTest {
     }
 
     @DataPoints
-    public static final AnalysisResultTheory[] classes = new AnalysisResultTheory[] {
+    public static final AnalysisResultTheory[] classes = new AnalysisResultTheory[]{
             AnalysisResultTheory.of(ImmutableButHasUnmodifiedArrayAsField.class, IMMUTABLE),
             AnalysisResultTheory.of(ImmutableByDefensivelyCopyingAndGuardingArray.class, IMMUTABLE),
             AnalysisResultTheory.of(ImmutableWhenArrayFieldIsStatic.class, IMMUTABLE),
             AnalysisResultTheory.of(MutableAsElementsOfArrayAreMutableAndPublished.class, NOT_IMMUTABLE),
             AnalysisResultTheory.of(MutableByAssigningPrimitiveArrayToField.class, NOT_IMMUTABLE),
             AnalysisResultTheory.of(MutableByHavingArrayTypeAsField.class, NOT_IMMUTABLE),
-            AnalysisResultTheory.of(MutableByPublishingArray.class, NOT_IMMUTABLE), };
+            AnalysisResultTheory.of(MutableByPublishingArray.class, NOT_IMMUTABLE),};
 
 
     @Ignore

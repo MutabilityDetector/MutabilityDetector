@@ -37,7 +37,7 @@ public final class CodeLocationFactory {
         return new CodeLocationFactory(provider);
     }
 
-    public static CodeLocationFactory create() {
+    public static CodeLocationFactory createSimple() {
         return new CodeLocationFactory(EMPTY_PROVIDER);
     }
 
