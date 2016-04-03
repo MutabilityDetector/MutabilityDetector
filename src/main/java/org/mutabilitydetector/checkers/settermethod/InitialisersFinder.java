@@ -123,7 +123,7 @@ final class InitialisersFinder implements Finder<CandidatesInitialisersMapping> 
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [methods=").append(methods);
         b.append(", variableSetterMapping=").append(candidatesInitialisersMapping);
-        b.append(", areMethodsAlreadyExamined=").append(areMethodsAlreadyExamined).append("]");
+        b.append(", areMethodsAlreadyExamined=").append(areMethodsAlreadyExamined).append(']');
         return b.toString();
     }
 

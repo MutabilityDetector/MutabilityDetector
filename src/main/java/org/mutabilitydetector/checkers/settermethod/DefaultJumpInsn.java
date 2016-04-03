@@ -127,7 +127,7 @@ final class DefaultJumpInsn implements JumpInsn {
         builder.append("jumpInsnNode=").append(toString(jumpInsnNode));
         builder.append(", indexWithinBlock=").append(indexWithinBlock);
         builder.append(", indexWithinMethod=").append(indexWithinMethod);
-        builder.append("]");
+        builder.append(']');
         return builder.toString();
     }
 
@@ -136,7 +136,7 @@ final class DefaultJumpInsn implements JumpInsn {
         final Opcode opcode = Opcode.forInt(jumpInsnNode.getOpcode());
         final LabelNode labelNode = jumpInsnNode.label;
         final Label label = labelNode.getLabel();
-        result.append("[").append(opcode.toString()).append(", label=").append(label).append("]");
+        result.append('[').append(opcode.toString()).append(", label=").append(label).append(']');
         return result.toString();
     }
 

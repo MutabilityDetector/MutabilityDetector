@@ -158,7 +158,7 @@ final class EnhancedClassNode {
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append(" [").append("classNode=").append(classNode);
-        builder.append(", cfbCache=").append(cfbCache).append("]");
+        builder.append(", cfbCache=").append(cfbCache).append(']');
         return builder.toString();
     }
 

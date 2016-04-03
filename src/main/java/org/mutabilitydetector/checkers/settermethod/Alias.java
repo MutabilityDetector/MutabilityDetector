@@ -42,7 +42,7 @@ final class Alias {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append("Alias [").append("doesExist=").append(doesExist);
-        b.append(", localVariable=").append(localVariable).append("]");
+        b.append(", localVariable=").append(localVariable).append(']');
         return b.toString();
     }
 }

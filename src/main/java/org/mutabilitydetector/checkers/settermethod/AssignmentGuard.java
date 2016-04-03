@@ -74,7 +74,7 @@ final class AssignmentGuard implements JumpInsn {
             final StringBuilder b = new StringBuilder();
             b.append(getDeclaringClassPrefix()).append(getClass().getSimpleName());
             b.append(" [jumpInstruction=").append(jumpInstruction);
-            b.append(", predecessorInstructions=").append(predecessorInstructions).append("]");
+            b.append(", predecessorInstructions=").append(predecessorInstructions).append(']');
             return b.toString();
         }
 
@@ -83,7 +83,7 @@ final class AssignmentGuard implements JumpInsn {
             final Class<?> superclass = getClass().getDeclaringClass();
             if (null != superclass) {
                 final StringBuilder b = new StringBuilder();
-                b.append(superclass.getSimpleName()).append(".");
+                b.append(superclass.getSimpleName()).append('.');
                 result = b.toString();
             } else {
                 result = "";
@@ -461,7 +461,7 @@ final class AssignmentGuard implements JumpInsn {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append(" [delegationTarget=").append(delegationTarget);
-        b.append(", predecessorInstructions=").append(predecessorInstructions).append("]");
+        b.append(", predecessorInstructions=").append(predecessorInstructions).append(']');
         return b.toString();
     }
 
