@@ -25,7 +25,7 @@ import org.mutabilitydetector.config.GuavaConfiguration;
 import org.mutabilitydetector.config.JdkConfiguration;
 import org.mutabilitydetector.unittesting.MutabilityAssert;
 
-public class Configurations {
+public final class Configurations {
 
 
     /**
@@ -66,5 +66,9 @@ public class Configurations {
             merge(GUAVA_CONFIGURATION);
         }
     }.build();
+
+    private Configurations() throws InstantiationException {
+        throw new InstantiationException("This class is not created for instantiation");
+    }
 
 }

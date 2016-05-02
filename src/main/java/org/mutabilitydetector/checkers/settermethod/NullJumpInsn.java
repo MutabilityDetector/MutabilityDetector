@@ -33,6 +33,10 @@ final class NullJumpInsn implements JumpInsn {
 
     private static final class InstanceHolder {
         private static final JumpInsn INSTANCE = new NullJumpInsn();
+
+        private InstanceHolder() throws InstantiationException {
+            throw new InstantiationException("This class is not created for instantiation");
+        }
     }
 
     private static final JumpInsnNode EMPTY_JUMP_INSN_NODE = new JumpInsnNode(Opcodes.NOP, null);

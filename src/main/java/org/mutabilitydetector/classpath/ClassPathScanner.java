@@ -25,7 +25,11 @@ import org.reflections.Reflections;
 import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
-public class ClassPathScanner {
+public final class ClassPathScanner {
+
+    private ClassPathScanner() throws InstantiationException {
+        throw new InstantiationException("This class is not created for instantiation");
+    }
 
     public static Set<Class<?>> findImmutableClasses(final String packageName) {
         Reflections reflections = new Reflections(packageName);

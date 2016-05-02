@@ -29,7 +29,11 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.unittesting.matchers.IsImmutableMatcher;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 
-public class MutabilityMatchers {
+public final class MutabilityMatchers {
+
+    private MutabilityMatchers() throws InstantiationException {
+        throw new InstantiationException("This class is not created for instantiation");
+    }
 
     public static Matcher<MutableReasonDetail> noReasonsAllowed() {
         return new NoReasonsAllowed();
