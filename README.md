@@ -72,6 +72,12 @@ The command line has the following usage:
                                   Detector
     -e,--reportErrors            Reports on errors in the analysis. Defaults
                                   to false.
+    -f,--failFast                When true, encountering an unhandled
+                                  exception will cause analysis to abort
+                                  immediately. When false, exceptions during
+                                  analysis of a particular class will be
+                                  reflected in the result assigned to that
+                                  class. Defaults to false.
     -h,--help                    print this message
     -m,--match <regex>           A regular expression used to match class
                                   names to analyse. This is matched against
@@ -84,6 +90,7 @@ The command line has the following usage:
                                   Valid options are [ALL|IMMUTABLE|MUTABLE].
                                   If not specified, or doesn't match an
                                   available mode, defaults to 'ALL'
+    -s,--summary                 Show summary of analysis result.
     -v,--verbose                 Print details of analysis and reasons for
                                   results.
 
