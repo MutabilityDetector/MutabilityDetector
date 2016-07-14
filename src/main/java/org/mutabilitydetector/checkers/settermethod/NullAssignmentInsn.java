@@ -32,6 +32,11 @@ public final class NullAssignmentInsn implements AssignmentInsn {
 
     private static final class InstanceHolder {
         private static final NullAssignmentInsn INSTANCE = new NullAssignmentInsn();
+
+        private InstanceHolder() throws InstantiationException {
+            throw new InstantiationException("This class is not created for instantiation");
+        }
+
     }
 
     private NullAssignmentInsn() {
