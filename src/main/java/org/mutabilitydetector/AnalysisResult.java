@@ -117,7 +117,7 @@ public final class AnalysisResult {
     };
 
     public static final Function<AnalysisResult, Collection<AnalysisError>> TO_ERRORS = new Function<AnalysisResult, Collection<AnalysisError>>() {
-        @Override public Collection<AnalysisError> apply(AnalysisResult input) {
+        @Override public Collection<AnalysisError> apply(@Nonnull AnalysisResult input) {
             return input.errors;
         }
     };

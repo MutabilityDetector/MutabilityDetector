@@ -27,6 +27,7 @@ import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
+import org.mutabilitydetector.locations.Dotted;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
@@ -45,7 +46,7 @@ public final class SessionResultsFormatter {
     private final boolean verbose;
     private final boolean showSummary;
     private final ReportMode reportMode;
-    private final Collection<String> classesToReport;
+    private final Collection<Dotted> classesToReport;
     private final BatchAnalysisOptions options;
 
     public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
@@ -65,8 +66,8 @@ public final class SessionResultsFormatter {
         return output;
     }
 
-    private Collection<String> getClassesToReport(boolean isUsingClassList, ClassListReaderFactory readerFactory) {
-        return isUsingClassList ? readerFactory.createReader().classListToReport() : Collections.<String> emptySet();
+    private Collection<Dotted> getClassesToReport(boolean isUsingClassList, ClassListReaderFactory readerFactory) {
+        return isUsingClassList ? readerFactory.createReader().classListToReport() : Collections.<Dotted> emptySet();
     }
 
     private void appendErrors(Iterable<AnalysisError> errors, StringBuilder output) {
@@ -107,7 +108,7 @@ public final class SessionResultsFormatter {
     }
 
     private void appendSummaryOfResults(StringBuilder output, int total, int totalImmutable, int totalMutable) {
-        output.append(String.format("\n\t%d %s%n", total, "Total number of classes scanned."));
+        output.append(String.format("%n\t%d %s%n", total, "Total number of classes scanned."));
         output.append(String.format("\t%d %s%n", totalImmutable, "IMMUTABLE class(es)."));
         output.append(String.format("\t%d %s%n", totalMutable,  "NOT_IMMUTABLE class(es)."));
         final long processRuntime = ManagementFactory.getRuntimeMXBean().getStartTime() - System.currentTimeMillis();

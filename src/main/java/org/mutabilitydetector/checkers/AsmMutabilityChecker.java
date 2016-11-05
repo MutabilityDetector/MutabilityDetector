@@ -43,8 +43,6 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
 
     protected Collection<MutableReasonDetail> reasons = newArrayList();
 
-    protected String ownerClass;
-
     public String ownerClass() {
         return ownerClass;
     }

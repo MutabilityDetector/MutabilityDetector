@@ -41,7 +41,7 @@ import org.mutabilitydetector.locations.Dotted;
  * 
  */
 public final class WrappingHint {
-    public static WrappingHint NO_HINT = WrappingHint.builder().build();
+    public static final WrappingHint NO_HINT = WrappingHint.builder().build();
 
     final String copyMethodOwnerName;
     final String copyMethodName;

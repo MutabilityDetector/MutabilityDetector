@@ -31,6 +31,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -386,9 +387,9 @@ public abstract class CollectionField {
         }
 
         public static final Function<Node, String> AS_SIMPLE_STRING = new Function<Node, String>() {
-            @Nullable
+            @Nonnull
             @Override
-            public String apply(@Nullable Node input) {
+            public String apply(@Nonnull Node input) {
                 return input.asSimpleString();
             }
         };

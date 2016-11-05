@@ -127,7 +127,6 @@ final class AssignmentGuardVerifier {
                 final String msgTemplate = "The assignment guard for lazy field [%s] should check against null. "
                         + "Otherwise the field gets never initialised.";
                 setterMethodChecker.setNonFinalFieldResult(format(msgTemplate, candidateName), candidateName);
-            } else if (checksAgainstOtherObject(assignmentGuard, controlFlowBlock, candidate)) {
             }
         }
     

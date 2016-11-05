@@ -32,6 +32,7 @@ import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static org.mutabilitydetector.checkers.hint.WrappingHint.NO_HINT;
@@ -56,9 +57,9 @@ public final class WrappingHintGenerator {
     }
 
     private static final Function<GenericType, GenericType> REMOVE_WILDCARDS = new Function<GenericType, GenericType>() {
-        @Nullable
+        @Nonnull
         @Override
-        public GenericType apply(@Nullable GenericType input) {
+        public GenericType apply(@Nonnull GenericType input) {
             return input.withoutWildcard();
         }
     };

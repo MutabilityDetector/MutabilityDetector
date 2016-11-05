@@ -22,6 +22,8 @@ package org.mutabilitydetector.cli;
 
 
 
+import org.mutabilitydetector.locations.Dotted;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Collection;
@@ -36,12 +38,12 @@ public class PlainTextClassListToReportReader implements ClassListToReportCollec
     }
 
     @Override
-    public Collection<String> classListToReport() {
+    public Collection<Dotted> classListToReport() {
         String line = null;
-        Collection<String> classes = new HashSet<String>();
+        Collection<Dotted> classes = new HashSet<Dotted>();
         try {
             while ((line = reader.readLine()) != null) {
-                classes.add(line);
+                classes.add(Dotted.dotted(line));
             }
         } catch (IOException e) {
             throw new ClassListException("I/O exception while reading class list.", e);

@@ -57,9 +57,8 @@ public final class Dotted extends ClassName {
     };
 
     public static final Function<Dotted, String> AS_SIMPLE_STRING = new Function<Dotted, String>() {
-        @Nullable
         @Override
-        public String apply(Dotted input) {
+        public String apply(@Nonnull Dotted input) {
             return input.asSimpleString();
         }
     };

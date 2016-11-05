@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mutabilitydetector.locations.Dotted.dotted;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mutabilitydetector.locations.Dotted;
 
 public class ClassListToReportReaderTest {
 
@@ -48,7 +50,7 @@ public class ClassListToReportReaderTest {
     public void readsClassesFromPlainTextFile() throws Exception {
         when(reader.readLine()).thenReturn("java.lang.String", "java.io.FileReader", "org.junit.Test", null);
         classListReader = new PlainTextClassListToReportReader(reader);
-        Collection<String> classListToReport = classListReader.classListToReport();
+        Collection<Dotted> classListToReport = classListReader.classListToReport();
 
         assertEquals("Should contain three classes.", 3, classListToReport.size());
         assertContainsClassName(classListToReport, "java.lang.String");
@@ -56,8 +58,8 @@ public class ClassListToReportReaderTest {
         assertContainsClassName(classListToReport, "org.junit.Test");
     }
 
-    private void assertContainsClassName(Collection<String> classListToReport, String className) {
-        assertTrue("Should contain the class [" + className + "].", classListToReport.contains(className));
+    private void assertContainsClassName(Collection<Dotted> classListToReport, String className) {
+        assertTrue("Should contain the class [" + className + "].", classListToReport.contains(dotted(className)));
     }
 
     @Test(expected = ClassListException.class)

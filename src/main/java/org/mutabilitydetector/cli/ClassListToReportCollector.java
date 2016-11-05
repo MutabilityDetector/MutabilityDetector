@@ -22,6 +22,8 @@ package org.mutabilitydetector.cli;
 
 
 
+import org.mutabilitydetector.locations.Dotted;
+
 import java.util.Collection;
 
 public interface ClassListToReportCollector {
@@ -31,6 +33,6 @@ public interface ClassListToReportCollector {
      * @return collection of class names
      * @throws ClassListException
      */
-    Collection<String> classListToReport();
+    Collection<Dotted> classListToReport();
 
 }
