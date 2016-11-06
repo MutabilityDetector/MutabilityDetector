@@ -16,12 +16,6 @@
     </license>
   </licenses>
   <inceptionYear>2008</inceptionYear>
-  <distributionManagement>
-    <site>
-      <id>github.home</id>
-      <url>http://mutabilitydetector.github.com/MutabilityDetector/</url>
-    </site>
-  </distributionManagement>
   <properties>
     <package.base>org.mutabilitydetector</package.base>
     <repackage.base>${package.base}.internal</repackage.base>
