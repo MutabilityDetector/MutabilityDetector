@@ -97,8 +97,7 @@
                 <pluginExecution>
                   <pluginExecutionFilter>
                     <groupId>org.codehaus.mojo</groupId>
-                    <artifactId> license-maven-plugin
-                    </artifactId>
+                    <artifactId> license-maven-plugin</artifactId>
                     <versionRange>[1.7,)</versionRange>
                     <goals>
                       <goal>update-file-header</goal>
@@ -230,6 +229,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
+        <version>1.10</version>
         <configuration>
           <verbose>false</verbose>
           <licenseName>apache_v2</licenseName>
