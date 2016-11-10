@@ -1,7 +1,7 @@
 sudo: true
 language: java
 jdk:
-  - openjdk7
+  - oraclejdk8
 script: "mvn install"
 
 # Fix OpenJDK build. Issue: https://github.com/travis-ci/travis-ci/issues/5227 
