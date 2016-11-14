@@ -111,8 +111,8 @@ public final class SessionResultsFormatter {
         output.append(String.format("%n\t%d %s%n", total, "Total number of classes scanned."));
         output.append(String.format("\t%d %s%n", totalImmutable, "IMMUTABLE class(es)."));
         output.append(String.format("\t%d %s%n", totalMutable,  "NOT_IMMUTABLE class(es)."));
-        final long processRuntime = ManagementFactory.getRuntimeMXBean().getStartTime() - System.currentTimeMillis();
-        output.append(String.format("\t%d %s%n", processRuntime, "seconds runtime."));
+        final long processRuntime =System.currentTimeMillis() - ManagementFactory.getRuntimeMXBean().getStartTime()  ;
+        output.append(String.format("\t%d %s%n", processRuntime/1000, "seconds runtime."));
     }
 
     private List<AnalysisResult> sortByClassname(Iterable<AnalysisResult> sessionResults) {
