@@ -35,7 +35,6 @@ import org.mutabilitydetector.locations.Dotted;
 import java.util.Collection;
 import java.util.Map;
 
-import static com.google.common.collect.Iterables.addAll;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -75,8 +74,8 @@ public final class AllChecksRunner {
         for (AsmMutabilityChecker checker : checkers) {
             CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, knownResultsSoFar);
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
-            addAll(reasons, checkerResult.reasons);
-            addAll(errors, checkerResult.errors);
+            reasons.addAll(checkerResult.reasons);
+            errors.addAll(checkerResult.errors);
         }
 
         IsImmutable isImmutable = new ResultCalculator().calculateImmutableStatus(results);

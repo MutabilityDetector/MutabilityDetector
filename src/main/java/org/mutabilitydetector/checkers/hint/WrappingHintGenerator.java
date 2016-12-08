@@ -20,7 +20,6 @@ package org.mutabilitydetector.checkers.hint;
  * #L%
  */
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -31,9 +30,6 @@ import org.mutabilitydetector.checkers.hint.exceptions.WrappingHintGenerationExc
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.ClassNameConverter;
 import org.objectweb.asm.Type;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static org.mutabilitydetector.checkers.hint.WrappingHint.NO_HINT;
 
@@ -55,14 +51,6 @@ public final class WrappingHintGenerator {
         this.typeAssignedToField = typeToString(fieldType);
         this.userDefinedCopyMethods = userDefinedCopyMethods;
     }
-
-    private static final Function<GenericType, GenericType> REMOVE_WILDCARDS = new Function<GenericType, GenericType>() {
-        @Nonnull
-        @Override
-        public GenericType apply(@Nonnull GenericType input) {
-            return input.withoutWildcard();
-        }
-    };
 
     public WrappingHint generate() {
         try {
@@ -97,7 +85,7 @@ public final class WrappingHintGenerator {
         
         if (firstSuitable.isGeneric && typeSignature != null) {
             CollectionField withRemovedWildcards = CollectionField.from(typeAssignedToField, typeSignature)
-                    .transformGenericTree(REMOVE_WILDCARDS);
+                    .transformGenericTree(GenericType::withoutWildcard);
             builder.setCopyTypeParameterName(formatTypeParameter(withRemovedWildcards.asSimpleString()));
         }
     }

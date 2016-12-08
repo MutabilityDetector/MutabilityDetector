@@ -21,13 +21,9 @@ package org.mutabilitydetector;
  */
 
 
-import com.google.common.base.Equivalence;
-import com.google.common.base.Equivalence.Wrapper;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
@@ -48,10 +44,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy.FAIL_FAST;
 import static org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS;
 import static org.mutabilitydetector.config.HardcodedResultsUsage.LOOKUP_WHEN_REFERENCED;
@@ -133,20 +127,6 @@ public abstract class ConfigurationBuilder {
      */
     public abstract void configure();
     
-    private static final Equivalence<AnalysisResult> CLASSNAME_EQUIVALENCE = Equivalence.equals().onResultOf(AnalysisResult.TO_CLASSNAME);
-
-    private static final Function<AnalysisResult, Wrapper<AnalysisResult>> TO_CLASSNAME_EQUIVALENCE_WRAPPER = 
-        new Function<AnalysisResult, Wrapper<AnalysisResult>>() {
-            @Override public Wrapper<AnalysisResult> apply(AnalysisResult input) {
-                return CLASSNAME_EQUIVALENCE.wrap(input);
-            }
-    };
-
-    private static final Function<Wrapper<AnalysisResult>, AnalysisResult> UNWRAP = new Function<Wrapper<AnalysisResult>, AnalysisResult>() {
-        @Override public AnalysisResult apply(Wrapper<AnalysisResult> input) { return input.get(); }
-    };
-
-
     public final Configuration build() {
         configure();
         return new DefaultConfiguration(
@@ -346,13 +326,10 @@ public abstract class ConfigurationBuilder {
      * @param otherConfiguration - Configuration to merge hardcoded results with.
      */
     protected void mergeHardcodedResultsFrom(Configuration otherConfiguration) {
-        Set<Wrapper<AnalysisResult>> union = 
-                Sets.union(copyOf(transform(otherConfiguration.hardcodedResults().values(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)),
-                           newHashSet(transform(hardcodedResults.build(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)));
-        
-        Set<AnalysisResult> result = copyOf(transform(union, UNWRAP));
-        
-        hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(result);
+        Map<Dotted, AnalysisResult> resultsMap = hardcodedResults.build().stream()
+                .collect(Collectors.toMap(r -> r.className, r -> r));
+        resultsMap.putAll(otherConfiguration.hardcodedResults());
+        hardcodedResults = ImmutableSet.<AnalysisResult>builder().addAll(resultsMap.values());
     }
 
     /**
@@ -485,7 +462,8 @@ public abstract class ConfigurationBuilder {
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = predefinedResults;
             this.howToUseHardcodedResults = howToUseHardcodedResults;
-            this.resultsByClassname = Maps.uniqueIndex(hardcodedResults, AnalysisResult.TO_DOTTED_CLASSNAME);
+            this.resultsByClassname = ImmutableMap.copyOf(hardcodedResults.stream()
+                            .collect(Collectors.toMap(r -> r.className, r -> r)));
             this.reassignedFieldAlgorithm = reassignedFieldAlgorithm;
             this.validCopyMethods = validCopyMethods;
         }

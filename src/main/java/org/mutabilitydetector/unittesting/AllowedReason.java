@@ -25,12 +25,12 @@ package org.mutabilitydetector.unittesting;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Iterables.transform;
 import static java.util.Arrays.asList;
-import static org.mutabilitydetector.locations.Dotted.CLASS_TO_DOTTED;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.locations.Dotted.fromClass;
 
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingForSubclassing;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.FieldAssumptions;
@@ -98,7 +98,7 @@ public final class AllowedReason {
      * @see MutabilityAssert
      */
     public static ProvidedOtherClass provided(Class<?>... classes) {
-        return ProvidedOtherClass.provided(transform(asList(classes), CLASS_TO_DOTTED));
+        return ProvidedOtherClass.provided(transform(asList(classes), Dotted::fromClass));
     }
 
     /**

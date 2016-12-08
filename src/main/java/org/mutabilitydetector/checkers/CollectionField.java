@@ -21,20 +21,16 @@ package org.mutabilitydetector.checkers;
  */
 
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -246,14 +242,6 @@ public abstract class CollectionField {
             this.isVariable = isVariable;
         }
 
-        public static final Function<GenericType, String> AS_SIMPLE_STRING = new Function<GenericType, String>() {
-            @Nullable
-            @Override
-            public String apply(GenericType input) {
-                return input.asSimpleString();
-            }
-        };
-
         public static GenericType wildcard() {
             return new GenericType(null, "?", false);
         }
@@ -307,14 +295,14 @@ public abstract class CollectionField {
 
         @Override
         public String toString() {
-            return toStringWithFunction(Functions.toStringFunction());
+            return toStringWithFunction(Object::toString);
         }
 
         /**
          * Similar to {@code GenericType#asString} but uses unqualified class names
          */
         public String asSimpleString() {
-            return toStringWithFunction(Dotted.AS_SIMPLE_STRING);
+            return toStringWithFunction(Dotted::asSimpleString);
         }
 
         private String toStringWithFunction(Function<? super Dotted, String> toStringFunction) {
@@ -361,21 +349,23 @@ public abstract class CollectionField {
         }
 
         public String asString() {
-            return asStringUsingFunctions(Functions.toStringFunction(), Functions.toStringFunction());
+            return asStringUsingFunctions(Object::toString, Object::toString);
         }
 
         /**
          * Similar to {@code GenericType#asString} but uses unqualified class names
          */
         public String asSimpleString() {
-            return asStringUsingFunctions(GenericType.AS_SIMPLE_STRING, AS_SIMPLE_STRING);
+            return asStringUsingFunctions(GenericType::asSimpleString, Node::asSimpleString);
         }
 
         private String asStringUsingFunctions(Function<? super GenericType, String> genericTypeStringFunction,
                                               Function<? super Node, String> nodeStringFunction) {
             String childrenPart = "";
             if (children.size() > 0) {
-                childrenPart = "<" + Joiner.on(", ").join(Iterables.transform(children, nodeStringFunction)) + ">";
+                childrenPart = children.stream()
+                        .map(nodeStringFunction)
+                        .collect(Collectors.joining(", ", "<", ">"));
             }
 
             return genericTypeStringFunction.apply(type) + childrenPart;
@@ -385,13 +375,5 @@ public abstract class CollectionField {
         public String toString() {
             return asString();
         }
-
-        public static final Function<Node, String> AS_SIMPLE_STRING = new Function<Node, String>() {
-            @Nonnull
-            @Override
-            public String apply(@Nonnull Node input) {
-                return input.asSimpleString();
-            }
-        };
     }
 }

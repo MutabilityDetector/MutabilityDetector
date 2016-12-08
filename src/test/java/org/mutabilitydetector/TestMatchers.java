@@ -27,15 +27,13 @@ import static org.mutabilitydetector.TestUtil.formatReasons;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Ignore;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import org.mutabilitydetector.checkers.CheckerResult;
 
 /*
@@ -68,19 +66,15 @@ public class TestMatchers {
         };
     }
     
-    private static Function<MutableReasonDetail, Reason> TO_REASON = new Function<MutableReasonDetail, Reason>() {
-        @Override public Reason apply(MutableReasonDetail input) {
-            return input.reason();
-        }
-    };
-
     public static Matcher<? super AsmMutabilityChecker> hasReasons(final Reason... reasons) {
         return new TypeSafeDiagnosingMatcher<AsmMutabilityChecker>() {
             
             @Override
             protected boolean matchesSafely(AsmMutabilityChecker item, Description mismatchDescription) {
                 
-                Collection<Reason> actualReasons = Collections2.transform(item.checkerResult().reasons, TO_REASON);
+                Collection<Reason> actualReasons = item.checkerResult().reasons.stream()
+                        .map(MutableReasonDetail::reason)
+                        .collect(Collectors.toList());
                 
                 if (!actualReasons.containsAll(Arrays.asList(reasons))) {
                     mismatchDescription.appendText(" got a checker containing reasons: ")

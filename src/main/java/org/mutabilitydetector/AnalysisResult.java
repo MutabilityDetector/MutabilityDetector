@@ -21,11 +21,9 @@ package org.mutabilitydetector;
  */
 
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import org.mutabilitydetector.locations.Dotted;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,25 +101,6 @@ public final class AnalysisResult {
             throw new IllegalArgumentException("Reasons must be given when a class is not " + IsImmutable.IMMUTABLE); 
         }
     }
-
-    public static final Function<AnalysisResult, Dotted> TO_DOTTED_CLASSNAME = new Function<AnalysisResult, Dotted>() {
-        @Override public Dotted apply(@Nonnull AnalysisResult input) {
-            return input.className;
-        }
-    };
-
-    public static final Function<AnalysisResult, String> TO_CLASSNAME = new Function<AnalysisResult, String>() {
-        @Override public String apply(@Nonnull AnalysisResult input) {
-            return input.className.asString();
-        }
-    };
-
-    public static final Function<AnalysisResult, Collection<AnalysisError>> TO_ERRORS = new Function<AnalysisResult, Collection<AnalysisError>>() {
-        @Override public Collection<AnalysisError> apply(@Nonnull AnalysisResult input) {
-            return input.errors;
-        }
-    };
-
 
     public static AnalysisResult analysisResult(Dotted className, IsImmutable isImmutable, MutableReasonDetail... reasons) {
         return analysisResult(className, isImmutable, asList(reasons));
