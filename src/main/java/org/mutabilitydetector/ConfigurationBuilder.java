@@ -347,8 +347,8 @@ public abstract class ConfigurationBuilder {
      */
     protected void mergeHardcodedResultsFrom(Configuration otherConfiguration) {
         Set<Wrapper<AnalysisResult>> union = 
-                Sets.union(newHashSet(transform(hardcodedResults.build(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)), 
-                           copyOf(transform(otherConfiguration.hardcodedResults().values(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)));
+                Sets.union(copyOf(transform(otherConfiguration.hardcodedResults().values(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)),
+                           newHashSet(transform(hardcodedResults.build(), TO_CLASSNAME_EQUIVALENCE_WRAPPER)));
         
         Set<AnalysisResult> result = copyOf(transform(union, UNWRAP));
         
