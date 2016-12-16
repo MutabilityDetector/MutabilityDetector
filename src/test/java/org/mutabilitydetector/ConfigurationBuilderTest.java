@@ -72,23 +72,23 @@ public class ConfigurationBuilderTest {
 
     @Test
     public void mergeReplacesExistingHardcodedResultForClassWithCurrentHardcodedResult() throws Exception {
-        final Configuration existing = new ConfigurationBuilder() {
-            @Override public void configure() {
-                hardcodeResult(definitelyImmutable("hardcoded.in.both.Configurations"));
-                hardcodeResult(definitelyImmutable("only.in.existing.Configuration"));
-            }
-        }.build();
-        
         final AnalysisResult resultInCurrentConfig = analysisResult("hardcoded.in.both.Configurations",
                 IsImmutable.NOT_IMMUTABLE,
                 TestUtil.unusedMutableReasonDetail());
-        
-        final Configuration current = new ConfigurationBuilder() {
+
+        final Configuration mergedIn = new ConfigurationBuilder() {
             @Override public void configure() {
                 hardcodeResult(resultInCurrentConfig);
+                hardcodeResult(definitelyImmutable("only.in.existing.Configuration"));
+            }
+        }.build();
+
+        final Configuration current = new ConfigurationBuilder() {
+            @Override public void configure() {
+                hardcodeResult(definitelyImmutable("hardcoded.in.both.Configurations"));
                 hardcodeResult(definitelyImmutable("only.in.current.Configuration"));
 
-                mergeHardcodedResultsFrom(existing);
+                mergeHardcodedResultsFrom(mergedIn);
             }
         }.build();
         
