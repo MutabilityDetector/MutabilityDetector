@@ -25,7 +25,6 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
@@ -45,8 +44,8 @@ import org.mutabilitydetector.locations.Dotted;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static org.mutabilitydetector.AnalysisResult.TO_ERRORS;
 import static org.mutabilitydetector.checkers.info.AnalysisDatabase.newAnalysisDatabase;
 import static org.mutabilitydetector.config.HardcodedResultsUsage.DIRECTLY_IN_ASSERTION;
 
@@ -165,9 +164,8 @@ public final class DefaultCachingAnalysisSession implements AnalysisSession {
 
     @Override
     public Collection<AnalysisError> getErrors() {
-        return FluentIterable
-                .from(analysedClasses.asMap().values())
-                .transformAndConcat(TO_ERRORS)
-                .toList();
+        return analysedClasses.asMap().values().stream()
+                .flatMap(r -> r.errors.stream())
+                .collect(Collectors.toList());
     }
 }

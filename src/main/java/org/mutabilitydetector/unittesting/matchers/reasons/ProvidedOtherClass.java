@@ -35,7 +35,6 @@ import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
 import org.mutabilitydetector.locations.Dotted;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
 public final class ProvidedOtherClass {
@@ -128,8 +127,8 @@ public final class ProvidedOtherClass {
      */
     public Matcher<MutableReasonDetail> isAlsoImmutable() {
         final Matcher<MutableReasonDetail> allowGenericTypes = new AllowedIfOtherClassIsGenericTypeOfCollectionField(dottedClassNames);
-        
-        return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, toMatcher())));
+
+        return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, AllowedIfOtherClassIsImmutable::new)));
     }
 
     /**
@@ -202,14 +201,6 @@ public final class ProvidedOtherClass {
      */
     public Matcher<MutableReasonDetail> areAlsoImmutable() {
         return isAlsoImmutable();
-    }
-
-    private static final Function<Dotted, Matcher<? super MutableReasonDetail>> toMatcher() {
-        return new Function<Dotted, Matcher<? super MutableReasonDetail>>() { 
-            @Override public Matcher<MutableReasonDetail> apply(Dotted input) {
-                return new AllowedIfOtherClassIsImmutable(input);
-            }
-        };
     }
 
     private static final class AllowedIfOtherClassIsImmutable extends BaseMutableReasonDetailMatcher {
