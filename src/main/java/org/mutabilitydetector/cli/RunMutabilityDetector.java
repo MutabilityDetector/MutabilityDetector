@@ -42,6 +42,7 @@ import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
@@ -99,7 +100,9 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         }.build(); 
 
         String[] classPathFiles = new ClassPathFactory().parseClasspath(options.classpath());
-        AsmVerifierFactory verifierFactory = createClassLoadingVerifierFactory(classPathFiles);
+        AsmVerifierFactory verifierFactory = options.useExperimentalAsmNonClassloadingSimpleVerifier()
+            ? new NonClassLoadingVerifierFactory()
+            : createClassLoadingVerifierFactory(classPathFiles);
 
         AnalysisSession newSession = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
@@ -122,7 +125,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
                 new CachingAnalysisClassLoader(
                         new URLFallbackClassLoader(getCustomClassLoader(classPathFiles), new ClassForNameWrapper())));
     }
-    
+
     private URLClassLoader getCustomClassLoader(String[] classPathFiles) {
         List<URL> urlList = new ArrayList<URL>(classPathFiles.length);
         

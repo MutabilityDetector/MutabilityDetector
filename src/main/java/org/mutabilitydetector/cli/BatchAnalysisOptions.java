@@ -28,22 +28,23 @@ import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 public interface BatchAnalysisOptions {
 
-    public abstract String classpath();
+    String classpath();
 
-    public abstract String match();
+    String match();
 
-    public abstract boolean verbose();
+    boolean verbose();
 
     boolean showSummary();
 
-    public abstract ReportMode reportMode();
+    ReportMode reportMode();
 
-    public abstract File classListFile();
+    File classListFile();
 
-    public abstract boolean isUsingClassList();
+    boolean isUsingClassList();
 
-    public abstract boolean reportErrors();
+    boolean reportErrors();
     
-    public abstract boolean failFast();
+    boolean failFast();
 
+    boolean useExperimentalAsmNonClassloadingSimpleVerifier();
 }

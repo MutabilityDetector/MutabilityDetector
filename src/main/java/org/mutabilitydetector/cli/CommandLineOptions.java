@@ -47,6 +47,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private boolean showSummary = false;
     
     private final PrintStream errorStream;
+    private boolean useExperimentalAsmNonClassloadingSimpleVerifier;
 
     private final class ParsingActionImplementation implements ParsingAction {
         @Override
@@ -60,14 +61,12 @@ public class CommandLineOptions implements BatchAnalysisOptions {
             extractShowErrorsOption(line);
             extractFailFastOption(line);
             extractShowSummaryOption(line);
+            extractUseExperimentalAsmNonClassloadingSimpleVerifier(line);
             printHelpIfNoOptionsGiven(line);
         }
-
-
-
     }
 
-    public static enum ReportMode {
+    public enum ReportMode {
         ALL, IMMUTABLE, MUTABLE;
 
         public static String validModes() {
@@ -120,6 +119,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         opts.addOption("f", "failFast", false, "When true, encountering an unhandled exception will cause analysis to abort immediately. " +
                 "When false, exceptions during analysis of a particular class will be reflected in the result assigned to " +
                 "that class. Defaults to false.");
+//        opts.addOption("n", "nonClassloading", false, "When supplied, use an implementation of ASM's " +
+//            "SimpleVerifier that does not load classes. This can help avoid issues encountered with class loading, " +
+//            "but is experimental and unlikely to perform as well.");
 
         return opts;
     }
@@ -162,6 +164,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
 
     private void extractShowSummaryOption(CommandLine line) {
         this.showSummary = (line.hasOption("s") || line.hasOption("summary"));
+    }
+
+    private void extractUseExperimentalAsmNonClassloadingSimpleVerifier(CommandLine line) {
+        this.useExperimentalAsmNonClassloadingSimpleVerifier = (line.hasOption("n") || line.hasOption("nonClassloading"));
     }
 
     private void extractVerboseOption(CommandLine line) {
@@ -294,5 +300,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     @Override
     public boolean failFast() {
         return failFast;
+    }
+
+    @Override
+    public boolean useExperimentalAsmNonClassloadingSimpleVerifier() {
+        return useExperimentalAsmNonClassloadingSimpleVerifier;
     }
 }
