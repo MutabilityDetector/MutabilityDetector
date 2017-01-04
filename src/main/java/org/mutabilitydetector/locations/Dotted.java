@@ -21,6 +21,8 @@ package org.mutabilitydetector.locations;
  */
 
 
+import org.objectweb.asm.Type;
+
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
@@ -60,6 +62,14 @@ public final class Dotted extends ClassName {
 
     public static Dotted fromClass(Class<?> clazz) {
         return dotted(clazz.getName());
+    }
+
+    public static Dotted fromType(Type type) {
+        return dotted(type.getClassName());
+    }
+
+    public String asResource() {
+        return asString().replace(".", "/").concat(".class");
     }
 
 }

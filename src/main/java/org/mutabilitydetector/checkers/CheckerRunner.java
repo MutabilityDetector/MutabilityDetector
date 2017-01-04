@@ -98,22 +98,18 @@ public final class CheckerRunner {
     }
 
     private void analyseFromStream(ClassVisitor checker, Dotted dottedClassPath) throws IOException {
-        InputStream classStream = classpath.getResourceAsStream(asResourceName(dottedClassPath));
+        InputStream classStream = classpath.getResourceAsStream(dottedClassPath.asResource());
         analyse(checker, classStream);
     }
 
     private void analyseFromClassLoader(ClassVisitor checker, Dotted className) throws Exception {
-        InputStream classStream = getClass().getClassLoader().getResourceAsStream(asResourceName(className));
+        InputStream classStream = getClass().getClassLoader().getResourceAsStream(className.asResource());
         analyse(checker, classStream);
     }
 
     private void analyse(ClassVisitor checker, InputStream classStream) throws IOException {
         ClassReader cr = new ClassReader(classStream);
         cr.accept(checker, 0);
-    }
-
-    private String asResourceName(Dotted className) {
-        return className.asString().replace(".", "/").concat(".class");
     }
 
     private AnalysisError attemptRecovery(ClassVisitor visitor,
