@@ -101,7 +101,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
 
         String[] classPathFiles = new ClassPathFactory().parseClasspath(options.classpath());
         AsmVerifierFactory verifierFactory = options.useExperimentalAsmNonClassloadingSimpleVerifier()
-            ? new NonClassLoadingVerifierFactory()
+            ? new NonClassLoadingVerifierFactory(classpath)
             : createClassLoadingVerifierFactory(classPathFiles);
 
         AnalysisSession newSession = createWithGivenClassPath(classpath, 

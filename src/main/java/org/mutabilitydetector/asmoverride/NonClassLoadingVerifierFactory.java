@@ -21,19 +21,46 @@ package org.mutabilitydetector.asmoverride;
  */
 
 
+import com.google.classpath.ClassPath;
 import org.mutabilitydetector.asm.tree.analysis.NonClassloadingSimpleVerifier;
 import org.mutabilitydetector.asm.typehierarchy.ConcurrentMapCachingTypeHierarchyReader;
 import org.mutabilitydetector.asm.typehierarchy.IsAssignableFromCachingTypeHierarchyReader;
 import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
+import org.mutabilitydetector.locations.Dotted;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Interpreter;
 
+import java.io.IOException;
+
 public class NonClassLoadingVerifierFactory implements AsmVerifierFactory {
+
+    private final FromConfiguredClassPathTypeHierarchyReader typeHierarchyReader;
+
+    public NonClassLoadingVerifierFactory(ClassPath classPath) {
+        this.typeHierarchyReader = new FromConfiguredClassPathTypeHierarchyReader(classPath);
+    }
+
     @Override
     public Interpreter<BasicValue> interpreter() {
         return new NonClassloadingSimpleVerifier(
             new IsAssignableFromCachingTypeHierarchyReader(
                 new ConcurrentMapCachingTypeHierarchyReader(
-                    new TypeHierarchyReader())));
+                    typeHierarchyReader)));
+    }
+
+    private static final class FromConfiguredClassPathTypeHierarchyReader extends TypeHierarchyReader {
+
+        private final ClassPath classPath;
+
+        public FromConfiguredClassPathTypeHierarchyReader(ClassPath classPath) {
+            this.classPath = classPath;
+        }
+
+        @Override
+        protected ClassReader reader(Type t) throws IOException {
+            return new ClassReader(classPath.getResourceAsStream(Dotted.fromType(t).asResource()));
+        }
     }
 }
