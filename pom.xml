@@ -336,14 +336,12 @@
       <artifactId>reflections</artifactId>
       <version>0.9.10</version>
     </dependency>
-    <!-- Ignore while releasing -->
-    <!--<dependency>-->
-      <!--<groupId>org.mutabilitydetector</groupId>-->
-      <!--<artifactId>asm-nonclassloadingsimpleverifier</artifactId>-->
-      <!--<version>1.0-SNAPSHOT</version>-->
-      <!--<scope>compile</scope>-->
-    <!--</dependency>-->
-       <!-- -->
+    <dependency>
+      <groupId>org.mutabilitydetector</groupId>
+      <artifactId>asm-nonclassloadingextensions</artifactId>
+      <version>1.0-rc1</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>

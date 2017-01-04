@@ -119,9 +119,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         opts.addOption("f", "failFast", false, "When true, encountering an unhandled exception will cause analysis to abort immediately. " +
                 "When false, exceptions during analysis of a particular class will be reflected in the result assigned to " +
                 "that class. Defaults to false.");
-//        opts.addOption("n", "nonClassloading", false, "When supplied, use an implementation of ASM's " +
-//            "SimpleVerifier that does not load classes. This can help avoid issues encountered with class loading, " +
-//            "but is experimental and unlikely to perform as well.");
+        opts.addOption("n", "nonClassloading", false, "When supplied, use an implementation of ASM's " +
+            "SimpleVerifier that does not load classes. This can help avoid issues encountered with class loading. " +
+            "Warning: this is experimental, and has not been tested as thoroughly as the classloading version.");
 
         return opts;
     }

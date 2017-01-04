@@ -20,18 +20,20 @@ package org.mutabilitydetector.asmoverride;
  * #L%
  */
 
-// TODO: Need to make ASM-NonClassloadingSimpleVerifier available via pom
-//import org.mutabilitydetector.asm.CachingTypeHierarchyReader;
-//import org.mutabilitydetector.asm.IsAssignableFromCachingTypeHierarchyReader;
-//import org.mutabilitydetector.asm.NonClassloadingSimpleVerifier;
-//import org.mutabilitydetector.asm.TypeHierarchyReader;
+
+import org.mutabilitydetector.asm.tree.analysis.NonClassloadingSimpleVerifier;
+import org.mutabilitydetector.asm.typehierarchy.ConcurrentMapCachingTypeHierarchyReader;
+import org.mutabilitydetector.asm.typehierarchy.IsAssignableFromCachingTypeHierarchyReader;
+import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Interpreter;
-//
+
 public class NonClassLoadingVerifierFactory implements AsmVerifierFactory {
     @Override
     public Interpreter<BasicValue> interpreter() {
-        throw new UnsupportedOperationException("This option will not be supported until ASM-NonClassloadingSimpleVerifier " +
-            "is published and can be depended upon.");
+        return new NonClassloadingSimpleVerifier(
+            new IsAssignableFromCachingTypeHierarchyReader(
+                new ConcurrentMapCachingTypeHierarchyReader(
+                    new TypeHierarchyReader())));
     }
 }
