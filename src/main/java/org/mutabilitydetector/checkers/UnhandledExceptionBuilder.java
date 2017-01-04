@@ -30,8 +30,9 @@ import org.objectweb.asm.ClassVisitor;
 
 public final class UnhandledExceptionBuilder {
 
-    private static final String UNHANDLED_ERROR_MESSAGE = String.format(
-        "%nAn unhandled error occurred. This is probably my fault, not yours, and I am sorry.%n" +
+    private static final String UNHANDLED_ERROR_MESSAGE_FORMAT =
+        "%nAn unhandled error occurred while analysing the class '%s'.%n%n" +
+        "This is probably my fault, not yours, and I am sorry.%n" +
         "I'd love to get an opportunity to fix this, please report as an issue at:%n " +
         "https://github.com/MutabilityDetector/MutabilityDetector/issues/ %n" +
         "Pasting in this error message and stack trace, and if possible, %n" +
@@ -42,7 +43,7 @@ public final class UnhandledExceptionBuilder {
         "    a jar (again preferably with source);%n" +
         "    or, if your project is open source, information on where I can get the code from%n" +
         "        (I'm happy to checkout and build your project in order to investigate the error).%n%n" +
-        "Apologies, and thank you for using Mutability Detector.%n%n");
+        "Apologies, and thank you for using Mutability Detector.%n%n";
     
     public MutabilityAnalysisException unhandledException(Throwable cause, 
                                                            Iterable<AnalysisResult> resultsSoFar,
@@ -56,7 +57,7 @@ public final class UnhandledExceptionBuilder {
         errorMessage.append(format("Classes analysed so far:%n"));
         appendClassesAnalysed(errorMessage, resultsSoFar);
         
-        errorMessage.append(UNHANDLED_ERROR_MESSAGE);
+        errorMessage.append(format(UNHANDLED_ERROR_MESSAGE_FORMAT, className.asString()));
         
         return new MutabilityAnalysisException(errorMessage.toString(), cause);
     }
