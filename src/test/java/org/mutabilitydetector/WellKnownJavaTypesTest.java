@@ -40,9 +40,11 @@ import java.util.Date;
 
 import javax.management.ImmutableDescriptor;
 
+import com.sun.imageio.plugins.png.PNGMetadata;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
@@ -149,7 +151,12 @@ public class WellKnownJavaTypesTest {
             }
         }
         fail("Didn't find private class");
+    }
 
+    // Currently fails due to a bug, remove the expected exception when fixed
+    @Test(expected = MutabilityAnalysisException.class)
+    public void PNGMetadata() {
+        assertInstancesOf(PNGMetadata.class, areImmutable());
     }
 
 }
