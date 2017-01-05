@@ -163,8 +163,7 @@ public class CollectionFieldTest {
     }
 
     private static class DeclaresGenericCollectionButAssignsRawCollection {
-        @SuppressWarnings("unchecked")
-        public final Collection<int[]> genericListWithRawTypeAssigned = new ArrayList();
+        public final Collection<int[]> genericListWithRawTypeAssigned = new ArrayList<>();
     }
 
     private String[] descAndSignatureOfSingleFieldIn(Class<?> class1) throws IOException {
