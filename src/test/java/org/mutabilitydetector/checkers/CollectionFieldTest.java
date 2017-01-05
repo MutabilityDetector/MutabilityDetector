@@ -30,6 +30,8 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.lang.ref.Reference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +123,16 @@ public class CollectionFieldTest {
         assertThat(collectionField.asString(), equalTo("java.util.List<java.lang.ref.Reference<java.util.Date>>"));
     }
 
+
+    @Test(expected = AssertionError.class)
+    public void recognisesPrimitiveArrayAsGenericTypeOfCollectionField() throws Exception {
+        String[] descAndSignature = descAndSignatureOfSingleFieldIn(DeclaresGenericCollectionButAssignsRawCollection.class);
+
+        CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
+
+        assertThat(collectionField.getGenericParameterTypes(), contains(exact(fromClass(int[].class))));
+    }
+
     private static class WithGenericListField {
         public List<String> listOfString;
     }
@@ -148,6 +160,11 @@ public class CollectionFieldTest {
 
     private static class WithWildcardGenericsListField {
         public List<?> listOfString;
+    }
+
+    private static class DeclaresGenericCollectionButAssignsRawCollection {
+        @SuppressWarnings("unchecked")
+        public final Collection<int[]> genericListWithRawTypeAssigned = new ArrayList();
     }
 
     private String[] descAndSignatureOfSingleFieldIn(Class<?> class1) throws IOException {

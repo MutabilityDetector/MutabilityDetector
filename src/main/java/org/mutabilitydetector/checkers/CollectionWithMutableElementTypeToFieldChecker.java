@@ -127,7 +127,6 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
                     return true;
                 }
 
-
                 MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type, analysisInProgress);
                 
                 if (mutabilityLookup.foundCyclicReference || !mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
