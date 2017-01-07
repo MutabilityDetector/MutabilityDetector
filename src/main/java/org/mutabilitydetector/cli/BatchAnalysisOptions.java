@@ -21,10 +21,10 @@ package org.mutabilitydetector.cli;
  */
 
 
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
+import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 import java.io.File;
-
-import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 
 public interface BatchAnalysisOptions {
 
@@ -46,5 +46,5 @@ public interface BatchAnalysisOptions {
     
     boolean failFast();
 
-    boolean useExperimentalAsmNonClassloadingSimpleVerifier();
+    ClassloadingOption classloading();
 }

@@ -41,6 +41,7 @@ import org.mutabilitydetector.AnalysisSession;
 import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
 import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
 import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
 import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
@@ -100,9 +101,9 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         }.build(); 
 
         String[] classPathFiles = new ClassPathFactory().parseClasspath(options.classpath());
-        AsmVerifierFactory verifierFactory = options.useExperimentalAsmNonClassloadingSimpleVerifier()
-            ? new NonClassLoadingVerifierFactory(classpath)
-            : createClassLoadingVerifierFactory(classPathFiles);
+        AsmVerifierFactory verifierFactory = options.classloading() == ClassloadingOption.ENABLED
+            ? createClassLoadingVerifierFactory(classPathFiles)
+            : new NonClassLoadingVerifierFactory(classpath);
 
         AnalysisSession newSession = createWithGivenClassPath(classpath, 
                                                             new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 

@@ -27,4 +27,8 @@ import org.objectweb.asm.tree.analysis.Interpreter;
 
 public interface AsmVerifierFactory {
     Interpreter<BasicValue> interpreter();
+
+    enum ClassloadingOption {
+        ENABLED, DISABLED
+    }
 }

@@ -32,6 +32,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
 
 public class CommandLineOptions implements BatchAnalysisOptions {
 
@@ -47,7 +48,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     private boolean showSummary = false;
     
     private final PrintStream errorStream;
-    private boolean useExperimentalAsmNonClassloadingSimpleVerifier;
+    private ClassloadingOption classloadingOption;
 
     private final class ParsingActionImplementation implements ParsingAction {
         @Override
@@ -167,7 +168,9 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     }
 
     private void extractUseExperimentalAsmNonClassloadingSimpleVerifier(CommandLine line) {
-        this.useExperimentalAsmNonClassloadingSimpleVerifier = (line.hasOption("n") || line.hasOption("nonClassloading"));
+        this.classloadingOption = (line.hasOption("n") || line.hasOption("nonClassloading"))
+            ? ClassloadingOption.DISABLED
+            : ClassloadingOption.ENABLED;
     }
 
     private void extractVerboseOption(CommandLine line) {
@@ -303,7 +306,7 @@ public class CommandLineOptions implements BatchAnalysisOptions {
     }
 
     @Override
-    public boolean useExperimentalAsmNonClassloadingSimpleVerifier() {
-        return useExperimentalAsmNonClassloadingSimpleVerifier;
+    public ClassloadingOption classloading() {
+        return classloadingOption;
     }
 }
