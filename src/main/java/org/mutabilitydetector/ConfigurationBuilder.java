@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
@@ -91,7 +92,8 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
  */
 @NotThreadSafe
 public abstract class ConfigurationBuilder {
-    
+
+
     /**
      * Subclasses should override this method to configure analysis.
      * <p>
@@ -133,6 +135,7 @@ public abstract class ConfigurationBuilder {
                 hardcodedResults.build(),
                 hardcodedImmutableContainerClasses.build(),
                 exceptionPolicy,
+                classloadingOption,
                 reassignedFieldAlgorithm,
                 validCopyMethods.build(),
                 howToUseHardcodedResults);
@@ -141,6 +144,7 @@ public abstract class ConfigurationBuilder {
     private ImmutableSet.Builder<AnalysisResult> hardcodedResults = ImmutableSet.builder();
     private ImmutableSet.Builder<Dotted> hardcodedImmutableContainerClasses = ImmutableSet.builder();
     private ExceptionPolicy exceptionPolicy = FAIL_FAST;
+    private ClassloadingOption classloadingOption = ClassloadingOption.ENABLED;
     private ReassignedFieldAnalysisChoice reassignedFieldAlgorithm = NAIVE_PUT_FIELD_ANALYSIS;
     private ImmutableSetMultimap.Builder<String,CopyMethod> validCopyMethods = ImmutableSetMultimap.builder();
     private HardcodedResultsUsage howToUseHardcodedResults = LOOKUP_WHEN_REFERENCED;
@@ -183,6 +187,29 @@ public abstract class ConfigurationBuilder {
      */
     protected final void setExceptionPolicy(ExceptionPolicy exceptionPolicy) {
         this.exceptionPolicy = exceptionPolicy;
+    }
+
+
+    /**
+     * Configures whether Mutability Detector loads classes or not during analysis.
+     * <p>
+     * Mutability Detector often needs to analyse classes other than the one
+     * specified in order to gain a more accurate result. The default behaviour
+     * is to load these classes from the current classpath. Setting this flag to
+     * {@link ClassloadingOption#DISABLED} will instruct Mutability Detector not to
+     * attempt to load classes, and instead use a method of analysing
+     * all classes, which guarantees not to load classes. This can save on heap requirements
+     * as Mutability Detector's non classloading approach requires less data than class loading.
+     * <p>
+     * For the moment, this option is recommended if you find classloading takes up too much heap,
+     * and the classes loaded for analysis won't be loaded anyway.
+     *
+     * @see Configuration#classloadingOption()
+     * @return ClassloadingOption
+     *          - whether to allow class loading for analysis or not
+     */
+    protected final void setClassloadingPolicy(ClassloadingOption classloadingOption) {
+        this.classloadingOption = classloadingOption;
     }
 
     /**
@@ -439,7 +466,7 @@ public abstract class ConfigurationBuilder {
     private void rethrow(String message, Throwable e) {
         throw new MutabilityAnalysisException("Error in configuration: "+message+": "+e.getMessage(), e);
     }
-    
+
     @Immutable
     private static final class DefaultConfiguration implements Configuration {
 
@@ -450,17 +477,20 @@ public abstract class ConfigurationBuilder {
         private final ImmutableSetMultimap<String, CopyMethod> validCopyMethods;
 
         private final ExceptionPolicy exceptionPolicy;
+        private final ClassloadingOption classloadingOption;
         private final ReassignedFieldAnalysisChoice reassignedFieldAlgorithm;
 
         private DefaultConfiguration(ImmutableSet<AnalysisResult> predefinedResults,
                                      ImmutableSet<Dotted> immutableContainerClasses,
                                      ExceptionPolicy exceptionPolicy,
+                                     ClassloadingOption classloadingOption,
                                      ReassignedFieldAnalysisChoice reassignedFieldAlgorithm,
                                      ImmutableSetMultimap<String, CopyMethod> validCopyMethods,
                                      HardcodedResultsUsage howToUseHardcodedResults) {
             this.immutableContainerClasses = immutableContainerClasses;
             this.exceptionPolicy = exceptionPolicy;
             this.hardcodedResults = predefinedResults;
+            this.classloadingOption = classloadingOption;
             this.howToUseHardcodedResults = howToUseHardcodedResults;
             this.resultsByClassname = ImmutableMap.copyOf(hardcodedResults.stream()
                             .collect(Collectors.toMap(r -> r.className, r -> r)));
@@ -485,6 +515,9 @@ public abstract class ConfigurationBuilder {
         public ExceptionPolicy exceptionPolicy() {
             return exceptionPolicy;
         }
+
+        @Override
+        public ClassloadingOption classloadingOption() { return classloadingOption; }
 
         @Override
         public ReassignedFieldAnalysisChoice reassignedFieldAlgorithm() {

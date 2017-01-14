@@ -21,15 +21,9 @@ package org.mutabilitydetector.unittesting;
  */
 
 
-
-import static java.util.Arrays.asList;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
-import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withNoAllowedReasons;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
+import com.google.common.collect.Lists;
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.AnalysisSession;
@@ -37,12 +31,27 @@ import org.mutabilitydetector.Configuration;
 import org.mutabilitydetector.ConfigurationBuilder;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
-import org.mutabilitydetector.DefaultCachingAnalysisSession;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
+import org.mutabilitydetector.asmoverride.ClassLoadingVerifierFactory;
+import org.mutabilitydetector.asmoverride.NonClassLoadingVerifierFactory;
+import org.mutabilitydetector.checkers.ClassPathBasedCheckerRunnerFactory;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory;
+import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
+import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
+import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.internal.AssertionReporter;
 import org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.mutabilitydetector.DefaultCachingAnalysisSession.createWithGivenClassPath;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withAllowedReasons;
+import static org.mutabilitydetector.unittesting.matchers.reasons.WithAllowedReasonsMatcher.withNoAllowedReasons;
 
 /**
  * Performs Mutability Detector's analysis and produces unit-test-friendly
@@ -74,8 +83,19 @@ public class MutabilityAsserter {
      * @see Configurations#OUT_OF_THE_BOX_CONFIGURATION
      */
     public static MutabilityAsserter configured(Configuration configuration) {
-        return new MutabilityAsserter(new AssertionReporter(), 
-                DefaultCachingAnalysisSession.createWithCurrentClassPath(configuration));
+        ClassPath classpath = new ClassPathFactory().createFromJVM();
+
+        AsmVerifierFactory verifierFactory = configuration.classloadingOption() == ClassloadingOption.ENABLED
+            ? new ClassLoadingVerifierFactory(new CachingAnalysisClassLoader(new ClassForNameWrapper()))
+            : new NonClassLoadingVerifierFactory(classpath);
+
+        AnalysisSession analysisSession = createWithGivenClassPath(classpath,
+            new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
+            new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS, configuration.immutableContainerClasses()),
+            verifierFactory,
+            configuration);
+
+        return new MutabilityAsserter(new AssertionReporter(), analysisSession);
     }
 
     /**
@@ -97,8 +117,7 @@ public class MutabilityAsserter {
      * </pre>
      */
     public static MutabilityAsserter configured(ConfigurationBuilder configuration) {
-        return new MutabilityAsserter(new AssertionReporter(), 
-                DefaultCachingAnalysisSession.createWithCurrentClassPath(configuration.build()));
+        return configured(configuration.build());
     }
 
     /**

@@ -21,18 +21,17 @@ package org.mutabilitydetector;
  */
 
 
-
-
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSetMultimap;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption;
 import org.mutabilitydetector.checkers.CheckerRunner.ExceptionPolicy;
 import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldAnalysisChoice;
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.config.HardcodedResultsUsage;
 import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.MutabilityAsserter;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Allows customisation of Mutability Detector's analysis.
@@ -116,6 +115,25 @@ public interface Configuration {
      *            - how to respond to exceptions during analysis. Defaults to
      */
     ExceptionPolicy exceptionPolicy();
+
+    /**
+     * Configures whether Mutability Detector loads classes or not during analysis.
+     * <p>
+     * Mutability Detector often needs to analyse classes other than the one
+     * specified in order to gain a more accurate result. The default behaviour
+     * is to load these classes from the current classpath. Setting this flag to
+     * {@link ClassloadingOption#DISABLED} will instruct Mutability Detector not to
+     * attempt to load classes, and instead use a method of analysing
+     * all classes, which guarantees not to load classes. This can save on heap requirements
+     * as Mutability Detector's non classloading approach requires less data than class loading.
+     * <p>
+     * For the moment, this option is recommended if you find classloading takes up too much heap,
+     * and the classes loaded for analysis won't be loaded anyway.
+     *
+     * @return ClassloadingOption
+     *          - whether to allow class loading for analysis or not
+     */
+    ClassloadingOption classloadingOption();
 
     /**
      * Only to be used in development. This method will never appear in a released version.
