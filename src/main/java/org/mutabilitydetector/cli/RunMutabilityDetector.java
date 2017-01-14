@@ -20,8 +20,6 @@ package org.mutabilitydetector.cli;
  * #L%
  */
 
-
-
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static org.mutabilitydetector.Configurations.OUT_OF_THE_BOX_CONFIGURATION;
@@ -91,28 +89,29 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     private StringBuilder getResultString() {
         RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
         String[] findResources = classpath.findResources("", regExpResourceFilter);
-        
+        List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
+
         Configuration configuration = new ConfigurationBuilder() {
             @Override
             public void configure() {
                 mergeHardcodedResultsFrom(OUT_OF_THE_BOX_CONFIGURATION);
                 setExceptionPolicy(options.failFast() ? FAIL_FAST : CARRY_ON);
+                setClassloadingPolicy(options.classloading());
             }
-        }.build(); 
+        }.build();
 
         String[] classPathFiles = new ClassPathFactory().parseClasspath(options.classpath());
         AsmVerifierFactory verifierFactory = options.classloading() == ClassloadingOption.ENABLED
             ? createClassLoadingVerifierFactory(classPathFiles)
             : new NonClassLoadingVerifierFactory(classpath);
 
-        AnalysisSession newSession = createWithGivenClassPath(classpath, 
-                                                            new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()), 
+        AnalysisSession newSession = createWithGivenClassPath(classpath,
+                                                            new ClassPathBasedCheckerRunnerFactory(classpath, configuration.exceptionPolicy()),
                                                             new MutabilityCheckerFactory(ReassignedFieldAnalysisChoice.NAIVE_PUT_FIELD_ANALYSIS, configuration.immutableContainerClasses()),
                                                             verifierFactory,
                                                             configuration);
-        
-        List<Dotted> filtered = namesFromClassResources.asDotted(findResources);
-        
+
+
         AnalysisSession completedSession = new BatchAnalysisSession(newSession).runAnalysis(filtered);
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
@@ -128,7 +127,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
     }
 
     private URLClassLoader getCustomClassLoader(String[] classPathFiles) {
-        List<URL> urlList = new ArrayList<URL>(classPathFiles.length);
+        List<URL> urlList = new ArrayList<>(classPathFiles.length);
         
         for (String classPathUrl : classPathFiles) {
             try {
@@ -154,7 +153,7 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         } catch (Throwable e) {
             System.out.println("Exiting...");
             System.exit(1);
-            return null; // impossible statement
+            throw new IllegalStateException();
         }
     }
 }
