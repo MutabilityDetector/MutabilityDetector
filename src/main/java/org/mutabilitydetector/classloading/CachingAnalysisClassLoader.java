@@ -21,13 +21,10 @@ package org.mutabilitydetector.classloading;
  */
 
 
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import java.util.concurrent.ExecutionException;
 
 public final class CachingAnalysisClassLoader implements AnalysisClassLoader {
     
@@ -41,11 +38,7 @@ public final class CachingAnalysisClassLoader implements AnalysisClassLoader {
     @Override
     public Class<?> loadClass(final String dottedClass) throws ClassNotFoundException {
         try {
-            return cache.get(dottedClass, new Callable<Class<?>>() {
-                @Override public Class<?> call() throws Exception {
-                    return classLoader.loadClass(dottedClass);
-                }
-            });
+            return cache.get(dottedClass, () -> classLoader.loadClass(dottedClass));
         } catch (ExecutionException e) {
             throw new ClassNotFoundException("Error loading class: " + dottedClass, e.getCause());
         }
