@@ -23,6 +23,7 @@ package org.mutabilitydetector;
 
 
 import static org.junit.Assert.fail;
+import static org.mutabilitydetector.asmoverride.AsmVerifierFactory.ClassloadingOption.*;
 import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
 import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
@@ -41,15 +42,18 @@ import java.util.Date;
 import javax.management.ImmutableDescriptor;
 
 import com.sun.imageio.plugins.png.PNGMetadata;
+import com.sun.org.apache.xml.internal.security.encryption.XMLCipher;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.junit.FalsePositive;
 import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
 import com.sun.corba.se.impl.activation.ORBD;
 import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
+import org.mutabilitydetector.unittesting.MutabilityAsserter;
 
 public class WellKnownJavaTypesTest {
 

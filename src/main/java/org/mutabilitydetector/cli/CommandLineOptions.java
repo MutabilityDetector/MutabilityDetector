@@ -26,6 +26,7 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -87,6 +88,10 @@ public class CommandLineOptions implements BatchAnalysisOptions {
         this.errorStream = errorStream;
         this.options = createOptions();
         parseOptions(args);
+    }
+
+    public CommandLineOptions(PrintStream errorStream, List<String> args) {
+        this(errorStream, args.toArray(new String[args.size()]));
     }
 
     private Options createOptions() {

@@ -21,18 +21,23 @@ package org.mutabilitydetector.cli;
  */
 
 
+import com.google.classpath.ClassPathFactory;
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableList;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.google.classpath.ClassPathFactory;
-import com.google.common.base.Stopwatch;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 
 public class AnalysingRtJar {
 
@@ -72,7 +77,7 @@ public class AnalysingRtJar {
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-v", "-cp", selfJarPath);
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(selfJarPath), options, namesFromClassResources).run();
     }
-    
+
     @Ignore
     @Test
     public void checkNullPointerExceptionIsNotThrownOnAbritaryCodebase() {
@@ -80,5 +85,26 @@ public class AnalysingRtJar {
         BatchAnalysisOptions options = new CommandLineOptions(errorStream, "-cp", rtJarPath);
         new RunMutabilityDetector(new ClassPathFactory().createFromPath(rtJarPath), options, namesFromClassResources).run();
     }
-    
+
+    @Ignore
+    @Test
+    public void compareNonClassloadingVsClassloadingResults() throws Exception {
+        String rtJarPath = System.getProperty("java.home") + "/lib/rt.jar";
+//        String rtJarPath = "./target/test-classes/";
+        List<String> options = Arrays.asList("--classpath", rtJarPath, "--reportErrors");
+        List<String> nonClassloadingOptions = ImmutableList.<String>builder().addAll(options).add("--nonClassloading").build();
+        BatchAnalysisOptions classloadingBatchOptions = new CommandLineOptions(System.err, options);
+        BatchAnalysisOptions nonClassloadingBatchOptions = new CommandLineOptions(System.err, nonClassloadingOptions);
+
+
+        String classLoadingResult = new RunMutabilityDetector(
+            new ClassPathFactory().createFromPath(rtJarPath), classloadingBatchOptions, namesFromClassResources).call();
+
+        String nonClassloadingResult = new RunMutabilityDetector(
+            new ClassPathFactory().createFromPath(rtJarPath), nonClassloadingBatchOptions, namesFromClassResources).call();
+
+
+        assertEquals(classLoadingResult, nonClassloadingResult);
+    }
+
 }
