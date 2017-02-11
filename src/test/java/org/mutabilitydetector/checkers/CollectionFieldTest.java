@@ -124,7 +124,7 @@ public class CollectionFieldTest {
     }
 
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void recognisesPrimitiveArrayAsGenericTypeOfCollectionField() throws Exception {
         String[] descAndSignature = descAndSignatureOfSingleFieldIn(DeclaresGenericCollectionButAssignsRawCollection.class);
 

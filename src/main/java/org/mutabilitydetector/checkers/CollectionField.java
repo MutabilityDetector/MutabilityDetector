@@ -199,6 +199,22 @@ public abstract class CollectionField {
         }
 
         @Override
+        public void visitBaseType(char descriptor) {
+            if (state.isElementTypeArray) {
+                state.elementType = dotted("[" + descriptor);
+                storeNode();
+            } else {
+                throw new IllegalStateException("It shouldn't happen. Java doesn't support primitive generic types");
+            }
+        }
+
+        @Override
+        public SignatureVisitor visitArrayType() {
+            state.isElementTypeArray = true;
+            return withRoot(firstNonNull(lastStored, root));
+        }
+
+        @Override
         public SignatureVisitor visitTypeArgument(char wildcard) {
             state.wildcard = valueOf(wildcard);
 
@@ -228,6 +244,8 @@ public abstract class CollectionField {
             protected Dotted typeVariable;
             protected String wildcard;
             protected boolean seenOuterCollectionType = false;
+            boolean isElementTypeArray = false;
+
         }
     }
 
