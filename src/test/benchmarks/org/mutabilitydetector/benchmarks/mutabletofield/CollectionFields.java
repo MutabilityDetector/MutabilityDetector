@@ -165,6 +165,10 @@ public class CollectionFields {
         private final Collection<byte[]> byteArrayCollection = new ArrayList<>();
     }
 
+    public final static class CollectionWithStringArrayGenericType {
+        private final Collection<String[]> stringArrayCollection = new ArrayList<>();
+    }
+
     public interface ImmutableContainer<E> {
         E get();
     }

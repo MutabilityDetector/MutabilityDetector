@@ -158,6 +158,8 @@ public abstract class CollectionField {
      * Constructs generics tree by visiting signature
      */
     private static class GenericCollectionVisitor extends SignatureVisitor {
+        public static final String OBJECT_ARRAY_PREFIX = "[L";
+        public static final String PRIMITIVE_ARRAY_PREFIX = "[";
         private GenericCollectionReaderState state;
         private Node root;
         private Node lastStored;
@@ -180,7 +182,7 @@ public abstract class CollectionField {
                 state.collectionType = dotted(name);
                 state.seenOuterCollectionType = true;
             } else {
-                state.elementType = dotted(name);
+                state.elementType = state.isElementTypeArray ? dotted(OBJECT_ARRAY_PREFIX + name) : dotted(name);
                 storeNode();
             }
         }
@@ -201,7 +203,7 @@ public abstract class CollectionField {
         @Override
         public void visitBaseType(char descriptor) {
             if (state.isElementTypeArray) {
-                state.elementType = dotted("[" + descriptor);
+                state.elementType = dotted(PRIMITIVE_ARRAY_PREFIX + descriptor);
                 storeNode();
             } else {
                 throw new IllegalStateException("It shouldn't happen. Java doesn't support primitive generic types");

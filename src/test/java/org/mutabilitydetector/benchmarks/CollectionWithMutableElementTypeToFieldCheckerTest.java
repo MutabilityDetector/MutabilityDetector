@@ -22,6 +22,7 @@ package org.mutabilitydetector.benchmarks;
 
 
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configurations;
@@ -115,6 +116,20 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
         assertThat(checker.checkerResult().reasons.iterator().next().message(),
                 containsString("(java.util.Collection<[B>)"));
+    }
+
+
+    /**
+     * FIXME Wrong error message. {@link org.mutabilitydetector.locations.Dotted#dotted(String)} method removed
+     */
+    @Test
+    @Ignore
+    public void raisesErrorWhenCollectionFieldTypeIsObjectArray() {
+        AnalysisResult result = runChecker(checker, CollectionFields.CollectionWithStringArrayGenericType.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+        assertThat(checker.checkerResult().reasons.iterator().next().message(),
+                containsString("(java.util.Collection<[Ljava.lang.Sring>)"));
     }
 
     @Test
