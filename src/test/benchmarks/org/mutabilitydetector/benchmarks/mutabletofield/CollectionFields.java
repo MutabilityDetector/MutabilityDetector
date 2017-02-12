@@ -162,9 +162,8 @@ public class CollectionFields {
     }
 
     public final static class CollectionWithByteArrayGenericType {
-        private final Collection<byte[]> unmodifiableMap = new ArrayList<>();
+        private final Collection<byte[]> byteArrayCollection = new ArrayList<>();
     }
-
 
     public interface ImmutableContainer<E> {
         E get();

@@ -109,7 +109,7 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
     }
 
     @Test
-    public void raisesErrorWhenCollectionFieldTypeIsArrat() {
+    public void raisesErrorWhenCollectionFieldTypeIsPrimitiveArray() {
         AnalysisResult result = runChecker(checker, CollectionFields.CollectionWithByteArrayGenericType.class);
         assertThat(result, areNotImmutable());
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
