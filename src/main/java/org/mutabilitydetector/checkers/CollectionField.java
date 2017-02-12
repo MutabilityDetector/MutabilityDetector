@@ -228,7 +228,8 @@ public abstract class CollectionField {
 
         private GenericType createGenericType() {
             boolean isVariable = state.typeVariable != null;
-            return new GenericType(isVariable ? state.typeVariable : state.elementType, state.wildcard, isVariable);
+            return new GenericType(isVariable ? state.typeVariable : state.elementType, state.wildcard, isVariable,
+                    state.isElementTypeArray);
         }
 
         /**
@@ -253,27 +254,29 @@ public abstract class CollectionField {
         public final Dotted type;
         public final String wildcard;
         public final boolean isVariable;
+        public final boolean isArray;
 
-        public GenericType(Dotted type, String wildcard, boolean isVariable) {
+        public GenericType(Dotted type, String wildcard, boolean isVariable, boolean isArray) {
             this.type = type;
             this.wildcard = checkNotNull(wildcard, "wildcard");
             this.isVariable = isVariable;
+            this.isArray = isArray;
         }
 
         public static GenericType wildcard() {
-            return new GenericType(null, "?", false);
+            return new GenericType(null, "?", false, false);
         }
 
         public static GenericType exact(Dotted type) {
-            return new GenericType(type, "=", false);
+            return new GenericType(type, "=", false, false);
         }
 
         public static GenericType extends_(Dotted type) {
-            return new GenericType(type, "+", false);
+            return new GenericType(type, "+", false, false);
         }
 
         public static GenericType super_(Dotted type) {
-            return new GenericType(type, "-", false);
+            return new GenericType(type, "-", false, false);
         }
 
         @Override
@@ -341,9 +344,9 @@ public abstract class CollectionField {
 
         public GenericType withoutWildcard() {
             if ("?".equals(wildcard)) {
-                return new GenericType(fromClass(Object.class), "=", false);
+                return new GenericType(fromClass(Object.class), "=", false, false);
             }
-            return new GenericType(type, "=", false);
+            return new GenericType(type, "=", false, false);
         }
     }
 

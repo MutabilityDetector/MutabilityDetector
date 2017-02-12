@@ -20,16 +20,7 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.mutabilitydetector.benchmarks.ImmutableExample;
@@ -169,6 +160,11 @@ public class CollectionFields {
             this.unmodifiableMap = Collections.unmodifiableMap(new HashMap<ImmutableExample, SOME_GENERIC_TYPE>(mapOfImmutableType));
         }
     }
+
+    public final static class CollectionWithByteArrayGenericType {
+        private final Collection<byte[]> unmodifiableMap = new ArrayList<>();
+    }
+
 
     public interface ImmutableContainer<E> {
         E get();

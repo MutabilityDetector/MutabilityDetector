@@ -157,10 +157,9 @@ public class WellKnownJavaTypesTest {
         fail("Didn't find private class");
     }
 
-    // Currently fails due to a bug, remove the expected exception when fixed
-    @Test(expected = MutabilityAnalysisException.class)
+    @Test
     public void PNGMetadata() {
-        assertInstancesOf(PNGMetadata.class, areImmutable());
+        assertInstancesOf(PNGMetadata.class, areNotImmutable());
     }
 
 }

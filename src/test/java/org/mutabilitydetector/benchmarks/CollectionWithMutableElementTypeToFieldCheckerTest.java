@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfGenericType;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfImmutableType;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfMutableType;
@@ -105,6 +106,15 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
         AnalysisResult result = runChecker(checker, HasImmutableContainerOfMutableType.class);
         assertThat(result, areNotImmutable());
+    }
+
+    @Test
+    public void raisesErrorWhenCollectionFieldTypeIsArrat() {
+        AnalysisResult result = runChecker(checker, CollectionFields.CollectionWithByteArrayGenericType.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+        assertThat(checker.checkerResult().reasons.iterator().next().message(),
+                containsString("(java.util.Collection<[B>)"));
     }
 
     @Test
