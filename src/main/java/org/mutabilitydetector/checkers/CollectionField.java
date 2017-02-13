@@ -158,6 +158,8 @@ public abstract class CollectionField {
      * Constructs generics tree by visiting signature
      */
     private static class GenericCollectionVisitor extends SignatureVisitor {
+        public static final String OBJECT_ARRAY_PREFIX = "[L";
+        public static final String PRIMITIVE_ARRAY_PREFIX = "[";
         private GenericCollectionReaderState state;
         private Node root;
         private Node lastStored;
@@ -180,7 +182,7 @@ public abstract class CollectionField {
                 state.collectionType = dotted(name);
                 state.seenOuterCollectionType = true;
             } else {
-                state.elementType = dotted(name);
+                state.elementType = state.isElementTypeArray ? dotted(OBJECT_ARRAY_PREFIX + name) : dotted(name);
                 storeNode();
             }
         }
@@ -199,6 +201,22 @@ public abstract class CollectionField {
         }
 
         @Override
+        public void visitBaseType(char descriptor) {
+            if (state.isElementTypeArray) {
+                state.elementType = dotted(PRIMITIVE_ARRAY_PREFIX + descriptor);
+                storeNode();
+            } else {
+                throw new IllegalStateException("It shouldn't happen. Java doesn't support primitive generic types");
+            }
+        }
+
+        @Override
+        public SignatureVisitor visitArrayType() {
+            state.isElementTypeArray = true;
+            return withRoot(firstNonNull(lastStored, root));
+        }
+
+        @Override
         public SignatureVisitor visitTypeArgument(char wildcard) {
             state.wildcard = valueOf(wildcard);
 
@@ -212,7 +230,8 @@ public abstract class CollectionField {
 
         private GenericType createGenericType() {
             boolean isVariable = state.typeVariable != null;
-            return new GenericType(isVariable ? state.typeVariable : state.elementType, state.wildcard, isVariable);
+            return new GenericType(isVariable ? state.typeVariable : state.elementType, state.wildcard, isVariable,
+                    state.isElementTypeArray);
         }
 
         /**
@@ -228,6 +247,8 @@ public abstract class CollectionField {
             protected Dotted typeVariable;
             protected String wildcard;
             protected boolean seenOuterCollectionType = false;
+            boolean isElementTypeArray = false;
+
         }
     }
 
@@ -235,27 +256,29 @@ public abstract class CollectionField {
         public final Dotted type;
         public final String wildcard;
         public final boolean isVariable;
+        public final boolean isArray;
 
-        public GenericType(Dotted type, String wildcard, boolean isVariable) {
+        public GenericType(Dotted type, String wildcard, boolean isVariable, boolean isArray) {
             this.type = type;
             this.wildcard = checkNotNull(wildcard, "wildcard");
             this.isVariable = isVariable;
+            this.isArray = isArray;
         }
 
         public static GenericType wildcard() {
-            return new GenericType(null, "?", false);
+            return new GenericType(null, "?", false, false);
         }
 
         public static GenericType exact(Dotted type) {
-            return new GenericType(type, "=", false);
+            return new GenericType(type, "=", false, false);
         }
 
         public static GenericType extends_(Dotted type) {
-            return new GenericType(type, "+", false);
+            return new GenericType(type, "+", false, false);
         }
 
         public static GenericType super_(Dotted type) {
-            return new GenericType(type, "-", false);
+            return new GenericType(type, "-", false, false);
         }
 
         @Override
@@ -323,9 +346,9 @@ public abstract class CollectionField {
 
         public GenericType withoutWildcard() {
             if ("?".equals(wildcard)) {
-                return new GenericType(fromClass(Object.class), "=", false);
+                return new GenericType(fromClass(Object.class), "=", false, false);
             }
-            return new GenericType(type, "=", false);
+            return new GenericType(type, "=", false, false);
         }
     }
 

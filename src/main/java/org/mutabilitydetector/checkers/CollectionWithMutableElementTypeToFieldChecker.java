@@ -125,6 +125,8 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
                     return true;
                 } else if (genericType.isVariable) {
                     return true;
+                } else if (genericType.isArray) {
+                    return true;
                 }
 
                 MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type, analysisInProgress);

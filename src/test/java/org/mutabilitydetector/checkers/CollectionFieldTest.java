@@ -21,7 +21,9 @@ package org.mutabilitydetector.checkers;
  */
 
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -30,8 +32,6 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.lang.ref.Reference;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -124,13 +124,29 @@ public class CollectionFieldTest {
     }
 
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void recognisesPrimitiveArrayAsGenericTypeOfCollectionField() throws Exception {
-        String[] descAndSignature = descAndSignatureOfSingleFieldIn(DeclaresGenericCollectionButAssignsRawCollection.class);
+        String[] descAndSignature = descAndSignatureOfSingleFieldIn(CollectionFields
+                .CollectionWithByteArrayGenericType.class);
 
         CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
 
-        assertThat(collectionField.getGenericParameterTypes(), contains(exact(fromClass(int[].class))));
+        assertThat(collectionField.getGenericParameterTypes(), contains(exact(fromClass(byte[].class))));
+    }
+
+    /**
+     *  FIXME it passes because in both cases method {@link org.mutabilitydetector.locations.Dotted#dotted(String)}
+     *  removes '[L' from signature. However we have generic type = java.lang.String instead [LjavaLangString
+     */
+    @Test
+    @Ignore
+    public void recognisesObjectArrayAsGenericTypeOfCollectionField() throws Exception {
+        String[] descAndSignature = descAndSignatureOfSingleFieldIn(CollectionFields
+                .CollectionWithStringArrayGenericType.class);
+
+        CollectionField collectionField = CollectionField.from(descAndSignature[0], descAndSignature[1]);
+
+        assertThat(collectionField.getGenericParameterTypes(), contains(exact(fromClass(String[].class))));
     }
 
     private static class WithGenericListField {
@@ -160,10 +176,6 @@ public class CollectionFieldTest {
 
     private static class WithWildcardGenericsListField {
         public List<?> listOfString;
-    }
-
-    private static class DeclaresGenericCollectionButAssignsRawCollection {
-        public final Collection<int[]> genericListWithRawTypeAssigned = new ArrayList<>();
     }
 
     private String[] descAndSignatureOfSingleFieldIn(Class<?> class1) throws IOException {

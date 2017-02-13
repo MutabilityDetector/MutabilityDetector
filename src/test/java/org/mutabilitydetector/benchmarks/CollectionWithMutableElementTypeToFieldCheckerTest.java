@@ -22,10 +22,12 @@ package org.mutabilitydetector.benchmarks;
 
 
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
 import org.mutabilitydetector.Configurations;
 import org.mutabilitydetector.MutableReasonDetail;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfGenericType;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfImmutableType;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.HasImmutableContainerOfMutableType;
@@ -105,6 +107,29 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
 
         AnalysisResult result = runChecker(checker, HasImmutableContainerOfMutableType.class);
         assertThat(result, areNotImmutable());
+    }
+
+    @Test
+    public void raisesErrorWhenCollectionFieldTypeIsPrimitiveArray() {
+        AnalysisResult result = runChecker(checker, CollectionFields.CollectionWithByteArrayGenericType.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+        assertThat(checker.checkerResult().reasons.iterator().next().message(),
+                containsString("(java.util.Collection<[B>)"));
+    }
+
+
+    /**
+     * FIXME Wrong error message. {@link org.mutabilitydetector.locations.Dotted#dotted(String)} method removed
+     */
+    @Test
+    @Ignore
+    public void raisesErrorWhenCollectionFieldTypeIsObjectArray() {
+        AnalysisResult result = runChecker(checker, CollectionFields.CollectionWithStringArrayGenericType.class);
+        assertThat(result, areNotImmutable());
+        assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
+        assertThat(checker.checkerResult().reasons.iterator().next().message(),
+                containsString("(java.util.Collection<[Ljava.lang.Sring>)"));
     }
 
     @Test
