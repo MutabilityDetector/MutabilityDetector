@@ -28,10 +28,10 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 import org.mutabilitydetector.locations.Dotted;
+import org.mutabilitydetector.misc.TimingUtil;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,13 +48,15 @@ public final class SessionResultsFormatter {
     private final ReportMode reportMode;
     private final Collection<Dotted> classesToReport;
     private final BatchAnalysisOptions options;
-
+    private TimingUtil timingUtil;
+    
     public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
         this.options = options;
         this.verbose = options.verbose();
         this.showSummary = options.showSummary();
         this.reportMode = options.reportMode();
         this.classesToReport = getClassesToReport(options.isUsingClassList(), readerFactory);
+        this.timingUtil = new TimingUtil();
     }
 
     public StringBuilder format(Iterable<AnalysisResult> results, Iterable<AnalysisError> errors) {
@@ -111,7 +113,7 @@ public final class SessionResultsFormatter {
         output.append(String.format("%n\t%d %s%n", total, "Total number of classes scanned."));
         output.append(String.format("\t%d %s%n", totalImmutable, "IMMUTABLE class(es)."));
         output.append(String.format("\t%d %s%n", totalMutable,  "NOT_IMMUTABLE class(es)."));
-        final long processRuntime =System.currentTimeMillis() - ManagementFactory.getRuntimeMXBean().getStartTime()  ;
+        final long processRuntime = timingUtil.getCurrentTimeMillis() - timingUtil.getVMStartTimeMillis();
         output.append(String.format("\t%d %s%n", processRuntime/1000, "seconds runtime."));
     }
 
@@ -161,6 +163,10 @@ public final class SessionResultsFormatter {
             return first.className.asString().compareToIgnoreCase(second.className.asString());
         }
 
+    }
+
+    public void setTimingUtil(TimingUtil timingUtil) {
+        this.timingUtil = timingUtil;
     }
 
 }
