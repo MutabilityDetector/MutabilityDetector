@@ -139,7 +139,6 @@ public class SessionResultsFormatterTest {
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory, timingUtil);
 
-        TimingUtil t2 = new TimingUtil();
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(),
