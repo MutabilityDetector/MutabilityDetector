@@ -48,6 +48,7 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.misc.TimingUtil;
 
 public class SessionResultsFormatterTest {
 
@@ -119,6 +120,10 @@ public class SessionResultsFormatterTest {
         when(options.reportMode()).thenReturn(ReportMode.ALL);
         when(options.isUsingClassList()).thenReturn(false);
         when(options.showSummary()).thenReturn(true);
+        
+        TimingUtil timingUtil = mock(TimingUtil.class);
+        when(timingUtil.getCurrentTimeMillis()).thenReturn(23000l);
+        when(timingUtil.getVMStartTimeMillis()).thenReturn(16000l);
 
         AnalysisSession analysisSession = mock(AnalysisSession.class);
         Collection<AnalysisResult> analysisResults = Arrays.asList(analysisResult("a.b.c",
@@ -133,6 +138,7 @@ public class SessionResultsFormatterTest {
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
         SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
+        formatter.setTimingUtil(timingUtil);
 
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
@@ -143,7 +149,7 @@ public class SessionResultsFormatterTest {
                         containsString("3 Total number of classes scanned." + newline),
                         containsString("2 IMMUTABLE class(es)." + newline),
                         containsString("1 NOT_IMMUTABLE class(es)." + newline),
-                        containsString("seconds runtime." + newline)
+                        containsString("7 seconds runtime." + newline)
                         ));
     }
 }
