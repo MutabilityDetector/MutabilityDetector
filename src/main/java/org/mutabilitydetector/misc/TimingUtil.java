@@ -27,11 +27,10 @@ import java.time.ZoneId;
  * #L%
  */
 
-@Immutable
 public class TimingUtil {
     
-    private Clock jvmStartTimeClock;
-    private Clock currentTimeClock;
+    private final Clock jvmStartTimeClock;
+    private final Clock currentTimeClock;
     
     public TimingUtil() {
         long jvmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();

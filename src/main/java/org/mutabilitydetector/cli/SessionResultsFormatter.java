@@ -48,15 +48,15 @@ public final class SessionResultsFormatter {
     private final ReportMode reportMode;
     private final Collection<Dotted> classesToReport;
     private final BatchAnalysisOptions options;
-    private TimingUtil timingUtil;
+    private final TimingUtil timingUtil;
     
-    public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory) {
+    public SessionResultsFormatter(BatchAnalysisOptions options, ClassListReaderFactory readerFactory, TimingUtil timingUtil) {
         this.options = options;
         this.verbose = options.verbose();
         this.showSummary = options.showSummary();
         this.reportMode = options.reportMode();
         this.classesToReport = getClassesToReport(options.isUsingClassList(), readerFactory);
-        this.timingUtil = new TimingUtil();
+        this.timingUtil = timingUtil;
     }
 
     public StringBuilder format(Iterable<AnalysisResult> results, Iterable<AnalysisError> errors) {
@@ -163,10 +163,6 @@ public final class SessionResultsFormatter {
             return first.className.asString().compareToIgnoreCase(second.className.asString());
         }
 
-    }
-
-    public void setTimingUtil(TimingUtil timingUtil) {
-        this.timingUtil = timingUtil;
     }
 
 }

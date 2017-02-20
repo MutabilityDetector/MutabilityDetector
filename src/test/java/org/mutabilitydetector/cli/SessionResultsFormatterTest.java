@@ -74,7 +74,7 @@ public class SessionResultsFormatterTest {
                                                                                   unusedMutableReasonDetails()));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
-        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
+        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory, mock(TimingUtil.class));
 
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
@@ -103,7 +103,7 @@ public class SessionResultsFormatterTest {
         Collection<AnalysisResult> analysisResults = singleton(analysisResult("a.b.c", IsImmutable.NOT_IMMUTABLE, reasons));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
-        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
+        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory, mock(TimingUtil.class));
 
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
@@ -137,9 +137,9 @@ public class SessionResultsFormatterTest {
                         unusedMutableReasonDetails()));
         when(analysisSession.getResults()).thenReturn(analysisResults);
 
-        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory);
-        formatter.setTimingUtil(timingUtil);
+        SessionResultsFormatter formatter = new SessionResultsFormatter(options, unusedReaderFactory, timingUtil);
 
+        TimingUtil t2 = new TimingUtil();
         StringBuilder result = formatter.format(analysisSession.getResults(), analysisSession.getErrors());
 
         assertThat(result.toString(),

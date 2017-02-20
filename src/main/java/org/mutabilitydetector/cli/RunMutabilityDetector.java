@@ -48,6 +48,7 @@ import org.mutabilitydetector.checkers.MutabilityCheckerFactory.ReassignedFieldA
 import org.mutabilitydetector.classloading.CachingAnalysisClassLoader;
 import org.mutabilitydetector.classloading.ClassForNameWrapper;
 import org.mutabilitydetector.locations.Dotted;
+import org.mutabilitydetector.misc.TimingUtil;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -116,7 +117,9 @@ public final class RunMutabilityDetector implements Runnable, Callable<String> {
         
         ClassListReaderFactory readerFactory = new ClassListReaderFactory(options.classListFile());
         
-        return new SessionResultsFormatter(options, readerFactory)
+        TimingUtil timingUtil = new TimingUtil();
+        
+        return new SessionResultsFormatter(options, readerFactory, timingUtil)
                        .format(completedSession.getResults(), completedSession.getErrors());
     }
 
