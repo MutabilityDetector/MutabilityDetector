@@ -1,7 +1,5 @@
 package org.mutabilitydetector.misc;
 
-import javax.annotation.concurrent.Immutable;
-
 import java.lang.management.ManagementFactory;
 import java.time.Clock;
 import java.time.Instant;
@@ -27,7 +25,7 @@ import java.time.ZoneId;
  * #L%
  */
 
-public class TimingUtil {
+public final class TimingUtil {
     
     private final Clock jvmStartTimeClock;
     private final Clock currentTimeClock;
