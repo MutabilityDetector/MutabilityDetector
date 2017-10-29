@@ -24,15 +24,15 @@ package org.mutabilitydetector.checkers;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.asm.Opcodes.AASTORE;
-import static org.mockito.asm.Opcodes.ACC_STATIC;
 import static org.mutabilitydetector.checkers.AccessModifierQuery.method;
 import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
+import static org.objectweb.asm.Opcodes.AASTORE;
 
 import org.junit.Test;
-import org.mockito.asm.Opcodes;
 
 public class AccessModifierQueryTest {
 
@@ -68,7 +68,7 @@ public class AccessModifierQueryTest {
 
     @Test
     public void isInterface_true() throws Exception {
-        assertTrue("Expected access to be interface.", method(Opcodes.ACC_INTERFACE).isInterface());
+        assertTrue("Expected access to be interface.", method(ACC_INTERFACE).isInterface());
     }
 
     @Test
