@@ -194,7 +194,7 @@ public class WithAllowedReasonsMatcherTest {
         String expectedError = String.format(
                 "org.some.Thing is actually NOT_IMMUTABLE%n" + 
                 "    Reasons:%n" + 
-                "        it sucks [Class: org.some.Thing]%n" + 
+                "        it sucks [at org.some.Thing(Thing.java:1)]%n" +
                 "    Allowed reasons:%n" + 
                 "        None.");
         
