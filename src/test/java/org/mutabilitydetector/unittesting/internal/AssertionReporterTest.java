@@ -92,7 +92,7 @@ public class AssertionReporterTest {
             assertThat(errorMessageLines[1], is("Expected: d.e.SimpleClassName to be " + IMMUTABLE));
             assertThat(errorMessageLines[2], is("     but: d.e.SimpleClassName is actually " + NOT_IMMUTABLE));
             assertThat(errorMessageLines[3], is("    Reasons:"));
-            assertThat(errorMessageLines[4], is("        a reason the class is mutable [Class: d.e.SimpleClassName]" ));
+            assertThat(errorMessageLines[4], is("        a reason the class is mutable [at d.e.SimpleClassName(SimpleClassName.java:1)]" ));
             assertThat(errorMessageLines[5], is("    Allowed reasons:" ));
             assertThat(errorMessageLines[6], is("        None." ));
         }

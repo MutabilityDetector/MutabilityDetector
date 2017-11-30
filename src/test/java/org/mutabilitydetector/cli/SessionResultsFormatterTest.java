@@ -109,7 +109,7 @@ public class SessionResultsFormatterTest {
 
         assertThat(result.toString(), 
                    containsString("a.b.c is NOT_IMMUTABLE" + newline +
-                           "\t1st checker reason message [Class: path.to.MyClass]" + newline +
+                           "\t1st checker reason message [at path.to.MyClass(MyClass.java:1)]" + newline +
                            "\t2nd checker reason message [Field: myField, Class: path.to.OtherClass]" + newline));
     }
 
