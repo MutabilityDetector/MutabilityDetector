@@ -129,7 +129,7 @@ public class CollectionWithMutableElementTypeToFieldCheckerTest {
         assertThat(result, areNotImmutable());
         assertThat(checker, hasReasons(COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE));
         assertThat(checker.checkerResult().reasons.iterator().next().message(),
-                containsString("(java.util.Collection<[Ljava.lang.Sring>)"));
+                containsString("(java.util.Collection<[Ljava.lang.String>)"));
     }
 
     @Test
