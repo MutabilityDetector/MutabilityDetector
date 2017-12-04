@@ -21,6 +21,7 @@ package org.mutabilitydetector;
  */
 
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.mutabilitydetector.locations.Dotted;
 
@@ -65,7 +66,7 @@ public final class AnalysisResult {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(getClass())
+        return MoreObjects.toStringHelper(getClass())
                 .add("class", className)
                 .add("isImmutable", isImmutable)
                 .add("reasons", reasons)

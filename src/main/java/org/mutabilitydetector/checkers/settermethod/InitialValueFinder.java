@@ -21,24 +21,26 @@ package org.mutabilitydetector.checkers.settermethod;
  */
 
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Juergen Fickel (jufickel@htwg-konstanz.de)
@@ -234,7 +236,7 @@ final class InitialValueFinder implements Finder<Set<UnknownTypeValue>> {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = Objects.toStringHelper(this);
+        final ToStringHelper helper = MoreObjects.toStringHelper(this);
         helper.add("variable", variable).add("setters", initialisers);
         helper.add("possibleInitialValues", possibleInitialValues);
         return helper.toString();
