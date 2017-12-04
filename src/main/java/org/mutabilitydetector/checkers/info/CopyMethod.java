@@ -21,6 +21,7 @@ package org.mutabilitydetector.checkers.info;
  */
 
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -71,7 +72,7 @@ public final class CopyMethod {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("owner", owner)
                 .add("name", name)
                 .add("desc", desc)
