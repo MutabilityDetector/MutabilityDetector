@@ -34,7 +34,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
     public abstract String prettyPrint();
     
     @Immutable
-    public final static class UnknownCodeLocation extends CodeLocation<UnknownCodeLocation> {
+    public static final class UnknownCodeLocation extends CodeLocation<UnknownCodeLocation> {
 
         public static final UnknownCodeLocation UNKNOWN = new UnknownCodeLocation();
         
@@ -118,7 +118,12 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Class: %s]", typeName());
+            return String.format("[at %s(%s.java:1)]", typeName(), getShortClassName());
+        }
+
+        private String getShortClassName() {
+            final String[] classNameParts = dottedClassName.split("\\.");
+            return classNameParts[classNameParts.length - 1];
         }
 
     }

@@ -59,7 +59,7 @@ public class ClassLocationTest {
     @Test
     public void prettyPrintShowsClassNameInDottedFormat() throws Exception {
         ClassLocation location = fromInternalName("some/package/MyClass");
-        assertThat(location.prettyPrint(), is("[Class: some.package.MyClass]"));
+        assertThat(location.prettyPrint(), is("[at some.package.MyClass(MyClass.java:1)]"));
     }
 
 }
