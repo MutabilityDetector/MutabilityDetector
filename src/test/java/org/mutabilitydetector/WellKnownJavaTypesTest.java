@@ -143,9 +143,4 @@ public class WellKnownJavaTypesTest {
         fail("Didn't find private class");
     }
 
-    @Test
-    public void PNGMetadata() {
-        assertInstancesOf(PNGMetadata.class, areNotImmutable());
-    }
-
 }
