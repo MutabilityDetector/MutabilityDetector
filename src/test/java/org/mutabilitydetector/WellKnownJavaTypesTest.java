@@ -21,15 +21,15 @@ package org.mutabilitydetector;
  */
 
 
+import com.sun.imageio.plugins.png.PNGMetadata;
+import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mutabilitydetector.junit.FalsePositive;
+import org.mutabilitydetector.junit.IncorrectAnalysisRule;
 
-import static org.junit.Assert.fail;
-import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
-import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
-import static org.mutabilitydetector.unittesting.AllowedReason.provided;
-import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
-import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
-
+import javax.management.ImmutableDescriptor;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,17 +38,13 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.management.ImmutableDescriptor;
-
-import com.sun.imageio.plugins.png.PNGMetadata;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mutabilitydetector.junit.FalsePositive;
-import org.mutabilitydetector.junit.IncorrectAnalysisRule;
-
-import com.sun.corba.se.impl.activation.ORBD;
-import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
+import static org.junit.Assert.fail;
+import static org.mutabilitydetector.unittesting.AllowedReason.allowingForSubclassing;
+import static org.mutabilitydetector.unittesting.AllowedReason.assumingFields;
+import static org.mutabilitydetector.unittesting.AllowedReason.provided;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 public class WellKnownJavaTypesTest {
 
@@ -130,11 +126,6 @@ public class WellKnownJavaTypesTest {
     @Test
     public void ArrayList() {
         assertInstancesOf(ArrayList.class, areNotImmutable());
-    }
-
-    @Test
-    public void ORBD() {
-        assertInstancesOf(ORBD.class, areNotImmutable());
     }
 
     @Ignore
