@@ -15,3 +15,6 @@ target/
 
 /.settings
 /.directory
+
+# Maven-shade-plugin build file
+dependency-reduced-pom.xml
