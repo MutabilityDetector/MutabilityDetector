@@ -61,6 +61,6 @@ public class FieldLocationTest {
     public void prettyPrintIncludesFieldAndClassName() throws Exception {
         FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName",
                 ClassLocation.fromInternalName("a/b/MyClass"));
-        assertThat(fieldLocation.prettyPrint(), is("[Field: myFieldName, Class: a.b.MyClass]"));
+        assertThat(fieldLocation.prettyPrint(), is("[Field: myFieldName at a.b.MyClass(MyClass.java:1)]"));
     }
 }
