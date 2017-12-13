@@ -32,7 +32,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
     public abstract String typeName();
 
     public abstract String prettyPrint();
-    
+
     @Immutable
     public static final class UnknownCodeLocation extends CodeLocation<UnknownCodeLocation> {
 
@@ -64,7 +64,6 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         public String prettyPrint() {
             return "[Unknown code location]";
         }
-        
     }
 
     @Immutable
@@ -80,6 +79,11 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         @Override
         public String typeName() {
             return dottedClassName;
+        }
+
+        String typeShortName() {
+          final String[] classNameParts = dottedClassName.split("\\.");
+          return classNameParts[classNameParts.length - 1];
         }
 
         @Override
@@ -118,12 +122,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[at %s(%s.java:1)]", typeName(), getShortClassName());
-        }
-
-        private String getShortClassName() {
-            final String[] classNameParts = dottedClassName.split("\\.");
-            return classNameParts[classNameParts.length - 1];
+            return String.format("[at %s(%s.java:1)]", typeName(), typeShortName());
         }
 
     }
@@ -150,6 +149,10 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         @Override
         public String typeName() {
             return ownerOfField.typeName();
+        }
+
+        String typeShortName() {
+          return ownerOfField.typeShortName();
         }
 
         @Override
@@ -180,7 +183,7 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         @Override
         public String prettyPrint() {
-            return String.format("[Field: %s, Class: %s]", fieldName(), typeName());
+            return String.format("[Field: %s at %s(%s.java:1)]", fieldName(), typeName(), typeShortName());
         }
 
     }
