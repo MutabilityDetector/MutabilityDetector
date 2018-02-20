@@ -415,7 +415,7 @@ public class ErrorLocationTest {
                     "Expected: org.mutabilitydetector.ErrorLocationTest$ClassWithMutableField to be IMMUTABLE\n" +
                     "     but: org.mutabilitydetector.ErrorLocationTest$ClassWithMutableField is actually NOT_IMMUTABLE\n" +
                     "    Reasons:\n" +
-                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$MutableClass) assigned to it. [Field: field, Class: org.mutabilitydetector.ErrorLocationTest$ClassWithMutableField]\n" +
+                    "        Field can have a mutable type (org.mutabilitydetector.ErrorLocationTest$MutableClass) assigned to it. [Field: field at org.mutabilitydetector.ErrorLocationTest$ClassWithMutableField(ErrorLocationTest$ClassWithMutableField.java:1)]\n" +
                     "    Allowed reasons:\n" +
                     "        None."));
         }
