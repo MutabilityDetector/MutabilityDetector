@@ -202,8 +202,9 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
 
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {
         AbstractInsnNode previous = node.getPrevious();
-        previous =  previous instanceof FrameNode ? previous.getPrevious() : previous;
-        return (previous instanceof LabelNode) || (previous instanceof LineNumberNode)
+        return (previous instanceof LabelNode) || 
+                (previous instanceof LineNumberNode) ||
+                 (previous instanceof FrameNode)
                 ? lastMeaningfulNode(previous)
                 : previous;
     }
