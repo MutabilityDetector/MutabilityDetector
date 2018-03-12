@@ -202,11 +202,39 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
 
     private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node) {
         AbstractInsnNode previous = node.getPrevious();
+        if (previous instanceof JumpInsnNode) {
+           previous = previous.getPrevious();
+        }
+        if(previous instanceof FrameNode) {
+            previous = lastMeaningfulNode(previous,0);
+        }
+        if(previous instanceof InsnNode || previous instanceof VarInsnNode) {
+            while(previous!=null && !(previous instanceof JumpInsnNode))
+                previous = previous.getNext()!=null ? previous.getNext()
+                        : null;
+            if(previous!=null)    
+                previous = ((JumpInsnNode)previous).label;
+        }
         return (previous instanceof LabelNode) || 
-                (previous instanceof LineNumberNode) ||
-                 (previous instanceof FrameNode)
+                (previous instanceof LineNumberNode)
                 ? lastMeaningfulNode(previous)
                 : previous;
+    }
+    
+    private AbstractInsnNode lastMeaningfulNode(AbstractInsnNode node, int jumpCount) {
+        if(jumpCount==2) {
+            if (node instanceof JumpInsnNode) {
+                JumpInsnNode jumpInsn = (JumpInsnNode)node;
+                node = jumpInsn.label ;
+            }
+            return node;
+        }
+        AbstractInsnNode previous = node.getPrevious();
+        if(!(previous instanceof JumpInsnNode)) {
+            return lastMeaningfulNode(previous, jumpCount);
+        }else {
+            return lastMeaningfulNode(previous, jumpCount+1);
+        }
     }
 
     public static class UnmodifiableWrapResult {
