@@ -7,17 +7,22 @@ import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiabl
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.FIELD_TYPE_CANNOT_BE_WRAPPED;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_AND_COPIES_SAFELY;
 import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_BUT_DOES_NOT_COPY;
+import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 import static org.objectweb.asm.Type.getType;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.RandomAccess;
 
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.mutabilitydetector.benchmarks.checkers.ImmutableClassWithTernaryOperatorAndConstantCategoryOpcode;
+import org.mutabilitydetector.benchmarks.checkers.ImmutableClassWithTernaryOperatorAndVarInsn;
+import org.mutabilitydetector.benchmarks.checkers.ImmutableWithIfStatementAndConstantCategoryOpcode;
+import org.mutabilitydetector.benchmarks.checkers.ImmutableWithIfStatementAndVarInsn;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.objectweb.asm.Label;
@@ -25,7 +30,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -230,46 +234,26 @@ public class CollectionTypeWrappedInUnmodifiableIdiomCheckerTest {
         assertThat(result.status, is(WRAPS_AND_COPIES_SAFELY));
         assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
     }
+    @Test
+    public void testImmutabilityInBranchesWithConstantCategoryOpCodes() {
+        assertInstancesOf(ImmutableClassWithTernaryOperatorAndConstantCategoryOpcode.class, areImmutable());
+        
+    }
+    @Test
+    public void testImmutabilityInBranchesWithVarInsn() {
+        assertInstancesOf(ImmutableClassWithTernaryOperatorAndVarInsn.class, areNotImmutable());
+    }
     
     @Test
-    public void ignoresNodesWhichDoNotResultInDifferentCodeSemanticsWithFrameNodes() throws Exception {
-        final MethodInsnNode safeCopyBeforeWrappingMethod = new StaticConcreteMethodInsnNode("java/util/ArrayList", 
-                                                                                             "<init>", 
-                                                                                             "(Ljava/util/Collection;)V");
-        final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", 
-                                                                               "unmodifiableList", 
-                                                                               "(Ljava/util/List;)Ljava/util/List;") {
-            @Override public AbstractInsnNode getPrevious() {
-                return safeCopyBeforeWrappingMethod;
-            }
-        };
-        final LabelNode label = new LabelNode(new Label()) {
-            @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
-        };
-        final FrameNode frame = new FrameNode(Opcodes.F_FULL, 
-                2, 
-                new Object[] {"imaginary/class", "imaginary/class/attribute"}, 
-                1,  
-                new Object[] {"imaginary/class", "imaginary/class/attribute"}) {
-            @Override public AbstractInsnNode getPrevious() { return label; } 
-        };
-        
-        String typeOfField = "java/util/List";
-
-        FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
-            @Override public AbstractInsnNode getPrevious() { return frame; }
-        };
-
-        CollectionTypeWrappedInUnmodifiableIdiomChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
-
-        UnmodifiableWrapResult result = checker.checkWrappedInUnmodifiable();
-
-        assertThat(result.invokesWhitelistedWrapperMethod(), is(true));
-        assertThat(result.safelyCopiesBeforeWrapping(), is(true));
-        assertThat(result.status, is(WRAPS_AND_COPIES_SAFELY));
-        assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
+    public void testImmutabilityInBranchesWithIfStatementAndConstantCategoryOpCodes() {
+        assertInstancesOf(ImmutableWithIfStatementAndConstantCategoryOpcode.class, areImmutable());
     }
-
+    
+    @Test
+    public void testImmutabilityInBranchesWithIfStatementAndVarInsn() {
+        assertInstancesOf(ImmutableWithIfStatementAndVarInsn.class, areNotImmutable());
+    }
+    
     @Theory
     public void validAssignmentsHold(ValidUnmodifiableAssignment dataPoint) throws Exception {
         CollectionTypeWrappedInUnmodifiableIdiomChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
