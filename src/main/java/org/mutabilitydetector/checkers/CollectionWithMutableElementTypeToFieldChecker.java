@@ -54,7 +54,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
     
     private final Map<String, String> fieldSignatures = newHashMap();
     private final AnalysisInProgress analysisInProgress;
-
+    
     public CollectionWithMutableElementTypeToFieldChecker(
             MutableTypeInformation mutableTypeInfo,
             AsmVerifierFactory verifierFactory,
@@ -128,7 +128,9 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
                 } else if (genericType.isArray) {
                     return true;
                 }
-
+                if(isClassSelfReferenced()) {
+                    return false;
+                }
                 MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), genericType.type, analysisInProgress);
                 
                 if (mutabilityLookup.foundCyclicReference || !mutabilityLookup.result.isImmutable.equals(IMMUTABLE)) {
