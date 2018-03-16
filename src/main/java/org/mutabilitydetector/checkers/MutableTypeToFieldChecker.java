@@ -65,6 +65,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     private final Map<String, String> genericFields = Maps.newHashMap();
     private final AnalysisInProgress analysisInProgress;
     private final Map<String, String> typeSignatureByFieldName = Maps.newHashMap();
+    private boolean isClassSelfReferenced=false;
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
@@ -95,8 +96,12 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (signature == null) { return null ; }
+        if(signature.contains(this.ownerClass())) {
+            this.setIsClassSelfReferenced(true);
+            return super.visitField(access, name, desc, signature, value);
+        }
         typeSignatureByFieldName.put(name, signature);
-
+        
         GenericFieldVisitor visitor = new GenericFieldVisitor();
         new SignatureReader(signature).acceptType(visitor);
 
@@ -108,7 +113,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
 
         return super.visitField(access, name, desc, signature, value);
     }
-
+    
     static final class GenericFieldVisitor extends SignatureVisitor {
         private String declaredType;
         private boolean fieldIsOfGenericType = true;
@@ -169,9 +174,8 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                     setAssigningToGenericFieldResult(fieldName, fieldLocation);
                     break;
                 }
-
-                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), assignedToField, analysisInProgress);
-
+                MutabilityLookup mutabilityLookup = mutableTypeInfo.resultOf(dotted(ownerClass), assignedToField,analysisInProgress);
+                
                 if (mutabilityLookup.foundCyclicReference) {
                     setCyclicReferenceResult(fieldLocation, mutabilityLookup.cyclicReference);
                     break;
@@ -228,7 +232,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
             setResult(String.format("Field can have a generic type (%s) assigned to it.", genericTypeOf(fieldName)),
                     fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
-
+        
         private String genericTypeOf(String fieldName) {
             return genericFields.get(fieldName);
         }
@@ -266,6 +270,10 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
             setResult("There is a field assigned which creates a cyclic reference. " +
                             "(" + Joiner.on(" -> ").join(cyclicReference.references) + ")",
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
+        }
+        
+        public Boolean isClassSelfReferenced() {
+            return new Boolean(isClassSelfReferenced);
         }
 
     }

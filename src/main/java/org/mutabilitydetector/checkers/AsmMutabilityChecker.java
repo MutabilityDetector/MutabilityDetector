@@ -42,11 +42,20 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
     private CheckerResult checkerResult = IMMUTABLE_CHECKER_RESULT;
 
     protected Collection<MutableReasonDetail> reasons = newArrayList();
-
+    
+    private boolean isClassSelfReferenced=false;
+    
     public String ownerClass() {
         return ownerClass;
     }
 
+    protected void setIsClassSelfReferenced(boolean isClassSeflReferenced) {
+        this.isClassSelfReferenced = isClassSeflReferenced;
+    }
+    
+    protected Boolean isClassSelfReferenced() {
+        return new Boolean(isClassSelfReferenced);
+    }
     protected void setResult(String message, CodeLocation<?> location, Reason reason) {
         reasons.add(createReasonDetail(message, location, reason));
         this.checkerResult = CheckerResult.withNoErrors(reason.createsResult(), reasons);
