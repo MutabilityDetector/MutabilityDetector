@@ -62,7 +62,7 @@ public final class AllChecksRunner {
         Map<IsImmutable, Integer> results = newHashMap();
         Collection<MutableReasonDetail> reasons = newArrayList();
         Collection<AnalysisError> errors = newArrayList();
-        boolean isClassSelfReferenced=false;
+        boolean isClassSelfReferenced = false;
 
         Iterable<AsmMutabilityChecker> checkers = factory.createInstances(
                 database,
