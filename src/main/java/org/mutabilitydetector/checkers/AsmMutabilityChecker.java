@@ -53,9 +53,10 @@ public abstract class AsmMutabilityChecker extends AsmClassVisitor {
         this.isClassSelfReferenced = isClassSeflReferenced;
     }
     
-    protected Boolean isClassSelfReferenced() {
-        return new Boolean(isClassSelfReferenced);
+    protected boolean isClassSelfReferenced() {
+        return isClassSelfReferenced;
     }
+    
     protected void setResult(String message, CodeLocation<?> location, Reason reason) {
         reasons.add(createReasonDetail(message, location, reason));
         this.checkerResult = CheckerResult.withNoErrors(reason.createsResult(), reasons);
