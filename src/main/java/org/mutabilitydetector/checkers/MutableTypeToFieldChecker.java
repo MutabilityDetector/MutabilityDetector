@@ -273,8 +273,8 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
         
-        public Boolean isClassSelfReferenced() {
-            return new Boolean(isClassSelfReferenced);
+        public boolean isClassSelfReferenced() {
+            return isClassSelfReferenced;
         }
 
     }
