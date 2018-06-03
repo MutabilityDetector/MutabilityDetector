@@ -65,7 +65,6 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     private final Map<String, String> genericFields = Maps.newHashMap();
     private final AnalysisInProgress analysisInProgress;
     private final Map<String, String> typeSignatureByFieldName = Maps.newHashMap();
-    private boolean isClassSelfReferenced=false;
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
@@ -268,10 +267,5 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                             "(" + Joiner.on(" -> ").join(cyclicReference.references) + ")",
                       fieldLocation, MUTABLE_TYPE_TO_FIELD);
         }
-        
-        public boolean isClassSelfReferenced() {
-            return isClassSelfReferenced;
-        }
-
     }
 }
