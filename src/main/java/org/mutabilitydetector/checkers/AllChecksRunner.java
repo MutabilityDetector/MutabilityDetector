@@ -73,13 +73,7 @@ public final class AllChecksRunner {
         CheckerRunner checkerRunner = checkerRunnerFactory.createRunner();
 
         for (AsmMutabilityChecker checker : checkers) {
-            if(checker instanceof CollectionWithMutableElementTypeToFieldChecker) {
-                checker.setIsClassSelfReferenced(isClassSelfReferenced);
-            }
             CheckerResult checkerResult = checkerRunner.run(checker, toAnalyse, knownResultsSoFar);
-            if(checker instanceof MutableTypeToFieldChecker) {
-                isClassSelfReferenced = checker.isClassSelfReferenced();
-            }
             results.put(checkerResult.isImmutable, getNewCount(results, checkerResult.isImmutable));
             reasons.addAll(checkerResult.reasons);
             errors.addAll(checkerResult.errors);

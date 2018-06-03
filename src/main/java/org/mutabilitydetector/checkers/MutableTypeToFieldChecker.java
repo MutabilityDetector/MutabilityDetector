@@ -96,10 +96,6 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (signature == null) { return null ; }
-        if(signature.contains(ownerClass())) {
-            setIsClassSelfReferenced(true);
-            return super.visitField(access, name, desc, signature, value);
-        }
         typeSignatureByFieldName.put(name, signature);
         
         GenericFieldVisitor visitor = new GenericFieldVisitor();
