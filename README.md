@@ -116,7 +116,7 @@ MutabilityDetector4FindBugs is also available from Maven Central, with the follo
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector4FindBugs</artifactId>
-        <version>0.9.1</version>
+        <version>0.9.3</version>
         <scope>test</scope>
     </dependency>
 
