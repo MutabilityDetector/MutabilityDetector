@@ -24,7 +24,7 @@ To use Mutability Detector directly, either from the command line, at runtime in
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector</artifactId>
-        <version>0.9.6</version>
+        <version>0.10.1</version>
         <scope>test</scope>
     </dependency>
 
@@ -34,7 +34,7 @@ Just add MutabilityDetector to your unit testing classpath. Adding your first as
 
     import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
     
-    @Test public void checkMyClassIsImmutable() {
+    @Test public void checkMyClassIsImmutable() {0
         assertImmutable(MyClass.class); 
     }
     
