@@ -1,4 +1,7 @@
-<a href="http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector"><img src="http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=latest_version" alt="Latest Version Javadocs"></a>
+[![Latest Version](http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=MutabilityDetector_latest_version)](http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector)
+[![Email](https://img.shields.io/badge/email-author-green.svg)](mailto:Grundlefleck+md@gmail.com)
+[![Join the chat at https://gitter.im/MutabilityDetector/main](https://badges.gitter.im/MutabilityDetector/main.svg)](https://gitter.im/MutabilityDetector/main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://api.travis-ci.org/MutabilityDetector/MutabilityDetector.png?branch=master)](https://travis-ci.org/MutabilityDetector/MutabilityDetector)
 
 ## What is Mutability Detector?
 Mutability Detector is designed to analyse Java classes and report on whether instances of a given class are immutable. It can be used:
@@ -29,6 +32,8 @@ To use Mutability Detector directly, either from the command line, at runtime in
         <version>[latest version here]</version>
         <scope>test</scope>
     </dependency>
+    
+[![Latest Version](http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=latest_version)](http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector)
 
 
 ### Using Mutability Detector in Unit Testing
@@ -118,17 +123,10 @@ MutabilityDetector4FindBugs is also available from Maven Central, with the follo
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector4FindBugs</artifactId>
-        <version>0.9.3</version>
+        <version>[latest version here]</version>
         <scope>test</scope>
     </dependency>
-
-### Build Status
-[![Build Status](https://api.travis-ci.org/MutabilityDetector/MutabilityDetector.png?branch=master)](https://travis-ci.org/MutabilityDetector/MutabilityDetector)
-
-#### Contact
-Contact can be made either by leaving comments, by [email](mailto:Grundlefleck+md@gmail.com), or through Gitter.
-
-Gitter is available for OSX, Windows, Linux, iPhone, and Android. It can also be mirror over and IRC Bridge. To install Gitter head over to https://gitter.im/apps for your system. 
-[![Join the chat at https://gitter.im/MutabilityDetector/main](https://badges.gitter.im/MutabilityDetector/main.svg)](https://gitter.im/MutabilityDetector/main?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+    
+[![MutabilityDetector4FindBugs Latest Version](http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector4FindBugs.svg?label=MutabilityDetector4FindBugs_latest_version)](http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector4FindBugs)
 
 
