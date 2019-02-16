@@ -34,7 +34,7 @@ Just add MutabilityDetector to your unit testing classpath. Adding your first as
 
     import static org.mutabilitydetector.unittesting.MutabilityAssert.assertImmutable;
     
-    @Test public void checkMyClassIsImmutable() {0
+    @Test public void checkMyClassIsImmutable() {
         assertImmutable(MyClass.class); 
     }
     
