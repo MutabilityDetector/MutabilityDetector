@@ -1,4 +1,4 @@
-<a href="http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector"><img src="http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=Current_Release" alt="Current Release Javadocs"></a>
+<a href="http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector"><img src="http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=latest_version" alt="Latest Version Javadocs"></a>
 
 ## What is Mutability Detector?
 Mutability Detector is designed to analyse Java classes and report on whether instances of a given class are immutable. It can be used:
