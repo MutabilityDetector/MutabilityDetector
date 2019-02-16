@@ -59,59 +59,7 @@ Mutability Detector can handle jars as seen above, or directories of class files
 
 The output is a list of the analysed classes against the result of asking "Is immutable?", ie. `IMMUTABLE`, `NOT_IMMUTABLE`, `EFFECTIVELY_IMMUTABLE`.
 
-The command line has the following usage:
-
-
-    $ java -jar MutabilityDetector.jar --help
-    usage: MutabilityDetector-cl,--classlist <filename>   Only report results on the classes listed
-                                  within <filename>. Currently this option
-                                  only supports plain text files with one
-                                  class per line. It is also rather limited in
-                                  the format it accepts: each line must
-                                  contain the equivalent of
-                                  someClass.getName(), e.g. it must be
-                                  java.lang.Integer, with dot delimiters and
-                                  no suffixes such as .java or .class. Can be
-                                  used in conjunction with -match to reduce
-                                  the time taken to perform analysis.
-     -cp,--classpath <path>       The classpath to be analysed by Mutability
-                                  Detector
-     -e,--reportErrors            Reports on errors in the analysis. Defaults
-                                  to false.
-     -f,--failFast                When true, encountering an unhandled
-                                  exception will cause analysis to abort
-                                  immediately. When false, exceptions during
-                                  analysis of a particular class will be
-                                  reflected in the result assigned to that
-                                  class. Defaults to false.
-     -h,--help                    print this message
-     -m,--match <regex>           A regular expression used to match class
-                                  names to analyse. This is matched against
-                                  the fully qualified class name, minus the
-                                  .class suffix (i.e. it matches against
-                                  'java.lang.Object', not
-                                  'java/lang/Object.class'). The default is
-                                  '.*', meaning all classes will be analysed.
-     -n,--nonClassloading         When supplied, use an implementation of
-                                  ASM's SimpleVerifier that does not load
-                                  classes. This can help avoid issues
-                                  encountered with class loading. Warning:
-                                  this is experimental, and has not been
-                                  tested as thoroughly as the classloading
-                                  version.
-     -r,--report <arg>            Choose what is reported from the analysis.
-                                  Valid options are [ALL|IMMUTABLE|MUTABLE].
-                                  If not specified, or doesn't match an
-                                  available mode, defaults to 'ALL'
-     -s,--summary                 Show summary of analysis result.
-     -v,--verbose                 Print details of analysis and reasons for
-                                  results.
-    
-    Exiting...
-
-
-
-
+Execute `java -jar MutabilityDetector.jar --help` for a complete listing of the command line options.
 
 ### Using Mutability Detector within Your Application
 
