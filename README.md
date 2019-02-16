@@ -1,4 +1,4 @@
-[![Javadocs](http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=latest version)](http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector)
+[![Javadocs](http://www.javadoc.io/badge/org.mutabilitydetector/MutabilityDetector.svg?label=latest)](http://www.javadoc.io/doc/org.mutabilitydetector/MutabilityDetector)
 
 ## What is Mutability Detector?
 Mutability Detector is designed to analyse Java classes and report on whether instances of a given class are immutable. It can be used:
