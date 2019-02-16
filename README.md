@@ -21,7 +21,7 @@ If this sounds like it may be interesting or useful to you, continue reading for
   
   
 ## Getting Started
-To use Mutability Detector directly, either from the command line, at runtime in your application, or as part of your unit tests, grab the jar available [here](https://github.com/MutabilityDetector/MutabilityDetector/wiki/Downloads). Or you can declare it in your Maven-compatible build tool, with the following coordinates:
+To use Mutability Detector directly, either from the command line, at runtime in your application, or as part of your unit tests, grab the jar available [from Maven Central](https://search.maven.org/remote_content?g=org.mutabilitydetector&a=MutabilityDetector&v=LATEST). Or you can declare it in your Maven-compatible build tool, with the following coordinates:
 
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
