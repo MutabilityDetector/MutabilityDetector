@@ -57,7 +57,7 @@ The output is a list of the analysed classes against the result of asking "Is im
 The command line has the following usage:
 
 
-    $ java -jar MutabilityDetector-0.9.jar --help
+    $ java -jar MutabilityDetector.jar --help
     usage: MutabilityDetector
     -cl,--classlist <filename>   Only report results on the classes listed
                                   within <filename>. Currently this option
