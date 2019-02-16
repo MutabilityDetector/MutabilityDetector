@@ -40,7 +40,7 @@ Just add MutabilityDetector to your unit testing classpath. Adding your first as
         assertImmutable(MyClass.class); 
     }
     
-Though it is possible (or likely) that you will have to configure the assertion to deal with any false positives that arise. See the [JavaDoc on `MutabilityAssert`](http://mutabilitydetector.github.io/MutabilityDetector/mvn-site/apidocs/org/mutabilitydetector/unittesting/MutabilityAssert.html) for further information. 
+Though it is possible (or likely) that you will have to configure the assertion to deal with any false positives that arise. See the [JavaDoc on `MutabilityAssert`](https://www.javadoc.io/page/org.mutabilitydetector/MutabilityDetector/latest/org/mutabilitydetector/unittesting/MutabilityAssert.html) for further information. 
 
 ### Using Mutability Detector from the Command Line
 
