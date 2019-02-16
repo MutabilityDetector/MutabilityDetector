@@ -26,7 +26,7 @@ To use Mutability Detector directly, either from the command line, at runtime in
     <dependency>
         <groupId>org.mutabilitydetector</groupId>
         <artifactId>MutabilityDetector</artifactId>
-        <version>0.10.1</version>
+        <version>[latest version here]</version>
         <scope>test</scope>
     </dependency>
 
