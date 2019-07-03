@@ -29,26 +29,17 @@ import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public final class CustomClassLoadingSimpleVerifier extends SimpleVerifier {
 
-    private final AnalysisClassLoader classLoader;
-    private final ClassNameConverter classNameConverter = new ClassNameConverter();
 
     public CustomClassLoadingSimpleVerifier(AnalysisClassLoader fallbackClassLoader) {
-        this.classLoader = fallbackClassLoader;
+        this.setClassLoader(toJavaClassloader(fallbackClassLoader));
     }
 
-    @Override
-    protected Class<?> getClass(Type t) {
-        String className;
-
-        try {
-            if (t.getSort() == Type.ARRAY) {
-                className = classNameConverter.dotted(t.getDescriptor());
-            } else {
-                className = t.getClassName();
+    private ClassLoader toJavaClassloader(AnalysisClassLoader fallbackClassLoader) {
+        return new ClassLoader() {
+            @Override
+            public Class<?> loadClass(String name) throws ClassNotFoundException {
+                return fallbackClassLoader.loadClass(name);
             }
-            return classLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        };
     }
 }
