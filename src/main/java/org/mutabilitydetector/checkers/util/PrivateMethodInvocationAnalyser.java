@@ -20,6 +20,7 @@ package org.mutabilitydetector.checkers.util;
  * #L%
  */
 
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.checkers.MethodIs;
 import org.mutabilitydetector.checkers.MutabilityAnalysisException;
 import org.mutabilitydetector.asmoverride.AsmClassVisitor;
@@ -75,7 +76,7 @@ public final class PrivateMethodInvocationAnalyser extends TypeInformationRetrie
     private class MethodInvocationVisitor extends MethodNode {
 
         public MethodInvocationVisitor(int access, String name, String desc, String signature, String[] exceptions) {
-            super(Opcodes.ASM5, access, name, desc, signature, exceptions);
+            super(AsmCompatibility.AsmApiVersion, access, name, desc, signature, exceptions);
         }
 
         @Override

@@ -52,4 +52,10 @@ public final class Slashed extends ClassName {
     public static Slashed slashed(String slashedClassName) {
         return new Slashed(slashedClassName);
     }
+
+    @Override
+    public String asInternal() {
+        return new ClassNameConverter().toInternal(this);
+    }
+
 }

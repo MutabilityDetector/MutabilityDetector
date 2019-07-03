@@ -23,6 +23,7 @@ package org.mutabilitydetector.checkers;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields;
 import org.mutabilitydetector.checkers.CollectionField.GenericType;
 import org.objectweb.asm.ClassReader;
@@ -182,7 +183,7 @@ public class CollectionFieldTest {
         final String[] fieldDescSignature = new String[2]; 
         
         ClassReader classReader = new ClassReader(class1.getName());
-        classReader.accept(new ClassVisitor(Opcodes.ASM5) {
+        classReader.accept(new ClassVisitor(AsmCompatibility.AsmApiVersion) {
             @Override
             public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
                 fieldDescSignature[0] = desc;

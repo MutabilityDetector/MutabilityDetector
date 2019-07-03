@@ -25,6 +25,7 @@ package org.mutabilitydetector.asmoverride;
 import org.mutabilitydetector.classloading.AnalysisClassLoader;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Interpreter;
+import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 public class ClassLoadingVerifierFactory implements AsmVerifierFactory {
 
@@ -36,7 +37,14 @@ public class ClassLoadingVerifierFactory implements AsmVerifierFactory {
     
     @Override
     public Interpreter<BasicValue> interpreter() {
-        return new CustomClassLoadingSimpleVerifier(classLoader);
+        SimpleVerifier simpleVerifier = new SimpleVerifier();
+        simpleVerifier.setClassLoader(new ClassLoader() {
+            @Override
+            public Class<?> loadClass(String name) throws ClassNotFoundException {
+                return classLoader.loadClass(name);
+            }
+        });
+        return simpleVerifier;
     }
 
 }

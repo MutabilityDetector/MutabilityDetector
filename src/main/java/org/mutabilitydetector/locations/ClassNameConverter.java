@@ -43,6 +43,14 @@ public final class ClassNameConverter {
                 .apply(givenClassName);
     }
 
+    public String toInternal(Dotted dotted) {
+        return "L" + dotted.asSimpleString().replace(".", "/") + ";";
+    }
+
+    public String toInternal(Slashed slashed) {
+        return "L" + slashed.asSimpleString() + ";";
+    }
+
     private static final Function<String, String> SINGLE_DIMENSIONAL_IF_ARRAY = s -> s.replaceAll("\\[+", "[");
 
     private static final Function<String, String> REMOVE_ARRAY_DESCRIPTOR_IF_REFERENCE_TYPE =
@@ -57,5 +65,5 @@ public final class ClassNameConverter {
     private static final Function<String, String> REMOVE_TRAILING_SEMICOLON = s -> s.replace(";", "");
 
     private static final Function<String, String> REPLACE_SLASHES_WITH_DOTS = s -> s.replace("/", ".");
-    
+
 }
