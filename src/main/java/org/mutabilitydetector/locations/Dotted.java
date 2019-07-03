@@ -42,6 +42,11 @@ public final class Dotted extends ClassName {
     }
 
     @Override
+    public String asInternal() {
+        return new ClassNameConverter().toInternal(this);
+    }
+
+    @Override
     public int hashCode() {
         return asString().hashCode();
     }

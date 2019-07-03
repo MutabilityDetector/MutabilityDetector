@@ -52,7 +52,7 @@ public class WrappingHintGeneratorTest {
 
     @Test
     public void testCollectionHintWithExactGenerics() {
-        String exactSignature = "Ljava/util/Collection<=Ljava/lang/String;>;";
+        String exactSignature = "Ljava/util/Collection<Ljava/lang/String;>;";
         Type collectionType = Type.getType(Collection.class);
         WrappingHintGenerator generator = new WrappingHintGenerator(Configuration.INSTANCE,
                 exactSignature, collectionType, EMPTY_USER_DEFINED_METHODS);

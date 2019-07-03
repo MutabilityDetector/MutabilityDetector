@@ -25,6 +25,7 @@ package org.mutabilitydetector.checkers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -47,7 +48,7 @@ public abstract class FieldAssignmentVisitor extends MethodNode {
             String signature,
             String[] exceptions,
             AsmVerifierFactory verifierFactory) {
-        super(Opcodes.ASM5, access, name, desc, signature, exceptions);
+        super(AsmCompatibility.AsmApiVersion, access, name, desc, signature, exceptions);
         this.owner = owner;
         this.verifierFactory = verifierFactory;
     }

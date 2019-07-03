@@ -65,4 +65,5 @@ public abstract class ClassName {
         return asString.equals(other.asString);
     }
 
+    public abstract String asInternal();
 }

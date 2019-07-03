@@ -25,6 +25,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
 import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
@@ -84,7 +85,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
 
         if (signature == null) { return; }
 
-        new SignatureReader(signature).accept(new SignatureVisitor(Opcodes.ASM5) {
+        new SignatureReader(signature).accept(new SignatureVisitor(AsmCompatibility.AsmApiVersion) {
             @Override
             public void visitFormalTypeParameter(String name) {
                 genericTypesOfClass.add(name);
@@ -114,7 +115,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
         private boolean fieldIsOfGenericType = true;
 
         public GenericFieldVisitor() {
-            super(Opcodes.ASM5);
+            super(AsmCompatibility.AsmApiVersion);
         }
 
         @Override

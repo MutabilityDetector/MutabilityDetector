@@ -22,6 +22,7 @@ package org.mutabilitydetector.checkers;
 
 
 import com.google.common.base.Objects;
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
@@ -165,13 +166,13 @@ public abstract class CollectionField {
         private Node lastStored;
 
         public GenericCollectionVisitor(Dotted collectionType) {
-            super(Opcodes.ASM5);
+            super(AsmCompatibility.AsmApiVersion);
             state = new GenericCollectionReaderState();
             root = new Node(GenericType.exact(collectionType));
         }
 
         private GenericCollectionVisitor(GenericCollectionReaderState state, Node root) {
-            super(Opcodes.ASM5);
+            super(AsmCompatibility.AsmApiVersion);
             this.state = state;
             this.root = root;
         }

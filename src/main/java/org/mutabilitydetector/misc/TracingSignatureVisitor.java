@@ -22,6 +22,7 @@ package org.mutabilitydetector.misc;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureVisitor;
 
@@ -37,7 +38,7 @@ public final class TracingSignatureVisitor extends SignatureVisitor {
     private PrintWriter log;
 
     private TracingSignatureVisitor(List<Integer> treePath, PrintWriter log) {
-        super(Opcodes.ASM5);
+        super(AsmCompatibility.AsmApiVersion);
 
         this.treePath = treePath;
         this.log = new PrintWriter(log, true);

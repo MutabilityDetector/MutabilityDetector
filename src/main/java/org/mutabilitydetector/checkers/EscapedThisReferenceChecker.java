@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.checkers.util.StackPushingOpcodes;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.MethodVisitor;
@@ -59,7 +60,7 @@ public final class EscapedThisReferenceChecker extends AsmMutabilityChecker {
                 String desc,
                 String signature,
                 String[] exceptions) {
-            super(Opcodes.ASM5, access, name, desc, signature, exceptions);
+            super(AsmCompatibility.AsmApiVersion, access, name, desc, signature, exceptions);
         }
 
         @Override

@@ -21,8 +21,6 @@ package org.mutabilitydetector;
  */
 
 
-import com.sun.imageio.plugins.png.PNGMetadata;
-import com.sun.java.swing.plaf.windows.WindowsTableHeaderUI;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -127,20 +125,4 @@ public class WellKnownJavaTypesTest {
     public void ArrayList() {
         assertInstancesOf(ArrayList.class, areNotImmutable());
     }
-
-    @Ignore
-    @Test
-    public void XPDefaultRenderer() {
-        Class<?> enclosingClass = WindowsTableHeaderUI.class;
-        Class<?>[] declaredClasses = enclosingClass.getDeclaredClasses();
-
-        for (Class<?> declaredClass : declaredClasses) {
-            if ("XPDefaultRenderer".equals(declaredClass.getSimpleName())) {
-                assertInstancesOf(declaredClass, areNotImmutable());
-                return;
-            }
-        }
-        fail("Didn't find private class");
-    }
-
 }
