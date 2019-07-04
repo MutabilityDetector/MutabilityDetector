@@ -1,8 +1,14 @@
 sudo: true
 language: java
-jdk:
-  - oraclejdk8
-script: "mvn install"
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: MVN_PROFILE=jdk8
+    - jdk: openjdk10
+      env: MVN_PROFILE=jdk10
+    - jdk: openjdk11
+      env: MVN_PROFILE=jdk11
+script: "mvn install -P ${MVN_PROFILE}"
 
 # Fix OpenJDK build. Issue: https://github.com/travis-ci/travis-ci/issues/5227 
 addons:
