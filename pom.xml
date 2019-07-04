@@ -81,7 +81,7 @@
 
   <profiles>
     <profile>
-      <id>default</id>
+      <id>jdk8</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -90,9 +90,9 @@
       </properties>
     </profile>
     <profile>
-      <id>jdk9</id>
+      <id>jdk10</id>
       <properties>
-        <java.version>9</java.version>
+        <java.version>10</java.version>
       </properties>
     </profile>
     <profile>
