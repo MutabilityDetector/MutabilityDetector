@@ -59,12 +59,16 @@
   <organization>
     <name>Graham Allan</name>
   </organization>
-  <distributionManagement>
-    <snapshotRepository>
+
+  <repositories>
+    <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
+
   <reporting>
     <plugins>
       <plugin>
