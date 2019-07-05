@@ -2,7 +2,7 @@ sudo: true
 language: java
 matrix:
   include:
-    - jdk: oraclejdk8
+    - jdk: openjdk8
       env: MVN_PROFILE=jdk8
     - jdk: openjdk10
       env: MVN_PROFILE=jdk10
