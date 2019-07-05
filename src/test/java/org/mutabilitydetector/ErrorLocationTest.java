@@ -1,5 +1,6 @@
 package org.mutabilitydetector;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mutabilitydetector.unittesting.AllowedReason;
 import org.mutabilitydetector.unittesting.MutabilityAssertionError;
@@ -19,6 +20,7 @@ import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable
 
 
 @SuppressWarnings("ALL")
+@Ignore
 public class ErrorLocationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
