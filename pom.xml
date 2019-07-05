@@ -79,19 +79,6 @@
     </plugins>
   </reporting>
 
-  <profiles>
-    <profile>
-      <id>jdk11</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <java.version>11</java.version>
-        <javadoc.executable>${java.home}/bin/javadoc</javadoc.executable>
-      </properties>
-    </profile>
-  </profiles>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -242,7 +229,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <javadocExecutable>${javadoc.executable}</javadocExecutable>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
           <additionalOptions>-Xdoclint:none</additionalOptions>
         </configuration>
         <executions>
