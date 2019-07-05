@@ -81,24 +81,10 @@
 
   <profiles>
     <profile>
-      <id>jdk8</id>
+      <id>jdk11</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <properties>
-        <java.version>1.8</java.version>
-        <javadoc.executable>${java.home}/../bin/javadoc</javadoc.executable>
-      </properties>
-    </profile>
-    <profile>
-      <id>jdk10</id>
-      <properties>
-        <java.version>10</java.version>
-        <javadoc.executable>${java.home}/bin/javadoc</javadoc.executable>
-      </properties>
-    </profile>
-    <profile>
-      <id>jdk11</id>
       <properties>
         <java.version>11</java.version>
         <javadoc.executable>${java.home}/bin/javadoc</javadoc.executable>
@@ -258,11 +244,6 @@
         <configuration>
           <javadocExecutable>${javadoc.executable}</javadocExecutable>
           <additionalOptions>-Xdoclint:none</additionalOptions>
-          <fixClassComment>false</fixClassComment>
-          <fixFieldComment>true</fixFieldComment>
-          <fixMethodComment>false</fixMethodComment>
-          <force>true</force>
-          <fixTags>param</fixTags>
         </configuration>
         <executions>
           <execution>

@@ -2,10 +2,6 @@ sudo: true
 language: java
 matrix:
   include:
-    - jdk: openjdk8
-      env: MVN_PROFILE=jdk8
-    - jdk: openjdk10
-      env: MVN_PROFILE=jdk10
     - jdk: openjdk11
       env: MVN_PROFILE=jdk11
 script: "mvn install -P ${MVN_PROFILE}"
