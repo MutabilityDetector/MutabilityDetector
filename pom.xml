@@ -231,6 +231,7 @@
         <configuration>
           <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
           <additionalOptions>-Xdoclint:none</additionalOptions>
+          <source>8</source>
         </configuration>
         <executions>
           <execution>
