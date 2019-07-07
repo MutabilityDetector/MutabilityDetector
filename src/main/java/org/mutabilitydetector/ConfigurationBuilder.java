@@ -205,8 +205,7 @@ public abstract class ConfigurationBuilder {
      * and the classes loaded for analysis won't be loaded anyway.
      *
      * @see Configuration#classloadingOption()
-     * @return ClassloadingOption
-     *          - whether to allow class loading for analysis or not
+     * @param classloadingOption - whether to allow class loading for analysis or not
      */
     protected final void setClassloadingPolicy(ClassloadingOption classloadingOption) {
         this.classloadingOption = classloadingOption;

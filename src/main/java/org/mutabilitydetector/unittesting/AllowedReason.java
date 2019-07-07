@@ -169,7 +169,7 @@ public final class AllowedReason {
      * <pre><code>
      * &#064;Immutable
      * public final class UsesInternalMapForCaching {
-     *   private final Map<String, String> internalCache = new HashMap<String, String>();
+     *   private final Map&lt;String, String&gt; internalCache = new HashMap&lt;String, String&gt;();
      *   // ... constructor, and methods which mutate the map for caching
      * }
      *
@@ -182,7 +182,7 @@ public final class AllowedReason {
      *                    assumingFields("internalCache").areModifiedAsPartOfAnUnobservableCachingStrategy());
      * </code></pre>
      * <p>
-     * This method is also available in Iterable$lt;String&gt; form {@link #assumingFields(Iterable))}.
+     * This method is also available in Iterable&lt;String&gt; from {@link AllowedReason#assumingFields(Iterable)}.
      *
      *
      * @see MutabilityAssert
@@ -212,7 +212,7 @@ public final class AllowedReason {
      * <pre><code>
      * &#064;Immutable
      * public final class UsesInternalMapForCaching {
-     *   private final Map<String, String> internalCache = new HashMap<String, String>();
+     *   private final Map&lt;String, String&gt; internalCache = new HashMap&lt;String, String&gt;();
      *   // ... constructor, and methods which mutate the map for caching
      * }
      *

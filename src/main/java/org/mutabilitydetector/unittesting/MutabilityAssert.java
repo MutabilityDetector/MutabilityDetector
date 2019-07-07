@@ -231,7 +231,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * introduced, e.g. if someone adds a setter method.
  *
  * <p>
- * Similar to the <code>Matcher&ltAnalysisResult&gt;</code> parameter, the
+ * Similar to the <code>Matcher&lt;AnalysisResult&gt;</code> parameter, the
  * allowed reason parameter of
  * {@link #assertInstancesOf(Class, Matcher, Matcher)} is a
  * <code>Matcher&lt;{@link MutableReasonDetail}&gt;</code>. Mutability Detector
@@ -322,7 +322,7 @@ import org.mutabilitydetector.MutableReasonDetail;
  * </pre>
  *
  * Mutability Detector does not currently behave any differently for bounded type
- * parameters such as <code>T extends Foo</code> or <code>T super Foo & Bar</code>.
+ * parameters such as <code>T extends Foo</code> or <code>T super Foo &amp; Bar</code>.
  * Only the name of the generic type is considered, and must match exactly the
  * name of the type parameter used by the class.
  *
