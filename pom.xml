@@ -280,6 +280,7 @@
                   <exclude>com.google.code.findbugs:annotations</exclude>
                   <exclude>org.hamcrest:hamcrest-core</exclude>
                   <exclude>org.checkerframework:checker-compat-qual</exclude>
+                  <exclude>org.checkerframework:checker-qual</exclude>
                   <exclude>com.google.errorprone:error_prone_annotations</exclude>
                   <exclude>com.google.j2objc:j2objc-annotations</exclude>
                   <exclude>org.codehaus.mojo:animal-sniffer-annotations</exclude>
