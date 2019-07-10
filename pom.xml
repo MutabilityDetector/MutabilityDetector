@@ -98,12 +98,10 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-            <version>3.0.0-M1</version>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -116,10 +114,10 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
             <configuration>
-              <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-              <additionalparam>-Xdoclint:none</additionalparam>
+              <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+              <additionalOptions>-Xdoclint:none</additionalOptions>
+              <source>8</source>
             </configuration>
             <executions>
               <execution>
@@ -147,7 +145,6 @@
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.8</version>
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>
@@ -213,7 +210,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.9.1</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -224,6 +221,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.6.8</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -277,6 +279,10 @@
                   <exclude>com.google.code.findbugs:jsr305</exclude>
                   <exclude>com.google.code.findbugs:annotations</exclude>
                   <exclude>org.hamcrest:hamcrest-core</exclude>
+                  <exclude>org.checkerframework:checker-compat-qual</exclude>
+                  <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                  <exclude>com.google.j2objc:j2objc-annotations</exclude>
+                  <exclude>org.codehaus.mojo:animal-sniffer-annotations</exclude>
                 </excludes>
               </artifactSet>
               <filters>
@@ -323,51 +329,6 @@
                 </transformer>
               </transformers>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.1</version>
-        <configuration>
-          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-          <additionalOptions>-Xdoclint:none</additionalOptions>
-          <source>8</source>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -471,11 +432,6 @@
       <artifactId>asm-nonclassloadingextensions</artifactId>
       <version>1.0-rc2</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.security</groupId>
-      <artifactId>xml-security-impl</artifactId>
-      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
