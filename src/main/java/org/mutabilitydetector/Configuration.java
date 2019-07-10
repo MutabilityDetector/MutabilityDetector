@@ -144,7 +144,7 @@ public interface Configuration {
     /**
      * Safe methods for copying collections when being assigned to a field in a class's constructor.
      * 
-     * @return
+     * @return hardcodedCopyMethods - methods that are deemed safe for copying
      */
     ImmutableSetMultimap<String, CopyMethod> hardcodedCopyMethods();
 
