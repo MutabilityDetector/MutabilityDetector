@@ -408,7 +408,7 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>2.9</version>
+        <version>3.3.3</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
