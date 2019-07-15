@@ -342,7 +342,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.10</version>
+        <version>2.0.0</version>
         <configuration>
           <verbose>false</verbose>
           <licenseName>apache_v2</licenseName>
