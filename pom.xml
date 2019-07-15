@@ -20,7 +20,7 @@
     <package.base>org.mutabilitydetector</package.base>
     <repackage.base>${package.base}.internal</repackage.base>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <findbugs-plugin.version>3.0.4</findbugs-plugin.version>
+    <findbugs-plugin.version>3.0.5</findbugs-plugin.version>
     <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
   <issueManagement>
