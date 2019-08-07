@@ -49,6 +49,9 @@ public class GuavaConfiguration extends ConfigurationBuilder {
         hardcodeAsImmutableContainerType(packageBase + "collect.ImmutableTable");
         hardcodeAsImmutableContainerType(packageBase + "collect.Range");
         hardcodeAsImmutableContainerType(packageBase + "base.Optional");
+        hardcodeAsDefinitelyImmutable(packageBase + "primitives.ImmutableDoubleArray");
+        hardcodeAsDefinitelyImmutable(packageBase + "primitives.ImmutableIntArray");
+        hardcodeAsDefinitelyImmutable(packageBase + "primitives.ImmutableLongArray");
     }
 
 }
