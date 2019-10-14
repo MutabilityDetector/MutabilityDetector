@@ -30,9 +30,14 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
+import org.mutabilitydetector.locations.CodeLocation;
+import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
 import org.mutabilitydetector.locations.Dotted;
 
 import com.google.common.collect.Iterables;
@@ -128,7 +133,8 @@ public final class ProvidedOtherClass {
     public Matcher<MutableReasonDetail> isAlsoImmutable() {
         final Matcher<MutableReasonDetail> allowGenericTypes = new AllowedIfOtherClassIsGenericTypeOfCollectionField(dottedClassNames);
 
-        return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, AllowedIfOtherClassIsImmutable::new)));
+        return anyOf(allowGenericTypes, anyOf(transform(dottedClassNames, AllowedIfOtherClassIsImmutable::new)),
+                new AllowedIfOtherClassIsGenericTypeParameter(dottedClassNames));
     }
 
     /**
@@ -267,6 +273,43 @@ public final class ProvidedOtherClass {
                 }
             }
             return true;
+        }
+    }
+
+    private static final class AllowedIfOtherClassIsGenericTypeParameter extends BaseMutableReasonDetailMatcher {
+        private final Iterable<Dotted> classNames;
+
+        public AllowedIfOtherClassIsGenericTypeParameter(final Iterable<Dotted> classNames) {
+            if (classNames == null) {
+                throw new IllegalArgumentException("classNames cannot be null");
+            }
+            this.classNames = classNames;
+        }
+
+        @Override
+        protected boolean matchesSafely(final MutableReasonDetail reasonDetail) {
+            final CodeLocation<?> codeLocation = reasonDetail.codeLocation();
+            if (reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD) && codeLocation instanceof FieldLocation) {
+                final FieldLocation location = (FieldLocation) reasonDetail.codeLocation();
+                try {
+                    final Class<?> type = Class.forName(location.typeName());
+                    try {
+                        final Field field = type.getDeclaredField(location.fieldName());
+                        final Type fieldType = field.getType();
+                        if (fieldType instanceof Class) {
+                            final Dotted fieldClassDotted = Dotted.fromClass((Class<?>) fieldType);
+                            for (final Dotted allowedClass : classNames) {
+                                if (fieldClassDotted.equals(allowedClass)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (final NoSuchFieldException | SecurityException e) {
+                    }
+                } catch (final ClassNotFoundException e) {
+                }
+            }
+            return false;
         }
     }
 }
