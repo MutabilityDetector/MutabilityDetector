@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Collection;
 import java.util.List;
 
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -148,7 +149,7 @@ final class EffectiveAssignmentInsnVerifier {
             } else {
                 final String message = "Value for lazy field is not a constant but stems from a method which is "
                         + "neither parameterless nor an instance or class method.";
-                setterMethodChecker.setMutableTypeToFieldResult(message, candidateName);
+                setterMethodChecker.setMutableTypeToFieldResult(message, candidateName, Dotted.fromFieldNode(candidate));
             }
         }
     }

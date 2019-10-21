@@ -22,6 +22,8 @@ package org.mutabilitydetector.locations;
 
 
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -71,6 +73,25 @@ public final class Dotted extends ClassName {
 
     public static Dotted fromType(Type type) {
         return dotted(type.getClassName());
+    }
+
+    /**
+     * @param fieldDescription a field's descriptor (see {@link Type})
+     * @return a lightweight representation of a field's declared type
+     * @see org.objectweb.asm.ClassVisitor#visitField(int, String, String, String, Object)
+     */
+    public static Dotted fromFieldDescription(final String fieldDescription) {
+        final Type type = Type.getType(fieldDescription);
+        final int sort = type.getSort();
+        return sort == Type.ARRAY ? dotted(fieldDescription) : fromType(type);
+    }
+
+    public static Dotted fromFieldNode(final FieldNode node) {
+        return fromFieldDescription(node.desc);
+    }
+
+    public static Dotted fromFieldInsnNode(final FieldInsnNode node) {
+        return fromFieldDescription(node.desc);
     }
 
     public String asResource() {

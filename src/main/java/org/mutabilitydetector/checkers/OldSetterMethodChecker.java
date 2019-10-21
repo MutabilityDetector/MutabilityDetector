@@ -34,6 +34,7 @@ import org.mutabilitydetector.checkers.VarStack.VarStackSnapshot;
 import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -113,7 +114,7 @@ public final class OldSetterMethodChecker extends AsmMutabilityChecker {
         private void detectInStaticMethod(FieldInsnNode fieldInsnNode) {
             String ownerOfReassignedField = fieldInsnNode.owner;
             if (reassignedIsThisType(ownerOfReassignedField) && assignmentIsNotOnAParameter(fieldInsnNode)) {
-                setIsImmutableResult(fieldInsnNode.name);
+                setIsImmutableResult(fieldInsnNode.name, Dotted.fromFieldInsnNode(fieldInsnNode));
             }
         }
 
@@ -136,7 +137,7 @@ public final class OldSetterMethodChecker extends AsmMutabilityChecker {
             VarStackSnapshot varStackSnapshot = varStack.next();
             if (varStackSnapshot.thisObjectWasAddedToStack()) {
                 // Throwing an NPE, assuming it's mutable for now.
-                setIsImmutableResult(fieldInsnNode.name);
+                setIsImmutableResult(fieldInsnNode.name, Dotted.fromFieldInsnNode(fieldInsnNode));
             }
         }
 
@@ -154,9 +155,9 @@ public final class OldSetterMethodChecker extends AsmMutabilityChecker {
             varStack.visitVarInsn(var);
         }
 
-        private void setIsImmutableResult(String fieldName) {
+        private void setIsImmutableResult(String fieldName, Dotted fieldType) {
             setResult(format("Field [%s] can be reassigned within method [%s]", fieldName, this.name), 
-                      FieldLocation.fieldLocation(fieldName, fromInternalName(owner)), 
+                      FieldLocation.fieldLocation(fieldName, fromInternalName(owner), fieldType), 
                       MutabilityReason.FIELD_CAN_BE_REASSIGNED);
         }
 

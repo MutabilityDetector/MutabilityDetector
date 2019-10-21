@@ -132,14 +132,16 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
 
         private final @Nonnull String fieldName;
         private final @Nonnull ClassLocation ownerOfField;
+        private final @Nonnull Dotted fieldType;
 
-        private FieldLocation(String fieldName, ClassLocation ownerOfField) {
+        private FieldLocation(String fieldName, ClassLocation ownerOfField, Dotted fieldType) {
             this.fieldName = fieldName;
             this.ownerOfField = ownerOfField;
+            this.fieldType = fieldType;
         }
 
-        public static FieldLocation fieldLocation(String fieldName, ClassLocation ownerOfField) {
-            return new FieldLocation(fieldName, ownerOfField);
+        public static FieldLocation fieldLocation(String fieldName, ClassLocation ownerOfField, Dotted fieldType) {
+            return new FieldLocation(fieldName, ownerOfField, fieldType);
         }
 
         public String fieldName() {
@@ -184,6 +186,10 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         @Override
         public String prettyPrint() {
             return String.format("[Field: %s at %s(%s.java:1)]", fieldName(), typeName(), typeShortName());
+        }
+
+        public Dotted fieldType() {
+            return fieldType;
         }
 
     }
