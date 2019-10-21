@@ -39,7 +39,6 @@ import static org.mutabilitydetector.locations.Slashed.slashed;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.junit.Test;
 import org.mutabilitydetector.AnalysisResult;
@@ -48,6 +47,7 @@ import org.mutabilitydetector.IsImmutable;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.cli.CommandLineOptions.ReportMode;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.misc.TimingUtil;
 
 public class SessionResultsFormatterTest {
@@ -91,7 +91,8 @@ public class SessionResultsFormatterTest {
                                                                                         CAN_BE_SUBCLASSED),
                                                                 newMutableReasonDetail("2nd checker reason message",
                                                                                         FieldLocation.fieldLocation("myField",
-                                                                                                                    fromInternalName("path/to/OtherClass")),
+                                                                                                                    fromInternalName("path/to/OtherClass"),
+                                                                                                                    Dotted.dotted("java.lang.String")),
                                                                                         MUTABLE_TYPE_TO_FIELD));
 
         BatchAnalysisOptions options = mock(BatchAnalysisOptions.class);

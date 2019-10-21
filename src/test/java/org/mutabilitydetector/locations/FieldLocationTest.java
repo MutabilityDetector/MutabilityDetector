@@ -38,29 +38,30 @@ public class FieldLocationTest {
     @Test
     public void hasFieldNameAndNameOfTypeContainingField() throws Exception {
         FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName",
-                ClassLocation.fromInternalName("a/b/MyClass"));
+                ClassLocation.fromInternalName("a/b/MyClass"), Dotted.dotted("long"));
         assertThat(fieldLocation.fieldName(), is("myFieldName"));
         assertThat(fieldLocation.typeName(), is("a.b.MyClass"));
     }
 
     @Test
     public void comparesToOtherFieldLocationsSortingAlphabeticallyByOwningTypeNameThenFieldName() throws Exception {
-        FieldLocation comparing = fieldLocation("myFieldName", fromInternalName("a/b/MyClass"));
-        assertThat(comparing.compareTo(fieldLocation("myFieldNamd", fromInternalName("a/b/MyClass"))),
+        FieldLocation comparing = fieldLocation("myFieldName", fromInternalName("a/b/MyClass"), Dotted.dotted("int"));
+        assertThat(comparing.compareTo(fieldLocation("myFieldNamd", fromInternalName("a/b/MyClass"), Dotted.dotted("byte"))),
                 is(greaterThan(0)));
-        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClass"))), is(equalTo(0)));
-        assertThat(comparing.compareTo(fieldLocation("myFieldNamf", fromInternalName("a/b/MyClass"))), is(lessThan(0)));
+        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClass"), Dotted.dotted("int"))), is(equalTo(0)));
+        assertThat(comparing.compareTo(fieldLocation("myFieldNamf", fromInternalName("a/b/MyClass"), Dotted.dotted("long"))), is(lessThan(0)));
 
-        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClasr"))),
+        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClasr"), Dotted.dotted("short"))),
                 is(greaterThan(0)));
-        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClass"))), is(equalTo(0)));
-        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClast"))), is(lessThan(0)));
+        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClass"), Dotted.dotted("int"))), is(equalTo(0)));
+        assertThat(comparing.compareTo(fieldLocation("myFieldName", fromInternalName("a/b/MyClast"), Dotted.dotted("float"))), is(lessThan(0)));
     }
 
     @Test
     public void prettyPrintIncludesFieldAndClassName() throws Exception {
         FieldLocation fieldLocation = FieldLocation.fieldLocation("myFieldName",
-                ClassLocation.fromInternalName("a/b/MyClass"));
+                ClassLocation.fromInternalName("a/b/MyClass"), Dotted.dotted("java.util.Map"));
         assertThat(fieldLocation.prettyPrint(), is("[Field: myFieldName at a.b.MyClass(MyClass.java:1)]"));
     }
+
 }

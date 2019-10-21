@@ -27,6 +27,7 @@ import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldL
 
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.FieldVisitor;
 
 public final class PublishedNonFinalFieldChecker extends AsmMutabilityChecker {
@@ -35,7 +36,7 @@ public final class PublishedNonFinalFieldChecker extends AsmMutabilityChecker {
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (field(access).isNotPrivate() && field(access).isNotFinal()) {
             setResult("Field is visible outwith this class, and is not declared final.",
-                    fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                    fieldLocation(name, ClassLocation.fromInternalName(ownerClass), Dotted.fromFieldDescription(desc)),
                     MutabilityReason.PUBLISHED_NON_FINAL_FIELD);
         }
         return super.visitField(access, name, desc, signature, value);

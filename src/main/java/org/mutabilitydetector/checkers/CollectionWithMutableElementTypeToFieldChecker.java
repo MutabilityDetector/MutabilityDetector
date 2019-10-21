@@ -37,6 +37,7 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -53,6 +54,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
     private final JdkCollectionTypes jdkCollectionTypes = new JdkCollectionTypes();
     
     private final Map<String, String> fieldSignatures = newHashMap();
+    private final Map<String, Dotted> fieldTypes = new HashMap<>();
     private final AnalysisInProgress analysisInProgress;
     
     public CollectionWithMutableElementTypeToFieldChecker(
@@ -69,6 +71,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         fieldSignatures.put(name, signature);
+        fieldTypes.put(name, Dotted.fromFieldDescription(desc));
         return super.visitField(access, name, desc, signature, value);
     }
     
@@ -113,7 +116,7 @@ public final class CollectionWithMutableElementTypeToFieldChecker extends AsmMut
                 
                 if (!collectionField.isGeneric() || anyGenericParameterTypesAreMutable(genericParameters)) {
                     setResult(format("Field can have collection with mutable element type (%s) assigned to it.", collectionField.asString()),
-                              fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass)),
+                              fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass), fieldTypes.get(fieldName)),
                               MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE);
                 }
             }

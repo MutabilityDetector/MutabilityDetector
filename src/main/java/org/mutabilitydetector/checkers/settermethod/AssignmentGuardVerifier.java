@@ -37,6 +37,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.mutabilitydetector.MutabilityReason;
 import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Entry;
 import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.tree.*;
 
 /**
@@ -111,14 +112,10 @@ final class AssignmentGuardVerifier {
     private final class NonNullCheckAssignmentGuardVerifier {
     
         private final FieldNode candidate;
-        private final ControlFlowBlock controlFlowBlock;
-        private final JumpInsn assignmentGuard;
     
         public NonNullCheckAssignmentGuardVerifier(final FieldNode theCandidate,
                 final ControlFlowBlock theControlFlowBlock, final JumpInsn theAssignmentGuard) {
             candidate = theCandidate;
-            controlFlowBlock = theControlFlowBlock;
-            assignmentGuard = theAssignmentGuard;
         }
     
         public void verify() {
@@ -126,7 +123,8 @@ final class AssignmentGuardVerifier {
             if (isNotPossibleInitialValueOfCandidate(DefaultUnknownTypeValue.getInstanceForNull(), candidate)) {
                 final String msgTemplate = "The assignment guard for lazy field [%s] should check against null. "
                         + "Otherwise the field gets never initialised.";
-                setterMethodChecker.setNonFinalFieldResult(format(msgTemplate, candidateName), candidateName);
+                setterMethodChecker.setNonFinalFieldResult(format(msgTemplate, candidateName), candidateName,
+                        Dotted.fromFieldNode(candidate));
             }
         }
     

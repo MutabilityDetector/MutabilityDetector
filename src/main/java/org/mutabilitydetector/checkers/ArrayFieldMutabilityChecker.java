@@ -26,6 +26,7 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
@@ -45,7 +46,7 @@ public class ArrayFieldMutabilityChecker extends AsmMutabilityChecker {
              */
             if (isArray(desc) && !isTheInternalImmutableArrayFieldInAnEnum(name)) {
                 setResult("Field is an array.",
-                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                        fieldLocation(name, ClassLocation.fromInternalName(ownerClass), Dotted.fromFieldDescription(desc)),
                         MutabilityReason.ARRAY_TYPE_INHERENTLY_MUTABLE);
             }
         }
