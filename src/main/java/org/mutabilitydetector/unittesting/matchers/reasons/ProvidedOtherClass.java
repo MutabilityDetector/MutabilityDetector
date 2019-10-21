@@ -30,9 +30,6 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
@@ -291,22 +288,11 @@ public final class ProvidedOtherClass {
             final CodeLocation<?> codeLocation = reasonDetail.codeLocation();
             if (reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD) && codeLocation instanceof FieldLocation) {
                 final FieldLocation location = (FieldLocation) reasonDetail.codeLocation();
-                try {
-                    final Class<?> type = Class.forName(location.typeName());
-                    try {
-                        final Field field = type.getDeclaredField(location.fieldName());
-                        final Type fieldType = field.getType();
-                        if (fieldType instanceof Class) {
-                            final Dotted fieldClassDotted = Dotted.fromClass((Class<?>) fieldType);
-                            for (final Dotted allowedClass : classNames) {
-                                if (fieldClassDotted.equals(allowedClass)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    } catch (final NoSuchFieldException | SecurityException e) {
+                final Dotted fieldType = location.fieldType();
+                for (final Dotted allowedClass : classNames) {
+                    if (fieldType.equals(allowedClass)) {
+                        return true;
                     }
-                } catch (final ClassNotFoundException e) {
                 }
             }
             return false;

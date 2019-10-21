@@ -26,6 +26,7 @@ import static org.mutabilitydetector.checkers.AccessModifierQuery.field;
 import static org.mutabilitydetector.locations.CodeLocation.FieldLocation.fieldLocation;
 
 import org.mutabilitydetector.MutabilityReason;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.objectweb.asm.FieldVisitor;
 
@@ -35,7 +36,7 @@ public final class NonFinalFieldChecker extends AsmMutabilityChecker {
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (field(access).isNotFinal() && field(access).isNotStatic()) {
             setResult("Field is not final, if shared across threads the Java Memory Model will not guarantee it is initialised before it is read.",
-                    fieldLocation(name, ClassLocation.fromInternalName(ownerClass)),
+                    fieldLocation(name, ClassLocation.fromInternalName(ownerClass), Dotted.fromFieldDescription(desc)),
                     MutabilityReason.NON_FINAL_FIELD);
         }
         return super.visitField(access, name, desc, signature, value);

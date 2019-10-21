@@ -42,7 +42,9 @@ import org.mutabilitydetector.checkers.info.MethodIdentifier;
 import org.mutabilitydetector.checkers.info.PrivateMethodInvocationInformation;
 import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Entry;
 import org.mutabilitydetector.checkers.settermethod.CandidatesInitialisersMapping.Initialisers;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.locations.Slashed;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -131,7 +133,7 @@ public final class SetterMethodChecker extends AbstractSetterMethodChecker {
         final Collection<FieldNode> unassociatedVariables = candidatesInitialisersMapping
                 .removeAndGetCandidatesWithoutInitialisingMethod();
         for (final FieldNode unassociatedVariable : unassociatedVariables) {
-            setNonFinalFieldResult(unassociatedVariable.name);
+            setNonFinalFieldResult(unassociatedVariable.name, Dotted.fromFieldNode(unassociatedVariable));
         }
     }
 

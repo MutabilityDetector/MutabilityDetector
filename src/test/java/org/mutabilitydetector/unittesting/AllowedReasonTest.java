@@ -41,6 +41,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.benchmarks.types.InterfaceType;
+import org.mutabilitydetector.locations.Dotted;
 import org.mutabilitydetector.unittesting.matchers.reasons.AllowingNonFinalFields;
 import org.mutabilitydetector.unittesting.matchers.reasons.NoReasonsAllowed;
 
@@ -88,7 +89,7 @@ public class AllowedReasonTest {
     @Test
     public void canAllowArrayFields() throws Exception {
         MutableReasonDetail reason = newMutableReasonDetail("has array field",
-                                                            fieldLocation("myArrayField", fromInternalName("a/b/c")),
+                                                            fieldLocation("myArrayField", fromInternalName("a/b/c"), Dotted.dotted("[B")),
                                                             ARRAY_TYPE_INHERENTLY_MUTABLE);
         
         assertThat(assumingFields("myArrayField").areNotModifiedAndDoNotEscape(),

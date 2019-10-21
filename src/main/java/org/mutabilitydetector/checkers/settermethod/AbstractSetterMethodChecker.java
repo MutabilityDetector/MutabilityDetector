@@ -35,6 +35,7 @@ import org.mutabilitydetector.Reason;
 import org.mutabilitydetector.checkers.AsmMutabilityChecker;
 import org.mutabilitydetector.locations.CodeLocation.ClassLocation;
 import org.mutabilitydetector.locations.CodeLocation.FieldLocation;
+import org.mutabilitydetector.locations.Dotted;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -102,7 +103,7 @@ abstract class AbstractSetterMethodChecker extends AsmMutabilityChecker {
             result = new FieldNode(access, name, desc, signature, value);
             candidatesInitialisersMapping.addCandidate((FieldNode) result);
         } else if (field(access).isNotFinal() && field(access).isNotStatic()) {
-            setNonFinalFieldResult(name);
+            setNonFinalFieldResult(name, Dotted.fromFieldDescription(desc));
         }
         if (super.visitField(0, null, null, null, null) == result) {
             result = classNode.visitField(access, name, desc, signature, value);
@@ -180,14 +181,14 @@ abstract class AbstractSetterMethodChecker extends AsmMutabilityChecker {
         super.setResult(message, fromInternalName(classNode.name), reason);
     }
 
-    final void setNonFinalFieldResult(final String variableName) {
+    final void setNonFinalFieldResult(final String variableName, final Dotted variableType) {
         final String msg = "Field is not final, if shared across threads the Java Memory Model will not"
                 + " guarantee it is initialised before it is read.";
-        setNonFinalFieldResult(msg, variableName);
+        setNonFinalFieldResult(msg, variableName, variableType);
     }
 
-    final void setNonFinalFieldResult(final String message, final String variableName) {
-        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
+    final void setNonFinalFieldResult(final String message, final String variableName, final Dotted variableType) {
+        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass), variableType);
         setResult(message, location, MutabilityReason.NON_FINAL_FIELD);
     }
 
@@ -201,8 +202,8 @@ abstract class AbstractSetterMethodChecker extends AsmMutabilityChecker {
         setResultForClass(message, MutabilityReason.FIELD_CAN_BE_REASSIGNED);
     }
 
-    final void setMutableTypeToFieldResult(final String message, final String variableName) {
-        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass));
+    final void setMutableTypeToFieldResult(final String message, final String variableName, final Dotted variableType) {
+        final FieldLocation location = fieldLocation(variableName, ClassLocation.fromInternalName(ownerClass), variableType);
         setResult(message, location, MutabilityReason.MUTABLE_TYPE_TO_FIELD);
     }
 
