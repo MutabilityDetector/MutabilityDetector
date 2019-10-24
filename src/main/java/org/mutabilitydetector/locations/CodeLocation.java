@@ -1,5 +1,7 @@
 package org.mutabilitydetector.locations;
 
+import java.util.Objects;
+
 /*
  * #%L
  * MutabilityDetector
@@ -135,6 +137,9 @@ public abstract class CodeLocation<T extends CodeLocation<T>> implements Compara
         private final @Nonnull Dotted fieldType;
 
         private FieldLocation(String fieldName, ClassLocation ownerOfField, Dotted fieldType) {
+            Objects.requireNonNull(fieldName, "fieldName cannot be null");
+            Objects.requireNonNull(ownerOfField, "ownerOfField cannot be null");
+            Objects.requireNonNull(fieldType, "fieldType cannot be null");
             this.fieldName = fieldName;
             this.ownerOfField = ownerOfField;
             this.fieldType = fieldType;
