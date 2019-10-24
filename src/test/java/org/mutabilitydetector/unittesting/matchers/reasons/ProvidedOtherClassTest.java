@@ -33,6 +33,7 @@ import static org.mutabilitydetector.locations.Dotted.dotted;
 import static org.mutabilitydetector.unittesting.AllowedReason.provided;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
+import static org.mutabilitydetector.unittesting.MutabilityMatchers.areNotImmutable;
 
 import org.hamcrest.Matcher;
 import org.junit.Rule;
@@ -148,7 +149,28 @@ public class ProvidedOtherClassTest {
         assertInstancesOf(ClassWithGenericField.class, areImmutable(), provided(SomeInterface.class).isAlsoImmutable());
     }
 
+    /**
+     * When a class is declared as immutable with a type parameter that is
+     * considered immutable, then a field with that type should also be considered
+     * immutable.
+     *
+     * @see {@link https://github.com/MutabilityDetector/MutabilityDetector/issues/104}
+     */
+    @Test
+    public final void considerProvidedImmutableOtherClassesForGenericFields() {
+        assertInstancesOf(ClassWithGenericField.class, areImmutable(),
+                provided(UnrelatedInterface.class, SomeInterface.class).areAlsoImmutable());
+    }
+
+    @Test
+    public final void considerClassWithGenericParameterMutable() {
+        assertInstancesOf(ClassWithGenericField.class, areNotImmutable());
+    }
+
     protected static interface SomeInterface {
+    }
+
+    protected static interface UnrelatedInterface {
     }
 
     protected static final class ClassWithGenericField<T extends SomeInterface> {
