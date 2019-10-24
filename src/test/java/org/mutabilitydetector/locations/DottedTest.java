@@ -101,7 +101,6 @@ public class DottedTest {
         final Class<?> toAnalyse = GenericPojo.class;
 
         // when
-
         TestUtil.runChecker(extractor, toAnalyse);
 
         // then
@@ -130,7 +129,6 @@ public class DottedTest {
         final Class<?> toAnalyse = BoundedGenericPojo.class;
 
         // when
-
         TestUtil.runChecker(extractor, toAnalyse);
 
         // then
@@ -147,7 +145,7 @@ public class DottedTest {
         T listField;
         S singleField;
         Function<? extends S, T> functionField;
-        T arrayField;
+        T[] arrayField;
         Predicate<? super S> predicateField;
     }
 

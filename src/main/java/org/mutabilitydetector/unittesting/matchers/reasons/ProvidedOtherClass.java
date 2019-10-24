@@ -30,6 +30,8 @@ import static org.mutabilitydetector.MutabilityReason.ABSTRACT_TYPE_TO_FIELD;
 import static org.mutabilitydetector.MutabilityReason.COLLECTION_FIELD_WITH_MUTABLE_ELEMENT_TYPE;
 import static org.mutabilitydetector.MutabilityReason.MUTABLE_TYPE_TO_FIELD;
 
+import java.util.stream.StreamSupport;
+
 import org.hamcrest.Matcher;
 import org.mutabilitydetector.MutableReasonDetail;
 import org.mutabilitydetector.checkers.MutableTypeToFieldChecker;
@@ -289,11 +291,7 @@ public final class ProvidedOtherClass {
             if (reasonDetail.reason().isOneOf(MUTABLE_TYPE_TO_FIELD) && codeLocation instanceof FieldLocation) {
                 final FieldLocation location = (FieldLocation) reasonDetail.codeLocation();
                 final Dotted fieldType = location.fieldType();
-                for (final Dotted allowedClass : classNames) {
-                    if (fieldType.equals(allowedClass)) {
-                        return true;
-                    }
-                }
+                return StreamSupport.stream(classNames.spliterator(), false).anyMatch(fieldType::equals);
             }
             return false;
         }
