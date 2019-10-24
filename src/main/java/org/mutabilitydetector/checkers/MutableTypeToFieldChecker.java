@@ -45,7 +45,6 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,9 +65,6 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     private final Map<String, String> genericFields = Maps.newHashMap();
     private final AnalysisInProgress analysisInProgress;
     private final Map<String, String> typeSignatureByFieldName = Maps.newHashMap();
-    private final Map<String, Dotted> typeByFieldName = new HashMap<>(); // distinct from typeSignatureByFieldName as
-                                                                         // "signature" is not always specified when
-                                                                         // visiting a field
 
     public MutableTypeToFieldChecker(TypeStructureInformation info,
                                      MutableTypeInformation mutableTypeInfo,
@@ -100,7 +96,6 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if (signature == null) { return null ; }
         typeSignatureByFieldName.put(name, signature);
-        typeByFieldName.put(name, Dotted.fromFieldDescription(desc));
         
         GenericFieldVisitor visitor = new GenericFieldVisitor();
         new SignatureReader(signature).acceptType(visitor);
@@ -165,7 +160,7 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
             int sort = typeAssignedToField.getSort();
             String fieldName = fieldInsnNode.name;
             FieldLocation fieldLocation = fieldLocation(fieldName, ClassLocation.fromInternalName(ownerClass),
-                    typeByFieldName.get(fieldName));
+                    Dotted.fromFieldInsnNode(fieldInsnNode));
 
             switch (sort) {
             case Type.OBJECT:
