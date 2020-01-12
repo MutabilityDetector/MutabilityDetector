@@ -117,7 +117,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
-              <additionalOptions>-Xdoclint:none</additionalOptions>
+              <doclint>none</doclint>
               <source>8</source>
             </configuration>
             <executions>
@@ -211,6 +211,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <doclint>none</doclint>
+          </configuration>
           <version>3.1.1</version>
         </plugin>
         <plugin>
