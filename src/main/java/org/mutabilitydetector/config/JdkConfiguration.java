@@ -1,5 +1,23 @@
 package org.mutabilitydetector.config;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 /*
  * #%L
  * MutabilityDetector
@@ -22,10 +40,6 @@ package org.mutabilitydetector.config;
 
 import org.mutabilitydetector.ConfigurationBuilder;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
-
 /**
  * Non-exhaustive list of immutable classes from the standard JDK.
  *
@@ -41,24 +55,52 @@ import java.net.URI;
  * @see BigDecimal
  * @see BigInteger
  * @see Class
+ * @see Duration
+ * @see Instant
+ * @see LocalDate
+ * @see LocalDateTime
+ * @see LocalTime
+ * @see MonthDay
+ * @see OffsetDateTime
+ * @see OffsetTime
+ * @see Period
+ * @see Year
+ * @see YearMonth
+ * @see ZoneOffset
+ * @see ZonedDateTime
+ * @see DateTimeFormatter
  */
 public class JdkConfiguration extends ConfigurationBuilder {
-    @Override
-    public void configure() {
-        hardcodeAsDefinitelyImmutable(String.class);
-        hardcodeAsDefinitelyImmutable(Boolean.class);
-        hardcodeAsDefinitelyImmutable(Byte.class);
-        hardcodeAsDefinitelyImmutable(Character.class);
-        hardcodeAsDefinitelyImmutable(Short.class);
-        hardcodeAsDefinitelyImmutable(Integer.class);
-        hardcodeAsDefinitelyImmutable(Long.class);
-        hardcodeAsDefinitelyImmutable(Float.class);
-        hardcodeAsDefinitelyImmutable(Double.class);
-        hardcodeAsDefinitelyImmutable(BigDecimal.class);
-        hardcodeAsDefinitelyImmutable(BigInteger.class);
-        hardcodeAsDefinitelyImmutable(Class.class);
-        hardcodeAsDefinitelyImmutable(URI.class);
+	@Override
+	public void configure() {
+		hardcodeAsDefinitelyImmutable(String.class);
+		hardcodeAsDefinitelyImmutable(Boolean.class);
+		hardcodeAsDefinitelyImmutable(Byte.class);
+		hardcodeAsDefinitelyImmutable(Character.class);
+		hardcodeAsDefinitelyImmutable(Short.class);
+		hardcodeAsDefinitelyImmutable(Integer.class);
+		hardcodeAsDefinitelyImmutable(Long.class);
+		hardcodeAsDefinitelyImmutable(Float.class);
+		hardcodeAsDefinitelyImmutable(Double.class);
+		hardcodeAsDefinitelyImmutable(BigDecimal.class);
+		hardcodeAsDefinitelyImmutable(BigInteger.class);
+		hardcodeAsDefinitelyImmutable(Class.class);
+		hardcodeAsDefinitelyImmutable(URI.class);
+		hardcodeAsDefinitelyImmutable(Duration.class);
+		hardcodeAsDefinitelyImmutable(Instant.class);
+		hardcodeAsDefinitelyImmutable(LocalDate.class);
+		hardcodeAsDefinitelyImmutable(LocalDateTime.class);
+		hardcodeAsDefinitelyImmutable(LocalTime.class);
+		hardcodeAsDefinitelyImmutable(MonthDay.class);
+		hardcodeAsDefinitelyImmutable(OffsetDateTime.class);
+		hardcodeAsDefinitelyImmutable(OffsetTime.class);
+		hardcodeAsDefinitelyImmutable(Period.class);
+		hardcodeAsDefinitelyImmutable(Year.class);
+		hardcodeAsDefinitelyImmutable(YearMonth.class);
+		hardcodeAsDefinitelyImmutable(ZoneOffset.class);
+		hardcodeAsDefinitelyImmutable(ZonedDateTime.class);
+		hardcodeAsDefinitelyImmutable(DateTimeFormatter.class);
 
-        hardcodeAsImmutableContainerType("java.util.Optional");
-    }
+		hardcodeAsImmutableContainerType("java.util.Optional");
+	}
 }
