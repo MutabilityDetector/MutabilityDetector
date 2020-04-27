@@ -373,7 +373,7 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-scm</artifactId>
-        <version>3.3.4</version>
+        <version>3.4.0</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
