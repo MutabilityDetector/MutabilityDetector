@@ -31,6 +31,7 @@ import org.junit.rules.MethodRule;
 import org.mutabilitydetector.*;
 import org.mutabilitydetector.benchmarks.ImmutableExample;
 import org.mutabilitydetector.benchmarks.WrapsCollectionUsingNonWhitelistedMethod;
+import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewListUsingListOf;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.CopyListIntoNewArrayListAndUnmodifiableListIdiom;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.ListFieldFromUnmodifiableArrayAsList;
 import org.mutabilitydetector.benchmarks.mutabletofield.CollectionFields.StoresCopiedCollectionAsObjectAndIterable;
@@ -215,7 +216,13 @@ public class MutableTypeToFieldCheckerTest {
         assertThat(codeLocation.fieldName(), is("names"));
     }
 
+    @Test
+    public void allowsCallingImmutableFactoryMethod() throws Exception {
+        checkerWithRealSession = checkerWithRealAnalysisSession();
 
+        assertThat(runChecker(checkerWithRealSession, CopyListIntoNewListUsingListOf.class),
+                areImmutable());
+    }
     @Test
     public void allowsCopyingAndWrappingInUmodifiableCollectionTypeIdiom() throws Exception {
         checkerWithRealSession = checkerWithRealAnalysisSession();

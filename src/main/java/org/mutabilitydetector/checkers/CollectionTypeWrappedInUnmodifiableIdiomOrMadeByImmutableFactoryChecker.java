@@ -52,6 +52,12 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
 
         public final String UNMODIFIABLE_METHOD_OWNER = "java.util.Collections";
 
+        public final ImmutableMap<String, String> FIELD_TYPE_TO_IMMUTABLE_METHOD = ImmutableMap.<String, String>builder()
+                .put("java.util.Set", "of")
+                .put("java.util.List", "of")
+                .put("java.util.Map", "of")
+                .build();
+
         public final ImmutableMap<String, String> FIELD_TYPE_TO_UNMODIFIABLE_METHOD = ImmutableMap.<String, String>builder()
                 .put("java.util.Collection", "unmodifiableCollection")
                 .put("java.util.Set", "unmodifiableSet")
@@ -171,19 +177,43 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         return CLASS_NAME_CONVERTER.dotted(typeAssignedToField.getInternalName());
     }
 
-    private boolean wrapsInUnmodifiable() {
+    private boolean cannotGetMethodNameAndOnClassFromPreviousInvocation(String[] retVal) {
         AbstractInsnNode lastMeaningfulNode = lastMeaningfulNode(fieldInsnNode);
         if (!(lastMeaningfulNode instanceof MethodInsnNode)) {
-            return false;
+            return true;
         }
 
         MethodInsnNode previousInvocation = (MethodInsnNode) lastMeaningfulNode;
-        String methodName = previousInvocation.name;
-        String onClass = previousInvocation.owner;
+        retVal[0] = previousInvocation.name;
+        retVal[1] = previousInvocation.owner;
+
+        return false;
+    }
+
+    public boolean checkInvokesImmutableInterfaceMethod() {
+        String[] methodNameAndOnClassAry = new String[2];
+        if (cannotGetMethodNameAndOnClassFromPreviousInvocation(methodNameAndOnClassAry)) {
+            return false;
+        }
+        String methodName = methodNameAndOnClassAry[0];
+        String onClass = methodNameAndOnClassAry[1];
+
+        return Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.containsKey(CLASS_NAME_CONVERTER.dotted(onClass))
+                && Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.get(typeAssignedToField()).equals(methodName);
+    }
+
+    private boolean wrapsInUnmodifiable() {
+        String[] methodNameAndOnClassAry = new String[2];
+        if (cannotGetMethodNameAndOnClassFromPreviousInvocation(methodNameAndOnClassAry)) {
+            return false;
+        }
+        String methodName = methodNameAndOnClassAry[0];
+        String onClass = methodNameAndOnClassAry[1];
 
         return Configuration.INSTANCE.UNMODIFIABLE_METHOD_OWNER.equals(CLASS_NAME_CONVERTER.dotted(onClass))
                 && Configuration.INSTANCE.FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField()).equals(methodName);
     }
+
 
     private boolean safelyCopiesBeforeWrapping(MethodInsnNode unmodifiableMethodCall) {
         AbstractInsnNode lastMeaningfulNode = lastMeaningfulNode(unmodifiableMethodCall);
