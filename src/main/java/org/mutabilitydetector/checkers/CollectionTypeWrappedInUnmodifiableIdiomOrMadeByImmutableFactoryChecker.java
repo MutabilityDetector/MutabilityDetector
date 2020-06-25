@@ -33,11 +33,11 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.*;
+import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.*;
 import static org.mutabilitydetector.checkers.hint.WrappingHint.NO_HINT;
 import static org.mutabilitydetector.locations.Dotted.dotted;
 
-public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
+public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker {
 
     public enum Configuration {
         INSTANCE;
@@ -130,13 +130,13 @@ public class CollectionTypeWrappedInUnmodifiableIdiomChecker {
     private final ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods;
     private final String typeSignature;
 
-    public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField,
-                                                           ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
+    public CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField,
+                                                                                   ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods) {
         this(fieldInsnNode, typeAssignedToField, userDefinedCopyMethods, null);
     }
 
-    public CollectionTypeWrappedInUnmodifiableIdiomChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField,
-                                                           ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods, String typeSignature) {
+    public CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(FieldInsnNode fieldInsnNode, Type typeAssignedToField,
+                                                                                   ImmutableMultimap<String, CopyMethod> userDefinedCopyMethods, String typeSignature) {
         checkArgument(fieldInsnNode.getOpcode() == Opcodes.PUTFIELD, "Checking for unmodifiable wrap idiom requires PUTFIELD instruction");
         this.fieldInsnNode = fieldInsnNode;
         this.typeAssignedToField = typeAssignedToField;
