@@ -184,11 +184,14 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                     break;
                 } else if (!isConcreteType(assignedToField)) {
                     String fieldSignature = typeSignatureByFieldName.get(fieldName);
-                    UnmodifiableWrapResult unmodifiableWrapResult = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(
-                            fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods(), fieldSignature)
-                            .checkWrappedInUnmodifiable();
+                    CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker =
+                            new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(
+                            fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods(), fieldSignature);
+                    UnmodifiableWrapResult unmodifiableWrapResult = checker.checkWrappedInUnmodifiable();
 
-                    if (!unmodifiableWrapResult.canBeWrapped()) {
+                    if (checker.checkInvokesImmutableInterfaceMethod()) {
+                        break;
+                    } else if (!unmodifiableWrapResult.canBeWrapped()) {
                         setAbstractFieldAssignmentResult(fieldLocation, assignedToField);
                         break;
                     } else if (unmodifiableWrapResult.invokesWhitelistedWrapperMethod()) {

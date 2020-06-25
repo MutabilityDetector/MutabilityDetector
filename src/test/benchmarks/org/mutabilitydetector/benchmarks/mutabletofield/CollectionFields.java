@@ -28,6 +28,19 @@ import org.mutabilitydetector.benchmarks.ImmutableExample;
 @SuppressWarnings("unused")
 public class CollectionFields {
 
+    public static final class CopyListIntoNewListUsingListOf {
+
+        private final List<ImmutableExample> immutable;
+
+        public CopyListIntoNewListUsingListOf(List<ImmutableExample> potentiallyMutatable) {
+            this.immutable = List.of(potentiallyMutatable.toArray(new ImmutableExample[0]));
+        }
+
+        public List<ImmutableExample> getImmutable() {
+            return immutable;
+        }
+    }
+
     public static final class CopyListIntoNewArrayListAndUnmodifiableListIdiom {
 
         private final List<ImmutableExample> unmodifiable;
