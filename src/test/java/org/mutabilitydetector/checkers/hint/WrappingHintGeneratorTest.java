@@ -23,7 +23,7 @@ package org.mutabilitydetector.checkers.hint;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import org.junit.Test;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.Configuration;
+import org.mutabilitydetector.checkers.ImmutableCollectionChecker.Configuration;
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.objectweb.asm.Type;
 

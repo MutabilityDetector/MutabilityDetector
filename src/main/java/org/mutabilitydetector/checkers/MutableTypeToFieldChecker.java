@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.mutabilitydetector.asmoverride.AsmCompatibility;
 import org.mutabilitydetector.asmoverride.AsmVerifierFactory;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.AnalysisInProgress;
 import org.mutabilitydetector.checkers.info.CyclicReferences;
 import org.mutabilitydetector.checkers.info.MutableTypeInformation;
@@ -184,8 +184,8 @@ public final class MutableTypeToFieldChecker extends AsmMutabilityChecker {
                     break;
                 } else if (!isConcreteType(assignedToField)) {
                     String fieldSignature = typeSignatureByFieldName.get(fieldName);
-                    CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker =
-                            new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(
+                    ImmutableCollectionChecker checker =
+                            new ImmutableCollectionChecker(
                             fieldInsnNode, typeAssignedToField, mutableTypeInfo.hardcodedCopyMethods(), fieldSignature);
                     UnmodifiableWrapResult unmodifiableWrapResult = checker.checkWrappedInUnmodifiable();
 
