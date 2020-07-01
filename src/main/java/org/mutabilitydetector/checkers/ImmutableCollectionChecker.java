@@ -181,7 +181,7 @@ public class ImmutableCollectionChecker {
 
     private Optional<MethodInsnNode> getLastMethodInsnNode() {
         AbstractInsnNode lastMeaningfulNode = lastMeaningfulNode(fieldInsnNode);
-        if (!(lastMeaningfulNode instanceof MethodInsnNode)) {
+        if (lastMeaningfulNode instanceof MethodInsnNode) {
             return Optional.of((MethodInsnNode) lastMeaningfulNode);
         } else {
             return Optional.empty();
@@ -190,8 +190,8 @@ public class ImmutableCollectionChecker {
 
     public boolean checkInvokesImmutableInterfaceMethod() {
         return getLastMethodInsnNode().map(previousInvocation ->
-                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.containsKey(CLASS_NAME_CONVERTER.dotted(previousInvocation.name)) &&
-                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.get(typeAssignedToField()).equals(previousInvocation.owner))
+                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.containsKey(CLASS_NAME_CONVERTER.dotted(previousInvocation.owner)) &&
+                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.get(typeAssignedToField()).equals(previousInvocation.name))
                     .orElse(false);
 
     }
