@@ -3,10 +3,10 @@ package org.mutabilitydetector.checkers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.FIELD_TYPE_CANNOT_BE_WRAPPED;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_AND_COPIES_SAFELY;
-import static org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_BUT_DOES_NOT_COPY;
+import static org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.DOES_NOT_WRAP_USING_WHITELISTED_METHOD;
+import static org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.FIELD_TYPE_CANNOT_BE_WRAPPED;
+import static org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_AND_COPIES_SAFELY;
+import static org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult.UnmodifiableWrapStatus.WRAPS_BUT_DOES_NOT_COPY;
 import static org.mutabilitydetector.locations.Slashed.slashed;
 import static org.mutabilitydetector.unittesting.MutabilityAssert.assertInstancesOf;
 import static org.mutabilitydetector.unittesting.MutabilityMatchers.areImmutable;
@@ -24,7 +24,7 @@ import org.mutabilitydetector.benchmarks.checkers.ImmutableClassWithTernaryOpera
 import org.mutabilitydetector.benchmarks.checkers.ImmutableClassWithTernaryOperatorAndVarInsn;
 import org.mutabilitydetector.benchmarks.checkers.ImmutableWithIfStatementAndConstantCategoryOpcode;
 import org.mutabilitydetector.benchmarks.checkers.ImmutableWithIfStatementAndVarInsn;
-import org.mutabilitydetector.checkers.CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker.UnmodifiableWrapResult;
+import org.mutabilitydetector.checkers.ImmutableCollectionChecker.UnmodifiableWrapResult;
 import org.mutabilitydetector.checkers.info.CopyMethod;
 import org.mutabilitydetector.locations.ClassName;
 import org.objectweb.asm.Label;
@@ -61,7 +61,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import com.google.common.collect.ImmutableMultimap;
 
 @RunWith(Theories.class)
-public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryCheckerTest {
+public class ImmutableCollectionCheckerTest {
 
     private final ImmutableMultimap<String, CopyMethod> NO_USER_DEFINED_COPY_METHODS = ImmutableMultimap.<String, CopyMethod>of();
 
@@ -69,13 +69,13 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
     @Test(expected=IllegalArgumentException.class)
     public void requiresTheFieldInstructionNodeToBeAPutFieldInstruction() throws Exception {
         FieldInsnNode insnNode = new FieldInsnNode(Opcodes.GETFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(insnNode, null, NO_USER_DEFINED_COPY_METHODS);
+        new ImmutableCollectionChecker(insnNode, null, NO_USER_DEFINED_COPY_METHODS);
     }
 
     @Test
     public void doesNotAllowCopyingIntoAbritraryType() throws Exception {
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "the/field/Type");
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, getType(slashed("the/assigned/Type").asInternal()), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, getType(slashed("the/assigned/Type").asInternal()), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().status, is(FIELD_TYPE_CANNOT_BE_WRAPPED));
         assertThat(checker.checkWrappedInUnmodifiable().getWrappingHint("field"), is(""));
@@ -97,7 +97,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(false));
         assertThat(checker.checkWrappedInUnmodifiable().status, is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
@@ -117,7 +117,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return varInsn; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().invokesWhitelistedWrapperMethod(), is(false));
         assertThat(checker.checkWrappedInUnmodifiable().status, is(DOES_NOT_WRAP_USING_WHITELISTED_METHOD));
@@ -149,7 +149,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(false));
         assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_BUT_DOES_NOT_COPY));
@@ -165,7 +165,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/util/List") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(false));
         assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_BUT_DOES_NOT_COPY));
@@ -181,7 +181,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", "java/lang/Iterable") {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().canBeWrapped(), is(true));
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(true));
@@ -201,7 +201,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", typeOfField) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         assertThat(checker.checkWrappedInUnmodifiable().safelyCopiesBeforeWrapping(), is(true));
         assertThat(checker.checkWrappedInUnmodifiable().status, is(WRAPS_AND_COPIES_SAFELY));
@@ -227,7 +227,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
 
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
+        ImmutableCollectionChecker checker = new ImmutableCollectionChecker(fieldInsnNode, Type.getType(List.class), NO_USER_DEFINED_COPY_METHODS);
 
         UnmodifiableWrapResult result = checker.checkWrappedInUnmodifiable();
 
@@ -258,7 +258,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
     
     @Theory
     public void validAssignmentsHold(ValidUnmodifiableAssignment dataPoint) throws Exception {
-        CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
+        ImmutableCollectionChecker checker = checkerForPutfieldPrecededByCopyAndWrapMethods(
                 dataPoint.copyMethodOwner,
                 dataPoint.copyMethodName,
                 dataPoint.copyMethodDesc,
@@ -355,7 +355,7 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         }
     }
 
-    private CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
+    private ImmutableCollectionChecker checkerForPutfieldPrecededByCopyAndWrapMethods(
             String copyMethodOwner, String copyMethodName, String copyMethodDesc, String wrappingMethodName,
             ClassName fieldType) {
         final MethodInsnNode whitelistedCopyMethod = new StaticConcreteMethodInsnNode(copyMethodOwner, copyMethodName, copyMethodDesc);
@@ -365,20 +365,20 @@ public class CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChe
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType.asInternal()) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(fieldType.asInternal()), NO_USER_DEFINED_COPY_METHODS);
+        return new ImmutableCollectionChecker(fieldInsnNode, Type.getType(fieldType.asInternal()), NO_USER_DEFINED_COPY_METHODS);
     }
 
-    private CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
+    private ImmutableCollectionChecker checkerOfPutFieldPrecededByCall(String fieldType, String methodName, String unmodifiableMethodDesc) {
         final MethodInsnNode wrappingMethod = new StaticConcreteMethodInsnNode("java/util/Collections", methodName, unmodifiableMethodDesc);
         FieldInsnNode fieldInsnNode = new FieldInsnNode(Opcodes.PUTFIELD, "some/type/Name", "fieldName", fieldType) {
             @Override public AbstractInsnNode getPrevious() { return wrappingMethod; }
         };
-        return new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType("L" + fieldType + ";"), NO_USER_DEFINED_COPY_METHODS);
+        return new ImmutableCollectionChecker(fieldInsnNode, Type.getType("L" + fieldType + ";"), NO_USER_DEFINED_COPY_METHODS);
     }
 
-    private CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker checkerForAssigningToFieldOfType(ClassName fieldType) {
+    private ImmutableCollectionChecker checkerForAssigningToFieldOfType(ClassName fieldType) {
         FieldInsnNode fieldInsnNode = putFieldForType(fieldType);
-        return new CollectionTypeWrappedInUnmodifiableIdiomOrMadeByImmutableFactoryChecker(fieldInsnNode, Type.getType(fieldType.asInternal()), NO_USER_DEFINED_COPY_METHODS);
+        return new ImmutableCollectionChecker(fieldInsnNode, Type.getType(fieldType.asInternal()), NO_USER_DEFINED_COPY_METHODS);
     }
 
     private FieldInsnNode putFieldForType(ClassName fieldType) {
