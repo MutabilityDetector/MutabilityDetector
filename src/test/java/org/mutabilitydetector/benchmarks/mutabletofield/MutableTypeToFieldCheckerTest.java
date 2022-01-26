@@ -22,7 +22,6 @@ package org.mutabilitydetector.benchmarks.mutabletofield;
 
 
 import com.google.common.collect.ImmutableSet;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,8 +53,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mutabilitydetector.Configurations.NO_CONFIGURATION;
 import static org.mutabilitydetector.IsImmutable.NOT_IMMUTABLE;
