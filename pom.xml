@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mutabilitydetector</groupId>
   <artifactId>MutabilityDetector</artifactId>
-  <version>0.10.5-SNAPSHOT</version>
+  <version>0.10.6</version>
   <packaging>jar</packaging>
   <name>MutabilityDetector</name>
   <description>Lightweight analysis tool for detecting mutability in Java
@@ -29,7 +29,7 @@
     <url>https://github.com/MutabilityDetector/MutabilityDetector</url>
     <connection>scm:git:https://github.com/MutabilityDetector/MutabilityDetector</connection>
     <developerConnection>scm:git:git@github.com:MutabilityDetector/MutabilityDetector.git</developerConnection>
-    <tag>MutabilityDetector-0.10.5</tag>
+    <tag>MutabilityDetector-0.10.6</tag>
   </scm>
   <developers>
     <developer>
