@@ -23,5 +23,5 @@ package org.mutabilitydetector.asmoverride;
 import org.objectweb.asm.Opcodes;
 
 public final class AsmCompatibility {
-    public static final int AsmApiVersion = Opcodes.ASM7;
+    public static final int AsmApiVersion = Opcodes.ASM8;
 }
