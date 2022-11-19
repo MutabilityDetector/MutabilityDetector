@@ -96,7 +96,7 @@ public final class WrappingHintGenerator {
      */
     private void generateWrappingPart(WrappingHint.Builder builder) {
         builder.setWrappingMethodOwnerName(configuration.UNMODIFIABLE_METHOD_OWNER)
-                .setWrappingMethodName(configuration.FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField));
+                .setWrappingMethodName(configuration.FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField).iterator().next());
     }
 
     private static String formatTypeParameter(String typeParameter) {

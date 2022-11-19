@@ -21,9 +21,7 @@ package org.mutabilitydetector.checkers;
  */
 
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import org.mutabilitydetector.checkers.hint.WrappingHint;
 import org.mutabilitydetector.checkers.hint.WrappingHintGenerator;
 import org.mutabilitydetector.checkers.info.CopyMethod;
@@ -54,18 +52,24 @@ public class ImmutableCollectionChecker {
 
         public final String UNMODIFIABLE_METHOD_OWNER = "java.util.Collections";
 
-        public final ImmutableMap<String, String> FIELD_TYPE_TO_IMMUTABLE_METHOD = ImmutableMap.<String, String>builder()
+        public final ImmutableSetMultimap<String, String> FIELD_TYPE_TO_IMMUTABLE_METHOD = ImmutableSetMultimap.<String, String>builder()
                 .put("java.util.Set", "of")
+                .put("java.util.Set", "copyOf")
                 .put("java.util.List", "of")
+                .put("java.util.List", "copyOf")
                 .put("java.util.Map", "of")
+                .put("java.util.Map", "copyOf")
                 .build();
 
-        public final ImmutableMap<String, String> FIELD_TYPE_TO_UNMODIFIABLE_METHOD = ImmutableMap.<String, String>builder()
+        public final ImmutableListMultimap<String, String> FIELD_TYPE_TO_UNMODIFIABLE_METHOD = ImmutableListMultimap.<String, String>builder()
                 .put("java.util.Collection", "unmodifiableCollection")
                 .put("java.util.Set", "unmodifiableSet")
+                .put("java.util.Set", "copyOf")
                 .put("java.util.SortedSet", "unmodifiableSortedSet")
                 .put("java.util.List", "unmodifiableList")
+                .put("java.util.List", "copyOf")
                 .put("java.util.Map", "unmodifiableMap")
+                .put("java.util.Map", "copyOf")
                 .put("java.util.SortedMap", "unmodifiableSortedMap")
                 .build();
 
@@ -191,7 +195,7 @@ public class ImmutableCollectionChecker {
     public boolean checkInvokesImmutableInterfaceMethod() {
         return getLastMethodInsnNode().map(previousInvocation ->
                         Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.containsKey(CLASS_NAME_CONVERTER.dotted(previousInvocation.owner)) &&
-                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.get(typeAssignedToField()).equals(previousInvocation.name))
+                        Configuration.INSTANCE.FIELD_TYPE_TO_IMMUTABLE_METHOD.get(typeAssignedToField()).contains(previousInvocation.name))
                     .orElse(false);
 
     }
@@ -199,7 +203,7 @@ public class ImmutableCollectionChecker {
     private boolean wrapsInUnmodifiable() {
         return getLastMethodInsnNode().map(previousInvocation ->
                         Configuration.INSTANCE.UNMODIFIABLE_METHOD_OWNER.equals(CLASS_NAME_CONVERTER.dotted(previousInvocation.owner)) &&
-                        Configuration.INSTANCE.FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField()).equals(previousInvocation.name))
+                        Configuration.INSTANCE.FIELD_TYPE_TO_UNMODIFIABLE_METHOD.get(typeAssignedToField()).contains(previousInvocation.name))
                     .orElse(false);
     }
 
