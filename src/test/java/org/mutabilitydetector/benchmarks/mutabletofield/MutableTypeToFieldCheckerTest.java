@@ -125,7 +125,6 @@ public class MutableTypeToFieldCheckerTest {
     public void requestsMutableStatusOfPublishedField() throws Exception {
         AnalysisInProgress analysisInProgressWhenRequestingMutabilityOfField = analysisInProgressIncludes(MutableByHavingMutableFieldAssigned.class);
 
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.processTransitiveAnalysis(
                 mutableExample,
                 analysisInProgressWhenRequestingMutabilityOfField))
@@ -150,7 +149,6 @@ public class MutableTypeToFieldCheckerTest {
                 NOT_IMMUTABLE,
                 newMutableReasonDetail(unusedMessage, unusedCodeLocation(), ABSTRACT_COLLECTION_TYPE_TO_FIELD));
 
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.processTransitiveAnalysis(mutableExample, analysisInProgressWhenRequestingMutabilityOfField)).thenReturn(mutableResult);
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
@@ -163,7 +161,6 @@ public class MutableTypeToFieldCheckerTest {
     public void failsCheckIfAnyFieldsHaveMutableAssignedToThem() throws Exception {
         AnalysisInProgress analysisInProgressWhenRequestingMutabilityOfField = analysisInProgressIncludes(MutableByHavingMutableFieldAssigned.class);
 
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.processTransitiveAnalysis(mutableExample, analysisInProgressWhenRequestingMutabilityOfField)).thenReturn(unusedAnalysisResult);
 
         result = runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
@@ -193,7 +190,6 @@ public class MutableTypeToFieldCheckerTest {
 
     @Test
     public void codeLocationIsFieldLocation() throws Exception {
-        when(session.getResults()).thenReturn(Collections.<AnalysisResult>emptyList());
         when(session.processTransitiveAnalysis(eq(mutableExample), any(AnalysisInProgress.class))).thenReturn(unusedAnalysisResult);
 
         runChecker(checkerWithMockedSession, MutableByHavingMutableFieldAssigned.class);
