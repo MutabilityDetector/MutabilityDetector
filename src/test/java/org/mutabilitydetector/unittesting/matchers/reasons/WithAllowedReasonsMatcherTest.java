@@ -157,8 +157,6 @@ public class WithAllowedReasonsMatcherTest {
         MutableReasonDetail disallowedReason = newMutableReasonDetail("disallowed", unusedCodeLocation, unusedReason());
         
         Matcher<MutableReasonDetail> onlyAllowOneReason = mock(Matcher.class);
-        when(onlyAllowOneReason.matches(disallowedReason)).thenReturn(false);
-        
         IsImmutableMatcher isImmutable = IsImmutableMatcher.hasIsImmutableStatusOf(IMMUTABLE);
         AnalysisResult analysisResult = analysisResult("some class", NOT_IMMUTABLE, disallowedReason);
         
